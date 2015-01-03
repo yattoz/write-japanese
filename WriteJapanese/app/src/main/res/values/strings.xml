@@ -1,3 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WriteJapanese</string>
+
+    <string name="app_name">Write Japanese</string>
+    <string name="menu_settings">Settings</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="title_activity_credits">Credits</string>
+    <string name="teach_me_button">Teach me</string>
+    <string name="undo_stroke_button">Undo Stroke</string>
+    <string name="finished_drawing_button">Check</string>
+    <string name="practice_button">Study</string>
+    <string name="next_button">Next</string>
+    <string name="trace_message">Trace the character</string>
+    <string name="test_button">Test</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_teaching">Study Mode</string>
+    <string name="practice_writing">Practice Writing</string>
+    <string name="character_info">Character Information</string>
+    <string name="remind_story_button">Hint Story</string>
+    <string name="title_activity_progress">Your Progress</string>
+    <string name="progress_title_section_1">Progress</string>
+    <string name="progress_title_section_2">Characters</string>
+
+    <style name="ButtonText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
 </resources>

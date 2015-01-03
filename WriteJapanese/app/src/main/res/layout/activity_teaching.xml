@@ -1,0 +1,70 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e5e5e5" >
+
+    <LinearLayout
+        android:id="@+id/characterIntroduction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="8dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" >
+
+            <dmeeuwis.nakama.views.AnimatedCurveView
+                android:id="@+id/kanji_animation"
+                android:layout_width="match_parent"
+                android:layout_height="170sp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/bigkanji"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:includeFontPadding="false"
+                android:textSize="160sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/meanings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:scrollingCache="false" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Meanings"
+                android:textColor="#878787"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/exampleSpace"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical" >
+
+<!--             <TextView -->
+<!--                 android:layout_width="match_parent" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:text="Example Words" -->
+<!--                 android:textColor="#878787" -->
+<!--                 android:textSize="18sp" /> -->
+
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

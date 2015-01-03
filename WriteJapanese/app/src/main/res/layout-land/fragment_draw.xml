@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tracingFrame"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:paddingTop="0dp" >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent" 
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        >
+
+        <TextView
+            android:id="@+id/teachingLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/trace_message"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tipMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="18sp"
+           android:paddingTop="12sp" 
+             />
+    </LinearLayout>
+
+    <dmeeuwis.nakama.views.TracingCurveView
+        android:id="@+id/tracingPad"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp" />
+
+</LinearLayout>

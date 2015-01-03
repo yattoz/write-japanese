@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#e5e5e5" >
+
+    <dmeeuwis.masterlibrary.SafeViewFlipper
+        android:id="@+id/viewflipper"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="0dp" >
+
+        <!-- Drawing frame, where users test their might. -->
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="1.0" >
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5" >
+
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/bg_card" >
+
+                    <ImageView
+                        android:id="@+id/other_meanings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:contentDescription="Other meanings"
+                        android:padding="5dp"
+                        android:src="@drawable/ic_action_overflow" />
+
+                    <LinearLayout
+                        android:id="@+id/instructionsSpace"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:orientation="vertical" >
+
+                        <TextSwitcher
+                            android:id="@+id/instructionsLabel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <TextSwitcher
+                            android:id="@+id/target"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <FrameLayout
+                            android:id="@+id/buttonSpace"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="16dp" >
+
+                            <LinearLayout
+                                android:id="@+id/buttonsBeforeStrokeLayer"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:gravity="center_vertical|center_horizontal"
+                                android:orientation="vertical" >
+
+                                <Button
+                                    android:id="@+id/remindStoryButton"
+                                    style="@style/ButtonText"
+                                    android:layout_width="fill_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:background="@drawable/blue_button"
+                                    android:text="@string/remind_story_button"
+                                    android:textSize="24dp" />
+
+                                <Button
+                                    android:id="@+id/teachButton"
+                                    style="@style/ButtonText"
+                                    android:layout_width="fill_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/blue_button"
+                                    android:text="@string/teach_me_button"
+                                    android:textSize="24dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/buttonsAfterStrokeLayer"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:gravity="center_vertical" >
+
+                                <Button
+                                    android:id="@+id/finishedButton"
+                                    style="@style/ButtonText"
+                                    android:layout_width="0dip"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/green_button"
+                                    android:text="@string/finished_drawing_button"
+                                    android:textSize="24dp" />
+                            </LinearLayout>
+                        </FrameLayout>
+                    </LinearLayout>
+                </FrameLayout>
+
+                <ImageView
+                    android:id="@+id/reviewBug"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:contentDescription="Reviewing"
+                    android:src="@drawable/review_bug"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <dmeeuwis.nakama.views.DrawView
+                android:id="@+id/drawPad"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.5" />
+        </LinearLayout>
+
+        <!-- Incorrect view screen -->
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:baselineAligned="false"
+                android:orientation="horizontal" >
+
+                <!-- Drawn -->
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFA20D1B"
+                        android:padding="6dp"
+                        android:text="Drawn"
+                        android:textColor="#FFFFFF" />
+
+                    <dmeeuwis.nakama.views.AnimatedCurveView
+                        android:id="@+id/animatedDrawnReplay"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+                <!-- Correct -->
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FF1BA20D"
+                        android:padding="6dp"
+                        android:text="Correct"
+                        android:textColor="#FFFFFF" />
+
+                    <dmeeuwis.nakama.views.AnimatedCurveView
+                        android:id="@+id/animatedKnownReplay"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+                <!-- Advice -->
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#449def"
+                        android:padding="6dp"
+                        android:text="Advice"
+                        android:textColor="#FFFFFF" />
+
+                    <ListView
+                        android:id="@+id/criticism"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/correctionButtonSpace"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/practiceButton"
+                    style="@style/ButtonText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/blue_button"
+                    android:text="@string/practice_button"
+                    android:textSize="22dp" />
+
+                <Button
+                    android:id="@+id/nextButton"
+                    style="@style/ButtonText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/green_button"
+                    android:text="@string/next_button"
+                    android:textSize="22dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/correctLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:baselineAligned="false"
+            android:orientation="horizontal" >
+
+            <!--
+            <dmeeuwis.masterlibrary.CorrectCompareView
+                android:id="@+id/correctFrame"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
+            -->
+
+
+            <!-- Left side: known and drawn characters -->
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FF1BA20D"
+                        android:textColor="#FFFFFF"
+                        android:padding="6dp"
+                        android:text="Correct" />
+
+                    <dmeeuwis.nakama.views.AnimatedCurveView
+                        android:id="@+id/correctKnownView"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FF1BA20D"
+                        android:padding="6dp"
+                        android:textColor="#FFFFFF"
+                        android:text="Drawn" />
+
+                    <dmeeuwis.nakama.views.AnimatedCurveView
+                        android:id="@+id/correctDrawnView"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" >
+
+                <ListView
+                    android:id="@+id/correctExamples"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_above="@+id/correctNextButton"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="10.0sp"
+                    android:layout_marginLeft="5.0sp"
+                    android:layout_marginRight="5.0sp"
+                    android:layout_marginTop="10.0sp"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="10.0sp" />
+
+                <Button
+                    android:id="@id/correctNextButton"
+                    style="@style/ButtonText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/green_button"
+                    android:text="@string/next_button"
+                    android:textSize="24dp" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <dmeeuwis.masterlibrary.IncorrectScreenView
+            android:id="@+id/incorrectFrame"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </dmeeuwis.masterlibrary.SafeViewFlipper>
+
+    <View
+        android:id="@+id/maskView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+</FrameLayout>

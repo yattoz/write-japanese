@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProgressActivity" >
+
+    <dmeeuwis.nakama.views.SingleBarChart
+        android:id="@+id/barChart"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/chartLegend"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/barChart"
+        android:gravity="right" />
+
+    <GridView
+        android:id="@+id/character_grid"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/chartLegend"
+        android:gravity="center"
+        android:numColumns="auto_fit"
+        android:padding="5sp" >
+    </GridView>
+
+</RelativeLayout>

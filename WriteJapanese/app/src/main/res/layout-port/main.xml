@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/topLevelLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#e5e5e5">
+
+    <dmeeuwis.masterlibrary.SafeViewFlipper
+        android:id="@+id/viewflipper"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <!-- Drawing frame, where users test their might. -->
+
+        <RelativeLayout
+            android:id="@+id/drawingFrame"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <dmeeuwis.nakama.views.DrawView
+                android:id="@+id/drawPad"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+
+            <FrameLayout
+                android:id="@+id/instructionsSpace"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    card_view:cardCornerRadius="5dp"
+                    android:layout_margin="5dp">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <TextSwitcher
+                            android:id="@+id/instructionsLabel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <TextSwitcher
+                            android:id="@+id/target"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <ImageView
+                    android:id="@+id/other_meanings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center_vertical"
+                    android:contentDescription="Other meanings"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_action_overflow" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/buttonSpace"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true">
+
+                <LinearLayout
+                    android:id="@+id/buttonsBeforeStrokeLayer"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/remindStoryButton"
+                        style="@style/ButtonText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/blue_button"
+                        android:text="@string/remind_story_button" />
+
+                    <Button
+                        android:id="@+id/teachButton"
+                        style="@style/ButtonText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/blue_button"
+                        android:text="@string/teach_me_button" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/buttonsAfterStrokeLayer"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical|center_horizontal">
+
+                    <Button
+                        android:id="@+id/finishedButton"
+                        style="@style/ButtonText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/green_button"
+                        android:text="@string/finished_drawing_button" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/reviewBug"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:contentDescription="Reviewing"
+                android:src="@drawable/review_bug"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <!-- After drawing frame, this frame shows advice and criticism. -->
+
+        <LinearLayout
+            android:id="@+id/reviewingFrame"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <!-- Animated corrections -->
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="5"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFA20D1B"
+                        android:padding="6dp"
+                        android:text="Drawn"
+                        android:textColor="#FFFFFF" />
+
+                    <dmeeuwis.nakama.views.AnimatedCurveView
+                        android:id="@+id/animatedDrawnReplay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FF1BA20D"
+                        android:padding="6dp"
+                        android:text="Correct"
+                        android:textColor="#FFFFFF" />
+
+                    <dmeeuwis.nakama.views.AnimatedCurveView
+                        android:id="@+id/animatedKnownReplay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/criticism"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_margin="5dp"
+                android:layout_weight="3"
+                android:background="@drawable/bg_card"
+                android:padding="5dp" />
+
+            <LinearLayout
+                android:id="@+id/correctionButtonSpace"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/practiceButton"
+                    style="@style/ButtonText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/blue_button"
+                    android:text="@string/practice_button"
+                    android:textSize="24dp" />
+
+                <Button
+                    android:id="@+id/nextButton"
+                    style="@style/ButtonText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/green_button"
+                    android:text="@string/next_button"
+                    android:textSize="24dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/correctLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <!--
+            <dmeeuwis.masterlibrary.CorrectCompareView
+                android:id="@+id/correctFrame"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
+            -->
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FF1BA20D"
+                        android:padding="6dp"
+                        android:text="Correct"
+                        android:textColor="#FFFFFF" />
+
+                    <dmeeuwis.nakama.views.AnimatedCurveView
+                        android:id="@+id/correctKnownView"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FF1BA20D"
+                        android:padding="6dp"
+                        android:text="Drawn"
+                        android:textColor="#FFFFFF" />
+
+                    <dmeeuwis.nakama.views.AnimatedCurveView
+                        android:id="@+id/correctDrawnView"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/correctExamples"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="10.0sp"
+                android:layout_marginLeft="5.0sp"
+                android:layout_marginRight="5.0sp"
+                android:layout_marginTop="10.0sp"
+                android:layout_weight="1"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="10.0sp" />
+
+            <Button
+                android:id="@+id/correctNextButton"
+                style="@style/ButtonText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/green_button"
+                android:text="@string/next_button"
+                android:textSize="24dp" />
+        </LinearLayout>
+
+        <dmeeuwis.masterlibrary.IncorrectScreenView
+            android:id="@+id/incorrectFrame"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </dmeeuwis.masterlibrary.SafeViewFlipper>
+
+    <View
+        android:id="@+id/maskView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+</FrameLayout>

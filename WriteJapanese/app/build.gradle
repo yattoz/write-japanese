@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "dmeeuwis.writejapanese"
+        applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 9
         targetSdkVersion 21
         versionCode 1
@@ -17,9 +17,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+	sourceSets {
+		main.java.srcDirs += 'src/nakamadict/java'
+	}
+
+	lintOptions {
+		abortOnError false
+	}
+}
+
+repositories {
+	mavenCentral()
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
+	compile 'com.android.support:cardview-v7:21.0.+'
+
+	compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
+	compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
+	compile 'com.nhaarman.listviewanimations:lib-core-slh:3.1.0@aar'
 }
