@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.Outline;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -62,6 +64,7 @@ import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.AnimatedCurveView.DrawTime;
 import dmeeuwis.nakama.views.DrawView;
+import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
 public abstract class AbstractMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
@@ -95,7 +98,7 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
     protected View drawFrame, reviewFrame;
     
     protected LinearLayout correctionsAnimationArea;
-    protected Button remindStoryButton;
+    protected FloatingActionButton remindStoryButton;
     protected ImageView otherMeaningsButton;
     protected ListView criticism;
     protected ArrayAdapter<String> criticismArrayAdapter;
@@ -116,8 +119,6 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 	protected LinkedHashMap<String, CharacterStudySet> characterSets = new LinkedHashMap<String, CharacterStudySet>();
 	
 	private int currentCharacterClueIndex = 0;
-	
-	protected Animation outToLeft, fadeInAfter, fadeInBefore, fadeOutAfter, fadeOutBefore;
 	
 	static private final int BLUE_COLOR = 0xffD7FFD7;
 	static private final int GREEN_COLOR = 0xffE4E8FF;
@@ -157,7 +158,7 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
         this.dictionarySet = DictionarySet.singleton(this);
 		Log.i("nakama", "MainActivity: onCreate, loading dictionary set took " + (System.currentTimeMillis() - startTime) + "ms.");
        
-		outToLeft = AnimationUtils.loadAnimation(this,  R.anim.screen_transition_out);
+		Animation outToLeft = AnimationUtils.loadAnimation(this,  R.anim.screen_transition_out);
         
         flipper = (ViewFlipper)findViewById(R.id.viewflipper);
 		flipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.screen_transition_in));
@@ -223,8 +224,10 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
         });
 
 
-        Button doneButton = (Button)findViewById(R.id.finishedButton);
-        doneButton.getBackground().setColorFilter(DONE_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+        final FloatingActionButton doneButton = (FloatingActionButton)findViewById(R.id.finishedButton);
+        doneButton.hideInstantly();
+        doneButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
+        doneButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_check_mark));
         doneButton.setOnClickListener(new OnClickListener() {
 			@Override public void onClick(View arg0) {
 				if(drawPad.getStrokeCount() == 0){
@@ -278,8 +281,7 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 		});
         
         db = new StoryDataHelper(getApplicationContext());
-        remindStoryButton = (Button)findViewById(R.id.remindStoryButton);
-        remindStoryButton.getBackground().setColorFilter(REMIND_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+        remindStoryButton = (FloatingActionButton)findViewById(R.id.remindStoryButton);
         remindStoryButton.setOnClickListener(new OnClickListener() {
 			@Override public void onClick(View v) {
 				Toast.makeText(getApplicationContext(), db.getStory(currentCharacterSet.currentCharacter()), Toast.LENGTH_LONG).show();
@@ -299,16 +301,18 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 			}
 		});
         
-        Button teachMeButton = (Button)findViewById(R.id.teachButton);
-        teachMeButton.getBackground().setColorFilter(TEACH_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+        final FloatingActionButton teachMeButton = (FloatingActionButton)findViewById(R.id.teachButton);
+        teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkBlue));
+        teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_question_mark));
         teachMeButton.setOnClickListener(new OnClickListener() {
-			@Override public void onClick(View v) {
-				char c = currentCharacterSet.currentCharacter();
-				currentCharacterSet.markCurrentAsUnknown();
-				goToTeachingActivity(c);
-			}
-		});
-        
+            @Override
+            public void onClick(View v) {
+                char c = currentCharacterSet.currentCharacter();
+                currentCharacterSet.markCurrentAsUnknown();
+                goToTeachingActivity(c);
+            }
+        });
+
         // Review Frame init
         reviewFrame = findViewById(R.id.reviewingFrame);
         
@@ -320,7 +324,6 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 				playbackAnimation.startAnimation(0);
 			}
 		});
-        
         playbackAnimation.setOnClickListener(new OnClickListener() {
 			@Override public void onClick(View v) {
 				correctAnimation.startAnimation(0);
@@ -328,7 +331,7 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 		});
         
         criticism = (ListView)findViewById(R.id.criticism);
-        criticismArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<String>(0));
+        criticismArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<String>(0));
         criticism.setAdapter(criticismArrayAdapter);
         
         OnClickListener nextButtonListener = new OnClickListener() {
@@ -339,15 +342,14 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 			}
              };
         
-        Button next = (Button)findViewById(R.id.nextButton);
-        next.getBackground().setColorFilter(NEXT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+        final Button next = (Button)findViewById(R.id.nextButton);
         next.setOnClickListener(nextButtonListener);
         
-        Button correctNext = (Button)findViewById(R.id.correctNextButton);
+        final Button correctNext = (Button)findViewById(R.id.correctNextButton);
         correctNext.getBackground().setColorFilter(NEXT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
         correctNext.setOnClickListener(nextButtonListener);
         
-        Button practiceButton = (Button)findViewById(R.id.practiceButton);
+        final Button practiceButton = (Button)findViewById(R.id.practiceButton);
         practiceButton.getBackground().setColorFilter(PRACTICE_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
         practiceButton.setOnClickListener(new OnClickListener() {
 			@Override public void onClick(View v) {
@@ -355,28 +357,24 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 			}
 		});
        
-      
-        final View beforeStrokeButtonLayer = findViewById(R.id.buttonsBeforeStrokeLayer);
-        final View afterStrokeButtonLayer = findViewById(R.id.buttonsAfterStrokeLayer);
-        
+
         incorrectScreen = (IncorrectScreenView)findViewById(R.id.incorrectFrame);
  
         correctVocabList = (ListView)findViewById(R.id.correctExamples);
   		correctVocabArrayAdapter = new KanjiVocabArrayAdapter(this, this.dictionarySet.kanjiFinder());
+
+//        ScaleInAnimationAdapter scaley = new ScaleInAnimationAdapter(correctVocabArrayAdapter);
+
+
 //        ScaleInAnimationAdapter scaley = new ScaleInAnimationAdapter(correctVocabArrayAdapter);
 //        scaley.setAbsListView(correctVocabList);
 //        correctVocabList.setAdapter(scaley);
         
-        fadeInBefore = AnimationUtils.loadAnimation(this, R.anim.fadein);
-        fadeInBefore.setAnimationListener(new VisibilityChangeAfterAnimationListener(beforeStrokeButtonLayer, View.VISIBLE));
-        fadeOutBefore = AnimationUtils.loadAnimation(this, R.anim.fadeout);
-        fadeOutBefore.setAnimationListener(new VisibilityChangeAfterAnimationListener(beforeStrokeButtonLayer, View.INVISIBLE));
-        
-        fadeInAfter = AnimationUtils.loadAnimation(this, R.anim.fadein);
-        fadeInAfter.setAnimationListener(new VisibilityChangeAfterAnimationListener(afterStrokeButtonLayer, View.VISIBLE));
-        fadeOutAfter = AnimationUtils.loadAnimation(this, R.anim.fadeout);
-        fadeOutAfter.setAnimationListener(new VisibilityChangeAfterAnimationListener(afterStrokeButtonLayer, View.INVISIBLE));
-       
+/*
+        final View beforeStrokeButtonLayer = findViewById(R.id.buttonsBeforeStrokeLayer);
+        final View afterStrokeButtonLayer = findViewById(R.id.buttonsAfterStrokeLayer);
+
+
         afterStrokeButtonLayer.setVisibility(View.INVISIBLE);
         beforeStrokeButtonLayer.setVisibility(View.VISIBLE);
         drawPad.setOnStrokeListener(new DrawView.OnStrokeListener(){
@@ -387,25 +385,52 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
         		}
         	}
         });
-        
+
         drawPad.setOnClearListener(new DrawView.OnClearListener(){
         	@Override public void onClear(){
         		if(beforeStrokeButtonLayer.getVisibility() != View.VISIBLE){
         			beforeStrokeButtonLayer.startAnimation(fadeInBefore);
         		}
-        		
+
         		if(afterStrokeButtonLayer.getVisibility() == View.VISIBLE){
         			afterStrokeButtonLayer.startAnimation(fadeOutAfter);
         		}
-        		
+
 		        String story = db.getStory(currentCharacterSet.currentCharacter());
 		        if(story != null && !"".equals(story.trim()))
 	        		remindStoryButton.setVisibility(View.VISIBLE);
-		        else 
+		        else
 	        		remindStoryButton.setVisibility(View.GONE);
         	}
         });
-        
+*/
+
+        drawPad.setOnStrokeListener(new DrawView.OnStrokeListener(){
+            @Override public void onStroke(List<Point> stroke){
+                if(drawPad.getStrokeCount() == 1){
+                    //next.startAnimation(fadeInNextButton);
+                    //teachMeButton.startAnimation(fadeOutTeachButton);
+                    doneButton.showFloatingActionButton();
+                    teachMeButton.hideFloatingActionButton();
+                }
+            }
+        });
+
+        drawPad.setOnClearListener(new DrawView.OnClearListener(){
+            @Override public void onClear(){
+                if(teachMeButton.isHidden())
+                    teachMeButton.showFloatingActionButton();
+                if(!doneButton.isHidden())
+                    doneButton.hideFloatingActionButton();
+
+                String story = db.getStory(currentCharacterSet.currentCharacter());
+                if(story != null && !"".equals(story.trim()))
+                    remindStoryButton.setVisibility(View.VISIBLE);
+                else
+                    remindStoryButton.setVisibility(View.GONE);
+            }
+        });
+
         // child implementation needs to call loadNextCharacter(false) to start data loading.
 		Log.i("nakama", "MainActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms.");
     }
