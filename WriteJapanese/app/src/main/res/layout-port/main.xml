@@ -200,14 +200,6 @@
             android:layout_height="fill_parent"
             android:orientation="vertical">
 
-            <!--
-            <dmeeuwis.masterlibrary.CorrectCompareView
-                android:id="@+id/correctFrame"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1" />
-            -->
-
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -277,15 +269,12 @@
                 android:divider="@android:color/transparent"
                 android:dividerHeight="10.0sp" />
 
-            <Button
+            <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/correctNextButton"
-                style="@style/ButtonText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/green_button"
-                android:text="@string/next_button"
-                android:textSize="24dp" />
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="right"
+                />
         </LinearLayout>
 
         <dmeeuwis.masterlibrary.IncorrectScreenView

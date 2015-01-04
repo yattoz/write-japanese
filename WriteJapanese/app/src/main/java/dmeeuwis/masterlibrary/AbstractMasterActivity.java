@@ -47,6 +47,8 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 // import com.nhaarman.listviewanimations.swinginadapters.prepared.ScaleInAnimationAdapter;
 
+import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter;
+
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.masterlibrary.CharacterStudySet.LockLevel;
@@ -302,7 +304,7 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 		});
         
         final FloatingActionButton teachMeButton = (FloatingActionButton)findViewById(R.id.teachButton);
-        teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkBlue));
+        teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
         teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_question_mark));
         teachMeButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -345,8 +347,9 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
         final Button next = (Button)findViewById(R.id.nextButton);
         next.setOnClickListener(nextButtonListener);
         
-        final Button correctNext = (Button)findViewById(R.id.correctNextButton);
-        correctNext.getBackground().setColorFilter(NEXT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+        final FloatingActionButton correctNext = (FloatingActionButton)findViewById(R.id.correctNextButton);
+        correctNext.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
+        correctNext.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
         correctNext.setOnClickListener(nextButtonListener);
         
         final Button practiceButton = (Button)findViewById(R.id.practiceButton);
@@ -363,53 +366,13 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
         correctVocabList = (ListView)findViewById(R.id.correctExamples);
   		correctVocabArrayAdapter = new KanjiVocabArrayAdapter(this, this.dictionarySet.kanjiFinder());
 
-//        ScaleInAnimationAdapter scaley = new ScaleInAnimationAdapter(correctVocabArrayAdapter);
-
-
-//        ScaleInAnimationAdapter scaley = new ScaleInAnimationAdapter(correctVocabArrayAdapter);
-//        scaley.setAbsListView(correctVocabList);
-//        correctVocabList.setAdapter(scaley);
-        
-/*
-        final View beforeStrokeButtonLayer = findViewById(R.id.buttonsBeforeStrokeLayer);
-        final View afterStrokeButtonLayer = findViewById(R.id.buttonsAfterStrokeLayer);
-
-
-        afterStrokeButtonLayer.setVisibility(View.INVISIBLE);
-        beforeStrokeButtonLayer.setVisibility(View.VISIBLE);
-        drawPad.setOnStrokeListener(new DrawView.OnStrokeListener(){
-        	@Override public void onStroke(List<Point> stroke){
-        		if(drawPad.getStrokeCount() == 1){
-        			beforeStrokeButtonLayer.startAnimation(fadeOutBefore);
-        			afterStrokeButtonLayer.startAnimation(fadeInAfter);
-        		}
-        	}
-        });
-
-        drawPad.setOnClearListener(new DrawView.OnClearListener(){
-        	@Override public void onClear(){
-        		if(beforeStrokeButtonLayer.getVisibility() != View.VISIBLE){
-        			beforeStrokeButtonLayer.startAnimation(fadeInBefore);
-        		}
-
-        		if(afterStrokeButtonLayer.getVisibility() == View.VISIBLE){
-        			afterStrokeButtonLayer.startAnimation(fadeOutAfter);
-        		}
-
-		        String story = db.getStory(currentCharacterSet.currentCharacter());
-		        if(story != null && !"".equals(story.trim()))
-	        		remindStoryButton.setVisibility(View.VISIBLE);
-		        else
-	        		remindStoryButton.setVisibility(View.GONE);
-        	}
-        });
-*/
+        ScaleInAnimationAdapter scaley = new ScaleInAnimationAdapter(correctVocabArrayAdapter);
+        scaley.setAbsListView(correctVocabList);
+        correctVocabList.setAdapter(scaley);
 
         drawPad.setOnStrokeListener(new DrawView.OnStrokeListener(){
             @Override public void onStroke(List<Point> stroke){
                 if(drawPad.getStrokeCount() == 1){
-                    //next.startAnimation(fadeInNextButton);
-                    //teachMeButton.startAnimation(fadeOutTeachButton);
                     doneButton.showFloatingActionButton();
                     teachMeButton.hideFloatingActionButton();
                 }

@@ -112,23 +112,23 @@ public class PathComparator {
 	
 		Log.d("nakama", "Score Matrix\n======================" + printMatrix(scoreMatrix) + "====================");
 	
-		Log.i("nakama", "Scanning for known intersects.");
+		Log.d("nakama", "Scanning for known intersects.");
 		List<Intersection> knownIntersects = this.known.findIntersections();
-		Log.i("nakama", "This kanji should have " + knownIntersects.size() + " intersects:\n" + Util.join("\n", knownIntersects) + "\n");
+		Log.d("nakama", "This kanji should have " + knownIntersects.size() + " intersects:\n" + Util.join("\n", knownIntersects) + "\n");
 		
-		Log.i("nakama", "Scanning for drawn intersects.");
+		Log.d("nakama", "Scanning for drawn intersects.");
 		List<Intersection> drawnIntersects = this.drawn.findIntersections();
-		Log.i("nakama", "This drawn kanji has " + drawnIntersects.size() + " intersects:\n" + Util.join("\n", drawnIntersects + "\n"));
+		Log.d("nakama", "This drawn kanji has " + drawnIntersects.size() + " intersects:\n" + Util.join("\n", drawnIntersects + "\n"));
 
 		int intersectDistanceLimit = (int)(drawingAreaMaxDim * 0.3);
-		Log.i("nakama", "Using max intersect distance of " + intersectDistanceLimit);
+		Log.d("nakama", "Using max intersect distance of " + intersectDistanceLimit);
 		outer: for(Intersection knownInt: knownIntersects){
 			for(Intersection drawnInt: drawnIntersects){
 				double distance = PathCalculator.distance(knownInt.intersectPoint, drawnInt.intersectPoint);
 				if(drawnInt.strokesMatch(drawnInt) && distance <= intersectDistanceLimit){
 					continue outer;
 				} else {
-					Log.i("nakama", "Saw distance between intersects " + drawnInt + " and known int " + knownInt.intersectPoint + " as " + distance);
+					Log.d("nakama", "Saw distance between intersects " + drawnInt + " and known int " + knownInt.intersectPoint + " as " + distance);
 				}
 			}
 			c.add("Your " + Util.adjectify(knownInt.firstPathIndex, known.strokeCount()) + " and " + Util.adjectify(knownInt.secondPathIndex, known.strokeCount()) + " strokes should meet.");
@@ -268,21 +268,21 @@ public class PathComparator {
 	 * Compares one stroke to another, generating a list of criticisms.
 	 */
 	private StrokeCriticism compareStroke(int baseIndex, int challengerIndex){
-		Log.i("nakama", "\n================================================================");
-		Log.i("nakama", "Comparing base stroke " + baseIndex + " to challenger stroke " + challengerIndex);
+		Log.d("nakama", "\n================================================================");
+		Log.d("nakama", "Comparing base stroke " + baseIndex + " to challenger stroke " + challengerIndex);
 		List<StrokeCompareFailure> failures = new LinkedList<StrokeCompareFailure>();
 		
 		Stroke bpath = this.known.get(baseIndex);
 		Stroke cpath = this.drawn.get(challengerIndex);
-		Log.i("nakama", String.format("%30s:  %6d %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
+		Log.d("nakama", String.format("%30s:  %6d %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
 		
 		Point bstart = bpath.startPoint;
 		Point bend = bpath.endPoint;
 		Point cstart = cpath.startPoint;
 		Point cend = cpath.endPoint;
 		
-		Log.i("nakama", String.format("%30s:  %s %s", "Start points", bstart, cstart));
-		Log.i("nakama", String.format("%30s:  %s %s", "End points", bend, cend));
+		Log.d("nakama", String.format("%30s:  %s %s", "Start points", bstart, cstart));
+		Log.d("nakama", String.format("%30s:  %s %s", "End points", bend, cend));
 		
 		/* Arc length is seeming to be not so accurate, due to all the minor fluctuation in a user's stroke throwing it off.
 		 * Lets rely more on distance traveled (distance from start point to end point ignoring curvature completely).
@@ -292,7 +292,7 @@ public class PathComparator {
 		float arcLengthDiff = 1 - Math.abs((float)Math.min(blength, clength) / Math.max(blength, clength));
 		boolean arcLengthDifference = arcLengthDiff > arcLengthFailPercentage(blength);
 		// arc lengths should be about equal.
-		Log.i("nakama", String.format("%30s:  %6d %6d", "Arc Length", blength, clength));
+		Log.d("nakama", String.format("%30s:  %6d %6d", "Arc Length", blength, clength));
 		if(arcLengthDifference){
 			if(blength > clength)
 				criticisms.add(Criticism.distanceFail("Your " + Util.adjectify(challengerIndex) + " stroke is too short.", // [Percent diff was: " + arcLengthDiff + "; base length: " + blength + ", your length: " + clength + "]",
@@ -306,7 +306,7 @@ public class PathComparator {
 		double bDistanceTravelled = bpath.distanceFromStartToEndPoints();
 		double cDistanceTravelled = cpath.distanceFromStartToEndPoints();
 		int percentDiff = (int)(Math.abs(bDistanceTravelled - cDistanceTravelled) / ((bDistanceTravelled + cDistanceTravelled) / 2) * 100);
-		Log.i("nakama", String.format("%30s:  %6.2f %6.2f. Percentage diff: %d, limit is %d", "Distance Travelled", bDistanceTravelled, cDistanceTravelled, percentDiff, PERCENTAGE_DISTANCE_DIFF_LIMIT));
+		Log.d("nakama", String.format("%30s:  %6.2f %6.2f. Percentage diff: %d, limit is %d", "Distance Travelled", bDistanceTravelled, cDistanceTravelled, percentDiff, PERCENTAGE_DISTANCE_DIFF_LIMIT));
 		if(percentDiff > PERCENTAGE_DISTANCE_DIFF_LIMIT)
 			failures.add(StrokeCompareFailure.DISTANCE_TRAVELLED);
 		
@@ -317,7 +317,7 @@ public class PathComparator {
 		final double bEndRadians = bpath.endDirection();
 		final double cEndRadians = cpath.endDirection();
 		
-		Log.i("nakama", "Base stroke " + baseIndex + " has points: " + Util.join(", ", bpath.points));
+		Log.d("nakama", "Base stroke " + baseIndex + " has points: " + Util.join(", ", bpath.points));
 		
 		double challengerStartDiff = Math.min((2 * Math.PI) - Math.abs(cStartRadians - cStartRadians), Math.abs(cStartRadians - cStartRadians));
 		double baseStartDiff = Math.min((2 * Math.PI) - Math.abs(bStartRadians - bStartRadians), Math.abs(cStartRadians - cStartRadians));
@@ -326,7 +326,7 @@ public class PathComparator {
 		final boolean baseSameStartEndDirection = baseStartDiff < STROKE_DIRECTION_LIMIT_RADIANS;
 		final boolean challengerSameStartEndDirection = challengerStartDiff < STROKE_DIRECTION_LIMIT_RADIANS;
 		if(smallDistance && baseSameStartEndDirection && challengerSameStartEndDirection){
-			Log.i("nakama", "SPECIAL CASE: CIRCLE detected, ignoring stroke directions.");
+			Log.d("nakama", "SPECIAL CASE: CIRCLE detected, ignoring stroke directions.");
 			return new StrokeCriticism(null, 0);
 		}
 				
@@ -336,7 +336,7 @@ public class PathComparator {
 			if(startDistance > FAIL_POINT_START_DISTANCE){
 				failures.add(StrokeCompareFailure.START_POINT_DIFFERENCE);
 			}
-			Log.i("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "Start Point Difference", startDistance, bstart, cstart, FAIL_POINT_START_DISTANCE));
+			Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "Start Point Difference", startDistance, bstart, cstart, FAIL_POINT_START_DISTANCE));
 		}
 		
 		// end points should be close to each other.
@@ -345,7 +345,7 @@ public class PathComparator {
 			if(endDistance > FAIL_POINT_END_DISTANCE){
 				failures.add(StrokeCompareFailure.END_POINT_DIFFERENCE);
 			}
-			Log.i("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "End Point Difference", endDistance, bend, cend, FAIL_POINT_END_DISTANCE));
+			Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "End Point Difference", endDistance, bend, cend, FAIL_POINT_END_DISTANCE));
 		}
 
 		// TODO: curvature differences: concave vs convex lines might have same length, but be wrong.
@@ -360,7 +360,7 @@ public class PathComparator {
 		String bStartDirection = Util.radiansToEnglish(bStartRadians);
 		String cStartDirection = Util.radiansToEnglish(cStartRadians);
 		double radianStartDiff = Math.min((2 * Math.PI) - Math.abs(bStartRadians - cStartRadians), Math.abs(bStartRadians - cStartRadians));
-		Log.i("nakama", String.format("%30s:  %6.2f (%s) %6.2f (%s). Radian difference is %6.2f Limit %f.", "Start angle", bStartRadians, bStartDirection, cStartRadians, cStartDirection, radianStartDiff, STROKE_DIRECTION_LIMIT_RADIANS));
+		Log.d("nakama", String.format("%30s:  %6.2f (%s) %6.2f (%s). Radian difference is %6.2f Limit %f.", "Start angle", bStartRadians, bStartDirection, cStartRadians, cStartDirection, radianStartDiff, STROKE_DIRECTION_LIMIT_RADIANS));
 		if(radianStartDiff > STROKE_DIRECTION_LIMIT_RADIANS && !cStartDirection.equals(bStartDirection)){
 			failures.add(StrokeCompareFailure.START_DIRECTION_DIFFERENCE);
 		}
@@ -369,16 +369,16 @@ public class PathComparator {
 		String bEndDirection = Util.radiansToEnglish(bEndRadians);
 		String cEndDirection = Util.radiansToEnglish(cEndRadians);
 		double radianEndDiff = Math.min((2 * Math.PI) - Math.abs(bEndRadians - cEndRadians), Math.abs(bEndRadians - cEndRadians));
-		Log.i("nakama", String.format("%30s:  %6.2f (%s) %6.2f (%s). Radian difference is %6.2f. Limit %f.", "End angle", bEndRadians, bEndDirection, cEndRadians, cEndDirection, radianEndDiff, STROKE_DIRECTION_LIMIT_RADIANS));
+		Log.d("nakama", String.format("%30s:  %6.2f (%s) %6.2f (%s). Radian difference is %6.2f. Limit %f.", "End angle", bEndRadians, bEndDirection, cEndRadians, cEndDirection, radianEndDiff, STROKE_DIRECTION_LIMIT_RADIANS));
 		if(radianEndDiff > STROKE_DIRECTION_LIMIT_RADIANS && !bEndDirection.equals(cEndDirection)){
 			failures.add(StrokeCompareFailure.END_DIRECTION_DIFFERENCE);
 		}
 		
 		// hard curves
 		List<Point> baseCurvePoints = PathCalculator.findSharpCurves(bpath);
-		Log.i("nakama", "Scanned base for sharp curves, found " + baseCurvePoints.size());
+		Log.d("nakama", "Scanned base for sharp curves, found " + baseCurvePoints.size());
 		List<Point> drawnCurvePoints = PathCalculator.findSharpCurves(cpath);
-		Log.i("nakama", "Scanned drawn for sharp curves, found " + drawnCurvePoints.size());
+		Log.d("nakama", "Scanned drawn for sharp curves, found " + drawnCurvePoints.size());
 		if(drawnCurvePoints.size() > baseCurvePoints.size()){
 			failures.add(StrokeCompareFailure.TOO_MANY_SHARP_CURVES);
 		} else if(drawnCurvePoints.size() < baseCurvePoints.size()){
@@ -405,7 +405,7 @@ public class PathComparator {
 				//	"base dirs: " + bStartRadians + "; " + bEndRadians + "; challenger dirs: " + cStartRadians + ", " + cEndRadians +
 				//	"; base dirs: " + bStartDirection + ", " + bEndDirection + "; challenger dirs: " + cStartDirection + ", " + cEndDirection));
 		}
-		Log.i("nakama", "========================== end of " + baseIndex + " vs " + challengerIndex);
+		Log.d("nakama", "========================== end of " + baseIndex + " vs " + challengerIndex);
 
 		
 		if(failures.size() == 0) {
@@ -430,9 +430,8 @@ public class PathComparator {
 					return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is too long.", 1);
 				}
 			case TOO_FEW_SHARP_CURVES:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is missing a sharp curve.", 1);
 			case TOO_MANY_SHARP_CURVES:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke has too many sharp curves not in the original.", 1);
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke has " + drawnCurvePoints.size() + " sharp curve" + (drawnCurvePoints.size() == 1 ? "" : "s") + ", but should have " + baseCurvePoints.size() + ".", 1);
 			case BACKWARDS:
 				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is backwards.", 1);
 			default: 
