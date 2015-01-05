@@ -15,7 +15,7 @@ public abstract class ParameterizedEquation {
 	public abstract float y(float t);
 	public abstract float arclength();
 
-	private final float CURVE_THRESHOLD = (float) (Math.PI / 12);
+	private final float CURVE_THRESHOLD = (float) (Math.PI / 18);
 	private final float INCREMENT = 0.05f;
 	
 	public List<Point> toPoints(){
@@ -56,12 +56,16 @@ public abstract class ParameterizedEquation {
 			float t = heavyTs[i];
 			points.add(new Point( (int)x(t), (int)y(t)));
 		}
-	
+
+        for(float t = 0; t <= 1.01f; t += INCREMENT){
+            Log.d("nakama", String.format("Printing f(t): x(%.2f) = %.2f; y(%.2f) = %.2f", t, x(t), t, y(t)));
+        }
+
 		// first and last point always included
-		points.add(0, new Point( (int)x(0), (int)y(0)));
-		points.add(new Point( (int)x(1.0f), (int)y(1.0f)));
+		points.add(0, new Point( (int)x(0.0f), (int)y(0.0f)));
+		points.add(   new Point( (int)x(0.9999f), (int)y(0.9999f))); // TODO: fix error in param eqns where xy(1.0) was going way off from xy(0.999)
 		
-		Log.i("nakama", "Discretized ParameterizedEquation into " + points.size() + " Points.");
+		Log.d("nakama", "Discretized ParameterizedEquation into " + points.size() + " points: " + Util.join(", ", points));
 		return points;
 	}
 }

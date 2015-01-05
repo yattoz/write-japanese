@@ -124,12 +124,6 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 		this.animatedCurve.startAnimation(1000);
 	}
 	
-	public void clear(int millisDelay){
-		Log.i("akama", "TracingCurveView.clear(" + millisDelay + ")");
-	//	this.animatedCurve.clear(millisDelay);
-		this.kanjiPad.clear(millisDelay);
-	}
-	
 	public void clear(){
 		Log.i("nakama", "TracingCurveView.clear");
 		this.animatedCurve.clear();

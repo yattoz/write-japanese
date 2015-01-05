@@ -32,8 +32,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	static final private float ANIMATION_TIME_PER_STROKE_IN_MS = 1500;
 	static final private float FRAME_RATE_PER_SEC = 60;
 	static final private float TIME_INCREMENTS = 1 / (ANIMATION_TIME_PER_STROKE_IN_MS / FRAME_RATE_PER_SEC);
-	static final public int KANJI_SVG_WIDTH = 109;
-	
+
 	final Paint paint = new Paint();
 	final ScaleAndOffsets scaleAndOffsets = new ScaleAndOffsets();
 	List<Path> pathsToDraw = new ArrayList<Path>();
@@ -45,9 +44,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	int allowedStrokes = 1;
 	float time = -1;
 	boolean autoIncrement = true;
-	int stroke_limit = 1;
-	boolean showSuggestionsAfterAnimations = false;
-	
+
 	Drawing drawing = null;
 	RectF unscaledBoundingBox = null;
 	
@@ -58,8 +55,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	Paint charMarginPaint = new Paint();
 	
 	DrawTime drawTime = DrawTime.ANIMATED;
-	
-	boolean animationRunning = false;
 	
 	public AnimatedCurveView(Context context, AttributeSet as){
 		super(context, as);
@@ -156,12 +151,13 @@ public class AnimatedCurveView extends View implements Animatable {
                 List<ParameterizedEquation> unscaledEqns = drawnPoints.toParameterizedEquations(1, 0);
                 List<ParameterizedEquation> eqnsNew = new LinkedList<ParameterizedEquation>();
                 eqnsNew.addAll(unscaledEqns);
-				AnimatedCurveView.this.eqns = eqnsNew;
+				eqns = eqnsNew;
                 if(debug) Log.d("nakama", "Saw new user point strokes: from params, read unscaled bounding box as " + unscaledBoundingBox);
                 drawTime = drawTimeParam;
                 invalidate();
 			}
 		};
+        drawing = drawnPoints;
 		
 		if(Looper.getMainLooper() == Looper.myLooper()){
 			setWork.run();
@@ -195,6 +191,8 @@ public class AnimatedCurveView extends View implements Animatable {
                 invalidate();
 			}
 		};
+
+        this.drawing = goodGlyph.toDrawing();
 		
 		if(Looper.getMainLooper() == Looper.myLooper()){
 			setWork.run();

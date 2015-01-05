@@ -58,20 +58,6 @@ public class PathComparator {
 		Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
 	}
 
-	/**
-	 * For a given stroke's base length (known length), return the percentage
-	 * diff required to be considered a failed stroke. Shorter strokes have more leeway in terms of percent than longer strokes.
-	final private float arcLengthFailPercentage(float bLength){
-		float relativeBlength = bLength / this.drawingAreaWidth;
-	
-		if(relativeBlength < 0.10f){
-			return 1.0f;
-		}
-		
-		return 0.5f;
-	}
-	 */
-	
 	private static class StrokeCriticism {
 		final public Integer cost;
 		final public String message;
@@ -202,9 +188,7 @@ public class PathComparator {
 		return c;
 		
 		// ToDo:
-		// detect concavity errors, sudden curve errors
 		// intersection point distance errors
-		// points along the path even if distance, start, and end all meet... can be used for intersection and curve detection?
 	}
 	
 	private static class StrokeResult {
@@ -278,18 +262,23 @@ public class PathComparator {
 		Log.d("nakama", "\n================================================================");
 		Log.d("nakama", "Comparing base stroke " + baseIndex + " to challenger stroke " + challengerIndex);
 		List<StrokeCompareFailure> failures = new LinkedList<StrokeCompareFailure>();
-		
+
+
+
 		Stroke bpath = this.known.get(baseIndex);
 		Stroke cpath = this.drawn.get(challengerIndex);
-		Log.d("nakama", String.format("%30s:  %6d %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
-		
+		Log.d("nakama", String.format("%30s:  Base: %6d Drawn: %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
+
+        Log.d("nakama", String.format("Base points: " + Util.join(", ", bpath.points)));
+        Log.d("nakama", String.format("Drawn points: " + Util.join(", ", cpath.points)));
+
 		Point bstart = bpath.startPoint;
 		Point bend = bpath.endPoint;
 		Point cstart = cpath.startPoint;
 		Point cend = cpath.endPoint;
 		
-		Log.d("nakama", String.format("%30s:  %s %s", "Start points", bstart, cstart));
-		Log.d("nakama", String.format("%30s:  %s %s", "End points", bend, cend));
+		Log.d("nakama", String.format("%30s:  Base[0]: %s Drawn[0]: %s", "Start points", bstart, cstart));
+		Log.d("nakama", String.format("%30s:  Base[-1]: %s Drawn[-1]: %s", "End points", bend, cend));
 		
 		/* Arc length is seeming to be not so accurate, due to all the minor fluctuation in a user's stroke throwing it off.
 		 * Lets rely more on distance traveled (distance from start point to end point ignoring curvature completely).
