@@ -1,41 +1,31 @@
 package dmeeuwis.masterlibrary;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Stack;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.AssetManager;
 import android.graphics.Color;
-import android.graphics.Outline;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
-import android.util.Pair;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -45,9 +35,11 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher.ViewFactory;
 
-// import com.nhaarman.listviewanimations.swinginadapters.prepared.ScaleInAnimationAdapter;
-
-import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
@@ -56,7 +48,6 @@ import dmeeuwis.masterlibrary.KanjiTranslationListAsyncTask.AddTranslation;
 import dmeeuwis.masterlibrary.PurchaseDialog.DialogMessage;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.helpers.DictionarySet;
-import dmeeuwis.nakama.helpers.VisibilityChangeAfterAnimationListener;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.Glyph;
@@ -69,12 +60,12 @@ import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
+// import com.nhaarman.listviewanimations.swinginadapters.prepared.ScaleInAnimationAdapter;
+
 public abstract class AbstractMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
 	
 	public enum State { DRAWING, REVIEWING, CORRECT_ANSWER, INCORRECT_ANSWER }
 	
-	protected final Stack<Pair<CharacterStudySet, Character>> undoStack = new Stack<Pair<CharacterStudySet, Character>>();
-
 	protected CharacterStudySet currentCharacterSet;
 	
 	protected StoryDataHelper db;
@@ -90,8 +81,8 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
     protected AnimatedCurveView correctKnownView;
     
     protected KanjiTranslationListAsyncTask vocabAsync;
-    protected ListView correctVocabList;
-    protected KanjiVocabArrayAdapter correctVocabArrayAdapter;
+    protected RecyclerView correctVocabList;
+    protected KanjiVocabRecyclerAdapter correctVocabArrayAdapter;
     
     protected ViewFlipper flipper;
 	protected FlipperAnimationListener flipperAnimationListener;
@@ -343,17 +334,20 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 				loadNextCharacter(true);
 			}
              };
-        
-        final Button next = (Button)findViewById(R.id.nextButton);
+
+        final FloatingActionButton next = (FloatingActionButton)findViewById(R.id.nextButton);
         next.setOnClickListener(nextButtonListener);
-        
+        next.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
+        next.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
+
         final FloatingActionButton correctNext = (FloatingActionButton)findViewById(R.id.correctNextButton);
         correctNext.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
         correctNext.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
         correctNext.setOnClickListener(nextButtonListener);
         
-        final Button practiceButton = (Button)findViewById(R.id.practiceButton);
-        practiceButton.getBackground().setColorFilter(PRACTICE_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+        final FloatingActionButton practiceButton = (FloatingActionButton)findViewById(R.id.practiceButton);
+        practiceButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
+        practiceButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_question_mark));
         practiceButton.setOnClickListener(new OnClickListener() {
 			@Override public void onClick(View v) {
 				goToTeachingActivity(currentCharacterSet.currentCharacter());
@@ -363,12 +357,10 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 
         incorrectScreen = (IncorrectScreenView)findViewById(R.id.incorrectFrame);
  
-        correctVocabList = (ListView)findViewById(R.id.correctExamples);
-  		correctVocabArrayAdapter = new KanjiVocabArrayAdapter(this, this.dictionarySet.kanjiFinder());
-
-        ScaleInAnimationAdapter scaley = new ScaleInAnimationAdapter(correctVocabArrayAdapter);
-        scaley.setAbsListView(correctVocabList);
-        correctVocabList.setAdapter(scaley);
+        correctVocabList = (RecyclerView)findViewById(R.id.correctExamples);
+        correctVocabList.setLayoutManager(new LinearLayoutManager(this));
+  		correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(this, this.dictionarySet.kanjiFinder());
+        correctVocabList.setAdapter(correctVocabArrayAdapter);
 
         drawPad.setOnStrokeListener(new DrawView.OnStrokeListener(){
             @Override public void onStroke(List<Point> stroke){
@@ -446,18 +438,9 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
     	if(currentUiState == State.DRAWING){
 	    	if(this.drawPad.getStrokeCount() > 0){
 	    		this.drawPad.undo();
-	    	} else if(undoStack.size() > 0){
-		    	Pair<CharacterStudySet, Character> backTo = undoStack.pop();
-		    	currentCharacterSet = backTo.first;
-		    	currentCharacterSet.back();
-		    	this.loadDrawDetails();
 	    	} else {
-	            Intent intent = new Intent(Intent.ACTION_MAIN);
-	            intent.addCategory(Intent.CATEGORY_HOME);
-	            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	            startActivity(intent);
+                super.onBackPressed();
 	    	}
-	    	
     	} else {
     		this.setUiState(State.DRAWING);
     	}
@@ -511,12 +494,7 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 			loadNextCharacter(true);
 			return;
 		}
-		
-        if(priorCharacter != null && increment){
-        	Log.d("nakama", "Pushing " + currentCharacterSet.currentCharacter() + " onto undo stack.");
-        	undoStack.push(Pair.create(currentCharacterSet, currentCharacterSet.currentCharacter()));
-        }
-        
+
         // TODO: improve this... show a page, give congratulations...? 
 		if(increment && currentCharacterSet.locked() && currentCharacterSet.passedAllCharacters()){
 			if(currentCharacterSet.locked() && lockChecker.getPurchaseStatus() == LockLevel.LOCKED){

@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import dmeeuwis.Kana;
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.KanjiMasterActivity;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
@@ -74,11 +75,17 @@ public class PathComparator {
 	private static class StrokeCriticism {
 		final public Integer cost;
 		final public String message;
-		
-		public StrokeCriticism(String message, Integer cost){
-			this.message = message;
-			this.cost = cost;
-		}
+
+        public StrokeCriticism(String message){
+            this.message = message;
+            this.cost = 1;
+        }
+
+        public StrokeCriticism(String message, int cost) {
+            this.message = message;
+            this.cost = cost;
+        }
+
 	}
 	
 	
@@ -416,24 +423,26 @@ public class PathComparator {
 		
 			switch (f) {
 			case START_DIRECTION_DIFFERENCE:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke starts pointing " + cStartDirection + ", but should point " + bStartDirection + ".", 1);
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke starts pointing " + cStartDirection + ", but should point " + bStartDirection + ".");
 			case END_DIRECTION_DIFFERENCE:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke ends pointing " + cEndDirection + ", but should point " + bEndDirection + ".", 1);
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke ends pointing " + cEndDirection + ", but should point " + bEndDirection + ".");
 			case START_POINT_DIFFERENCE:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke's starting point is off.", 1);
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke's starting point is off.");
 			case END_POINT_DIFFERENCE:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke's ending point is off.", 1);
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke's ending point is off.");
 			case DISTANCE_TRAVELLED:
 				if(cDistanceTravelled < bDistanceTravelled) {
-					return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is too short.", 1);
+					return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is too short." +
+                            (BuildConfig.DEBUG ? " (base: " + bDistanceTravelled + ", challenge: " + cDistanceTravelled + ")" : ""));
 				} else {
-					return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is too long.", 1);
+					return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is too long." +
+                        (BuildConfig.DEBUG ? " (base: " + bDistanceTravelled + ", challenge: " + cDistanceTravelled + ")" : ""));
 				}
 			case TOO_FEW_SHARP_CURVES:
 			case TOO_MANY_SHARP_CURVES:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke has " + drawnCurvePoints.size() + " sharp curve" + (drawnCurvePoints.size() == 1 ? "" : "s") + ", but should have " + baseCurvePoints.size() + ".", 1);
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke has " + drawnCurvePoints.size() + " sharp curve" + (drawnCurvePoints.size() == 1 ? "" : "s") + ", but should have " + baseCurvePoints.size() + ".");
 			case BACKWARDS:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is backwards.", 1);
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is backwards.");
 			default: 
 				throw new RuntimeException("Error: unhandled StrokeCompareFailure");
 			}

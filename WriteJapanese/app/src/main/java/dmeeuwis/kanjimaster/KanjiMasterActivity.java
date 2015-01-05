@@ -110,7 +110,8 @@ public class KanjiMasterActivity extends AbstractMasterActivity implements Actio
 			shuffleCheck.setChecked(currentCharacterSet.isShuffling());
 		}
 		MenuItem lockItem = menu.findItem(R.id.menu_lock);
-		Log.i("nakama", "KanjiMaster.onPrepareOptionsMenus: setting actionbar lock to: " + (lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED) + " (" + lockChecker.getPurchaseStatus() + ")");
+		Log.d("nakama", "KanjiMaster.onPrepareOptionsMenus: setting actionbar lock to: " +
+                (lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED) + " (" + lockChecker.getPurchaseStatus() + ")");
 		lockItem.setVisible(lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED);
 		return true;
 	}

@@ -2,13 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#e5e5e5" >
+    android:background="#e5e5e5">
 
     <dmeeuwis.masterlibrary.SafeViewFlipper
         android:id="@+id/viewflipper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:padding="0dp" >
+        android:padding="0dp">
 
         <!-- Drawing frame, where users test their might. -->
 
@@ -17,25 +17,24 @@
             android:layout_height="fill_parent"
             android:gravity="center_vertical|center_horizontal"
             android:orientation="horizontal"
-            android:weightSum="1.0" >
+            android:weightSum="1.0">
 
             <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:layout_weight="0.5" >
+                android:layout_weight="0.5">
 
-                <FrameLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/bg_card" >
+                    android:layout_margin="5dp">
 
                     <ImageView
                         android:id="@+id/other_meanings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:contentDescription="Other meanings"
+                        android:layout_gravity="end"
+                        android:contentDescription="@string/other_meanings_content_description"
                         android:padding="5dp"
                         android:src="@drawable/ic_action_overflow" />
 
@@ -44,7 +43,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:gravity="center_horizontal|center_vertical"
-                        android:orientation="vertical" >
+                        android:orientation="vertical">
 
                         <TextSwitcher
                             android:id="@+id/instructionsLabel"
@@ -55,59 +54,31 @@
                             android:id="@+id/target"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
-
-                        <FrameLayout
-                            android:id="@+id/buttonSpace"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="16dp" >
-
-                            <LinearLayout
-                                android:id="@+id/buttonsBeforeStrokeLayer"
-                                android:layout_width="fill_parent"
-                                android:layout_height="fill_parent"
-                                android:gravity="center_vertical|center_horizontal"
-                                android:orientation="vertical" >
-
-                                <Button
-                                    android:id="@+id/remindStoryButton"
-                                    style="@style/ButtonText"
-                                    android:layout_width="fill_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_horizontal"
-                                    android:background="@drawable/blue_button"
-                                    android:text="@string/remind_story_button"
-                                    android:textSize="24dp" />
-
-                                <Button
-                                    android:id="@+id/teachButton"
-                                    style="@style/ButtonText"
-                                    android:layout_width="fill_parent"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/blue_button"
-                                    android:text="@string/teach_me_button"
-                                    android:textSize="24dp" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:id="@+id/buttonsAfterStrokeLayer"
-                                android:layout_width="fill_parent"
-                                android:layout_height="fill_parent"
-                                android:gravity="center_vertical" >
-
-                                <Button
-                                    android:id="@+id/finishedButton"
-                                    style="@style/ButtonText"
-                                    android:layout_width="0dip"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:background="@drawable/green_button"
-                                    android:text="@string/finished_drawing_button"
-                                    android:textSize="24dp" />
-                            </LinearLayout>
-                        </FrameLayout>
                     </LinearLayout>
-                </FrameLayout>
+
+
+                    <dmeeuwis.nakama.views.FloatingActionButton
+                        android:id="@+id/remindStoryButton"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_gravity="bottom|start"
+                        android:layout_marginLeft="118dp"
+
+                        />
+
+                    <dmeeuwis.nakama.views.FloatingActionButton
+                        android:id="@+id/teachButton"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_gravity="bottom|start" />
+
+
+                    <dmeeuwis.nakama.views.FloatingActionButton
+                        android:id="@+id/finishedButton"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_gravity="bottom|end" />
+                </android.support.v7.widget.CardView>
 
                 <ImageView
                     android:id="@+id/reviewBug"
@@ -127,27 +98,23 @@
 
         <!-- Incorrect view screen -->
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical" >
+            android:layout_height="fill_parent">
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:baselineAligned="false"
-                android:orientation="horizontal" >
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
 
                 <!-- Drawn -->
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_card"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="fill_parent"
@@ -171,7 +138,7 @@
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_card"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="fill_parent"
@@ -195,7 +162,7 @@
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_card"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="fill_parent"
@@ -213,50 +180,26 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/correctionButtonSpace"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
 
-                <Button
-                    android:id="@+id/practiceButton"
-                    style="@style/ButtonText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:background="@drawable/blue_button"
-                    android:text="@string/practice_button"
-                    android:textSize="22dp" />
+            <dmeeuwis.nakama.views.FloatingActionButton
+                android:id="@+id/practiceButton"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="bottom|start" />
 
-                <Button
-                    android:id="@+id/nextButton"
-                    style="@style/ButtonText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:background="@drawable/green_button"
-                    android:text="@string/next_button"
-                    android:textSize="22dp" />
-            </LinearLayout>
-        </LinearLayout>
+            <dmeeuwis.nakama.views.FloatingActionButton
+                android:id="@+id/nextButton"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="bottom|end" />
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/correctLayout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:baselineAligned="false"
-            android:orientation="horizontal" >
-
-            <!--
-            <dmeeuwis.masterlibrary.CorrectCompareView
-                android:id="@+id/correctFrame"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1" />
-            -->
-
+            android:orientation="horizontal">
 
             <!-- Left side: known and drawn characters -->
 
@@ -264,7 +207,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -272,15 +215,15 @@
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_card"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:background="#FF1BA20D"
-                        android:textColor="#FFFFFF"
                         android:padding="6dp"
-                        android:text="Correct" />
+                        android:text="Correct"
+                        android:textColor="#FFFFFF" />
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/correctKnownView"
@@ -294,15 +237,15 @@
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_card"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:background="#FF1BA20D"
                         android:padding="6dp"
-                        android:textColor="#FFFFFF"
-                        android:text="Drawn" />
+                        android:text="Drawn"
+                        android:textColor="#FFFFFF" />
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/correctDrawnView"
@@ -314,35 +257,24 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:layout_weight="1" >
+                android:layout_weight="1">
 
-                <ListView
+                <android.support.v7.widget.RecyclerView
                     android:id="@+id/correctExamples"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:layout_above="@+id/correctNextButton"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginBottom="10.0sp"
-                    android:layout_marginLeft="5.0sp"
-                    android:layout_marginRight="5.0sp"
-                    android:layout_marginTop="10.0sp"
                     android:divider="@android:color/transparent"
                     android:dividerHeight="10.0sp" />
 
-                <Button
+                <dmeeuwis.nakama.views.FloatingActionButton
                     android:id="@id/correctNextButton"
-                    style="@style/ButtonText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/green_button"
-                    android:text="@string/next_button"
-                    android:textSize="24dp" />
-            </RelativeLayout>
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="bottom|end" />
+            </FrameLayout>
         </LinearLayout>
 
         <dmeeuwis.masterlibrary.IncorrectScreenView

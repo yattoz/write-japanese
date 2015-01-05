@@ -38,7 +38,6 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	String[] strings;
 	Map<Character, Progress> scores;
 	
-	Set<Character> unlockedCharacters;
 	LockChecker lc;
 
 	String characterList;

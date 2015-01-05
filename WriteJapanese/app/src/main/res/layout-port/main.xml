@@ -26,8 +26,8 @@
             <android.support.v7.widget.CardView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
                 android:layout_gravity="top|center_horizontal"
+                android:layout_margin="5dp"
                 card_view:cardCornerRadius="5dp">
 
                 <LinearLayout
@@ -53,8 +53,8 @@
                     android:id="@+id/other_meanings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right|center_vertical"
-                    android:contentDescription="Other meanings"
+                    android:layout_gravity="end|center_vertical"
+                    android:contentDescription="@string/other_meanings_content_description"
                     android:padding="5dp"
                     android:src="@drawable/ic_action_overflow" />
             </android.support.v7.widget.CardView>
@@ -64,15 +64,15 @@
                 android:id="@+id/remindStoryButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_gravity="bottom|left"
-                android:visibility="invisible"
-                android:text="@string/remind_story_button" />
+                android:layout_gravity="bottom|start"
+                android:text="@string/remind_story_button"
+                android:visibility="invisible" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/teachButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_gravity="bottom|left"
+                android:layout_gravity="bottom|start"
                 android:src="@drawable/ic_lock_lock"
                 android:text="@string/teach_me_button" />
 
@@ -80,202 +80,196 @@
                 android:id="@+id/finishedButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_gravity="bottom|right"
+                android:layout_gravity="bottom|end"
                 android:text="@string/finished_drawing_button" />
 
             <ImageView
                 android:id="@+id/reviewBug"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:layout_gravity="top|left"
-                android:contentDescription="Reviewing"
+                android:layout_gravity="top|start"
+                android:contentDescription="@string/reviewing_content_description"
                 android:src="@drawable/review_bug"
                 android:visibility="gone" />
         </FrameLayout>
 
         <!-- After drawing frame, this frame shows advice and criticism. -->
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/reviewingFrame"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
-
-            <!-- Animated corrections -->
+            android:layout_height="fill_parent">
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="5"
-                android:orientation="horizontal">
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
+
+
+                <!-- Animated corrections -->
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#FFA20D1B"
+                            android:padding="6dp"
+                            android:text="@string/drawn_label"
+                            android:textColor="#FFFFFF" />
+
+                        <dmeeuwis.nakama.views.AnimatedCurveView
+                            android:id="@+id/animatedDrawnReplay"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#FF1BA20D"
+                            android:padding="6dp"
+                            android:text="@string/known_label"
+                            android:textColor="#FFFFFF" />
+
+                        <dmeeuwis.nakama.views.AnimatedCurveView
+                            android:id="@+id/animatedKnownReplay"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <ListView
+                    android:id="@+id/criticism"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_card"
-                    android:orientation="vertical">
+                    android:padding="5dp" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#FFA20D1B"
-                        android:padding="6dp"
-                        android:text="Drawn"
-                        android:textColor="#FFFFFF" />
-
-                    <dmeeuwis.nakama.views.AnimatedCurveView
-                        android:id="@+id/animatedDrawnReplay"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#FF1BA20D"
-                        android:padding="6dp"
-                        android:text="Correct"
-                        android:textColor="#FFFFFF" />
-
-                    <dmeeuwis.nakama.views.AnimatedCurveView
-                        android:id="@+id/animatedKnownReplay"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
             </LinearLayout>
 
-            <ListView
-                android:id="@+id/criticism"
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_margin="5dp"
-                android:layout_weight="3"
-                android:background="@drawable/bg_card"
-                android:padding="5dp" />
+            <dmeeuwis.nakama.views.FloatingActionButton
+                android:id="@+id/practiceButton"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="bottom|start" />
 
-            <LinearLayout
-                android:id="@+id/correctionButtonSpace"
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+            <dmeeuwis.nakama.views.FloatingActionButton
+                android:id="@+id/nextButton"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="bottom|end" />
+        </FrameLayout>
 
-                <Button
-                    android:id="@+id/practiceButton"
-                    style="@style/ButtonText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:background="@drawable/blue_button"
-                    android:text="@string/practice_button"
-                    android:textSize="24dp" />
 
-                <Button
-                    android:id="@+id/nextButton"
-                    style="@style/ButtonText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:background="@drawable/green_button"
-                    android:text="@string/next_button"
-                    android:textSize="24dp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/correctLayout"
+        <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
+            android:layout_height="fill_parent">
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="fill_parent"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="#FF1BA20D"
-                        android:padding="6dp"
-                        android:text="Correct"
-                        android:textColor="#FFFFFF" />
-
-                    <dmeeuwis.nakama.views.AnimatedCurveView
-                        android:id="@+id/correctKnownView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
                         android:layout_margin="5dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_card" />
-                </LinearLayout>
+                        android:background="@drawable/bg_card"
+                        android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical">
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#FF1BA20D"
+                            android:padding="6dp"
+                            android:text="Correct"
+                            android:textColor="#FFFFFF" />
 
-                    <TextView
-                        android:layout_width="fill_parent"
+                        <dmeeuwis.nakama.views.AnimatedCurveView
+                            android:id="@+id/correctKnownView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="0dp"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="#FF1BA20D"
-                        android:padding="6dp"
-                        android:text="Drawn"
-                        android:textColor="#FFFFFF" />
-
-                    <dmeeuwis.nakama.views.AnimatedCurveView
-                        android:id="@+id/correctDrawnView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
                         android:layout_margin="5dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_card" />
+                        android:background="@drawable/bg_card"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#FF1BA20D"
+                            android:padding="6dp"
+                            android:text="@string/drawn_label"
+                            android:textColor="#FFFFFF" />
+
+                        <dmeeuwis.nakama.views.AnimatedCurveView
+                            android:id="@+id/correctDrawnView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
                 </LinearLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/correctExamples"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="5.0sp"
+                    android:layout_marginRight="5.0sp"
+                    android:layout_marginTop="10.0sp"
+                    android:layout_weight="1"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="10.0sp" />
+
             </LinearLayout>
-
-            <ListView
-                android:id="@+id/correctExamples"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginBottom="10.0sp"
-                android:layout_marginLeft="5.0sp"
-                android:layout_marginRight="5.0sp"
-                android:layout_marginTop="10.0sp"
-                android:layout_weight="1"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="10.0sp" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/correctNextButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_gravity="right"
-                />
-        </LinearLayout>
+                android:layout_gravity="bottom|end" />
+        </FrameLayout>
 
         <dmeeuwis.masterlibrary.IncorrectScreenView
             android:id="@+id/incorrectFrame"

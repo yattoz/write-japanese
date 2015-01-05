@@ -133,7 +133,7 @@ public class PathCalculator {
 		return intersections;
 	}
 
-	private static final double TURN_THRESHOLD_RADIANS = Math.PI / 3;
+	private static final double TURN_THRESHOLD_RADIANS = Math.PI / 2;
 	/** 
 	 * Finds sharp turn points. Currently turns are between sequential points, but would be better to 
 	 * do based on distance.

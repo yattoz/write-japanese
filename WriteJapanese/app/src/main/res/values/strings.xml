@@ -21,6 +21,10 @@
     <string name="title_activity_progress">Your Progress</string>
     <string name="progress_title_section_1">Progress</string>
     <string name="progress_title_section_2">Characters</string>
+    <string name="drawn_label">Drawn</string>
+    <string name="known_label">Correct</string>
+    <string name="other_meanings_content_description">Other meanings</string>
+    <string name="reviewing_content_description">Reviewing</string>
 
     <style name="ButtonText">
         <item name="android:layout_width">fill_parent</item>

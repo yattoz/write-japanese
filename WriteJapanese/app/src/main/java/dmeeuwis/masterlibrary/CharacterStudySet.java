@@ -3,6 +3,7 @@ package dmeeuwis.masterlibrary;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -16,8 +17,6 @@ import dmeeuwis.util.Util;
  */
 public abstract class CharacterStudySet implements Iterable<Character> {
 	
-	public static final String PREFS_KEY = "kanjiProgress";
-	public static enum Order { IN_ORDER, RANDOM_ORDER }
 	public static enum LockLevel { NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED }
 
 	final public Set<Character> freeCharactersSet;
@@ -42,8 +41,8 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		this.name = name;
 		this.locked = locked;
 
-		this.freeCharactersSet = Collections.unmodifiableSet(new HashSet<Character>(Collections.unmodifiableList(Util.stringToCharList(freeCharacters))));
-		this.allCharactersSet = Collections.unmodifiableSet(new HashSet<Character>(Collections.unmodifiableList(Util.stringToCharList(allCharacters))));
+		this.freeCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(freeCharacters)));
+		this.allCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(allCharacters)));
 
 		this.pathPrefix = pathPrefix;
 		this.tracker = new ProgressTracker(this.allCharactersSet);
