@@ -60,8 +60,6 @@ import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
-// import com.nhaarman.listviewanimations.swinginadapters.prepared.ScaleInAnimationAdapter;
-
 public abstract class AbstractMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
 	
 	public enum State { DRAWING, REVIEWING, CORRECT_ANSWER, INCORRECT_ANSWER }
@@ -617,6 +615,7 @@ public abstract class AbstractMasterActivity extends ActionBarActivity implement
 	public void onPause(){
 		Log.i("nakama", "AbstractMaster.onPause: saving state.");
 		drawPad.stopAnimation();
+        drawPad.destroy();
 		Editor ed = this.prefs.edit();
         ed.putBoolean("shuffleEnabled", currentCharacterSet.isShuffling());
         ed.commit();

@@ -1,36 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tracingFrame"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:paddingTop="10sp" >
-
-    <TextView
-        android:id="@+id/teachingLabel"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="@string/trace_message"
-        android:textSize="24sp" />
+    android:layout_height="fill_parent">
 
     <dmeeuwis.nakama.views.TracingCurveView
         android:id="@+id/tracingPad"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/tipMessage"
-        android:layout_below="@id/teachingLabel"
-        android:layout_centerHorizontal="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp" />
+        android:layout_height="fill_parent" />
 
-    <TextView
-        android:id="@id/tipMessage"
-        android:layout_width="match_parent"
+    <android.support.v7.widget.CardView
+        android:id="@+id/messageCard"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:minHeight="64sp"
-        android:gravity="center"
-        android:textSize="18sp" />
+        android:layout_gravity="bottom|center"
+        android:layout_margin="10dp">
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/tipMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:minHeight="64sp"
+            android:textSize="18sp" />
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

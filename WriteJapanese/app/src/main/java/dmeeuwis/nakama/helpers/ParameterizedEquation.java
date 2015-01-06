@@ -15,7 +15,7 @@ public abstract class ParameterizedEquation {
 	public abstract float y(float t);
 	public abstract float arclength();
 
-	private final float CURVE_THRESHOLD = (float) (Math.PI / 18);
+	private final float CURVE_THRESHOLD = (float) (Math.PI / 12);
 	private final float INCREMENT = 0.05f;
 	
 	public List<Point> toPoints(){

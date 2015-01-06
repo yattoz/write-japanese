@@ -95,13 +95,11 @@ public class DrawView extends View implements OnTouchListener {
 	
 	public DrawView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		//Log.i("nakama", "DrawView 3-cons");
 		init();
 	}
 
 	public DrawView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		//Log.i("nakama", "DrawView 2-cons");
 		init();
 	}
 
@@ -132,20 +130,8 @@ public class DrawView extends View implements OnTouchListener {
 		this.fingerPaint.setDither(true);
 		this.fingerPaint.setStrokeWidth(PAINT_THICKNESS_PX);
 		this.fingerPaint.setColor(Color.BLACK);
-		
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//        	setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-//        }
 	}
 
-	public void clear(int millisDelay){
-		this.postDelayed(new Runnable() {
-			@Override public void run() {
-				clear();
-			}
-		}, millisDelay);
-	}
-	
 	public void clear(){
 		Log.i("nakama", "DrawView clear start");
 		List<List<TimePoint>> linesToDrawRef = this.linesToDraw;
@@ -219,8 +205,6 @@ public class DrawView extends View implements OnTouchListener {
 		this.linesToGrade = Util.popCopy(linesToGradeRef);
 		linesToGradeRef = this.linesToGrade;
 
-		//drawBitmap.eraseColor(backgroundColor);
-		//initGrid(this.getWidth(), this.getHeight());
 		redraw();
 
 		for(int pi = 1; pi < lineToFade.size(); pi++){
@@ -410,13 +394,12 @@ public class DrawView extends View implements OnTouchListener {
 		if(remakeBitmaps){
 			Log.i("nakama", "DrawView initGrid bitmap recreate");
 			if(drawBitmap != null) drawBitmap.recycle();
-			drawBitmap = Bitmap.createBitmap(decidedWidth, decidedHeight, Bitmap.Config.ARGB_4444);
+			drawBitmap = Bitmap.createBitmap(decidedWidth, decidedHeight, Bitmap.Config.ARGB_4444);     // 6.6MB
 			drawCanvas = new Canvas(drawBitmap);
                         
 			if(fadeBitmap != null) fadeBitmap.recycle();
-			fadeBitmap = Bitmap.createBitmap(decidedWidth, decidedHeight, Bitmap.Config.ARGB_4444);
+			fadeBitmap = Bitmap.createBitmap(decidedWidth, decidedHeight, Bitmap.Config.ARGB_4444);     // 6.6MB
 			fadeCanvas = new Canvas(fadeBitmap);
-			
 		}
 
 		redraw();
@@ -448,19 +431,27 @@ public class DrawView extends View implements OnTouchListener {
 				fadeTimer.cancel();
 				fadeTimer = null;
 			} catch(Throwable t){
-				Log.e("nakama", "Error when stoping DrawView animations", t);
+				Log.e("nakama", "Error when stopping DrawView animations", t);
 			}
 		}
 	}
 	
 	@Override
 	public void onDetachedFromWindow(){
-		Log.i("nakama", "DrawView.onDetachedFromWindow: recycling bitmaps.");
-		drawBitmap.recycle();
-		drawBitmap = null;
-		fadeBitmap.recycle();
-		fadeBitmap = null;
-		System.gc();
+        cleanBitmaps();
 		super.onDetachedFromWindow();
 	}
+
+    public void destroy() {
+        cleanBitmaps();
+    }
+
+    private void cleanBitmaps(){
+        Log.i("nakama", "DrawView.onDetachedFromWindow: recycling bitmaps.");
+        if(drawBitmap != null) drawBitmap.recycle();
+        drawBitmap = null;
+        if(fadeBitmap != null) fadeBitmap.recycle();
+        fadeBitmap = null;
+        System.gc();
+    }
 }

@@ -6,11 +6,12 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.AssetFinder;
@@ -23,6 +24,8 @@ import dmeeuwis.nakama.views.TracingCurveView;
 import dmeeuwis.nakama.views.TracingCurveView.OnTraceCompleteListener;
 
 public class TeachingDrawFragment extends Fragment implements OnTraceCompleteListener, OnStrokeListener {
+
+    final static String initialAdvice = "Trace the character";
 
 	final static String[] goodAdvice = {
 		"Good! Trace again, for practice.",
@@ -45,16 +48,17 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	TracingCurveView tracingView;
 	TextView message;
 	int teachingLevel = 0;
-	
-	AlphaAnimation fadeIn = new AlphaAnimation(0.0f , 1.0f ) ; 
-	AlphaAnimation fadeOut = new AlphaAnimation( 1.0f , 0.0f ) ; 
+
+    CardView messageCard;
+
+	Animation fadeIn;
+	Animation fadeOut;
 
 	@Override public void onAttach(Activity activity){
 		TeachingActivity parent = (TeachingActivity)getActivity();
 		this.character = parent.getCharacter();
 		this.currentCharacterSvg = parent.getCurrentCharacterSvg();
-		Log.d("nakama", "TeachingInfoFragment: parent is " + parent + "; got parent's kanji " + this.character + "; char svg: " + this.currentCharacterSvg);
-		
+
 		super.onAttach(activity);	
 	}
 	
@@ -62,16 +66,16 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 		 View view = inflater.inflate(R.layout.fragment_draw, container, false);
 		 
 	     this.tracingView = (TracingCurveView)view.findViewById(R.id.tracingPad);
-	     
-	     this.fadeIn.setDuration(500);
-	     this.fadeIn.setFillAfter(true);
-	     this.fadeOut.setDuration(500);
-	     this.fadeOut.setFillAfter(true);
+
+         this.fadeIn = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_in_up);
+         this.fadeOut = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_out_down);
 
 	     this.glyph = new Glyph(currentCharacterSvg);
 	     
 	     this.message = (TextView)view.findViewById(R.id.tipMessage);
-	     
+         this.messageCard = (CardView)view.findViewById(R.id.messageCard);
+         this.message.setText(initialAdvice);
+
 	     this.tracingView.setOnTraceCompleteListener(this);
 	     this.tracingView.setOnStrokeListener(this);
 	     
@@ -84,34 +88,45 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	 }
 	 
 	 public void onComplete(Drawing drawing){
-         Log.d("nakama", "TeachingDrawFragment: onComplete");
 		 PathComparator comp = new PathComparator(character.charAt(0), glyph, drawing, new AssetFinder(this.getActivity().getAssets()));
 		 Criticism c = comp.compare();
+
 		 if(c.pass){
 			teachingLevel = Math.max(0, Math.min(goodAdvice.length-1, teachingLevel+1));
-			message.setText(goodAdvice[teachingLevel]);
+			changeCardMessage(goodAdvice[teachingLevel]);
 		 } else {
 			teachingLevel = Math.max(0, Math.min(teachingLevel-1, goodAdvice.length-1));
-			message.setText(badAdvice[0]);
+			changeCardMessage(badAdvice[0]);
 		 }
 		
 		 this.tracingView.clear();
-		 this.message.startAnimation(this.fadeIn);
 		 this.waitingForStroke = true;
 		 
 		 if(teachingLevel >= 2){
-             Log.d("nakama", "TeachingDrawFragment: onComplete, stopping animation for teachingLevel " + teachingLevel);
 			 this.tracingView.stopAnimation();
 		 } else {
-             Log.d("nakama", "TeachingDrawFragment: onComplete, restarting animation for teachingLevel " + teachingLevel);
-			 this.tracingView.startAnimation();
+			 this.tracingView.startAnimation(500);
 		 }
 	 }
+
+    void changeCardMessage(final String newMessage){
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override public void onAnimationStart(Animation animation) {  }
+            @Override public void onAnimationRepeat(Animation animation) {  }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                fadeOut.setAnimationListener(null);
+                message.setText(newMessage);
+                messageCard.startAnimation(fadeIn);
+            }
+        });
+        this.messageCard.startAnimation(this.fadeOut);
+    }
 
 	@Override
 	public void onStroke(List<Point> stroke) {
 		if(waitingForStroke){
-		 this.message.startAnimation(this.fadeOut);
 		 waitingForStroke = false;
 		}
 	}

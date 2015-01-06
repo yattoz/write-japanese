@@ -27,14 +27,11 @@ import dmeeuwis.util.Util;
 
 public class TeachingInfoFragment extends Fragment {
 
-	final static int MAX_TRANSLATIONS = 15;
-
 	Kanji kanji;
 	String[] currentCharacterSvg;
 	
 	AnimatedCurveView kanim;
 	LinearLayout examplesLayout;
-	KanjiVocabArrayAdapter vocabArrayAdapter;
 	List<Translation> usedInTranslations;
 	TextView kanjiLabel;
 	View view;
@@ -63,6 +60,11 @@ public class TeachingInfoFragment extends Fragment {
 		
 		super.onAttach(activity);
 	}
+
+    @Override public void onDetach(){
+        this.searchTask.cancel(true);
+        super.onDetach();
+    }
 	
 	 @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.d("nakama", "TeachingInfoFragment onCreateView: thi.kanjis is " + this.kanji);
@@ -76,12 +78,13 @@ public class TeachingInfoFragment extends Fragment {
 		kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);
 		kanjiLabel.setText(Character.toString(this.kanji.kanji));
 		
-		this.usedInTranslations = new LinkedList<Translation>();
+		this.usedInTranslations = new LinkedList<>();
 
 		addTextViewsToLayout((LinearLayout)view.findViewById(R.id.meanings), this.kanji.meanings);
 	
 		this.examplesLayout = (LinearLayout)view.findViewById(R.id.exampleSpace);
-        
+
+         // TODO: this should probably be made into a RecyclerView
 		AddTranslation adder = new AddTranslation(){
 			public void add(Translation t){
 				Log.i("nakama", "Inflating translation View for: " + t.toString());
