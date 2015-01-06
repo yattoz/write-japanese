@@ -32,7 +32,7 @@ import dmeeuwis.nakama.views.KanjiWithMeaningView;
 public class TeachingStoryFragment extends Fragment {
 
 	char character;
-	Kanji kanji;
+	Kanji kanji;        // may be null for kana
 	String[] currentCharacterSvg;
 	EditText storyEditor;
 	TextView kanjiLabel;
@@ -83,7 +83,7 @@ public class TeachingStoryFragment extends Fragment {
 		this.kanim.startAnimation(500);
 	
 		this.kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);
-		this.kanjiLabel.setText(Character.toString(this.kanji.kanji));
+		this.kanjiLabel.setText(Character.toString(this.character));
 		this.radicalsCard = view.findViewById(R.id.radicalsCard);
 
 		gridView = (GridView) view.findViewById(R.id.radicalsGrid);
