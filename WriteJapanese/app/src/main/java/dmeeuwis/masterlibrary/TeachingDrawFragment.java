@@ -67,8 +67,8 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 		 
 	     this.tracingView = (TracingCurveView)view.findViewById(R.id.tracingPad);
 
-         this.fadeIn = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_in_up);
-         this.fadeOut = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_out_down);
+         this.fadeIn = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_in);
+         this.fadeOut = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_out);
 
 	     this.glyph = new Glyph(currentCharacterSvg);
 	     
