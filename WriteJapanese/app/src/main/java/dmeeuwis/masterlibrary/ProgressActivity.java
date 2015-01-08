@@ -1,8 +1,5 @@
 package dmeeuwis.masterlibrary;
 
-import java.util.Map;
-import java.util.Set;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -23,6 +20,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.masterlibrary.ProgressTracker.Progress;
 import dmeeuwis.nakama.helpers.DictionarySet;
@@ -30,7 +32,7 @@ import dmeeuwis.nakama.library.Constants;
 import dmeeuwis.nakama.views.SingleBarChart;
 import dmeeuwis.nakama.views.SingleBarChart.BarChartEntry;
 
-public class ProgressActivity extends ActionBarActivity implements OnItemClickListener, LockCheckerHolder {
+public class ProgressActivity extends ActionBarActivity implements OnItemClickListener {
 
 	String callingClass;
 	String callingPath;
@@ -58,10 +60,6 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	static final int UNKNOWN_BORDER = Color.parseColor("#585555");
 	static final int UNKNOWN_COLOR = Color.parseColor("#A0E2E2E2");
 	
-	public LockChecker getLockChecker(){
-		return this.lc;
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,9 +72,9 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
     	Bundle params = getIntent().getExtras();
     	callingClass = params.getString("parent");
     	callingPath = params.getString(Constants.KANJI_PATH_PARAM);
-    	
-    	DictionarySet dictSet = DictionarySet.singleton(this);
-    	lc = new LockChecker(this, 
+
+        DictionarySet dictSet = new DictionarySet(this.getApplicationContext());
+        lc = new LockChecker(this,
 			 new Runnable(){
 				@Override public void run() {
 					Log.i("nakama", "ProgressActivity: notifyDataSetChanged");
@@ -85,7 +83,10 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 					characterGrid.invalidateViews();
 				}
 			});
+
         charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc);
+        charSet = CharacterSets.fromName(callingPath, null, null);
+        dictSet.close();
         characterList = charSet.charactersAsString();
 
     	chars = characterList.toCharArray();
@@ -193,7 +194,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 
 	    public View getView(int position, View convertView, ViewGroup parent) {
 	        TextView tv;
-	        Character character = Character.valueOf(chars[position]);
+	        Character character = chars[position];
 	        Progress score = scores.get(character);
 	        
 	        if (convertView == null) {

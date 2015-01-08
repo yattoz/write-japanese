@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "dmeeuwis.kanjimaster"
-        minSdkVersion 9
+        minSdkVersion 11
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+        versionCode 16
+        versionName "1.16"
     }
     buildTypes {
         release {

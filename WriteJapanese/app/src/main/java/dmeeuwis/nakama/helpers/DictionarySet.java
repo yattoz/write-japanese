@@ -1,20 +1,20 @@
 package dmeeuwis.nakama.helpers;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.FileChannel;
-
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.util.Log;
+
+import java.io.Closeable;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.indexer.Querier;
 import dmeeuwis.indexer.QuerierFileInputStream;
-import dmeeuwis.util.Util;
 
-public class DictionarySet {
+public class DictionarySet implements Closeable {
 
 	public static final String KANJIDICT_FILE = "kanjidic.utf8.awb";
 	public static final String KANJIDICT_INDEX = "kanjidic.index.awb";
@@ -43,15 +43,7 @@ public class DictionarySet {
 	final AssetFileDescriptor kanjiIndexFd;
 	final FileInputStream kanjiIndexStream;
 
-	private static DictionarySet singletonSet;
-	
-	synchronized public static DictionarySet singleton(Context context){
-		if(singletonSet == null)
-			singletonSet = new DictionarySet(context);
-		return singletonSet;
-	}
-	
-	private DictionarySet(Context context) {
+    public DictionarySet(Context context) {
 	   	Log.i("nakama", "Starting to create DictionarySet");
 	   	long start = System.currentTimeMillis();
 	   	
@@ -103,8 +95,7 @@ public class DictionarySet {
 	}
 	
 	public void close(){
-		return; 
-/*		safeClose(dictionaryFileStream);
+		safeClose(dictionaryFileStream);
 		safeClose(dictionaryFileFd);
 		
 		safeClose(searchHashToEdictIdStream);
@@ -115,25 +106,19 @@ public class DictionarySet {
 		
 		safeClose(kanjiDictStream);
 		safeClose(kanjiDictFd);
+        safeClose(kanjiDictCh);
 		
 		safeClose(kanjiIndexStream);
 		safeClose(kanjiIndexFd);
-*/
 	}
-	
-	
-	public String[] findKanjiPaths(char kanji) throws IOException{
-		int unicodeValue = kanji;
-		String hexValue = Integer.toHexString(unicodeValue);
-	
-		InputStream in = asm.open(hexValue + ".path");
-		String pathString;
-		try {
-			pathString = Util.slurp(in);
-		} finally {
-			in.close();
-		}
-		
-		return pathString.split("\n");
-	}
+
+    public static void safeClose(Closeable c){
+        if(c != null){
+            try {
+                c.close();
+            } catch(Throwable t){
+                // ignore
+            }
+        }
+    }
 }

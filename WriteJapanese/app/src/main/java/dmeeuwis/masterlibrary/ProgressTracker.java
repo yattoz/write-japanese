@@ -30,14 +30,14 @@ public class ProgressTracker {
 	final private Map<Character, Integer> recordSheet;
 
 	public ProgressTracker(String characters){
-		this.recordSheet = new LinkedHashMap<Character, Integer>(characters.length());
+		this.recordSheet = new LinkedHashMap<>(characters.length());
 		for(int i = 0; i < characters.length(); i++){
 			this.recordSheet.put(characters.charAt(i), null);
 		}
 	}
 
 	public ProgressTracker(Collection<Character> characters){
-		this.recordSheet = new LinkedHashMap<Character, Integer>(characters.size());
+		this.recordSheet = new LinkedHashMap<>(characters.size());
 		for(Character c: characters){
 			this.recordSheet.put(c, null);
 		}
@@ -50,7 +50,7 @@ public class ProgressTracker {
 
 	private List<Character> charactersMatchingScore(Set<Character> allowedChars, Integer... scores){
 		List<Integer> scoresList = Arrays.asList(scores);
-		List<Character> matching = new ArrayList<Character>();
+		List<Character> matching = new ArrayList<>();
         for(Map.Entry<Character, Integer> c: this.recordSheet.entrySet()){
         	Integer knownScore = c.getValue() == null ? 0 : c.getValue();
         	if(scoresList.contains(knownScore) && allowedChars.contains(c.getKey())){
@@ -62,7 +62,7 @@ public class ProgressTracker {
 	
 
 	public List<Character> charactersNotYetSeen(Set<Character> allowedChars){
-		List<Character> matching = new ArrayList<Character>();
+		List<Character> matching = new ArrayList<>();
         for(Map.Entry<Character, Integer> c: this.recordSheet.entrySet()){
         	if(c.getValue() == null && allowedChars.contains(c.getKey())){
 				matching.add(c.getKey());
@@ -155,19 +155,15 @@ public class ProgressTracker {
 	}
 
 	public Map<Character, Progress> getAllScores(){
-		Map<Character, Progress> all = new HashMap<Character, Progress>(recordSheet.size());
+		Map<Character, Progress> all = new HashMap<>(recordSheet.size());
 		for(Map.Entry<Character, Integer> entry: recordSheet.entrySet()){
         	all.put(entry.getKey(), Progress.parse(entry.getValue()));
 		}
 		return all;
 	}
 
-	public Progress getScore(Character c){
-		return Progress.parse(recordSheet.get(c));
-	}
-
 	public static ProgressTracker loadFromString(String savedString){
-		Map<Character, Integer> newMap = new HashMap<Character, Integer>();
+		Map<Character, Integer> newMap = new HashMap<>();
 		String[] lines = savedString.split("\n");
 		for(String l: lines){
 			String[] parts = l.split("=");

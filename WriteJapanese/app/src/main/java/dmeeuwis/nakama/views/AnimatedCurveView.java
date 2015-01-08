@@ -28,8 +28,10 @@ import dmeeuwis.nakama.views.MeasureUtil.ScaleAndOffsets;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
 
 public class AnimatedCurveView extends View implements Animatable {
+    public static enum DrawTime { ANIMATED, STATIC }
+    public static enum DrawStatus { DRAWING, FINISHED }
 
-	static final private float ANIMATION_TIME_PER_STROKE_IN_MS = 1500;
+    static final private float ANIMATION_TIME_PER_STROKE_IN_MS = 1500;
 	static final private float FRAME_RATE_PER_SEC = 60;
 	static final private float TIME_INCREMENTS = 1 / (ANIMATION_TIME_PER_STROKE_IN_MS / FRAME_RATE_PER_SEC);
 
@@ -38,8 +40,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	List<Path> pathsToDraw = new ArrayList<Path>();
 	List<ParameterizedEquation> eqns = new LinkedList<ParameterizedEquation>();
 
-	public boolean debug = false;
-	
 	int eqn_i = 0;
 	int allowedStrokes = 1;
 	float time = -1;
@@ -48,7 +48,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	Drawing drawing = null;
 	RectF unscaledBoundingBox = null;
 	
-	Timer animateTimer = null;
+    Timer animateTimer = null;
 	Runnable onAnimationFinishCallback = null;
 	
 	Paint bufferPaint = new Paint();
@@ -104,7 +104,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	public void clear(){
 		Runnable clearWork = new Runnable(){
 			@Override public void run() {
-				pathsToDraw = new ArrayList<Path>();
+				pathsToDraw = new ArrayList<>();
 				time = 0;
 				eqn_i = 0;
 				time = -1;
@@ -133,8 +133,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * When not in autoincrement mode, this will increase the number of strokes being animated by one.
 	 */
 	public int incrementCurveStroke(){
-		if(this.autoIncrement)
-			if(debug)Log.e("AnimatedCurveView", "Error: incrememtCurveStroke called when autoIncrement is true.");
 		return (this.allowedStrokes++);
 	}
 
@@ -152,7 +150,6 @@ public class AnimatedCurveView extends View implements Animatable {
                 List<ParameterizedEquation> eqnsNew = new LinkedList<ParameterizedEquation>();
                 eqnsNew.addAll(unscaledEqns);
 				eqns = eqnsNew;
-                if(debug) Log.d("nakama", "Saw new user point strokes: from params, read unscaled bounding box as " + unscaledBoundingBox);
                 drawTime = drawTimeParam;
                 invalidate();
 			}
@@ -167,9 +164,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	}
 	
 
-	public enum DrawTime { ANIMATED, STATIC }
-	
-	
 	/**
 	 * Clears current strokes, and registers a new set from point lists.
 	 */
@@ -215,8 +209,6 @@ public class AnimatedCurveView extends View implements Animatable {
 		return true;
 	}
 
-	public enum DrawStatus { DRAWING, FINISHED }
-
 	DrawStatus threadDrawStatus = DrawStatus.FINISHED;
 	private void drawIncrementSafe(){
 		Runnable setWork = new Runnable() {
@@ -239,7 +231,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	    	
 	    	// initialize new path
 	    	if(time <= 0){
-				if(debug)Log.d("nakama", "AnimatedCurveView: time is " + time + "; xOffset " + scaleAndOffsets.xOffset + "; yOffset " + scaleAndOffsets.yOffset);
 	    		time = 0;
 		    	float x = scaleAndOffsets.scale * eqnsRef.get(eqn_i).x(time) + scaleAndOffsets.xOffset;
 		    	float y = scaleAndOffsets.scale * eqnsRef.get(eqn_i).y(time) + scaleAndOffsets.yOffset;
@@ -250,7 +241,6 @@ public class AnimatedCurveView extends View implements Animatable {
 		    	
 	    	// or continue continue drawing current path.
 	    	} else {
-				if(debug)Log.d("nakama", "AnimatedCurveView: drawing, scale is " + scaleAndOffsets.scale + ", time is " + time + "; xOffset: " + scaleAndOffsets.xOffset + "; yOffset: " + scaleAndOffsets.yOffset);
 		    	float x = scaleAndOffsets.scale * eqnsRef.get(eqn_i).x(time) + scaleAndOffsets.xOffset;
 		    	float y = scaleAndOffsets.scale * eqnsRef.get(eqn_i).y(time) + scaleAndOffsets.yOffset;
 		    	if(eqn_i < pathsToDrawRef.size()){
@@ -269,7 +259,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	    		return DrawStatus.FINISHED;
 			}
 			
-			if(debug)Log.d("nakama", "AnimatedCurveView: Still eqns left...");
 			if((autoIncrement) || ((eqn_i+1) < allowedStrokes)){
 				eqn_i++;
 				time = -1;
@@ -289,7 +278,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		clear();
 		
 		threadDrawStatus = DrawStatus.DRAWING;
-		TimerTask task = new TimerTask() {
+        TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
 				drawIncrementSafe();
@@ -299,17 +288,16 @@ public class AnimatedCurveView extends View implements Animatable {
 				postInvalidate();
 			}
 		};
-		this.animateTimer = new Timer();
+
+        this.animateTimer = new Timer();
 		animateTimer.scheduleAtFixedRate(task, delayFirst, (long)(1000.0 / 30));
-		
-		if(debug) Log.d("nakama", "AnimatedCurveView: startAnimation run, timer scheduled! delay " + delayFirst);
 	}
 
 	/**
 	 * Stops current animation exactly where it is.
 	 */
 	public void stopAnimation(){
-		if(this.animateTimer != null){
+        if(this.animateTimer != null){
 			this.animateTimer.cancel();
 			this.animateTimer = null;
 		}
@@ -319,7 +307,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	    WidthAndHeight wh = MeasureUtil.fillMeasure(widthMeasureSpec, heightMeasureSpec);
 	    setMeasuredDimension(wh.width, wh.height);
-	    if(debug) Log.i("nakama", "AnimatedCurveView onMeasure: " + wh.width + ", " + wh.height);
 	}
 	
 	public void setOnAnimationFinishCallback(Runnable r){
@@ -330,17 +317,14 @@ public class AnimatedCurveView extends View implements Animatable {
 	protected void onDraw(Canvas canvas){
 		// Log.d("nakama", "AnimatedCurveView: onDraw");
 		if(this.scaleAndOffsets.initialized == false){
-			if(debug)Log.d("nakama", "AnimatedCurveView: onDraw: rescaling!");
-			
-			Log.i("nakama", "AnimatedCurveView: rescaled, animateTimer is " + animateTimer);
-			if(this.animateTimer != null){
+          if(this.animateTimer != null){
 				Log.i("nakama", "AnimatedCurveView: rescaled, resetting animateTimer.");
 				stopAnimation();
 				this.time = 0;
 				this.eqn_i = 0;
 				startAnimation(0);
 			}
-			
+
 			time = 0;
 			scaleAndOffsets.calculate(unscaledBoundingBox, getWidth(), getHeight());
 

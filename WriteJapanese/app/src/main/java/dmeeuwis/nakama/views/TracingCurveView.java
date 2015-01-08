@@ -54,7 +54,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 
 		this.kanjiPad = new DrawView(context);
 		this.kanjiPad.setBackgroundColor(0x00FFFFFF);
-		this.kanjiPad.addOnTouchListener(new OnTouchListener() {
+		this.kanjiPad.setOnTouchListener(new OnTouchListener() {
 			@Override public boolean onTouch(View v, MotionEvent event) {
 				if(event.getAction() == MotionEvent.ACTION_UP){
 					int allowed = animatedCurve.incrementCurveStroke();

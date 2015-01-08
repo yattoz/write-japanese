@@ -8,6 +8,8 @@
       <w>kanji</w>
       <w>katakana</w>
       <w>nakama</w>
+      <w>querier</w>
+      <w>recycler</w>
     </words>
   </dictionary>
 </component>

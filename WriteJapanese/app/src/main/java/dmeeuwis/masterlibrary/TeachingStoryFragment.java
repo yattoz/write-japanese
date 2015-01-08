@@ -52,8 +52,8 @@ public class TeachingStoryFragment extends Fragment {
 
 		loadFileTask = new LoadRadicalsFile();
 		loadFileTask.execute();
-		
-		DictionarySet sd = DictionarySet.singleton(activity);
+
+        DictionarySet sd = new DictionarySet(activity);
 		try {
 			this.kanji = sd.kanjiFinder().find(parent.getCharacter().charAt(0));
 		} catch (IOException e) {
@@ -129,7 +129,7 @@ public class TeachingStoryFragment extends Fragment {
         @Override
         protected List<Kanji> doInBackground(Void... v) {
 			Thread.currentThread().setName("LoadRadicalsFile");
-			DictionarySet dicts = DictionarySet.singleton(parent);
+            DictionarySet dicts = new DictionarySet(parent);
 			List<Kanji> retRadicals = null;
 			try {
 

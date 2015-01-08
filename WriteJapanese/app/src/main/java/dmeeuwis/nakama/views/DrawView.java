@@ -34,9 +34,9 @@ public class DrawView extends View implements OnTouchListener {
 
 	public final static int BACKGROUND_COLOR = 0xFFece5b4;
 	
-	final private float MIN_GRADING_POINT_DISTANCE_DP = 30;
-	final private float MIN_DRAW_POINT_DISTANCE_DP = 5;
-	final private float PAINT_THICKNESS_DP = 4;
+	static final private float MIN_GRADING_POINT_DISTANCE_DP = 30;
+	static final private float MIN_DRAW_POINT_DISTANCE_DP = 5;
+	static final private float PAINT_THICKNESS_DP = 4;
 
 	private float PAINT_THICKNESS_PX;
 	private float PAINT_MIN_THICKNESS_PX;
@@ -44,11 +44,11 @@ public class DrawView extends View implements OnTouchListener {
 	private float MIN_DRAW_POINT_DISTANCE_PX;
 	
 	// user input data stored here
-	protected List<List<TimePoint>> linesToDraw = new ArrayList<List<TimePoint>>();
-	protected List<List<Point>> linesToGrade = new ArrayList<List<Point>>();
+	protected List<List<Point>> linesToDraw = new ArrayList<>();
+	protected List<List<Point>> linesToGrade = new ArrayList<>();
 	
-	List<TimePoint> currentDrawLine = new ArrayList<TimePoint>(200);
-	List<Point> currentGradeLine = new ArrayList<Point>(100);
+	List<Point> currentDrawLine = new ArrayList<>(200);
+	List<Point> currentGradeLine = new ArrayList<>(100);
 
 	protected Paint fingerPaint = new Paint();
 	protected Paint fadePaint = new Paint();
@@ -134,18 +134,18 @@ public class DrawView extends View implements OnTouchListener {
 
 	public void clear(){
 		Log.i("nakama", "DrawView clear start");
-		List<List<TimePoint>> linesToDrawRef = this.linesToDraw;
-		this.linesToDraw = new ArrayList<List<TimePoint>>(200);
-		this.linesToGrade = new ArrayList<List<Point>>(100);
+		List<List<Point>> linesToDrawRef = this.linesToDraw;
+		this.linesToDraw = new ArrayList<>(200);
+		this.linesToGrade = new ArrayList<>(100);
 		
-		currentDrawLine = new ArrayList<TimePoint>(200);
-		currentGradeLine = new ArrayList<Point>(100);
+		currentDrawLine = new ArrayList<>(200);
+		currentGradeLine = new ArrayList<>(100);
 		
 		for(int i = linesToDrawRef.size() - 1; i >= 0; i--){
-			List<TimePoint> lineToFade = linesToDrawRef.get(i);
+			List<Point> lineToFade = linesToDrawRef.get(i);
 			for(int pi = 1; pi < lineToFade.size(); pi++){
-				TimePoint p0 = lineToFade.get(pi-1);
-				TimePoint p1 = lineToFade.get(pi);
+				Point p0 = lineToFade.get(pi-1);
+				Point p1 = lineToFade.get(pi);
 				// this.fingerPaint.setStrokeWidth(findWidth(p0, p1));
 				fadeCanvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
 			}
@@ -191,14 +191,14 @@ public class DrawView extends View implements OnTouchListener {
 	}
 	
 	public void undo(){
-		List<List<TimePoint>> linesToDrawRef = this.linesToDraw;
+		List<List<Point>> linesToDrawRef = this.linesToDraw;
 		List<List<Point>> linesToGradeRef = this.linesToGrade;
 
 		if(linesToDrawRef.size() == 0 || linesToGradeRef.size() == 0){
 			return;
 		}
 		
-		List<TimePoint> lineToFade = linesToDrawRef.get(linesToDrawRef.size()-1);
+		List<Point> lineToFade = linesToDrawRef.get(linesToDrawRef.size()-1);
 		this.linesToDraw = Util.popCopy(linesToDrawRef);
 		linesToDrawRef = this.linesToDraw;
 		
@@ -208,8 +208,8 @@ public class DrawView extends View implements OnTouchListener {
 		redraw();
 
 		for(int pi = 1; pi < lineToFade.size(); pi++){
-			TimePoint p0 = lineToFade.get(pi-1);
-			TimePoint p1 = lineToFade.get(pi); 
+			Point p0 = lineToFade.get(pi-1);
+			Point p1 = lineToFade.get(pi);
 			//this.fingerPaint.setStrokeWidth(findWidth(p0, p1));
 			fadeCanvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
 		}
@@ -220,11 +220,11 @@ public class DrawView extends View implements OnTouchListener {
 		}
 	}
 	
-	private void redrawFromPoints(List<List<TimePoint>> linesToDrawRef){
-		for(List<TimePoint> line: linesToDrawRef){
+	private void redrawFromPoints(List<List<Point>> linesToDrawRef){
+		for(List<Point> line: linesToDrawRef){
 			for(int pi = 1; pi < line.size(); pi++){
-				TimePoint p0 = line.get(pi-1);
-				TimePoint p1 = line.get(pi);
+				Point p0 = line.get(pi-1);
+				Point p1 = line.get(pi);
 				//this.fingerPaint.setStrokeWidth(findWidth(p0, p1));
 				drawCanvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
 			}
@@ -239,25 +239,10 @@ public class DrawView extends View implements OnTouchListener {
 		}
 	}
 	
-	public void addOnTouchListener(OnTouchListener listener){
-		this.extraListeners.add(listener);
-	}
-	
-	public float findWidth(TimePoint p0, TimePoint p1){
-		double timeDiff = p1.time - p0.time;
-		double velocity = PathCalculator.distance(p0, p1) / timeDiff;
-		double velocityPercent = 1 - velocity / 2 / MAX_VELOCITY;
-		float width = (float)(PAINT_THICKNESS_PX * velocityPercent);
-		float cappedWidth = Math.max(PAINT_MIN_THICKNESS_PX, Math.min(PAINT_THICKNESS_PX, width));
-		return cappedWidth;
-	}
-	
-
 	Rect dirtyBox = new Rect();
 	long lastTime = 0;
-	final static float MAX_VELOCITY = 3.0f;
-	final private void moveAction(MotionEvent me, List<TimePoint> drawPoints, List<Point> gradePoints){
-		TimePoint lastDraw = drawPoints.get(drawPoints.size()-1);
+	final private void moveAction(MotionEvent me, List<Point> drawPoints, List<Point> gradePoints){
+		Point lastDraw = drawPoints.get(drawPoints.size()-1);
 		Point lastGrade = gradePoints.get(gradePoints.size()-1);
 
 		dirtyBox.set((int)me.getX(), (int)me.getY(), (int)me.getX(), (int)me.getY());
@@ -284,7 +269,7 @@ public class DrawView extends View implements OnTouchListener {
 			
 			double distance = PathCalculator.distance(lastDraw.x, lastDraw.y, hx, hy);
 			if(distance >= MIN_DRAW_POINT_DISTANCE_PX){
-				TimePoint latest = new TimePoint((int)hx, (int)hy, time);
+				Point latest = new Point((int)hx, (int)hy);
 				//float cappedWidth = findWidth(lastDraw, latest);
 				//fingerPaint.setStrokeWidth(cappedWidth);
 				lastTime = time;
@@ -318,14 +303,14 @@ public class DrawView extends View implements OnTouchListener {
 		final int x = (int)me.getX();
 		final int y = (int)me.getY();
 
-		List<List<TimePoint>> linesToDrawRef = this.linesToDraw;
+		List<List<Point>> linesToDrawRef = this.linesToDraw;
 		List<List<Point>> linesToGradeRef = this.linesToGrade;
 
 		List<Point> currentGradeLineRef = currentGradeLine;
-		List<TimePoint> currentDrawLineRef = currentDrawLine;
+		List<Point> currentDrawLineRef = currentDrawLine;
 
 		if(actionCode == MotionEvent.ACTION_DOWN){
-			TimePoint p = new TimePoint(x, y, me.getEventTime());
+			Point p = new Point(x, y);
 			currentDrawLineRef.add(p);
 			currentGradeLineRef.add(p);
 			
@@ -335,10 +320,10 @@ public class DrawView extends View implements OnTouchListener {
 		} else if(actionCode == MotionEvent.ACTION_UP && currentDrawLineRef.size() > 0){
 			
 			// reset current for next stroke
-			this.currentDrawLine = new ArrayList<TimePoint>(200);
-			this.currentGradeLine = new ArrayList<Point>(100);
+			this.currentDrawLine = new ArrayList<>(200);
+			this.currentGradeLine = new ArrayList<>(100);
 			
-			TimePoint endPoint = new TimePoint(x, y, me.getEventTime());
+			Point endPoint = new Point(x, y);
 			Point prev = currentDrawLineRef.get(currentDrawLineRef.size() - 1);
 		
 			// throw away single dots

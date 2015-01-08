@@ -46,7 +46,11 @@ public class TeachingInfoFragment extends Fragment {
 		Log.d("nakama", "TeachingInfoFragment: parent is " + parent + ", kanji is " + this.kanji);
 		this.activity = activity;
 
-		DictionarySet sd = DictionarySet.singleton(activity);
+        DictionarySet result;
+        synchronized (DictionarySet.class) {
+            result = new DictionarySet(activity);
+        }
+        DictionarySet sd = result;
 		try {
 			this.kanji = sd.kanjiFinder().find(parent.getCharacter().charAt(0));
 		} catch (IOException e) {

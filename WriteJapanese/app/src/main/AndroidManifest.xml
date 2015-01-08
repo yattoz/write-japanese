@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dmeeuwis.kanjimaster"
-    android:versionCode="15"
-    android:versionName="1.15" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="dmeeuwis.kanjimaster" >
 
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-sdk
-        android:minSdkVersion="11"
-        android:targetSdkVersion="21" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +12,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="dmeeuwis.kanjimaster.KanjiMasterActivity"
+            android:launchMode="singleInstance"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,14 +23,17 @@
         </activity>
         <activity
             android:name="dmeeuwis.masterlibrary.TeachingActivity"
+            android:launchMode="singleInstance"
             android:label="@string/app_name" >
         </activity>
         <activity
             android:name="dmeeuwis.masterlibrary.ProgressActivity"
+            android:launchMode="singleInstance"
             android:label="@string/title_activity_progress" >
         </activity>
         <activity
             android:name="dmeeuwis.kanjimaster.CreditsActivity"
+            android:launchMode="singleInstance"
             android:label="@string/title_activity_credits" >
         </activity>
 

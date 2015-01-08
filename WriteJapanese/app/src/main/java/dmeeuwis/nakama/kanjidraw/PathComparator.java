@@ -12,6 +12,8 @@ import android.util.Log;
 import dmeeuwis.Kana;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.KanjiMasterActivity;
+import dmeeuwis.masterlibrary.CharacterSets;
+import dmeeuwis.masterlibrary.CharacterStudySet;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
 import dmeeuwis.util.Util;
@@ -32,10 +34,13 @@ public class PathComparator {
 	final Drawing drawn;
 	final int drawingAreaMaxDim;
 	final AssetFinder assetFinder;
+    final CharacterStudySet hirganaSet, katakanaSet;
 	
 	public PathComparator(char target, Glyph known, Drawing challenger, AssetFinder assetFinder){
 		this.target = target; 
 		this.assetFinder = assetFinder;
+        this.hirganaSet = CharacterSets.hiragana(null);
+        this.katakanaSet = CharacterSets.katakana(null);
 		
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 		Rect drawnBox = this.drawn.findBoundingBox();
@@ -168,7 +173,7 @@ public class PathComparator {
 		if(allowRecursion == Recursion.ALLOW){
 			if(!c.pass && Kana.isHiragana(target)){
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
-				PathComparator pc = new PathComparator(katakanaVersion, assetFinder.findGlyphForCharacter(KanjiMasterActivity.katakanaCharacterSet, katakanaVersion), this.drawn, assetFinder);
+				PathComparator pc = new PathComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder);
 				if(pc.compare(Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
 					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".");
@@ -176,7 +181,7 @@ public class PathComparator {
 				}
 			} else if(!c.pass && Kana.isKatakana(target)){
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
-				PathComparator pc = new PathComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(KanjiMasterActivity.hiraganaCharacterSet, hiraganaVersion), this.drawn, assetFinder);
+				PathComparator pc = new PathComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hirganaSet, hiraganaVersion), this.drawn, assetFinder);
 				if(pc.compare(Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
 					specific.add("You drew the hiragana " + hiraganaVersion + " instead of the katakana " + target + ".");

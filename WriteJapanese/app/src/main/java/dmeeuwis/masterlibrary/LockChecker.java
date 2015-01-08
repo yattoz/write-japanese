@@ -232,18 +232,16 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	}
 
 	public LockLevel getPurchaseStatus(){
-		//Log.d("nakama", "LockChecker: getPurchaseStatus");
-
 		SharedPreferences prefs = getSharedPrefs();
 		String unlocked = prefs.getString(PREFS_KEY, null);
 		// Log.d("nakama", "LockChecker: Unlock key from SharedPreferences: " + unlocked);
 		if(unlocked != null){
 			if(unlocked.equals(unlockKey())){
-				Log.d("nakama", "LockChecker: getPurchaseStatus: Unlock key matched: UNLOCKED");
+				// Log.d("nakama", "LockChecker: getPurchaseStatus: Unlock key matched: UNLOCKED");
 				return LockLevel.UNLOCKED;
 			} 
 		}
-		Log.d("nakama", "LockChecker: getPurchaseStatus: Unlock key didn't match: LOCKED");
+		// Log.d("nakama", "LockChecker: getPurchaseStatus: Unlock key didn't match: LOCKED");
 		return LockLevel.LOCKED;
 	}
 	
