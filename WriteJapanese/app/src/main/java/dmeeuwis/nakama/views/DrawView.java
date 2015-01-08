@@ -432,11 +432,12 @@ public class DrawView extends View implements OnTouchListener {
     }
 
     private void cleanBitmaps(){
-        Log.i("nakama", "DrawView.onDetachedFromWindow: recycling bitmaps.");
+/*        Log.i("nakama", "DrawView.onDetachedFromWindow: recycling bitmaps.");
         if(drawBitmap != null) drawBitmap.recycle();
         drawBitmap = null;
         if(fadeBitmap != null) fadeBitmap.recycle();
         fadeBitmap = null;
         System.gc();
+*/
     }
 }
