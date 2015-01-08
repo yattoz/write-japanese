@@ -198,6 +198,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
 		super.onTouchEvent(event);
+        Log.i("nakama", "AnimatedCurveView: onTouchEvent");
 		
 		if(drawTime == DrawTime.STATIC)
 			return false;

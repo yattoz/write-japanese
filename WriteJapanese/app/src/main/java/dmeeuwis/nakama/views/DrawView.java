@@ -299,6 +299,7 @@ public class DrawView extends View implements OnTouchListener {
 	
 	
 	@Override public boolean onTouch(View v, MotionEvent me) {
+        Log.i("nakama", "DrawView: onTouch");
 		final int actionCode = me.getAction();
 		final int x = (int)me.getX();
 		final int y = (int)me.getY();
@@ -355,6 +356,10 @@ public class DrawView extends View implements OnTouchListener {
 		
 		return true;
 	}
+
+    public void addOnTouchListener(OnTouchListener t){
+        this.extraListeners.add(t);
+    }
 	
 	@Override protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec){
 	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);

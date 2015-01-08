@@ -66,19 +66,18 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 		 View view = inflater.inflate(R.layout.fragment_draw, container, false);
 		 
 	     this.tracingView = (TracingCurveView)view.findViewById(R.id.tracingPad);
+         this.tracingView.setOnTraceCompleteListener(this);
+         this.tracingView.setOnStrokeListener(this);
 
          this.fadeIn = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_in);
          this.fadeOut = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_out);
 
 	     this.glyph = new Glyph(currentCharacterSvg);
 	     
-	     this.message = (TextView)view.findViewById(R.id.tipMessage);
          this.messageCard = (CardView)view.findViewById(R.id.messageCard);
+         this.message = (TextView)view.findViewById(R.id.tipMessage);
          this.message.setText(initialAdvice);
 
-	     this.tracingView.setOnTraceCompleteListener(this);
-	     this.tracingView.setOnStrokeListener(this);
-	     
 		 return view;
 	 }
 	 
@@ -142,18 +141,13 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	@Override
 	public void onPause(){
 		tracingView.stopAnimation();
+        tracingView.clear();
 		super.onPause();
-	}
-	
-	@Override
-	public void onStop(){
-		tracingView.clear();
-		super.onStop();
 	}
 	
 	@Override
 	public void onResume(){
 		tracingView.startAnimation(300);
-		super.onStop();
+		super.onResume();
 	}
 }

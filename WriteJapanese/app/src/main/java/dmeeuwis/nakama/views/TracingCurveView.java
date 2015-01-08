@@ -43,7 +43,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 		super(context);
 		init();
 	}
-	
+
 	private void init(){
 		Context context = this.getContext();
 		
@@ -54,8 +54,9 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 
 		this.kanjiPad = new DrawView(context);
 		this.kanjiPad.setBackgroundColor(0x00FFFFFF);
-		this.kanjiPad.setOnTouchListener(new OnTouchListener() {
+		this.kanjiPad.addOnTouchListener(new OnTouchListener() {
 			@Override public boolean onTouch(View v, MotionEvent event) {
+                Log.i("nakama", "TracingCurveView: onTouch");
 				if(event.getAction() == MotionEvent.ACTION_UP){
 					int allowed = animatedCurve.incrementCurveStroke();
 					Log.d("tracing", "Saw touch up event, incremented animated curve by 1 to " + allowed);
@@ -63,7 +64,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 				return false;
 			}
 		});
-		
+
 		this.kanjiPad.setOnStrokeListener(new OnStrokeListener() {
 			@Override public void onStroke(List<Point> stroke) {
 				if(TracingCurveView.this.onStrokeListener != null){
@@ -91,7 +92,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 		});
 		
 		this.addView(this.animatedCurve, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-		this.addView(this.kanjiPad, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        this.addView(this.kanjiPad, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 	}
 	
 	public static interface OnTraceCompleteListener {
@@ -117,13 +118,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 		Log.d("TracingCurveView", "Starting stroke animation");
 		this.animatedCurve.startAnimation(delay);
 	}
-	
-	public void startAnimation(){
-		Log.d("TracingCurveView", "Starting stroke animation");
-		this.animState = AnimationState.RUNNING;
-		this.animatedCurve.startAnimation(1000);
-	}
-	
+
 	public void clear(){
 		Log.i("nakama", "TracingCurveView.clear");
 		this.animatedCurve.clear();
