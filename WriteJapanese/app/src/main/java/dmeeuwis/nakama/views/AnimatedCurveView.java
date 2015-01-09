@@ -238,19 +238,22 @@ public class AnimatedCurveView extends View implements Animatable {
 		if(time <= 1 && eqn_i < eqnsRef.size()){
 	    	Path path = null;
 
-            float x = this.paddingLeft + scaleAndOffsets.scale * eqnsRef.get(eqn_i).x(time) + scaleAndOffsets.xOffset;
-            float y = this.paddingTop + scaleAndOffsets.scale * eqnsRef.get(eqn_i).y(time) + scaleAndOffsets.yOffset;
-
 	    	// initialize new path
 	    	if(time <= 0){
 	    		time = 0;
 	    		path = new Path();
+
+                float x = scaleAndOffsets.scale * eqnsRef.get(eqn_i).x(time) + scaleAndOffsets.xOffset;
+                float y = scaleAndOffsets.scale * eqnsRef.get(eqn_i).y(time) + scaleAndOffsets.yOffset;
 	    		
 		    	pathsToDrawRef.add(eqn_i, path);
 		    	path.moveTo(x, y);
 		    	
 	    	// or continue continue drawing current path.
 	    	} else {
+                float x = scaleAndOffsets.scale * eqnsRef.get(eqn_i).x(time) + scaleAndOffsets.xOffset;
+                float y = scaleAndOffsets.scale * eqnsRef.get(eqn_i).y(time) + scaleAndOffsets.yOffset;
+
 		    	if(eqn_i < pathsToDrawRef.size()){
 		   			path = pathsToDrawRef.get(eqn_i);
 		   		}
