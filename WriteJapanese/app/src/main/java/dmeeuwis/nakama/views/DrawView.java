@@ -49,7 +49,8 @@ public class DrawView extends View implements OnTouchListener {
 	// user input data stored here
 	protected List<List<Point>> linesToDraw = new ArrayList<>();
 	protected List<List<Point>> linesToGrade = new ArrayList<>();
-	
+    protected List<List<Point>> linesToFade = new ArrayList<>();
+
 	List<Point> currentDrawLine = new ArrayList<>(200);
 	List<Point> currentGradeLine = new ArrayList<>(100);
 
@@ -66,9 +67,6 @@ public class DrawView extends View implements OnTouchListener {
 
     protected Integer gridPaddingLeft = 0, gridPaddingTop = 0;
 
-	protected Bitmap fadeBitmap;
-	protected Canvas fadeCanvas;
-	
 	protected Timer fadeTimer = null;
 	protected int fadeAlpha = 0;
 	protected Integer backgroundColor;
@@ -91,9 +89,7 @@ public class DrawView extends View implements OnTouchListener {
 			} else {
 				fadeTimer.cancel();
 				fadeTimer = null;
-				if(fadeCanvas != null){
-					fadeCanvas.drawColor(Color.TRANSPARENT);
-				}
+                linesToFade.clear();
 			}
 		}
 	}
@@ -146,25 +142,12 @@ public class DrawView extends View implements OnTouchListener {
 	
 	public void clear(){
 		Log.i("nakama", "DrawView clear start");
-		List<List<Point>> linesToDrawRef = this.linesToDraw;
 		this.linesToDraw = new ArrayList<>(200);
 		this.linesToGrade = new ArrayList<>(100);
 		
 		currentDrawLine = new ArrayList<>(200);
 		currentGradeLine = new ArrayList<>(100);
 		
-		for(int i = linesToDrawRef.size() - 1; i >= 0; i--){
-			List<Point> lineToFade = linesToDrawRef.get(i);
-			for(int pi = 1; pi < lineToFade.size(); pi++){
-				Point p0 = lineToFade.get(pi-1);
-				Point p1 = lineToFade.get(pi);
-				// this.fingerPaint.setStrokeWidth(findWidth(p0, p1));
-				fadeCanvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
-			}
-		}
-		
-		startFadeTimer();
-	
 		Log.i("nakama", "clear: calling initGrid getWidth/Height " + this.getWidth() + ", " + this.getHeight());
 		redraw();
 		
@@ -209,22 +192,15 @@ public class DrawView extends View implements OnTouchListener {
 		if(linesToDrawRef.size() == 0 || linesToGradeRef.size() == 0){
 			return;
 		}
-		
-		List<Point> lineToFade = linesToDrawRef.get(linesToDrawRef.size()-1);
+
+        this.linesToFade.add(linesToDrawRef.get(linesToDrawRef.size()-1));
 		this.linesToDraw = Util.popCopy(linesToDrawRef);
-		linesToDrawRef = this.linesToDraw;
-		
+
 		this.linesToGrade = Util.popCopy(linesToGradeRef);
 		linesToGradeRef = this.linesToGrade;
 
 		redraw();
 
-		for(int pi = 1; pi < lineToFade.size(); pi++){
-			Point p0 = lineToFade.get(pi-1);
-			Point p1 = lineToFade.get(pi);
-			//this.fingerPaint.setStrokeWidth(findWidth(p0, p1));
-			fadeCanvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
-		}
 		startFadeTimer();
 
 		if(linesToGradeRef.size() == 0 && this.onClearListener != null){
@@ -383,7 +359,7 @@ public class DrawView extends View implements OnTouchListener {
         if(drawBitmap == null){ return; }
 
 		drawBitmap.eraseColor(backgroundColor);
-		fadeBitmap.eraseColor(Color.TRANSPARENT);
+//		fadeBitmap.eraseColor(Color.TRANSPARENT);
 
         Log.i("nakama", "DrawView.grid " + this.grid);
 		grid.measure(getWidth(), getHeight());
@@ -401,10 +377,6 @@ public class DrawView extends View implements OnTouchListener {
 			if(drawBitmap != null) drawBitmap.recycle();
 			drawBitmap = Bitmap.createBitmap(decidedWidth, decidedHeight, Bitmap.Config.ARGB_4444);     // 6.6MB
 			drawCanvas = new Canvas(drawBitmap);
-                        
-			if(fadeBitmap != null) fadeBitmap.recycle();
-			fadeBitmap = Bitmap.createBitmap(decidedWidth, decidedHeight, Bitmap.Config.ARGB_4444);     // 6.6MB
-			fadeCanvas = new Canvas(fadeBitmap);
 		}
 
 		redraw();
@@ -418,7 +390,13 @@ public class DrawView extends View implements OnTouchListener {
 		canvas.drawBitmap(drawBitmap, 0, 0, null);
 		if(fadeAlpha > 0){
 			fadePaint.setAlpha(fadeAlpha);
-			canvas.drawBitmap(fadeBitmap, 0, 0, fadePaint);
+            for(List<Point> l: this.linesToFade){
+                for(int i = 0; i < l.size() - 1; i++){
+                    Point p0 = l.get(i);
+                    Point p1 = l.get(i+1);
+                    canvas.drawLine(p0.x, p0.y, p1.x, p1.y, fadePaint);
+                }
+            }
 		}
 	}
 
