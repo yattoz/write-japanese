@@ -168,13 +168,19 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         			this.currentChar = tracker.randomReviewingNext(availableCharactersSet());
         			//Log.i("nakama", "Known set progression: reviewing review character " + this.currentChar);
 
-        		}
+        		} else {
+                    this.currentChar = tracker.randomCorrectNext(availableCharactersSet());
+                    //Log.i("nakama", "Known set progression: reviewing previously correct character " + this.currentChar);
+                }
         	} finally {
         		if(this.currentChar == null){
-        			this.currentChar = tracker.randomCorrectNext(availableCharactersSet());
-        			//Log.i("nakama", "Known set progression: reviewing previously correct character " + this.currentChar);
+                    this.currentChar = tracker.shuffleNext(availableCharactersSet());
         		}
         	}
+        }
+
+        if(this.currentChar == null){
+            throw new RuntimeException("Error: currentChar should never be null at the end of this method.");
         }
 	}
 

@@ -96,69 +96,79 @@ public class TeachingActivity extends ActionBarActivity {
 		}
 		return this.character;
 	}
-	
+
 	public String[] getCurrentCharacterSvg(){
 		if(this.currentCharacterSvg == null){
 			setupCharacter();
 		}
 		return this.currentCharacterSvg;
 	}
-	
-	@Override public void onCreate(Bundle saveInstanceState){
-		long startTime = System.currentTimeMillis();
-		super.onCreate(saveInstanceState);
-		
-		Log.i("nakama", "TeachingActivity: onCreate starting.");
-		this.setContentView(R.layout.fragment_container);
+
+	@Override public void onCreate(Bundle saveInstanceState) {
+        long startTime = System.currentTimeMillis();
+        super.onCreate(saveInstanceState);
+
+        Log.i("nakama", "TeachingActivity: onCreate starting.");
+        this.setContentView(R.layout.fragment_container);
         this.dictSet = new DictionarySet(this);
-		
-		Log.i("nakama", "TeachingActivity: before setupCharacter: " + (System.currentTimeMillis() - startTime));
-		setupCharacter();
-		Log.i("nakama", "TeachingActivity: after setupCharacter: " + (System.currentTimeMillis() - startTime));
-    	
-    	actionBar = this.getSupportActionBar();
-    	actionBar.setDisplayHomeAsUpEnabled(true);
-    	actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-    	
-    	drawFragment = new TeachingDrawFragment(); 
-    	drawTab = actionBar.newTab().setText("Trace"); // .setIcon(R.drawable.ic_action_edit);
-    	drawTab.setTabListener(new TabListener() {
-			@Override public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-				// Log.d("nakama", "drawTab onTabUnselected");
-			}
-			
-			@Override public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-				getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, drawFragment).commit();
-			}
-			
-			@Override public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-				// Log.d("nakama", "drawTab onTabReselected");
-			}
-		});
-    	actionBar.addTab(drawTab);
-    	
-		Log.i("nakama", "TeachingActivity: after drawTab: " + (System.currentTimeMillis() - startTime));
-    	
-    	storyFragment = new TeachingStoryFragment(); 
-    	storyTab = actionBar.newTab().setText("Story"); //.setIcon(R.drawable.ic_action_edit);
-    	storyTab.setTabListener(new TabListener() {
-			@Override public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-				storyFragment.clearFocus();
-				storyFragment.saveStory();
-			}
-			
-			@Override public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-				getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, storyFragment).commit();
-			}
-			
-			@Override public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-				// Log.d("nakama", "storyTab onTabReselected");
-			}
-		});
-    	actionBar.addTab(storyTab);
-    	
-		Log.i("nakama", "TeachingActivity: after storyTab: " + (System.currentTimeMillis() - startTime));
-    	
+
+        Log.i("nakama", "TeachingActivity: before setupCharacter: " + (System.currentTimeMillis() - startTime));
+        setupCharacter();
+        Log.i("nakama", "TeachingActivity: after setupCharacter: " + (System.currentTimeMillis() - startTime));
+
+        actionBar = this.getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        drawFragment = new TeachingDrawFragment();
+        drawTab = actionBar.newTab().setText("Trace"); // .setIcon(R.drawable.ic_action_edit);
+        drawTab.setTabListener(new TabListener() {
+            @Override
+            public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
+                // Log.d("nakama", "drawTab onTabUnselected");
+            }
+
+            @Override
+            public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, drawFragment).commit();
+            }
+
+            @Override
+            public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
+                // Log.d("nakama", "drawTab onTabReselected");
+            }
+        });
+        actionBar.addTab(drawTab);
+
+        Log.i("nakama", "TeachingActivity: after drawTab: " + (System.currentTimeMillis() - startTime));
+
+        storyFragment = new TeachingStoryFragment();
+        storyTab = actionBar.newTab().setText("Story"); //.setIcon(R.drawable.ic_action_edit);
+        storyTab.setTabListener(new TabListener() {
+            @Override
+            public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
+                storyFragment.clearFocus();
+                storyFragment.saveStory();
+            }
+
+            @Override
+            public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, storyFragment).commit();
+            }
+
+            @Override
+            public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
+                // Log.d("nakama", "storyTab onTabReselected");
+            }
+        });
+        actionBar.addTab(storyTab);
+
+        Log.i("nakama", "TeachingActivity: after storyTab: " + (System.currentTimeMillis() - startTime));
+        passCharacterDataToUi();
+        Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms.");
+    }
+
+    private void passCharacterDataToUi(){
     	char kanjiIn = this.character.charAt(0);
     	if(Kana.isKanji(kanjiIn)){
     		infoTab = actionBar.newTab().setText("Usage"); // .setIcon(R.drawable.ic_menu_mark);
@@ -188,7 +198,6 @@ public class TeachingActivity extends ActionBarActivity {
     	} else {
     		actionBar.setTitle("Learn " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
     	}
-		Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms.");
 	}
 
 	@Override
@@ -234,4 +243,10 @@ public class TeachingActivity extends ActionBarActivity {
         dictSet = new DictionarySet(this);
 		super.onResume();
 	}
+
+    @Override protected void onNewIntent(Intent intent){
+        this.setIntent(intent);
+        setupCharacter();
+        passCharacterDataToUi();
+    }
 }

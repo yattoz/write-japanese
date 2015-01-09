@@ -99,6 +99,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected LinkedHashMap<String, CharacterStudySet> characterSets = new LinkedHashMap<>();
     protected boolean showedEndOfSetDialog = false;
     protected boolean showedStartOfSetDialog = false;
+    protected boolean queuedNextCharLoad = false;   // when switching to teaching activity, queue a next char load for onResume
     protected PurchaseDialog pd;
     private int currentCharacterClueIndex = 0;
 
@@ -469,6 +470,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         params.putChar(Constants.KANJI_PARAM, character);
         params.putString(Constants.KANJI_PATH_PARAM, currentCharacterSet.pathPrefix);
         teachIntent.putExtras(params);
+        queuedNextCharLoad = true;
         startActivity(teachIntent);
     }
 
@@ -646,7 +648,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 break;
             }
         }
-        loadNextCharacter(false);
+        loadNextCharacter(queuedNextCharLoad);
+        queuedNextCharLoad = false;
 
         super.onResume();
     }
