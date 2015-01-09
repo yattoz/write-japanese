@@ -380,6 +380,8 @@ public class DrawView extends View implements OnTouchListener {
 	}
 	
 	private final void redraw(){
+        if(drawBitmap == null){ return; }
+
 		drawBitmap.eraseColor(backgroundColor);
 		fadeBitmap.eraseColor(Color.TRANSPARENT);
 
