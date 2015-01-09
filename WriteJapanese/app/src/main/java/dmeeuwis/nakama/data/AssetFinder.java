@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import android.content.res.AssetManager;
 import android.util.Log;
-import dmeeuwis.masterlibrary.CharacterStudySet;
+import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.kanjidraw.Glyph;
 import dmeeuwis.util.Util;
 

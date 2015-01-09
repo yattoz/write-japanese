@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

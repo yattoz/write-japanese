@@ -10,9 +10,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import android.util.Pair;
-import dmeeuwis.nakama.helpers.LinearEquation;
-import dmeeuwis.nakama.helpers.ParameterizedEquation;
-import dmeeuwis.nakama.helpers.Spline;
+
 import dmeeuwis.util.Util;
 
 public class Stroke implements Iterable<Point> {

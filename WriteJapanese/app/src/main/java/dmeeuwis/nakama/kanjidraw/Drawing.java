@@ -8,7 +8,7 @@ import java.util.List;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
-import dmeeuwis.nakama.helpers.ParameterizedEquation;
+
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
 
 public class Drawing implements Iterable<Stroke> {

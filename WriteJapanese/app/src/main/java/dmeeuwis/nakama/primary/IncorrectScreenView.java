@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama.primary;
 
 import android.content.Context;
 import android.graphics.Canvas;

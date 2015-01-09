@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama.data;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 
+import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.util.Util;
 
 /**

@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.helpers;
+package dmeeuwis.nakama.data;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;

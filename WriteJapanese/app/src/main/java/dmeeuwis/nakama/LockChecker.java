@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +23,7 @@ import com.android.vending.billing.util.IabResult;
 import com.android.vending.billing.util.Inventory;
 import com.android.vending.billing.util.Purchase;
 
-import dmeeuwis.masterlibrary.CharacterStudySet.LockLevel;
+import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 
 public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFinishedListener, OnConsumeFinishedListener {
 

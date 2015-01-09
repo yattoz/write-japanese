@@ -7,7 +7,7 @@
     android:layout_height="fill_parent"
     android:background="#e5e5e5">
 
-    <dmeeuwis.masterlibrary.SafeViewFlipper
+    <dmeeuwis.nakama.primary.SafeViewFlipper
         android:id="@+id/viewflipper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
@@ -274,11 +274,11 @@
                 android:layout_gravity="bottom|end" />
         </FrameLayout>
 
-        <dmeeuwis.masterlibrary.IncorrectScreenView
+        <dmeeuwis.nakama.primary.IncorrectScreenView
             android:id="@+id/incorrectFrame"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
-    </dmeeuwis.masterlibrary.SafeViewFlipper>
+    </dmeeuwis.nakama.primary.SafeViewFlipper>
 
     <View
         android:id="@+id/maskView"

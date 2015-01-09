@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,14 +21,18 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.masterlibrary.ProgressTracker.Progress;
-import dmeeuwis.nakama.helpers.DictionarySet;
-import dmeeuwis.nakama.library.Constants;
+import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.data.ProgressTracker;
+import dmeeuwis.nakama.data.ProgressTracker.Progress;
+import dmeeuwis.nakama.views.PurchaseDialog;
+import dmeeuwis.nakama.data.CharacterProgressDataHelper;
+import dmeeuwis.nakama.data.CharacterSets;
+import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.views.SingleBarChart;
 import dmeeuwis.nakama.views.SingleBarChart.BarChartEntry;
 

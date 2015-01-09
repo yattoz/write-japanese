@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary; 
+package dmeeuwis.nakama.teaching;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,8 +18,9 @@ import android.widget.Toast;
 import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.masterlibrary.KanjiTranslationListAsyncTask.AddTranslation;
-import dmeeuwis.nakama.helpers.DictionarySet;
+import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
+import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask.AddTranslation;
+import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.kanjidraw.Glyph;
 import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
 import dmeeuwis.nakama.views.AnimatedCurveView;

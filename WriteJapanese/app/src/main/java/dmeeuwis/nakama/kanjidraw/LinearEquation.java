@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.helpers;
+package dmeeuwis.nakama.kanjidraw;
 
 public class LinearEquation extends ParameterizedEquation {
 	public final float x0, y0, x1, y1;

@@ -2,7 +2,7 @@
 package dmeeuwis.nakama.views;
 
 import static java.lang.Math.abs;
-import dmeeuwis.nakama.library.Constants;
+import dmeeuwis.nakama.Constants;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.View.MeasureSpec;

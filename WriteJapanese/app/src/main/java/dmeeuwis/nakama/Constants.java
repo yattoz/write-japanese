@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.library;
+package dmeeuwis.nakama;
 
 public class Constants {
 	final public static String KANJI_DETAIL_INTENT = "dmeeuwis.nakama.kanji_details";

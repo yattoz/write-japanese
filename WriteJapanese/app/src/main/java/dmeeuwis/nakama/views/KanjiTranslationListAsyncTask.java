@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama.views;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import android.os.AsyncTask;
 import android.util.Log;
 import dmeeuwis.Translation;
-import dmeeuwis.nakama.helpers.DictionarySet;
+import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.util.Util;
 
 public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, Void> {

@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.helpers;
+package dmeeuwis.nakama.kanjidraw;
 
 import java.util.ArrayList;
 import java.util.Arrays;

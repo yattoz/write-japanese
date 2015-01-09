@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster;
+package dmeeuwis.nakama;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import dmeeuwis.kanjimaster.R;
 
 public class CreditsActivity extends ActionBarActivity {
 

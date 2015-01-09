@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.helpers;
+package dmeeuwis.nakama.kanjidraw;
 
 public class CubicBezier extends ParameterizedEquation {
 	public final float x0, y0, cx1, cy1, cx2, cy2, x3, y3;

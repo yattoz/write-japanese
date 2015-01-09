@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;

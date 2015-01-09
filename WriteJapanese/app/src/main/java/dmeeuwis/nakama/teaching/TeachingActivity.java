@@ -1,8 +1,7 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama.teaching;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,13 +17,12 @@ import android.support.v7.app.ActionBar.TabListener;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
+
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
-import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.helpers.DictionarySet;
-import dmeeuwis.nakama.library.Constants;
+import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.Constants;
 import dmeeuwis.util.Util;
 
 public class TeachingActivity extends ActionBarActivity {
@@ -63,7 +61,7 @@ public class TeachingActivity extends ActionBarActivity {
 			String kanjiInStr = prefs.getString("character", null);
 			if(kanjiInStr == null || kanjiInStr.length() == 0){
 				try {
-					startActivity(new Intent(this, Class.forName("dmeeuwis.kanjimaster.KanjiMasterActivity")));
+					startActivity(new Intent(this, Class.forName("dmeeuwis.nakama.primary.KanjiMasterActivity")));
 					return;
 				} catch (ClassNotFoundException e) {
 					throw new RuntimeException(e);

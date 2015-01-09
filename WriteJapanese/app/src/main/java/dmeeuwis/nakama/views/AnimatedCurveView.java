@@ -23,7 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.helpers.ParameterizedEquation;
+import dmeeuwis.nakama.kanjidraw.ParameterizedEquation;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.Glyph;
 import dmeeuwis.nakama.kanjidraw.Stroke;

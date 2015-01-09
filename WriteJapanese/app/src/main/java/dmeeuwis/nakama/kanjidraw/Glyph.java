@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.graphics.Rect;
-import dmeeuwis.nakama.helpers.ParameterizedEquation;
-import dmeeuwis.nakama.helpers.SvgHelper;
 
 public class Glyph implements Iterable<ParameterizedEquation> {
 

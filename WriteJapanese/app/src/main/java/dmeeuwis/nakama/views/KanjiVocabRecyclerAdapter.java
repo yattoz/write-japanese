@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama.views;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +13,6 @@ import java.util.List;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
 
 public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<KanjiVocabRecyclerAdapter.ViewHolder> {
 

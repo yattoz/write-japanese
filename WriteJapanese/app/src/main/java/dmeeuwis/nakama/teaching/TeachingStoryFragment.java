@@ -1,4 +1,4 @@
-package dmeeuwis.masterlibrary;
+package dmeeuwis.nakama.teaching;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +24,8 @@ import android.widget.Toast;
 import dmeeuwis.Kanji;
 import dmeeuwis.KanjiRadicalFinder;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.helpers.DictionarySet;
+import dmeeuwis.nakama.data.StoryDataHelper;
+import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.kanjidraw.Glyph;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.KanjiWithMeaningView;

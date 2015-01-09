@@ -1,7 +1,6 @@
-package dmeeuwis.masterlibrary; 
+package dmeeuwis.nakama.data;
 import android.content.Context;
 import android.util.Log;
-import dmeeuwis.nakama.data.DataHelper;
 
 public class CharacterProgressDataHelper {
     private final Context context;

@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="dmeeuwis.kanjimaster.KanjiMasterActivity"
+            android:name="dmeeuwis.nakama.primary.KanjiMasterActivity"
             android:launchMode="singleInstance"
             android:label="@string/app_name" >
             <intent-filter>
@@ -22,17 +22,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="dmeeuwis.masterlibrary.TeachingActivity"
+            android:name="dmeeuwis.nakama.teaching.TeachingActivity"
             android:launchMode="singleInstance"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="dmeeuwis.masterlibrary.ProgressActivity"
+            android:name="dmeeuwis.nakama.ProgressActivity"
             android:launchMode="singleInstance"
             android:label="@string/title_activity_progress" >
         </activity>
         <activity
-            android:name="dmeeuwis.kanjimaster.CreditsActivity"
+            android:name="dmeeuwis.nakama.CreditsActivity"
             android:launchMode="singleInstance"
             android:label="@string/title_activity_credits" >
         </activity>
