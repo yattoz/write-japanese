@@ -7,7 +7,7 @@ import java.util.List;
 
 import android.graphics.Rect;
 
-public class Glyph implements Iterable<ParameterizedEquation> {
+public class Glyph implements IGlyph {
 
 	public final List<ParameterizedEquation> strokes;
 	public final Drawing pointDrawing;
@@ -29,10 +29,15 @@ public class Glyph implements Iterable<ParameterizedEquation> {
 	public Drawing bufferEnds(int amount){
 		return this.pointDrawing.bufferEnds(amount);
 	}
-	
-	@Override
-	public Iterator<ParameterizedEquation> iterator() {
-		return this.strokes.iterator();
+
+    @Override
+    public Iterator<ParameterizedEquation> parameterizedEquations(float scale, float padding) {
+        return this.strokes.iterator();
+    }
+
+    @Override
+	public Iterator<Stroke> iterator() {
+		throw new RuntimeException("Not supported.");
 	}
 	
 	public Drawing toDrawing(){

@@ -593,6 +593,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     private void saveCurrentUsingCharacterSet() {
+        if(this.currentCharacterSet.currentCharacter() == null){
+            return;         // TODO: fix this. Should never be null, how is it happening?
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Editor ed = prefs.edit();
         Log.i("nakama", "AbstractMaster: saveCurrentUsingCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);

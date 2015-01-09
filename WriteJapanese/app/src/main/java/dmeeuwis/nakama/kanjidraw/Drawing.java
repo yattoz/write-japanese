@@ -11,7 +11,7 @@ import android.util.Log;
 
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
 
-public class Drawing implements Iterable<Stroke> {
+public class Drawing implements Iterable<Stroke>, IGlyph {
 
 	private final List<Stroke> strokes;
 	
@@ -27,6 +27,10 @@ public class Drawing implements Iterable<Stroke> {
 	public Drawing(List<Stroke> pointStrokes){
 		this.strokes = Collections.unmodifiableList(pointStrokes);
 	}
+
+    public Drawing toDrawing(){
+        return this;
+    }
 	
 	public int strokeCount(){
 		return this.strokes.size();
@@ -71,8 +75,8 @@ public class Drawing implements Iterable<Stroke> {
 		}
 		return new Drawing(newList);
 	}
-	
-	public Drawing scale(float scale){
+
+    public Drawing scale(float scale){
 		List<Stroke> scaledStrokes = new ArrayList<Stroke>(this.strokes.size());
 		for(int i = 0; i < scaledStrokes.size(); i++){
 			scaledStrokes.add(this.strokes.get(i).scale(scale));
@@ -122,7 +126,12 @@ public class Drawing implements Iterable<Stroke> {
 	public Iterator<Stroke> iterator() {
 		return this.strokes.iterator();
 	}
-	
+
+    @Override
+    public Iterator<ParameterizedEquation> parameterizedEquations(float scale, float padding) {
+        return this.toParameterizedEquations(scale, padding).iterator();
+    }
+
 	public List<ParameterizedEquation> toParameterizedEquations(float scale, float padding){
 		List<ParameterizedEquation> ret = new ArrayList<ParameterizedEquation>(this.strokeCount());
 		for(Stroke stroke: strokes)

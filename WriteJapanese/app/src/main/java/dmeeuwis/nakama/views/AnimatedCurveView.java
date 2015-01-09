@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.kanjidraw.IGlyph;
 import dmeeuwis.nakama.kanjidraw.ParameterizedEquation;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.Glyph;
@@ -49,7 +50,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	boolean autoIncrement = true;
     int paddingTop = 0, paddingLeft = 0;
 
-	Drawing drawing = null;
+	IGlyph drawing = null;
 	RectF unscaledBoundingBox = null;
 	
     Timer animateTimer = null;
@@ -194,7 +195,7 @@ public class AnimatedCurveView extends View implements Animatable {
 			}
 		};
 
-        this.drawing = goodGlyph.toDrawing();
+        this.drawing = goodGlyph;
 		
 		if(Looper.getMainLooper() == Looper.myLooper()){
 			setWork.run();
@@ -354,7 +355,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		}
 
 		// debug dots
-		if(this.drawing != null){
+		if(this.drawing != null && this.drawing instanceof Drawing){
 			for(Stroke s: this.drawing){
 				for(Point p: s){
 					canvas.drawCircle(p.x, p.y, 5, bufferPaint);
