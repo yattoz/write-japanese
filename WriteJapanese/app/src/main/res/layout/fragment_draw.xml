@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:nakama="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tracingFrame"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -7,7 +8,9 @@
     <dmeeuwis.nakama.views.TracingCurveView
         android:id="@+id/tracingPad"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"
+        nakama:gridPaddingTop="40dp"
+        />
 
     <android.support.v7.widget.CardView
         android:id="@+id/messageCard"

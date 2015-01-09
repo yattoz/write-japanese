@@ -73,7 +73,12 @@ import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
-public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
+public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder, Thread.UncaughtExceptionHandler {
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable ex) {
+        Log.e("nakama", "Top-level error: from thread " + thread.getName(), ex);
+    }
 
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER, INCORRECT_ANSWER}
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
@@ -123,6 +128,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         long startTime = System.currentTimeMillis();
         Log.i("nakama", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(this);
 
         if(BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()

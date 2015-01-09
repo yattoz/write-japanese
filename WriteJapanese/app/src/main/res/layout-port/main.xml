@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:nakama="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/topLevelLayout"
     android:layout_width="fill_parent"
@@ -20,6 +21,7 @@
 
             <dmeeuwis.nakama.views.DrawView
                 android:id="@+id/drawPad"
+                nakama:gridPaddingTop="30dp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
 

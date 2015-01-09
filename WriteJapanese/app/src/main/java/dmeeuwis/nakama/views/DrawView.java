@@ -9,6 +9,7 @@ import java.util.TimerTask;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -22,6 +23,8 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+
+import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.PathCalculator;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
@@ -61,6 +64,8 @@ public class DrawView extends View implements OnTouchListener {
 	protected Bitmap drawBitmap;
 	protected Canvas drawCanvas;
 
+    protected Integer gridPaddingLeft = 0, gridPaddingTop = 0;
+
 	protected Bitmap fadeBitmap;
 	protected Canvas fadeCanvas;
 	
@@ -68,7 +73,7 @@ public class DrawView extends View implements OnTouchListener {
 	protected int fadeAlpha = 0;
 	protected Integer backgroundColor;
 	
-	protected GridBackgroundDrawer grid = new GridBackgroundDrawer();
+	protected GridBackgroundDrawer grid;
 	
 	public interface OnStrokeListener {
 		public void onStroke(List<Point> stroke);
@@ -95,43 +100,50 @@ public class DrawView extends View implements OnTouchListener {
 	
 	public DrawView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init();
+        Log.i("nakama", "DrawView: 3-cons");
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
+        this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
+        this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
+        this.grid = new GridBackgroundDrawer(gridPaddingTop, gridPaddingLeft);
+
+        Resources r = getContext().getResources();
+        MIN_GRADING_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_GRADING_POINT_DISTANCE_DP, r.getDisplayMetrics());
+        MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DISTANCE_DP, r.getDisplayMetrics());
+        PAINT_THICKNESS_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, r.getDisplayMetrics());
+        PAINT_MIN_THICKNESS_PX = (float)(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, r.getDisplayMetrics()) * 0.35);
+
+        Log.i("nakama", "MIN_GRADING_POINT_DISTANCE_PX: " + MIN_GRADING_POINT_DISTANCE_PX);
+        Log.i("nakama", "MIN_DRAW_POINT_DISTANCE_PX: " + MIN_DRAW_POINT_DISTANCE_PX);
+        Log.i("nakama", "PAINT_THICKNESS_PX: " + PAINT_THICKNESS_PX);
+
+        this.setOnTouchListener(this);
+
+        this.fingerPaint = new Paint();
+        this.fingerPaint.setStyle(Paint.Style.STROKE);
+        this.fingerPaint.setStrokeCap(Cap.ROUND);
+        this.fingerPaint.setAntiAlias(true);
+        this.fingerPaint.setDither(true);
+        this.fingerPaint.setStrokeWidth(PAINT_THICKNESS_PX);
+        this.fingerPaint.setColor(Color.BLACK);
 	}
 
-	public DrawView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init();
-	}
+    public DrawView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
 	public DrawView(Context context) {
-		super(context);
-		//Log.i("nakama", "DrawView 1-cons");
-		init();
+		this(context, null, 0);
 	}
+
+    public void setGridPadding(int gridPaddingTop, int gridPaddingLeft){
+        Log.i("nakama", "DrawView: setGridPadding " + gridPaddingTop + ", " + gridPaddingLeft);
+        this.gridPaddingTop = gridPaddingTop;
+        this.gridPaddingLeft = gridPaddingLeft;
+        this.grid = new GridBackgroundDrawer(gridPaddingTop, gridPaddingLeft);
+        this.invalidate();
+    }
 	
-	@SuppressLint("NewApi")
-	private void init(){
-        Resources r = getContext().getResources();
-		MIN_GRADING_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)MIN_GRADING_POINT_DISTANCE_DP, r.getDisplayMetrics());
-		MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)MIN_DRAW_POINT_DISTANCE_DP, r.getDisplayMetrics());
-		PAINT_THICKNESS_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)PAINT_THICKNESS_DP, r.getDisplayMetrics());
-		PAINT_MIN_THICKNESS_PX = (float)(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)PAINT_THICKNESS_DP, r.getDisplayMetrics()) * 0.35);
-		
-		Log.i("nakama", "MIN_GRADING_POINT_DISTANCE_PX: " + MIN_GRADING_POINT_DISTANCE_PX);
-		Log.i("nakama", "MIN_DRAW_POINT_DISTANCE_PX: " + MIN_DRAW_POINT_DISTANCE_PX);
-		Log.i("nakama", "PAINT_THICKNESS_PX: " + PAINT_THICKNESS_PX);
-
-		this.setOnTouchListener(this);
-
-		this.fingerPaint = new Paint();
-		this.fingerPaint.setStyle(Paint.Style.STROKE);
-		this.fingerPaint.setStrokeCap(Cap.ROUND);
-		this.fingerPaint.setAntiAlias(true);
-		this.fingerPaint.setDither(true);
-		this.fingerPaint.setStrokeWidth(PAINT_THICKNESS_PX);
-		this.fingerPaint.setColor(Color.BLACK);
-	}
-
 	public void clear(){
 		Log.i("nakama", "DrawView clear start");
 		List<List<Point>> linesToDrawRef = this.linesToDraw;
@@ -370,7 +382,8 @@ public class DrawView extends View implements OnTouchListener {
 	private final void redraw(){
 		drawBitmap.eraseColor(backgroundColor);
 		fadeBitmap.eraseColor(Color.TRANSPARENT);
-		
+
+        Log.i("nakama", "DrawView.grid " + this.grid);
 		grid.measure(getWidth(), getHeight());
 		grid.draw(drawCanvas);
 		

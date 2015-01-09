@@ -3,6 +3,7 @@ package dmeeuwis.nakama.views;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.util.AttributeSet;
@@ -11,6 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.Glyph;
 import dmeeuwis.nakama.views.AnimatedCurveView.DrawTime;
@@ -26,75 +29,78 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 	Glyph glyph;
 	
 	Integer currentTracingTargetStrokeCount = null;
+    Integer gridPaddingLeft = 0, gridPaddingTop = 0;
 	
 	OnTraceCompleteListener onTraceListener;
 	OnStrokeListener onStrokeListener;
 
 	public TracingCurveView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init();
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
+        this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
+        this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
+        Log.i("nakama", "TracingCurveView: grid settings are: " + gridPaddingTop + ", " + gridPaddingTop);
+
+        this.animatedCurve = new AnimatedCurveView(context);
+        this.animatedCurve.setCurveColor(Color.LTGRAY);
+        this.animatedCurve.setAutoIncrement(false);
+        this.animatedCurve.setCurvePadding(gridPaddingTop, gridPaddingLeft);
+        this.animatedCurve.setBackgroundColor(DrawView.BACKGROUND_COLOR);
+
+        this.kanjiPad = new DrawView(context);
+        this.kanjiPad.setBackgroundColor(0x00FFFFFF);
+        this.kanjiPad.setGridPadding(gridPaddingTop, gridPaddingLeft);
+        this.kanjiPad.addOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i("nakama", "TracingCurveView: onTouch");
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    int allowed = animatedCurve.incrementCurveStroke();
+                    Log.d("tracing", "Saw touch up event, incremented animated curve by 1 to " + allowed);
+                }
+                return false;
+            }
+        });
+
+        this.kanjiPad.setOnStrokeListener(new OnStrokeListener() {
+            @Override public void onStroke(List<Point> stroke) {
+                if(TracingCurveView.this.onStrokeListener != null){
+                    TracingCurveView.this.onStrokeListener.onStroke(stroke);
+                }
+                if(TracingCurveView.this.currentTracingTargetStrokeCount != null &&
+                        TracingCurveView.this.currentTracingTargetStrokeCount == TracingCurveView.this.kanjiPad.getStrokeCount()){
+
+                    Drawing drawn = TracingCurveView.this.kanjiPad.getDrawing();
+
+                    if(onTraceListener != null)
+                        onTraceListener.onComplete(drawn);
+
+                    TracingCurveView.this.postDelayed(new Runnable(){
+                                                          @Override public void run() {
+                                                              if(animState == AnimationState.RUNNING){
+                                                                  TracingCurveView.this.kanjiPad.clear();
+                                                                  TracingCurveView.this.startAnimation(0);
+                                                              }
+                                                          }
+                                                      },
+                            1000);
+                }
+            }
+        });
+
+        this.addView(this.animatedCurve, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        this.addView(this.kanjiPad, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 	}
+
 	public TracingCurveView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init();
+		this(context, attrs, 0);
 	}
 
 	public TracingCurveView(Context context) {
-		super(context);
-		init();
+		this(context, null, 0);
 	}
 
-	private void init(){
-		Context context = this.getContext();
-		
-		this.animatedCurve = new AnimatedCurveView(context);
-		this.animatedCurve.setCurveColor(Color.LTGRAY);
-		this.animatedCurve.setAutoIncrement(false);
-		this.animatedCurve.setBackgroundColor(DrawView.BACKGROUND_COLOR);
-
-		this.kanjiPad = new DrawView(context);
-		this.kanjiPad.setBackgroundColor(0x00FFFFFF);
-		this.kanjiPad.addOnTouchListener(new OnTouchListener() {
-			@Override public boolean onTouch(View v, MotionEvent event) {
-                Log.i("nakama", "TracingCurveView: onTouch");
-				if(event.getAction() == MotionEvent.ACTION_UP){
-					int allowed = animatedCurve.incrementCurveStroke();
-					Log.d("tracing", "Saw touch up event, incremented animated curve by 1 to " + allowed);
-				}
-				return false;
-			}
-		});
-
-		this.kanjiPad.setOnStrokeListener(new OnStrokeListener() {
-			@Override public void onStroke(List<Point> stroke) {
-				if(TracingCurveView.this.onStrokeListener != null){
-					TracingCurveView.this.onStrokeListener.onStroke(stroke);
-				}
-				if(TracingCurveView.this.currentTracingTargetStrokeCount != null && 
-					TracingCurveView.this.currentTracingTargetStrokeCount == TracingCurveView.this.kanjiPad.getStrokeCount()){
-					
-						Drawing drawn = TracingCurveView.this.kanjiPad.getDrawing();
-					
-						if(onTraceListener != null)
-							onTraceListener.onComplete(drawn);
-						
-						TracingCurveView.this.postDelayed(new Runnable(){
-							@Override public void run() {
-								if(animState == AnimationState.RUNNING){
-									TracingCurveView.this.kanjiPad.clear();
-									TracingCurveView.this.startAnimation(0);
-								}
-							}
-						}, 
-						1000);
-				}
-			}
-		});
-		
-		this.addView(this.animatedCurve, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        this.addView(this.kanjiPad, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-	}
-	
 	public static interface OnTraceCompleteListener {
 		public void onComplete(Drawing drawing);
 	}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DrawView">
+        <attr name="gridPaddingLeft" format="dimension" />
+        <attr name="gridPaddingTop" format="dimension" />
+    </declare-styleable>
+</resources>

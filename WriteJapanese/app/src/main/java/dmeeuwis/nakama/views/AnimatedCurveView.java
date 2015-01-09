@@ -6,6 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,6 +21,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.helpers.ParameterizedEquation;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.Glyph;
@@ -37,13 +40,14 @@ public class AnimatedCurveView extends View implements Animatable {
 
 	final Paint paint = new Paint();
 	final ScaleAndOffsets scaleAndOffsets = new ScaleAndOffsets();
-	List<Path> pathsToDraw = new ArrayList<Path>();
-	List<ParameterizedEquation> eqns = new LinkedList<ParameterizedEquation>();
+	List<Path> pathsToDraw = new ArrayList<>();
+	List<ParameterizedEquation> eqns = new LinkedList<>();
 
 	int eqn_i = 0;
 	int allowedStrokes = 1;
 	float time = -1;
 	boolean autoIncrement = true;
+    int paddingTop = 0, paddingLeft = 0;
 
 	Drawing drawing = null;
 	RectF unscaledBoundingBox = null;
@@ -55,47 +59,45 @@ public class AnimatedCurveView extends View implements Animatable {
 	Paint charMarginPaint = new Paint();
 	
 	DrawTime drawTime = DrawTime.ANIMATED;
-	
+
+
+    public AnimatedCurveView(Context context, AttributeSet attrs, int defStyle){
+        super(context, attrs, defStyle);
+
+        this.setBackgroundColor(Color.WHITE);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
+        this.paddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
+        this.paddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
+        Log.i("nakama", "AnimatedCurveView: grid settings are: " + this.paddingLeft + ", " + this.paddingTop);
+
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Join.ROUND);
+        paint.setStrokeCap(Cap.ROUND);
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+        paint.setStrokeWidth(6);
+        paint.setColor(Color.BLACK);
+
+        bufferPaint.setStyle(Style.STROKE);
+        bufferPaint.setStrokeWidth(2);
+        bufferPaint.setColor(Color.LTGRAY);
+
+        charMarginPaint.setStyle(Style.STROKE);
+        charMarginPaint.setStrokeWidth(2);
+        charMarginPaint.setColor(Color.RED);
+    }
+
 	public AnimatedCurveView(Context context, AttributeSet as){
-		super(context, as);
-		init();
+		this(context, as, 0);
 	}
 	
 	public AnimatedCurveView(Context context){
-		super(context);
-		init();
+		this(context, null);
 	}
-	
-	private void init(){
-		this.setBackgroundColor(Color.WHITE);
-		
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setStrokeJoin(Join.ROUND);
-		paint.setStrokeCap(Cap.ROUND);
-		paint.setAntiAlias(true);
-		paint.setDither(true);
-		paint.setStrokeWidth(6);
-		paint.setColor(Color.BLACK);
-		
-		bufferPaint.setStyle(Style.STROKE);
-		bufferPaint.setStrokeWidth(2);
-		bufferPaint.setColor(Color.LTGRAY);
-		
-		charMarginPaint.setStyle(Style.STROKE);
-		charMarginPaint.setStrokeWidth(2);
-		charMarginPaint.setColor(Color.RED);
-	}
-	
+
 	public void setCurveColor(int color){
 		this.paint.setColor(color);
-	}
-	
-	public void clear(int millisDelay){
-		this.postDelayed(new Runnable() {
-			@Override public void run() {
-				clear();
-			}
-		}, millisDelay);
 	}
 
 	/**
@@ -119,6 +121,12 @@ public class AnimatedCurveView extends View implements Animatable {
 			post(clearWork);
 		}
 	}
+
+    public void setCurvePadding(int paddingTop, int paddingLeft){
+        this.paddingTop = paddingTop;
+        this.paddingLeft = paddingLeft;
+        this.invalidate();
+    }
 
 	/**
 	 * This controls whether the animation will automatically go through all strokes. If set to true,
@@ -229,12 +237,13 @@ public class AnimatedCurveView extends View implements Animatable {
 		List<ParameterizedEquation> eqnsRef = this.eqns;
 		if(time <= 1 && eqn_i < eqnsRef.size()){
 	    	Path path = null;
-	    	
+
+            float x = this.paddingLeft + scaleAndOffsets.scale * eqnsRef.get(eqn_i).x(time) + scaleAndOffsets.xOffset;
+            float y = this.paddingTop + scaleAndOffsets.scale * eqnsRef.get(eqn_i).y(time) + scaleAndOffsets.yOffset;
+
 	    	// initialize new path
 	    	if(time <= 0){
 	    		time = 0;
-		    	float x = scaleAndOffsets.scale * eqnsRef.get(eqn_i).x(time) + scaleAndOffsets.xOffset;
-		    	float y = scaleAndOffsets.scale * eqnsRef.get(eqn_i).y(time) + scaleAndOffsets.yOffset;
 	    		path = new Path();
 	    		
 		    	pathsToDrawRef.add(eqn_i, path);
@@ -242,8 +251,6 @@ public class AnimatedCurveView extends View implements Animatable {
 		    	
 	    	// or continue continue drawing current path.
 	    	} else {
-		    	float x = scaleAndOffsets.scale * eqnsRef.get(eqn_i).x(time) + scaleAndOffsets.xOffset;
-		    	float y = scaleAndOffsets.scale * eqnsRef.get(eqn_i).y(time) + scaleAndOffsets.yOffset;
 		    	if(eqn_i < pathsToDrawRef.size()){
 		   			path = pathsToDrawRef.get(eqn_i);
 		   		}
