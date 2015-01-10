@@ -5,8 +5,8 @@ import java.io.InputStream;
 
 import android.content.res.AssetManager;
 import android.util.Log;
-import dmeeuwis.nakama.data.CharacterStudySet;
-import dmeeuwis.nakama.kanjidraw.Glyph;
+
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.util.Util;
 
 public class AssetFinder {
@@ -17,8 +17,8 @@ public class AssetFinder {
 		this.am = am;
 	}
 	
-	public Glyph findGlyphForCharacter(CharacterStudySet charset, char c){
-		return new Glyph(findSvgForCharacter(charset, c));
+	public CurveDrawing findGlyphForCharacter(CharacterStudySet charset, char c){
+		return new CurveDrawing(findSvgForCharacter(charset, c));
 	}
 	
 	public String[] findSvgForCharacter(CharacterStudySet charset, char c){

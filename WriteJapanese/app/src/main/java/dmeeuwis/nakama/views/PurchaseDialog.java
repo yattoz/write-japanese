@@ -41,7 +41,6 @@ public class PurchaseDialog extends DialogFragment {
     	final DialogMessage mess = DialogMessage.valueOf(this.getArguments().getString(MESSAGE_KEY));
     	final LockChecker lc = ((LockCheckerHolder)getActivity()).getLockChecker();
     	
-        // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder
         		.setTitle("Unlock Full Version?")
@@ -52,7 +51,7 @@ public class PurchaseDialog extends DialogFragment {
                       PurchaseDialog.this.dismiss();
                    }
                })
-               .setNegativeButton("Stay with Free Version", new DialogInterface.OnClickListener() {
+               .setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        PurchaseDialog.this.dismiss();
                    }

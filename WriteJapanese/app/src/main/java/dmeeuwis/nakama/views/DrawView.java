@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -25,7 +24,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.kanjidraw.Drawing;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.kanjidraw.PathCalculator;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
 import dmeeuwis.util.Util;
@@ -160,8 +159,8 @@ public class DrawView extends View implements OnTouchListener {
 		this.backgroundColor = c;
 	}
 
-	public Drawing getDrawing(){
-		return Drawing.fromPoints(drawnPaths());
+	public PointDrawing getDrawing(){
+		return PointDrawing.fromPoints(drawnPaths());
 	}
 	
 	/**
@@ -193,7 +192,7 @@ public class DrawView extends View implements OnTouchListener {
 			return;
 		}
 
-        this.linesToFade.add(linesToDrawRef.get(linesToDrawRef.size()-1));
+        this.linesToFade.add(linesToDrawRef.get(linesToDrawRef.size() - 1));
 		this.linesToDraw = Util.popCopy(linesToDrawRef);
 
 		this.linesToGrade = Util.popCopy(linesToGradeRef);

@@ -68,6 +68,7 @@
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|start"
                 android:text="@string/remind_story_button"
+                android:elevation="10dp"
                 android:visibility="invisible" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
@@ -76,6 +77,7 @@
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|start"
                 android:src="@drawable/ic_lock_lock"
+                android:elevation="10dp"
                 android:text="@string/teach_me_button" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
@@ -83,6 +85,7 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|end"
+                android:elevation="10dp"
                 android:text="@string/finished_drawing_button" />
 
             <ImageView
@@ -181,11 +184,13 @@
                 android:id="@+id/practiceButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
+                android:elevation="10dp"
                 android:layout_gravity="bottom|start" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/nextButton"
                 android:layout_width="96dp"
+                android:elevation="10dp"
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|end" />
         </FrameLayout>
@@ -270,6 +275,7 @@
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/correctNextButton"
                 android:layout_width="96dp"
+                android:elevation="10dp"
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|end" />
         </FrameLayout>

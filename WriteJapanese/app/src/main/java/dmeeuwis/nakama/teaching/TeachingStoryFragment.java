@@ -26,7 +26,7 @@ import dmeeuwis.KanjiRadicalFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.kanjidraw.Glyph;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.KanjiWithMeaningView;
 
@@ -78,9 +78,9 @@ public class TeachingStoryFragment extends Fragment {
 		String story = db.getStory(this.character);
 		storyEditor.setText(story);
 		
-		Glyph animGlyph = new Glyph(currentCharacterSvg);
+		CurveDrawing animCurveDrawing = new CurveDrawing(currentCharacterSvg);
 		this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
-		this.kanim.setDrawing(animGlyph, AnimatedCurveView.DrawTime.ANIMATED);
+		this.kanim.setDrawing(animCurveDrawing, AnimatedCurveView.DrawTime.ANIMATED);
 		this.kanim.startAnimation(500);
 	
 		this.kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);

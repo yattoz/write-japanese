@@ -23,10 +23,10 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.kanjidraw.IGlyph;
-import dmeeuwis.nakama.kanjidraw.ParameterizedEquation;
 import dmeeuwis.nakama.kanjidraw.Drawing;
-import dmeeuwis.nakama.kanjidraw.Glyph;
+import dmeeuwis.nakama.kanjidraw.ParameterizedEquation;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.Stroke;
 import dmeeuwis.nakama.views.MeasureUtil.ScaleAndOffsets;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
@@ -50,7 +50,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	boolean autoIncrement = true;
     int paddingTop = 0, paddingLeft = 0;
 
-	IGlyph drawing = null;
+	Drawing drawing = null;
 	RectF unscaledBoundingBox = null;
 	
     Timer animateTimer = null;
@@ -148,7 +148,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	/**
 	 * Clears current strokes, and registers a new set from point lists.
 	 */
-	public void setDrawing(final Drawing drawnPoints, final DrawTime drawTimeParam){
+	public void setDrawing(final PointDrawing drawnPoints, final DrawTime drawTimeParam){
 		Runnable setWork = new Runnable(){
 			@Override public void run() {
                 clear();
@@ -176,14 +176,14 @@ public class AnimatedCurveView extends View implements Animatable {
 	/**
 	 * Clears current strokes, and registers a new set from point lists.
 	 */
-	public void setDrawing(final Glyph goodGlyph, final DrawTime drawTimeParam){
+	public void setDrawing(final CurveDrawing goodCurveDrawing, final DrawTime drawTimeParam){
 		Runnable setWork = new Runnable(){
 			@Override public void run() {
                 clear();
                 allowedStrokes = 1;
                 
-                List<ParameterizedEquation> unscaledEqns = goodGlyph.strokes;
-                unscaledBoundingBox = new RectF(goodGlyph.findBoundingBox());
+                List<ParameterizedEquation> unscaledEqns = goodCurveDrawing.strokes;
+                unscaledBoundingBox = new RectF(goodCurveDrawing.findBoundingBox());
                 List<ParameterizedEquation> eqnsNew = new ArrayList<ParameterizedEquation>(unscaledEqns.size());
                 eqnsNew.addAll(unscaledEqns);
 				AnimatedCurveView.this.eqns = eqnsNew;
@@ -195,7 +195,7 @@ public class AnimatedCurveView extends View implements Animatable {
 			}
 		};
 
-        this.drawing = goodGlyph;
+        this.drawing = goodCurveDrawing;
 		
 		if(Looper.getMainLooper() == Looper.myLooper()){
 			setWork.run();
@@ -355,7 +355,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		}
 
 		// debug dots
-		if(this.drawing != null && this.drawing instanceof Drawing){
+		if(this.drawing != null && this.drawing instanceof PointDrawing){
 			for(Stroke s: this.drawing){
 				for(Point p: s){
 					canvas.drawCircle(p.x, p.y, 5, bufferPaint);

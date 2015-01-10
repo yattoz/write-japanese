@@ -16,9 +16,9 @@ import android.widget.TextView;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.kanjidraw.Criticism;
-import dmeeuwis.nakama.kanjidraw.Drawing;
-import dmeeuwis.nakama.kanjidraw.Glyph;
-import dmeeuwis.nakama.kanjidraw.PathComparator;
+import dmeeuwis.nakama.kanjidraw.DrawingComparator;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.DrawView.OnStrokeListener;
 import dmeeuwis.nakama.views.TracingCurveView;
 import dmeeuwis.nakama.views.TracingCurveView.OnTraceCompleteListener;
@@ -44,7 +44,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	
 	String character;
 	String[] currentCharacterSvg;
-	Glyph glyph;
+	CurveDrawing curveDrawing;
 	TracingCurveView tracingView;
 	TextView message;
 	int teachingLevel = 0;
@@ -72,7 +72,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
          this.fadeIn = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_in);
          this.fadeOut = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_out);
 
-	     this.glyph = new Glyph(currentCharacterSvg);
+	     this.curveDrawing = new CurveDrawing(currentCharacterSvg);
 	     
          this.messageCard = (CardView)view.findViewById(R.id.messageCard);
          this.message = (TextView)view.findViewById(R.id.tipMessage);
@@ -82,12 +82,12 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	 }
 	 
 	 @Override public void onStart() {
-	     this.tracingView.setGlyph(glyph);
+	     this.tracingView.setCurveDrawing(curveDrawing);
 	     super.onStart();
 	 }
 	 
-	 public void onComplete(Drawing drawing){
-		 PathComparator comp = new PathComparator(character.charAt(0), glyph, drawing, new AssetFinder(this.getActivity().getAssets()));
+	 public void onComplete(PointDrawing pointDrawing){
+		 DrawingComparator comp = new DrawingComparator(character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(this.getActivity().getAssets()));
 		 Criticism c = comp.compare();
 
 		 if(c.pass){

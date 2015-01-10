@@ -17,7 +17,7 @@ import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
 import dmeeuwis.util.Util;
 
-public class PathComparator {
+public class DrawingComparator {
 	
 	public enum StrokeCompareFailure { DISTANCE_TRAVELLED, START_POINT_DIFFERENCE, END_POINT_DIFFERENCE, START_DIRECTION_DIFFERENCE, END_DIRECTION_DIFFERENCE, BACKWARDS, TOO_MANY_SHARP_CURVES, TOO_FEW_SHARP_CURVES }
 	public enum OverallFailure { EXTRA_STROKES, MISSING_STROKES, MISSING_INTERSECTION, WRONG_STROKE_ORDER }
@@ -29,22 +29,22 @@ public class PathComparator {
 	private final int PERCENTAGE_DISTANCE_DIFF_LIMIT = 100;
 
 	final char target;
-	final Drawing known;
-	final Drawing drawn;
+	final PointDrawing known;
+	final PointDrawing drawn;
 	final int drawingAreaMaxDim;
 	final AssetFinder assetFinder;
-    final CharacterStudySet hirganaSet, katakanaSet;
+    final CharacterStudySet hiraganaSet, katakanaSet;
 	
-	public PathComparator(char target, Glyph known, Drawing challenger, AssetFinder assetFinder){
+	public DrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder){
 		this.target = target; 
 		this.assetFinder = assetFinder;
-        this.hirganaSet = CharacterSets.hiragana(null);
+        this.hiraganaSet = CharacterSets.hiragana(null);
         this.katakanaSet = CharacterSets.katakana(null);
 		
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 		Rect drawnBox = this.drawn.findBoundingBox();
 		
-		Drawing cutOffKnown = known.pointDrawing.cutOffEdges();
+		PointDrawing cutOffKnown = known.pointPointDrawing.cutOffEdges();
 		this.known = cutOffKnown.scaleToBox(drawnBox);
 
 		Rect nBounds = this.known.findBoundingBox();
@@ -172,7 +172,7 @@ public class PathComparator {
 		if(allowRecursion == Recursion.ALLOW){
 			if(!c.pass && Kana.isHiragana(target)){
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
-				PathComparator pc = new PathComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder);
+				DrawingComparator pc = new DrawingComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder);
 				if(pc.compare(Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
 					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".");
@@ -180,7 +180,7 @@ public class PathComparator {
 				}
 			} else if(!c.pass && Kana.isKatakana(target)){
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
-				PathComparator pc = new PathComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hirganaSet, hiraganaVersion), this.drawn, assetFinder);
+				DrawingComparator pc = new DrawingComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), this.drawn, assetFinder);
 				if(pc.compare(Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
 					specific.add("You drew the hiragana " + hiraganaVersion + " instead of the katakana " + target + ".");

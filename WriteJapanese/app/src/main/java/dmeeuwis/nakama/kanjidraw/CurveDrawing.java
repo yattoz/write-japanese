@@ -7,15 +7,15 @@ import java.util.List;
 
 import android.graphics.Rect;
 
-public class Glyph implements IGlyph {
+public class CurveDrawing implements Drawing {
 
 	public final List<ParameterizedEquation> strokes;
-	public final Drawing pointDrawing;
+	public final PointDrawing pointPointDrawing;
 	private final SvgHelper svg = new SvgHelper();
 	
-	public Glyph(String[] in){
+	public CurveDrawing(String[] in){
 		this.strokes = Collections.unmodifiableList(svg.readSvgEquations(in));
-		this.pointDrawing = this.toDrawing();
+		this.pointPointDrawing = this.toDrawing();
 	}
 	
 	public int strokeCount(){
@@ -23,11 +23,11 @@ public class Glyph implements IGlyph {
 	}
 	
 	public Rect findBoundingBox(){
-		return this.pointDrawing.findBoundingBox();
+		return this.pointPointDrawing.findBoundingBox();
 	}
 	
-	public Drawing bufferEnds(int amount){
-		return this.pointDrawing.bufferEnds(amount);
+	public PointDrawing bufferEnds(int amount){
+		return this.pointPointDrawing.bufferEnds(amount);
 	}
 
     @Override
@@ -40,12 +40,12 @@ public class Glyph implements IGlyph {
 		throw new RuntimeException("Not supported.");
 	}
 	
-	public Drawing toDrawing(){
+	public PointDrawing toDrawing(){
 		List<Stroke> asStrokes = new ArrayList<Stroke>(strokes.size());
 		for(ParameterizedEquation eqn: this.strokes){
 			Stroke s = new Stroke(eqn.toPoints());
 			asStrokes.add(s);
 		}
-		return new Drawing(asStrokes);
+		return new PointDrawing(asStrokes);
 	}
 }

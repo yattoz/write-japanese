@@ -6,8 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.View;
-import dmeeuwis.nakama.kanjidraw.Drawing;
-import dmeeuwis.nakama.kanjidraw.Glyph;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.MeasureUtil;
 
 public class IncorrectScreenView extends View {
@@ -30,7 +30,7 @@ public class IncorrectScreenView extends View {
 	 * @param incorrect  
 	 * @param character  
 	 */
-	public void setInformation(Glyph correct, Drawing incorrect, char character){
+	public void setInformation(CurveDrawing correct, PointDrawing incorrect, char character){
 		// throw new RuntimeException("Need implementation.");
 	}
 	

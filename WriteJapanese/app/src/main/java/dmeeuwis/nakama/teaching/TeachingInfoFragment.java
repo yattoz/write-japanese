@@ -21,7 +21,7 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask.AddTranslation;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.kanjidraw.Glyph;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.util.Util;
@@ -75,9 +75,9 @@ public class TeachingInfoFragment extends Fragment {
 		Log.d("nakama", "TeachingInfoFragment onCreateView: thi.kanjis is " + this.kanji);
 		view = inflater.inflate(R.layout.activity_teaching, container, false);
 
-		Glyph animGlyph = new Glyph(currentCharacterSvg);
+		CurveDrawing animCurveDrawing = new CurveDrawing(currentCharacterSvg);
 		this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
-		this.kanim.setDrawing(animGlyph, AnimatedCurveView.DrawTime.ANIMATED);
+		this.kanim.setDrawing(animCurveDrawing, AnimatedCurveView.DrawTime.ANIMATED);
 		this.kanim.startAnimation(500);
 		
 		kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);

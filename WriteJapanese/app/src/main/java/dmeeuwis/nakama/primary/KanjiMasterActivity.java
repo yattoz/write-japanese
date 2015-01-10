@@ -54,6 +54,8 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
+import dmeeuwis.nakama.kanjidraw.DrawingComparator;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.KanjiVocabRecyclerAdapter;
 import dmeeuwis.nakama.LockChecker;
@@ -65,9 +67,7 @@ import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.kanjidraw.Criticism;
-import dmeeuwis.nakama.kanjidraw.Drawing;
-import dmeeuwis.nakama.kanjidraw.Glyph;
-import dmeeuwis.nakama.kanjidraw.PathComparator;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
@@ -233,7 +233,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         final FloatingActionButton doneButton = (FloatingActionButton) findViewById(R.id.finishedButton);
         doneButton.hideInstantly();
         doneButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
-        doneButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_check_mark));
+        doneButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -241,10 +241,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                     return;
                 }
 
-                final Drawing challenger = drawPad.getDrawing();
-                final Glyph known = new Glyph(currentCharacterSvg);
+                final PointDrawing challenger = drawPad.getDrawing();
+                final CurveDrawing known = new CurveDrawing(currentCharacterSvg);
 
-                PathComparator comparator = new PathComparator(currentCharacterSet.currentCharacter(), known, challenger,
+                DrawingComparator comparator = new DrawingComparator(currentCharacterSet.currentCharacter(), known, challenger,
                         new AssetFinder(KanjiMasterActivity.this.getAssets()));
                 final Criticism critique = comparator.compare();
 

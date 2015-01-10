@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.kanjidraw.Drawing;
-import dmeeuwis.nakama.kanjidraw.Glyph;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AnimatedCurveView.DrawTime;
 import dmeeuwis.nakama.views.DrawView.OnStrokeListener;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
@@ -26,7 +26,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 	AnimationState animState = AnimationState.STOPPED;
 	AnimatedCurveView animatedCurve;
 	DrawView kanjiPad;
-	Glyph glyph;
+	CurveDrawing curveDrawing;
 	
 	Integer currentTracingTargetStrokeCount = null;
     Integer gridPaddingLeft = 0, gridPaddingTop = 0;
@@ -71,7 +71,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
                 if(TracingCurveView.this.currentTracingTargetStrokeCount != null &&
                         TracingCurveView.this.currentTracingTargetStrokeCount == TracingCurveView.this.kanjiPad.getStrokeCount()){
 
-                    Drawing drawn = TracingCurveView.this.kanjiPad.getDrawing();
+                    PointDrawing drawn = TracingCurveView.this.kanjiPad.getDrawing();
 
                     if(onTraceListener != null)
                         onTraceListener.onComplete(drawn);
@@ -102,7 +102,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 	}
 
 	public static interface OnTraceCompleteListener {
-		public void onComplete(Drawing drawing);
+		public void onComplete(PointDrawing pointDrawing);
 	}
 	
 	public void setOnTraceCompleteListener(OnTraceCompleteListener listener){
@@ -113,11 +113,11 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 		this.onStrokeListener = listener;
 	}
 	
-	public void setGlyph(Glyph glyph){
-		Log.d("TracingCurveView", "Setting strokes to array length " + glyph.strokeCount());
-		this.glyph = glyph;
-		this.animatedCurve.setDrawing(glyph, DrawTime.ANIMATED);
-		this.currentTracingTargetStrokeCount = glyph.strokeCount();
+	public void setCurveDrawing(CurveDrawing curveDrawing){
+		Log.d("TracingCurveView", "Setting strokes to array length " + curveDrawing.strokeCount());
+		this.curveDrawing = curveDrawing;
+		this.animatedCurve.setDrawing(curveDrawing, DrawTime.ANIMATED);
+		this.currentTracingTargetStrokeCount = curveDrawing.strokeCount();
 	}
 	
 	public void startAnimation(int delay){
