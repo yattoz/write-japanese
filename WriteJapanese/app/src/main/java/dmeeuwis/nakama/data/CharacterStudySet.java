@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Random;
@@ -131,17 +132,19 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         this.reviewing = true;
        	int charactersSeen = tracker.getAllScores().size();
        	this.currentChar = null;
-        if(tracker.charactersNotYetSeen(availableCharactersSet()).size() > 0){
+        Set<Character> availSet = new HashSet<>(availableCharactersSet());
+        availSet.remove(this.currentChar);
+        if(tracker.charactersNotYetSeen(availSet).size() > 0){
 
         	try {
         		// 35% chance of mistaken character
         		if(ran <= 0.35){
-        			this.currentChar = tracker.randomMistakenNext(availableCharactersSet());
+        			this.currentChar = tracker.randomMistakenNext(availSet);
         			//Log.i("nakama", "Still learning progression: reviewing mistaken character " + this.currentChar);
 
        			// 15% chance of reviewing character
         		} else if(ran <= 0.40){
-        			this.currentChar = tracker.randomReviewingNext(availableCharactersSet());
+        			this.currentChar = tracker.randomReviewingNext(availSet);
         			//Log.i("nakama", "Still learning progression: reviewing review character " + this.currentChar);
         		}
         	} finally {
@@ -149,8 +152,8 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         		if(this.currentChar == null){
         			this.reviewing = false; 		// this is only case of not-reviewing
         			this.currentChar = this.shuffling ?
-        					tracker.shuffleNext(availableCharactersSet()) :
-       						tracker.standardNext(availableCharactersSet());
+        					tracker.shuffleNext(availSet) :
+       						tracker.standardNext(availSet);
         			//Log.i("nakama", "Still learning progression: introducing new character " + this.currentChar);
         		}
         	}
@@ -160,21 +163,21 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         	try {
         		// 40% chance of previously mistaken character
         		if(ran <= 0.40 && charactersSeen > 0){
-        			this.currentChar = tracker.randomReviewingNext(availableCharactersSet());
+        			this.currentChar = tracker.randomReviewingNext(availSet);
         			//Log.i("nakama", "Known set progression: reviewing mistaken character " + this.currentChar);
 
        			// 15% chance of reviewing character
         		} else if(ran <= 0.80 && charactersSeen > 0){
-        			this.currentChar = tracker.randomReviewingNext(availableCharactersSet());
+        			this.currentChar = tracker.randomReviewingNext(availSet);
         			//Log.i("nakama", "Known set progression: reviewing review character " + this.currentChar);
 
         		} else {
-                    this.currentChar = tracker.randomCorrectNext(availableCharactersSet());
+                    this.currentChar = tracker.randomCorrectNext(availSet);
                     //Log.i("nakama", "Known set progression: reviewing previously correct character " + this.currentChar);
                 }
         	} finally {
         		if(this.currentChar == null){
-                    this.currentChar = tracker.shuffleNext(availableCharactersSet());
+                    this.currentChar = tracker.shuffleNext(availSet);
         		}
         	}
         }

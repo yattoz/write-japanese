@@ -110,7 +110,7 @@ public class TeachingActivity extends ActionBarActivity {
 
         Log.i("nakama", "TeachingActivity: onCreate starting.");
         this.setContentView(R.layout.fragment_container);
-        this.dictSet = new DictionarySet(this);
+        this.dictSet = DictionarySet.get(this);
 
         Log.i("nakama", "TeachingActivity: before setupCharacter: " + (System.currentTimeMillis() - startTime));
         setupCharacter();
@@ -233,14 +233,12 @@ public class TeachingActivity extends ActionBarActivity {
 	public void onPause(){
 		Log.i("nakama", "TeachingActivity: onPause starting.");
 		storyFragment.saveStory();
-        dictSet.close();
 		Log.i("nakama", "TeachingActivity: onPause passing to super.");
 		super.onPause();
 	}
 	
 	@Override public void onResume(){
 		Log.i("nakama", "TeachingActivity: onResume");
-        dictSet = new DictionarySet(this);
 		super.onResume();
 	}
 

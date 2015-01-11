@@ -253,4 +253,8 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 		}
 	}
 
+    public void dispose(){
+        this.iab.dispose();
+    }
+
 }

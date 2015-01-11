@@ -23,7 +23,7 @@ import dmeeuwis.nakama.views.DrawView.OnStrokeListener;
 import dmeeuwis.nakama.views.TracingCurveView;
 import dmeeuwis.nakama.views.TracingCurveView.OnTraceCompleteListener;
 
-public class TeachingDrawFragment extends Fragment implements OnTraceCompleteListener, OnStrokeListener {
+public class TeachingDrawFragment extends Fragment implements OnTraceCompleteListener {
 
     final static String initialAdvice = "Trace the character";
 
@@ -40,8 +40,6 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	};
 	
 
-	boolean waitingForStroke = false;
-	
 	String character;
 	String[] currentCharacterSvg;
 	CurveDrawing curveDrawing;
@@ -67,7 +65,6 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 		 
 	     this.tracingView = (TracingCurveView)view.findViewById(R.id.tracingPad);
          this.tracingView.setOnTraceCompleteListener(this);
-         this.tracingView.setOnStrokeListener(this);
 
          this.fadeIn = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_in);
          this.fadeOut = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_out);
@@ -99,8 +96,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 		 }
 		
 		 this.tracingView.clear();
-		 this.waitingForStroke = true;
-		 
+
 		 if(teachingLevel >= 2){
 			 this.tracingView.stopAnimation();
 		 } else {
@@ -123,13 +119,6 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         this.messageCard.startAnimation(this.fadeOut);
     }
 
-	@Override
-	public void onStroke(List<Point> stroke) {
-		if(waitingForStroke){
-		 waitingForStroke = false;
-		}
-	}
-	
 	public boolean undo(){
 		if(this.tracingView.drawnStrokeCount() > 0){
 			this.tracingView.undo();

@@ -77,7 +77,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
     	callingClass = params.getString("parent");
     	callingPath = params.getString(Constants.KANJI_PATH_PARAM);
 
-        DictionarySet dictSet = new DictionarySet(this.getApplicationContext());
+        DictionarySet dictSet = DictionarySet.get(this.getApplicationContext());
         lc = new LockChecker(this,
 			 new Runnable(){
 				@Override public void run() {
@@ -90,7 +90,6 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 
         charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc);
         charSet = CharacterSets.fromName(callingPath, null, null);
-        dictSet.close();
         characterList = charSet.charactersAsString();
 
     	chars = characterList.toCharArray();

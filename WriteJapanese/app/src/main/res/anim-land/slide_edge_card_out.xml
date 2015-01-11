@@ -3,6 +3,6 @@
     android:duration="@integer/slide_duration_ms"
 
     android:fromXDelta="0"
-    android:interpolator="@android:anim/accelerate_interpolator"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator"
 
     android:toXDelta="-110%" />

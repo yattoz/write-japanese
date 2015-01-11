@@ -47,18 +47,12 @@ public class TeachingInfoFragment extends Fragment {
 		Log.d("nakama", "TeachingInfoFragment: parent is " + parent + ", kanji is " + this.kanji);
 		this.activity = activity;
 
-        DictionarySet result;
-        synchronized (DictionarySet.class) {
-            result = new DictionarySet(activity);
-        }
-        DictionarySet sd = result;
+        DictionarySet sd = DictionarySet.get(activity);
 		try {
 			this.kanji = sd.kanjiFinder().find(parent.getCharacter().charAt(0));
 		} catch (IOException e) {
 			Log.e("nakama", "Error: can't find kanji for: " + this.kanji, e);
 			Toast.makeText(activity, "Internal Error: can't find kanji information for: " + this.kanji, Toast.LENGTH_LONG).show();
-		} finally {
-			sd.close();
 		}
 		this.currentCharacterSvg = parent.getCurrentCharacterSvg();
 		this.dictSet = sd;

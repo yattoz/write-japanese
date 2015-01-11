@@ -51,7 +51,7 @@ public abstract class ParameterizedEquation {
 		}
 		Arrays.sort(heavyTs);
 		
-		List<Point> points = new ArrayList<Point>();
+		List<Point> points = new ArrayList<>();
 		for(int i = 0; i < heavyTs.length; i++){
 			float t = heavyTs[i];
 			points.add(new Point( (int)x(t), (int)y(t)));

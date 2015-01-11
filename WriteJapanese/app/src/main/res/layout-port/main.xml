@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:nakama="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:nakama="http://schemas.android.com/apk/res-auto"
     android:id="@+id/topLevelLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -21,9 +21,9 @@
 
             <dmeeuwis.nakama.views.DrawView
                 android:id="@+id/drawPad"
-                nakama:gridPaddingTop="30dp"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
+                android:layout_height="fill_parent"
+                nakama:gridPaddingTop="30dp" />
 
             <android.support.v7.widget.CardView
                 android:layout_width="fill_parent"
@@ -67,8 +67,8 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|start"
-                android:text="@string/remind_story_button"
                 android:elevation="10dp"
+                android:text="@string/remind_story_button"
                 android:visibility="invisible" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
@@ -76,8 +76,8 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|start"
-                android:src="@drawable/ic_lock_lock"
                 android:elevation="10dp"
+                android:src="@drawable/ic_lock_lock"
                 android:text="@string/teach_me_button" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
@@ -123,6 +123,7 @@
                     <android.support.v7.widget.CardView
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
+                        android:layout_margin="3dp"
                         android:layout_weight="1">
 
                         <dmeeuwis.nakama.views.AnimatedCurveView
@@ -130,8 +131,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="bottom"
-                            android:layout_margin="5dp"
-                            android:layout_marginTop="50dp" />
+                            />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -146,6 +146,7 @@
                     <android.support.v7.widget.CardView
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
+                        android:layout_margin="3dp"
                         android:layout_weight="1">
 
                         <LinearLayout
@@ -173,7 +174,7 @@
                     android:id="@+id/criticism"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:layout_margin="5dp"
+                    android:layout_margin="3dp"
                     android:layout_weight="1"
                     android:background="@drawable/bg_card"
                     android:padding="5dp" />
@@ -184,18 +185,19 @@
                 android:id="@+id/practiceButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:elevation="10dp"
-                android:layout_gravity="bottom|start" />
+                android:layout_gravity="bottom|start"
+                android:elevation="10dp" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/nextButton"
                 android:layout_width="96dp"
-                android:elevation="10dp"
                 android:layout_height="96dp"
-                android:layout_gravity="bottom|end" />
+                android:layout_gravity="bottom|end"
+                android:elevation="10dp" />
         </FrameLayout>
 
 
+        <!-- Correctly drawn screen -->
         <FrameLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
@@ -211,73 +213,69 @@
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
-                    <LinearLayout
+                    <android.support.v7.widget.CardView
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_card"
-                        android:orientation="vertical">
+                        android:layout_margin="3dp"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1">
 
+                        <dmeeuwis.nakama.views.AnimatedCurveView
+                            android:id="@+id/correctKnownView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_gravity="bottom"
+                            />
                         <TextView
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="top"
                             android:background="#FF1BA20D"
                             android:padding="6dp"
                             android:text="Correct"
                             android:textColor="#FFFFFF" />
 
-                        <dmeeuwis.nakama.views.AnimatedCurveView
-                            android:id="@+id/correctKnownView"
-                            android:layout_width="fill_parent"
-                            android:layout_height="0dp"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1" />
-                    </LinearLayout>
+                    </android.support.v7.widget.CardView>
 
-                    <LinearLayout
+                    <android.support.v7.widget.CardView
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_height="fill_parent"
+                        android:layout_margin="3dp"
+                        android:layout_weight="1">
 
-                        <TextView
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:background="#FF1BA20D"
-                            android:padding="6dp"
-                            android:text="@string/drawn_label"
-                            android:textColor="#FFFFFF" />
 
                         <dmeeuwis.nakama.views.AnimatedCurveView
                             android:id="@+id/correctDrawnView"
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
-                            android:layout_margin="5dp"
-                            android:layout_weight="1" />
-                    </LinearLayout>
+                            android:layout_gravity="bottom"
+                            />
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top"
+                            android:background="#FF1BA20D"
+                            android:padding="6dp"
+                            android:text="@string/drawn_label"
+                            android:textColor="#FFFFFF" />
+                    </android.support.v7.widget.CardView>
                 </LinearLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/correctExamples"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:layout_marginLeft="5.0sp"
-                    android:layout_marginRight="5.0sp"
-                    android:layout_marginTop="10.0sp"
+                    android:layout_marginTop="5dp"
                     android:layout_weight="1"
-                    android:divider="@android:color/transparent"
-                    android:dividerHeight="10.0sp" />
+                    />
 
             </LinearLayout>
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/correctNextButton"
                 android:layout_width="96dp"
-                android:elevation="10dp"
                 android:layout_height="96dp"
-                android:layout_gravity="bottom|end" />
+                android:layout_gravity="bottom|end"
+                android:elevation="10dp" />
         </FrameLayout>
 
         <dmeeuwis.nakama.primary.IncorrectScreenView

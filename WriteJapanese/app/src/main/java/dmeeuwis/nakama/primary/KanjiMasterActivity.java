@@ -75,12 +75,7 @@ import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
-public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder, Thread.UncaughtExceptionHandler {
-
-    @Override
-    public void uncaughtException(Thread thread, Throwable ex) {
-        Log.e("nakama", "Top-level error: from thread " + thread.getName(), ex);
-    }
+public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
 
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER, INCORRECT_ANSWER}
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
@@ -126,13 +121,19 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     protected String[] currentCharacterSvg;
 
+    private static class KanjiMasterUncaughtHandler implements Thread.UncaughtExceptionHandler {
+        @Override public void uncaughtException(Thread thread, Throwable ex) {
+            Log.e("nakama", "Uncaught exception from thread " + thread, ex);
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         long startTime = System.currentTimeMillis();
         Log.i("nakama", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(this);
+        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
         if(BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
@@ -160,7 +161,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         setContentView(R.layout.main);
 
-        this.dictionarySet = new DictionarySet(this.getApplicationContext());
+        this.dictionarySet = DictionarySet.get(this.getApplicationContext());
         Log.i("nakama", "MainActivity: onCreate, loading dictionary set took " + (System.currentTimeMillis() - startTime) + "ms.");
 
         Animation outToLeft = AnimationUtils.loadAnimation(this, R.anim.screen_transition_out);
@@ -600,7 +601,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Editor ed = prefs.edit();
-        Log.i("nakama", "AbstractMaster: saveCurrentUsingCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
+        Log.i("nakama", "KanjiMasterActivity: saveCurrentUsingCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET, this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET_CHAR, Character.toString(this.currentCharacterSet.currentCharacter()));
         ed.commit();
@@ -633,9 +634,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public void onResume() {
-        Log.i("nakama", "AbstractMaster.onResume");
+        Log.i("nakama", "KanjiMasterActivity.onResume");
 
-        dictionarySet = new DictionarySet(this.getApplicationContext());
         loadCurrentCharacterSet();
         currentCharacterSet.load(this.getApplicationContext());
 
@@ -656,7 +656,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public void onPause() {
-        Log.i("nakama", "AbstractMaster.onPause: saving state.");
+        Log.i("nakama", "KanjiMasterActivity.onPause: saving state.");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         drawPad.stopAnimation();
         drawPad.destroy();
@@ -668,9 +668,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if (pd != null) {
             pd.dismiss();
         }
-        dictionarySet.close();
         super.onPause();
     }
+
+    @Override
+    protected void onDestroy(){
+        Log.i("nakama", "KanjiMasterActivity.onDestroy");
+        this.dictionarySet.close();
+        this.lockChecker.dispose();
+        super.onDestroy();
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

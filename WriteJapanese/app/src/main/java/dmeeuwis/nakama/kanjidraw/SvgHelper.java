@@ -18,30 +18,9 @@ public class SvgHelper {
 		this.scale = 1.0f;
 	}
 
-	public SvgHelper(float scale){
-		this.scale = scale;
-	}
-	
-	public Path[] readSvgPaths(String[] in){
-		if(in == null)
-			return new Path[0];
-		
-		Path[] paths = new Path[in.length];
-		for(int i = 0; i < paths.length; i++){
-			paths[i] = readSvgPath(in[i]);
-		}
-		return paths;
-	}
-	
-    public Path readSvgPath(String in){
-    	PathProcesser processer = new PathProcesser();
-    	processSvgEquation(in, processer);
-    	return processer.path;
-    }
-
   	public List<ParameterizedEquation> readSvgEquations(String[] in){
   		if(in == null)
-  			return new ArrayList<ParameterizedEquation>(0);
+  			return new ArrayList<>(0);
   		
 		penXAbsolute = 0;
 		penYAbsolute = 0;
@@ -73,47 +52,15 @@ public class SvgHelper {
     	}
     }
     
-/*    private static class AbsolutePointProcesser implements Processor {
-    	public final List<Point> points;
-    	
-    	public AbsolutePointProcesser(){
-    		points = new ArrayList<Point>();
-    	}
-    	
-    	public void process(char c, float[] coords){
-    		points.add(new Point((int)coords[coords.length-2], (int)coords[coords.length-1]));
-    	}
-    }
- */   
-    private static class PathProcesser implements Processor {
-    	public final Path path;
-    	
-    	public PathProcesser(){
-    		path = new Path();
-    	}
-    	
-    	public void process(char c, float[] coords){
-    		if(c == 'M'){
-    			path.moveTo(coords[0], coords[1]);
-    		} else {
-	    		path.moveTo(coords[0], coords[1]);
-	    		path.cubicTo(coords[2], coords[3], coords[3], coords[4], coords[5], coords[6]);
-    		}
-    	}
-    }
-    
     private void processSvgEquation(String in, Processor processer){
     	float[] previousCoords = {};
     	Character previousOp = null;
-    	
-    	//System.out.println("Starting svg equation for '" + in + "' from: " + penXAbsolute + "," + penYAbsolute);
     	
     	for(int i = 0; i < in.length(); i++){
     		char c = in.charAt(i);
     		
     		if(c == 'M'){
     			SvgReadData move = readSvgMove(in, i);
-    			//System.out.println("SVG-M: " + move.toString());
     			i += move.string.length() - 1;
     			
     			float coords[] = new float[] { move.coords[0], move.coords[1] };
@@ -244,11 +191,8 @@ public class SvgHelper {
     			Log.e("nakama", "Skipping past unknown SVG symbol in path: " + c + " in string " + in);
     		}
     	}
-    	// Log.d("nakama", "Done constructing svg path.");
     }
 
-
-    
     private SvgReadData readSvgMove(String in, int start){
     	int index = start + 1;
 

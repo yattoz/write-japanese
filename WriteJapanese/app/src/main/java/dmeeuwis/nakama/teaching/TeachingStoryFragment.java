@@ -54,14 +54,12 @@ public class TeachingStoryFragment extends Fragment {
 		loadFileTask = new LoadRadicalsFile();
 		loadFileTask.execute();
 
-        DictionarySet sd = new DictionarySet(activity);
+        DictionarySet sd = DictionarySet.get(activity);
 		try {
 			this.kanji = sd.kanjiFinder().find(parent.getCharacter().charAt(0));
 		} catch (IOException e) {
 			Log.e("nakama", "Error: can't find kanji for: " + this.kanji, e);
 			Toast.makeText(activity, "Internal Error: can't find kanji information for: " + this.kanji, Toast.LENGTH_LONG).show();
-		} finally {
-			sd.close();
 		}
 		this.currentCharacterSvg = parent.getCurrentCharacterSvg();
 		
@@ -130,7 +128,7 @@ public class TeachingStoryFragment extends Fragment {
         @Override
         protected List<Kanji> doInBackground(Void... v) {
 			Thread.currentThread().setName("LoadRadicalsFile");
-            DictionarySet dicts = new DictionarySet(parent);
+            DictionarySet dicts = DictionarySet.get(parent);
 			List<Kanji> retRadicals = null;
 			try {
 
@@ -145,8 +143,6 @@ public class TeachingStoryFragment extends Fragment {
 			} catch (IOException e) {
 				Log.e("nakama", "Error: could not read kradfile entries to kanji.", e);
 				retRadicals = new ArrayList<Kanji>(0);
-			} finally {
-				dicts.close();
 			}
 			
 			return retRadicals;

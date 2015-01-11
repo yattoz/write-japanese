@@ -43,6 +43,10 @@ public class DictionarySet implements Closeable {
 	final AssetFileDescriptor kanjiIndexFd;
 	final FileInputStream kanjiIndexStream;
 
+    public static DictionarySet get(Context context){
+        return new DictionarySet(context);
+    }
+
     public DictionarySet(Context context) {
 	   	Log.i("nakama", "Starting to create DictionarySet");
 	   	long start = System.currentTimeMillis();
@@ -111,7 +115,6 @@ public class DictionarySet implements Closeable {
 		safeClose(kanjiIndexStream);
 		safeClose(kanjiIndexFd);
 	}
-
     public static void safeClose(Closeable c){
         if(c != null){
             try {
