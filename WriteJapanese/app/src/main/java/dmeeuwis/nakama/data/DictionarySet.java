@@ -14,7 +14,7 @@ import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.indexer.Querier;
 import dmeeuwis.indexer.QuerierFileInputStream;
 
-public class DictionarySet implements Closeable {
+public class DictionarySet {
 
 	public static final String KANJIDICT_FILE = "kanjidic.utf8.awb";
 	public static final String KANJIDICT_INDEX = "kanjidic.index.awb";
@@ -43,8 +43,13 @@ public class DictionarySet implements Closeable {
 	final AssetFileDescriptor kanjiIndexFd;
 	final FileInputStream kanjiIndexStream;
 
-    public static DictionarySet get(Context context){
-        return new DictionarySet(context);
+    private static DictionarySet singleton;
+    public static synchronized DictionarySet get(Context context){
+        if(singleton != null){
+            return singleton;
+        }
+        singleton = new DictionarySet(context);
+        return singleton;
     }
 
     public DictionarySet(Context context) {
@@ -98,7 +103,7 @@ public class DictionarySet implements Closeable {
 		return kanjiFinder;
 	}
 	
-	public void close(){
+/*	public void close(){
 		safeClose(dictionaryFileStream);
 		safeClose(dictionaryFileFd);
 		
@@ -124,4 +129,5 @@ public class DictionarySet implements Closeable {
             }
         }
     }
+*/
 }

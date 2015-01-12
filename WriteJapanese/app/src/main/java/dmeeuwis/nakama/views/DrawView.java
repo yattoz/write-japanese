@@ -35,7 +35,9 @@ import dmeeuwis.util.Util;
 public class DrawView extends View implements OnTouchListener {
 
 	public final static int BACKGROUND_COLOR = 0xFFece5b4;
-	
+
+    private static double DIRECTION_LIMIT = Math.PI / 8;
+
 	static final private float MIN_GRADING_POINT_DISTANCE_DP = 30;
 	static final private float MIN_DRAW_POINT_DISTANCE_DP = 5;
 	static final private float PAINT_THICKNESS_DP = 4;
@@ -68,7 +70,7 @@ public class DrawView extends View implements OnTouchListener {
 
 	protected Timer fadeTimer = null;
 	protected int fadeAlpha = 0;
-	protected Integer backgroundColor;
+	protected Integer backgroundColor = Color.WHITE;
 	
 	protected GridBackgroundDrawer grid;
 	
@@ -227,53 +229,54 @@ public class DrawView extends View implements OnTouchListener {
 	}
 	
 	Rect dirtyBox = new Rect();
-	long lastTime = 0;
-	final private void moveAction(MotionEvent me, List<Point> drawPoints, List<Point> gradePoints){
+	private void moveAction(MotionEvent me, List<Point> drawPoints, List<Point> gradePoints){
 		Point lastDraw = drawPoints.get(drawPoints.size()-1);
 		Point lastGrade = gradePoints.get(gradePoints.size()-1);
+        Double lastDirection = null;
+        if(drawPoints.size() > 1) {
+            lastDirection = PathCalculator.angle(drawPoints.get(drawPoints.size() - 2), drawPoints.get(drawPoints.size() - 1));
+        }
 
 		dirtyBox.set((int)me.getX(), (int)me.getY(), (int)me.getX(), (int)me.getY());
 		
 		final int history = me.getHistorySize();
 		for(int h = -1; h < history; h++){
 			float hx, hy;
-			long time = 0;
 			if(h == -1){
 				if(history == 0){
 					hx = me.getX();
 					hy = me.getY();
-					time = me.getEventTime();
-					// Log.i("nakama", "Saw an initial time: " + time);
 				} else {
 					continue;
 				}
 			} else {
 				hx = me.getHistoricalX(0, h);
 				hy = me.getHistoricalY(0, h);
-				time = me.getHistoricalEventTime(h);
-				// Log.i("nakama", "Saw an additional time: " + me.getHistoricalEventTime(h));
 			}
-			
+
 			double distance = PathCalculator.distance(lastDraw.x, lastDraw.y, hx, hy);
-			if(distance >= MIN_DRAW_POINT_DISTANCE_PX){
+            boolean distanceInclude = distance >= MIN_DRAW_POINT_DISTANCE_PX;
+
+			if(distanceInclude){
+                double direction = PathCalculator.angle(lastDraw.x, lastDraw.y, hx, hy);
+                boolean directionInclude = lastDirection == null || Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
+                Log.d("nakama", String.format("History point: direction %.2f distance %.2f. Direction limit %.2f, distance limit %.2f", direction, distance, DIRECTION_LIMIT, MIN_GRADING_POINT_DISTANCE_PX));
+
 				Point latest = new Point((int)hx, (int)hy);
-				//float cappedWidth = findWidth(lastDraw, latest);
-				//fingerPaint.setStrokeWidth(cappedWidth);
-				lastTime = time;
 				drawCanvas.drawLine(lastDraw.x, lastDraw.y, hx, hy, fingerPaint);
 				dirtyBox.union(lastDraw.x, lastDraw.y);
 				dirtyBox.union((int)hx, (int)hy);
-				drawPoints.add(lastDraw);
-				
-				if(PathCalculator.distance(lastGrade.x, lastGrade.y, hx, hy) >= MIN_GRADING_POINT_DISTANCE_PX){
+
+				if(directionInclude || PathCalculator.distance(lastGrade.x, lastGrade.y, hx, hy) >= MIN_GRADING_POINT_DISTANCE_PX){
+                    Log.d("nakama", String.format("\tTaking point! direction? " + directionInclude));
 					gradePoints.add(lastDraw);
 					lastGrade = lastDraw;
 				}
 				
 				drawPoints.add(latest);
-				if(PathCalculator.distance(lastGrade, latest) >= MIN_GRADING_POINT_DISTANCE_PX){
-					gradePoints.add(latest);
-				}
+				//if(PathCalculator.distance(lastGrade, latest) >= MIN_GRADING_POINT_DISTANCE_PX){
+				//	gradePoints.add(latest);
+				//}
 				lastDraw = latest;
 			}
 		}

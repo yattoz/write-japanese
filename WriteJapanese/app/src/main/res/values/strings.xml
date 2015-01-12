@@ -4,7 +4,6 @@
     <string name="app_name">Write Japanese</string>
     <string name="menu_settings">Settings</string>
     <string name="action_settings">Settings</string>
-
     <string name="title_activity_credits">Credits</string>
     <string name="teach_me_button">Teach me</string>
     <string name="undo_stroke_button">Undo Stroke</string>
@@ -39,4 +38,7 @@
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">2</item>
     </style>
+
+    <string name="title_activity_test_draw">TestDrawActivity</string>
+
 </resources>

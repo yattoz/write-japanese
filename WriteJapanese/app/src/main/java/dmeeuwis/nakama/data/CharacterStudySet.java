@@ -133,6 +133,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
        	int charactersSeen = tracker.getAllScores().size();
        	this.currentChar = null;
         Set<Character> availSet = new HashSet<>(availableCharactersSet());
+        Log.d("nakama", "CharacterStudySet: removed curr chr " + this.currentChar + " from selection.");
         availSet.remove(this.currentChar);
         if(tracker.charactersNotYetSeen(availSet).size() > 0){
 

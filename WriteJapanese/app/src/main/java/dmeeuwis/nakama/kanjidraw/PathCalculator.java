@@ -133,7 +133,7 @@ public class PathCalculator {
 		return intersections;
 	}
 
-	private static final double TURN_THRESHOLD_RADIANS = Math.PI / 2;
+	private static final double TURN_THRESHOLD_RADIANS = Math.PI / 3;
 	/** 
 	 * Finds sharp turn points. Currently turns are between sequential points, but would be better to 
 	 * do based on distance.
@@ -147,6 +147,7 @@ public class PathCalculator {
 			p1 = path.points.get(i+1);
 			double dir = angle(p0,  p1);
 			if(prevDir != null && Math.abs(dir - prevDir) >= TURN_THRESHOLD_RADIANS){
+                Log.d("nakama", String.format("Saw distance between points: %d, %d: %s and %s: %.2f >= %.2f", i, i+1, p0.toString(), p1.toString(), Math.abs(dir-prevDir), TURN_THRESHOLD_RADIANS));
 				turnPoints.add(p0);
 			}
 			prevDir = dir;

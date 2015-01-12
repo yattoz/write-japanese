@@ -76,14 +76,6 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 		return new PointDrawing(newList);
 	}
 
-    public PointDrawing scale(float scale){
-		List<Stroke> scaledStrokes = new ArrayList<Stroke>(this.strokes.size());
-		for(int i = 0; i < scaledStrokes.size(); i++){
-			scaledStrokes.add(this.strokes.get(i).scale(scale));
-		}
-		return new PointDrawing(scaledStrokes);
-	}
-	
 	public PointDrawing cutOffEdges(){
 		Rect bounds = this.findBoundingBox();
 		List<List<Point>> newCopy = new ArrayList<List<Point>>(this.strokeCount());

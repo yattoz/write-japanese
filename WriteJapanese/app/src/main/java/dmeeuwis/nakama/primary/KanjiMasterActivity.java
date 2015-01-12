@@ -51,6 +51,7 @@ import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.TestDrawActivity;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
@@ -674,7 +675,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     @Override
     protected void onDestroy(){
         Log.i("nakama", "KanjiMasterActivity.onDestroy");
-        this.dictionarySet.close();
         this.lockChecker.dispose();
         super.onDestroy();
     }
@@ -735,6 +735,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
+        if(BuildConfig.DEBUG) {
+            menu.add("DEBUG:DrawTest");
+            menu.add("DEBUG:LockUnlock");
+            menu.add("DEBUG:IabConsume");
+        }
         return true;
     }
 
@@ -778,10 +783,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
-//	    } else if(item.getItemId() ==  R.id.menu_debug_unlock){
-//	    	getLockChecker().coreUnlock();
-//	    } else if(item.getItemId() ==  R.id.menu_debug_consume){
-//	    	lockChecker.startConsume();
+        } else if (item.getTitle().equals("DEBUG:DrawTest")){
+            startActivity(new Intent(this, TestDrawActivity.class));
+	    } else if(item.getTitle().equals("DEBUG:LockUnlock")){
+	    	getLockChecker().coreUnlock();
+	    } else if(item.getTitle().equals("DEBUG:IabConsume")){
+	    	lockChecker.startConsume();
         }
         return true;
     }
