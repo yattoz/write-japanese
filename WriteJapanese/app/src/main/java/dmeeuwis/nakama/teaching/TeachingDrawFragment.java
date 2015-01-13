@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,22 +44,24 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	String character;
 	String[] currentCharacterSvg;
 	CurveDrawing curveDrawing;
+    int teachingLevel = 0;
+
 	TracingCurveView tracingView;
 	TextView message;
-	int teachingLevel = 0;
 
     CardView messageCard;
 
 	Animation fadeIn;
 	Animation fadeOut;
 
-	@Override public void onAttach(Activity activity){
-		TeachingActivity parent = (TeachingActivity)getActivity();
-		this.character = parent.getCharacter();
-		this.currentCharacterSvg = parent.getCurrentCharacterSvg();
+    TeachingActivity parent;
 
-		super.onAttach(activity);	
-	}
+    public void updateCharacter(TeachingActivity parent){
+        this.parent = parent;
+        this.character = parent.getCharacter();
+        this.currentCharacterSvg = parent.getCurrentCharacterSvg();
+        this.curveDrawing = new CurveDrawing(currentCharacterSvg);
+    }
 	
 	 @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		 View view = inflater.inflate(R.layout.fragment_draw, container, false);
@@ -66,25 +69,24 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	     this.tracingView = (TracingCurveView)view.findViewById(R.id.tracingPad);
          this.tracingView.setOnTraceCompleteListener(this);
 
-         this.fadeIn = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_in);
-         this.fadeOut = AnimationUtils.loadAnimation(this.getActivity(), R.anim.slide_edge_card_out);
+         this.fadeIn = AnimationUtils.loadAnimation(parent, R.anim.slide_edge_card_in);
+         this.fadeOut = AnimationUtils.loadAnimation(parent, R.anim.slide_edge_card_out);
 
-	     this.curveDrawing = new CurveDrawing(currentCharacterSvg);
-	     
          this.messageCard = (CardView)view.findViewById(R.id.messageCard);
          this.message = (TextView)view.findViewById(R.id.tipMessage);
-         this.message.setText(initialAdvice);
 
 		 return view;
 	 }
 	 
 	 @Override public void onStart() {
 	     this.tracingView.setCurveDrawing(curveDrawing);
+         this.message.setText(initialAdvice);
 	     super.onStart();
 	 }
 	 
 	 public void onComplete(PointDrawing pointDrawing){
-		 DrawingComparator comp = new DrawingComparator(character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(this.getActivity().getAssets()));
+         Log.d("nakama", "Character: " + character + "; curveDrawing: " + curveDrawing + "; pointDrawing: " + pointDrawing + "; parent: " + parent);
+		 DrawingComparator comp = new DrawingComparator(character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(parent.getAssets()));
 		 Criticism c = comp.compare();
 
 		 if(c.pass){

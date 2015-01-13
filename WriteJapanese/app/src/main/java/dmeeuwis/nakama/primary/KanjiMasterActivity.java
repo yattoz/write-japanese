@@ -402,9 +402,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
                 String story = db.getStory(currentCharacterSet.currentCharacter());
                 if (story != null && !"".equals(story.trim()))
-                    remindStoryButton.setVisibility(View.VISIBLE);
+                    remindStoryButton.showFloatingActionButton();
                 else
-                    remindStoryButton.setVisibility(View.GONE);
+                    remindStoryButton.hideFloatingActionButton();
             }
         });
 

@@ -38,7 +38,8 @@ public class TeachingActivity extends ActionBarActivity {
 	ActionBar.Tab storyTab;
 	TeachingStoryFragment storyFragment;
 	TeachingDrawFragment drawFragment;
-	
+    TeachingInfoFragment infoFragment;
+
 	DictionarySet dictSet;
 	
 	public void setupCharacter(){
@@ -163,6 +164,25 @@ public class TeachingActivity extends ActionBarActivity {
         });
         actionBar.addTab(storyTab);
 
+        infoTab = actionBar.newTab().setText("Usage");
+        this.infoFragment = new TeachingInfoFragment();
+        infoTab.setTabListener(new TabListener() {
+
+            @Override public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
+                Log.d("nakama", "infoTab onTabUnselected");
+            }
+
+            @Override public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
+                Log.d("nakama", "infoTab onTabSelected");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commit();
+            }
+
+            @Override public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
+                Log.d("nakama", "infoTab onTabReselected");
+            }
+        });
+        actionBar.addTab(infoTab);
+
         Log.i("nakama", "TeachingActivity: after storyTab: " + (System.currentTimeMillis() - startTime));
         passCharacterDataToUi();
         Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms.");
@@ -171,32 +191,23 @@ public class TeachingActivity extends ActionBarActivity {
     private void passCharacterDataToUi(){
     	char kanjiIn = this.character.charAt(0);
     	if(Kana.isKanji(kanjiIn)){
-    		infoTab = actionBar.newTab().setText("Usage"); // .setIcon(R.drawable.ic_menu_mark);
-    		final Fragment infoFragment = new TeachingInfoFragment();
-    		infoTab.setTabListener(new TabListener() {
-			
-    			@Override public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-    				Log.d("nakama", "infoTab onTabUnselected");
-    			}
-			
-    			@Override public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-    				Log.d("nakama", "infoTab onTabSelected");
-    				getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commit();
-    			}
-			
-    			@Override public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-    				Log.d("nakama", "infoTab onTabReselected");
-    			}
-    		});
     		try {
     			Kanji k = dictSet.kanjiFinder().find(kanjiIn);
     			actionBar.setTitle("Learn " + k.meanings[0]);
+                drawFragment.updateCharacter(this);
+
+/*                if(actionBar.getTabCount() == 2){
+                    actionBar.addTab(infoTab);      // might have been remove for kana
+                }
+*/
     		} catch(IOException e){
     			throw new RuntimeException(e);
     		}
-    		actionBar.addTab(infoTab);
     	} else {
     		actionBar.setTitle("Learn " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
+//            if(actionBar.getTabCount() == 3) {
+//                actionBar.removeTab(this.infoTab);
+//            }
     	}
 	}
 
@@ -239,6 +250,7 @@ public class TeachingActivity extends ActionBarActivity {
 	
 	@Override public void onResume(){
 		Log.i("nakama", "TeachingActivity: onResume");
+        drawTab.select();
 		super.onResume();
 	}
 

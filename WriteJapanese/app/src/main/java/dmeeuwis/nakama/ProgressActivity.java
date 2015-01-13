@@ -264,4 +264,9 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
     		Log.d("nakama", "AbstractMasterActivity: onActivityResult handled by IABUtil.");
     	}
    	}
+
+    @Override
+    protected void onDestroy() {
+        this.lc.dispose();
+    }
 }
