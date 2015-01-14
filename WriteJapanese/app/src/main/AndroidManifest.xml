@@ -65,6 +65,10 @@
             android:name="dmeeuwis.nakama.TestDrawActivity"
             android:label="@string/title_activity_test_draw" >
         </activity>
+        <activity
+            android:name="dmeeuwis.nakama.KanjiCheckActivity"
+            android:label="@string/title_activity_kanji_check" >
+        </activity>
     </application>
 
 </manifest>

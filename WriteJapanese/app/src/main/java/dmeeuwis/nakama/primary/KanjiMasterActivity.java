@@ -51,6 +51,7 @@ import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.KanjiCheckActivity;
 import dmeeuwis.nakama.TestDrawActivity;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
@@ -737,6 +738,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         inflater.inflate(R.menu.actionbar, menu);
         if(BuildConfig.DEBUG) {
             menu.add("DEBUG:DrawTest");
+            menu.add("DEBUG:KanjiCheck");
             menu.add("DEBUG:LockUnlock");
             menu.add("DEBUG:IabConsume");
         }
@@ -785,6 +787,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
         } else if (item.getTitle().equals("DEBUG:DrawTest")){
             startActivity(new Intent(this, TestDrawActivity.class));
+        } else if (item.getTitle().equals("DEBUG:KanjiCheck")){
+            startActivity(new Intent(this, KanjiCheckActivity.class));
 	    } else if(item.getTitle().equals("DEBUG:LockUnlock")){
 	    	getLockChecker().coreUnlock();
 	    } else if(item.getTitle().equals("DEBUG:IabConsume")){

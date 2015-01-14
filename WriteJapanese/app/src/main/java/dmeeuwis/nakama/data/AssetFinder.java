@@ -16,14 +16,22 @@ public class AssetFinder {
 	public AssetFinder(AssetManager am){
 		this.am = am;
 	}
-	
+
+    public CurveDrawing findGlyphForCharacter(String pathPrefix, char c){
+        return new CurveDrawing(findSvgForCharacter(pathPrefix, c));
+    }
+
 	public CurveDrawing findGlyphForCharacter(CharacterStudySet charset, char c){
 		return new CurveDrawing(findSvgForCharacter(charset, c));
 	}
-	
-	public String[] findSvgForCharacter(CharacterStudySet charset, char c){
+
+    public String[] findSvgForCharacter(CharacterStudySet charset, char c){
+        return findSvgForCharacter(charset.pathPrefix, c);
+    }
+
+	public String[] findSvgForCharacter(String pathPrefix, char c){
         int unicodeValue = c;
-        String path = charset.pathPrefix + "/" + Integer.toHexString(unicodeValue) + ".path";
+        String path = pathPrefix + "/" + Integer.toHexString(unicodeValue) + ".path";
         
         try {
 	        InputStream is = this.am.open(path);

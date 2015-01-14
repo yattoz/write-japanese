@@ -14,6 +14,7 @@ public class CurveDrawing implements Drawing {
 	private final SvgHelper svg = new SvgHelper();
 	
 	public CurveDrawing(String[] in){
+        if(in == null) { throw new IllegalArgumentException("Cannot construct CurveDrawing from null String[]."); }
 		this.strokes = Collections.unmodifiableList(svg.readSvgEquations(in));
 		this.pointPointDrawing = this.toDrawing();
 	}

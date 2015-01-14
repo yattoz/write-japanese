@@ -18,7 +18,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	private Rect boundingBoxCache = null;
 	
 	public static PointDrawing fromPoints(List<List<Point>> points){
-		List<Stroke> strokes = new ArrayList<Stroke>(points.size());
+		List<Stroke> strokes = new ArrayList<>(points.size());
 		for(List<Point> p: points)
 			strokes.add(new Stroke(p));
 		return new PointDrawing(strokes);
@@ -38,7 +38,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	
 	public Rect findBoundingBox(){
 		if(this.boundingBoxCache == null){
-			Integer left = null, right = null, top = null, bottom = null;
+			Integer left = 0, right = 0, top = 0, bottom = 0;
 			for(Stroke stroke: this.strokes){
 				Rect strokeBox = stroke.findBoundingBox();
 				if(left == null || strokeBox.left < left)
@@ -53,7 +53,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	
 			if(left == null || top == null || right == null || bottom == null)
 				throw new NullPointerException("Drawing: could not determine bounding box");
-			
+
 			boundingBoxCache = new Rect(left, top, right, bottom);
 		}
 		return this.boundingBoxCache;

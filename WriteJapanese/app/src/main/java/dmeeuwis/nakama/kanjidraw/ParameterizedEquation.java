@@ -15,9 +15,45 @@ public abstract class ParameterizedEquation {
 	public abstract float y(float t);
 	public abstract float arclength();
 
-	private final float CURVE_THRESHOLD = (float) (Math.PI / 12);
-	private final float INCREMENT = 0.05f;
-	
+	private static final float CURVE_THRESHOLD = (float) (Math.PI / 12);
+	private static final float INCREMENT = 0.05f;
+
+
+    public static float[] findHeavyTurns(ParameterizedEquation eqn){
+        final List<Float> tPoints = new ArrayList<Float>();
+        final List<Double> tWeights = new ArrayList<Double>();
+
+        double dir;
+        double prevDir = PathCalculator.angle(eqn.x(0), eqn.y(0), eqn.x(INCREMENT), eqn.y(INCREMENT));
+
+        // scan finely through and identify sharp turns
+        for(float t = INCREMENT; t < 1.0f - INCREMENT; t += INCREMENT){
+            dir = PathCalculator.angle(eqn.x(t), eqn.y(t), eqn.x(t+INCREMENT), eqn.y(t+INCREMENT));
+            double diff = Math.abs(dir - prevDir);
+            if(diff > CURVE_THRESHOLD){
+                tWeights.add(diff);
+                tPoints.add(t);	// track diff values, take top n changes
+            }
+            prevDir = dir;
+        }
+
+        final Integer[] indexes = Util.makeIndexArray(tPoints.size());
+        Arrays.sort(indexes, new Comparator<Integer>(){
+            @Override public int compare(Integer lhs, Integer rhs) {
+                return Double.compare(tWeights.get(lhs), tWeights.get(rhs));
+            }
+        });
+
+        // take the (at most) 10 heaviest
+        int pointsCount = Math.min(10, indexes.length);
+        float[] heavyTs = new float[pointsCount];
+        for(int i = 0; i < pointsCount; i++){
+            heavyTs[i] = tPoints.get(i);
+        }
+        Arrays.sort(heavyTs);
+        return heavyTs;
+    }
+
 	public List<Point> toPoints(){
 		final List<Float> tPoints = new ArrayList<Float>();
 		final List<Double> tWeights = new ArrayList<Double>();
