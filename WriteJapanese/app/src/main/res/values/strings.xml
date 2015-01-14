@@ -40,5 +40,6 @@
     </style>
 
     <string name="title_activity_test_draw">TestDrawActivity</string>
+    <string name="title_activity_kanji_check">KanjiCheckActivity</string>
 
 </resources>

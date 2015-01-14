@@ -139,7 +139,14 @@ public class PathCalculator {
 	 * do based on distance.
 	 */
 	static final List<Point> findSharpCurves(Stroke path){
-		List<Point> turnPoints = new ArrayList<Point>();
+        ParameterizedEquation p = path.toParameterizedEquation(1, 0);
+        float[] turns = ParameterizedEquation.findHeavyTurns(p);
+        List<Point> points = new ArrayList<>(turns.length);
+        for(float t: turns) {
+            points.add(new Point((int)p.x(t), (int)p.y(t)));
+        }
+        return points;
+/*		List<Point> turnPoints = new ArrayList<>();
 		Double prevDir = null;
 		Point p0, p1;
 		for(int i = 0; i < path.pointSize()-1; i++){
@@ -153,8 +160,15 @@ public class PathCalculator {
 			prevDir = dir;
 		}
 		return turnPoints;
+*/
 	}
-	
+
+    static int countSharpCurvesParamEqn(Stroke path){
+        ParameterizedEquation p = path.toParameterizedEquation(1, 0);
+        float[] turns = ParameterizedEquation.findHeavyTurns(p);
+        return turns.length;
+    }
+
 	static final public Set<Point> intersections(Stroke path1, Stroke path2){
 		// Log.d("nakama", "Detailed intersection check for:\n\t" + Util.join("; ", path1) + "\n\t" + Util.join("; ", path2));
 		

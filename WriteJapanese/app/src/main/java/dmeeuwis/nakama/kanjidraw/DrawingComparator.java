@@ -375,7 +375,7 @@ public class DrawingComparator {
 		}
 		
 		// hard curves
-		List<Point> baseCurvePoints = PathCalculator.findSharpCurves(bpath);
+/*		List<Point> baseCurvePoints = PathCalculator.findSharpCurves(bpath);
 		Log.d("nakama", "Scanned base for sharp curves, found " + baseCurvePoints.size());
 		List<Point> drawnCurvePoints = PathCalculator.findSharpCurves(cpath);
 		Log.d("nakama", "Scanned drawn for sharp curves, found " + drawnCurvePoints.size());
@@ -386,7 +386,7 @@ public class DrawingComparator {
 		} else {
 			// point by point comparison
 		}
-		
+*/
 		
 		// basic data points collected above; now go through basic criticisms data, and try to combine into more constructive ones.
 		// ===================================================================================================================
@@ -431,9 +431,9 @@ public class DrawingComparator {
 					return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is too long." +
                         (BuildConfig.DEBUG ? " (base: " + bDistanceTravelled + ", challenge: " + cDistanceTravelled + ")" : ""));
 				}
-			case TOO_FEW_SHARP_CURVES:
-			case TOO_MANY_SHARP_CURVES:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke has " + drawnCurvePoints.size() + " sharp curve" + (drawnCurvePoints.size() == 1 ? "" : "s") + ", but should have " + baseCurvePoints.size() + ".");
+//			case TOO_FEW_SHARP_CURVES:
+//			case TOO_MANY_SHARP_CURVES:
+//				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke has " + drawnCurvePoints.size() + " sharp curve" + (drawnCurvePoints.size() == 1 ? "" : "s") + ", but should have " + baseCurvePoints.size() + ".");
 			case BACKWARDS:
 				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is backwards.");
 			default: 

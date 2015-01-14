@@ -361,7 +361,6 @@ public class DrawView extends View implements OnTouchListener {
         if(drawBitmap == null){ return; }
 
 		drawBitmap.eraseColor(backgroundColor);
-//		fadeBitmap.eraseColor(Color.TRANSPARENT);
 
         Log.i("nakama", "DrawView.grid " + this.grid);
 		grid.measure(getWidth(), getHeight());
@@ -435,8 +434,6 @@ public class DrawView extends View implements OnTouchListener {
 /*        Log.i("nakama", "DrawView.onDetachedFromWindow: recycling bitmaps.");
         if(drawBitmap != null) drawBitmap.recycle();
         drawBitmap = null;
-        if(fadeBitmap != null) fadeBitmap.recycle();
-        fadeBitmap = null;
         System.gc();
 */
     }

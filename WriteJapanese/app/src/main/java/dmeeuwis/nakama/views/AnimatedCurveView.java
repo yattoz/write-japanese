@@ -138,6 +138,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * Clears current strokes, and registers a new set from point lists.
 	 */
 	public void setDrawing(final PointDrawing drawnPoints, final DrawTime drawTimeParam){
+        if(drawnPoints == null){ throw new IllegalArgumentException("Cannot accept null PointDrawing"); }
         clear();
         scaleAndOffsets.initialized = false; // will force recalculation of scale and offsets.
 
@@ -156,6 +157,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * Clears current strokes, and registers a new set from point lists.
 	 */
 	public void setDrawing(final CurveDrawing goodCurveDrawing, final DrawTime drawTimeParam){
+        if(goodCurveDrawing == null){ throw new IllegalArgumentException("Cannot accept null CurveDrawing"); }
         clear();
         allowedStrokes = 1;
 
