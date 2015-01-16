@@ -5,13 +5,14 @@ public class StoryDataHelper {
     private final Context context;
 
     public StoryDataHelper(Context c){
+        if(c == null){ throw new IllegalArgumentException("Need a not-null context to construct StoryDataHelper"); }
         this.context = c;
     }
     
     public void recordStory(char character, String story){
+        String existing = getStory(character);
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         try {
-            String existing = getStory(character);
             if (existing == null) {
                 db.getWritableDatabase().execSQL("INSERT INTO kanji_stories(character, story) VALUES(?, ?)",
                         new String[]{Character.toString(character), story});

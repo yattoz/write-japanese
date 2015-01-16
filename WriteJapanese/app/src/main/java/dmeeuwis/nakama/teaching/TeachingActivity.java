@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar.TabListener;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
@@ -30,6 +31,7 @@ public class TeachingActivity extends ActionBarActivity {
 	
 	private String character;
 	private String[] currentCharacterSvg;
+    private Kanji kanji;
 	
 	String callingClass;
 
@@ -73,7 +75,15 @@ public class TeachingActivity extends ActionBarActivity {
 		}
     	
 		this.character = kanjiIn.toString();
-    	
+
+        DictionarySet sd = DictionarySet.get(this);
+        try {
+            this.kanji = sd.kanjiFinder().find(getCharacter().charAt(0));
+        } catch (IOException e) {
+            Log.e("nakama", "Error: can't find kanji for: " + this.kanji, e);
+            Toast.makeText(this, "Internal Error: can't find kanji information for: " + this.kanji, Toast.LENGTH_LONG).show();
+        }
+
         int unicodeValue = kanjiIn;
         String path = kanjiPath + "/" + Integer.toHexString(unicodeValue) + ".path";
         AssetManager assets = getAssets();
@@ -98,6 +108,10 @@ public class TeachingActivity extends ActionBarActivity {
 		return this.character;
 	}
 
+    public Kanji getKanji(){
+        return this.kanji;
+    }
+
 	public String[] getCurrentCharacterSvg(){
 		if(this.currentCharacterSvg == null){
 			setupCharacter();
@@ -108,6 +122,7 @@ public class TeachingActivity extends ActionBarActivity {
 	@Override public void onCreate(Bundle saveInstanceState) {
         long startTime = System.currentTimeMillis();
         super.onCreate(saveInstanceState);
+        final TeachingActivity self = this;
 
         Log.i("nakama", "TeachingActivity: onCreate starting.");
         this.setContentView(R.layout.fragment_container);
@@ -149,12 +164,13 @@ public class TeachingActivity extends ActionBarActivity {
             @Override
             public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
                 storyFragment.clearFocus();
-                storyFragment.saveStory();
+                storyFragment.saveStory(self);
             }
 
             @Override
             public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, storyFragment).commit();
+                storyFragment.updateCharacter(self);
             }
 
             @Override
@@ -194,7 +210,6 @@ public class TeachingActivity extends ActionBarActivity {
     		try {
     			Kanji k = dictSet.kanjiFinder().find(kanjiIn);
     			actionBar.setTitle("Learn " + k.meanings[0]);
-                drawFragment.updateCharacter(this);
 
 /*                if(actionBar.getTabCount() == 2){
                     actionBar.addTab(infoTab);      // might have been remove for kana
@@ -209,6 +224,10 @@ public class TeachingActivity extends ActionBarActivity {
 //                actionBar.removeTab(this.infoTab);
 //            }
     	}
+
+//        this.infoFragment.updateCharacter(this);
+        this.drawFragment.updateCharacter(this);
+        this.storyFragment.updateCharacter(this);
 	}
 
 	@Override
@@ -243,7 +262,7 @@ public class TeachingActivity extends ActionBarActivity {
 	@Override 
 	public void onPause(){
 		Log.i("nakama", "TeachingActivity: onPause starting.");
-		storyFragment.saveStory();
+		storyFragment.saveStory(this);
 		Log.i("nakama", "TeachingActivity: onPause passing to super.");
 		super.onPause();
 	}

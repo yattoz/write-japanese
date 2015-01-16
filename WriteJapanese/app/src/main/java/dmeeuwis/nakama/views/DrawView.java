@@ -61,7 +61,7 @@ public class DrawView extends View implements OnTouchListener {
 	protected OnStrokeListener onStrokeListener = null;
 	protected OnClearListener onClearListener = null;
 	
-	protected List<OnTouchListener> extraListeners = new LinkedList<OnTouchListener>();
+	protected List<OnTouchListener> extraListeners = new LinkedList<>();
 
 	protected Bitmap drawBitmap;
 	protected Canvas drawCanvas;
@@ -97,7 +97,6 @@ public class DrawView extends View implements OnTouchListener {
 	
 	public DrawView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-        Log.i("nakama", "DrawView: 3-cons");
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
         this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
@@ -134,7 +133,6 @@ public class DrawView extends View implements OnTouchListener {
 	}
 
     public void setGridPadding(int gridPaddingTop, int gridPaddingLeft){
-        Log.i("nakama", "DrawView: setGridPadding " + gridPaddingTop + ", " + gridPaddingLeft);
         this.gridPaddingTop = gridPaddingTop;
         this.gridPaddingLeft = gridPaddingLeft;
         this.grid = new GridBackgroundDrawer(gridPaddingTop, gridPaddingLeft);
@@ -142,14 +140,12 @@ public class DrawView extends View implements OnTouchListener {
     }
 	
 	public void clear(){
-		Log.i("nakama", "DrawView clear start");
 		this.linesToDraw = new ArrayList<>(200);
 		this.linesToGrade = new ArrayList<>(100);
 		
 		currentDrawLine = new ArrayList<>(200);
 		currentGradeLine = new ArrayList<>(100);
 		
-		Log.i("nakama", "clear: calling initGrid getWidth/Height " + this.getWidth() + ", " + this.getHeight());
 		redraw();
 		
 		if(this.onClearListener != null)
@@ -260,7 +256,6 @@ public class DrawView extends View implements OnTouchListener {
 			if(distanceInclude){
                 double direction = PathCalculator.angle(lastDraw.x, lastDraw.y, hx, hy);
                 boolean directionInclude = lastDirection == null || Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
-                Log.d("nakama", String.format("History point: direction %.2f distance %.2f. Direction limit %.2f, distance limit %.2f", direction, distance, DIRECTION_LIMIT, MIN_GRADING_POINT_DISTANCE_PX));
 
 				Point latest = new Point((int)hx, (int)hy);
 				drawCanvas.drawLine(lastDraw.x, lastDraw.y, hx, hy, fingerPaint);
@@ -268,15 +263,11 @@ public class DrawView extends View implements OnTouchListener {
 				dirtyBox.union((int)hx, (int)hy);
 
 				if(directionInclude || PathCalculator.distance(lastGrade.x, lastGrade.y, hx, hy) >= MIN_GRADING_POINT_DISTANCE_PX){
-                    Log.d("nakama", String.format("\tTaking point! direction? " + directionInclude));
 					gradePoints.add(lastDraw);
 					lastGrade = lastDraw;
 				}
 				
 				drawPoints.add(latest);
-				//if(PathCalculator.distance(lastGrade, latest) >= MIN_GRADING_POINT_DISTANCE_PX){
-				//	gradePoints.add(latest);
-				//}
 				lastDraw = latest;
 			}
 		}
@@ -289,7 +280,6 @@ public class DrawView extends View implements OnTouchListener {
 	
 	
 	@Override public boolean onTouch(View v, MotionEvent me) {
-        Log.i("nakama", "DrawView: onTouch");
 		final int actionCode = me.getAction();
 		final int x = (int)me.getX();
 		final int y = (int)me.getY();
@@ -362,7 +352,6 @@ public class DrawView extends View implements OnTouchListener {
 
 		drawBitmap.eraseColor(backgroundColor);
 
-        Log.i("nakama", "DrawView.grid " + this.grid);
 		grid.measure(getWidth(), getHeight());
 		grid.draw(drawCanvas);
 		

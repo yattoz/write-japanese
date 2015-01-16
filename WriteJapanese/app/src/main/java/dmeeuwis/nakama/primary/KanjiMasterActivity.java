@@ -293,6 +293,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         db = new StoryDataHelper(getApplicationContext());
         remindStoryButton = (FloatingActionButton) findViewById(R.id.remindStoryButton);
+        remindStoryButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkSeaGreen));
+        remindStoryButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
         remindStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -389,6 +391,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 if (drawPad.getStrokeCount() == 1) {
                     doneButton.showFloatingActionButton();
                     teachMeButton.hideFloatingActionButton();
+                    remindStoryButton.hideFloatingActionButton();
                 }
             }
         });
@@ -400,12 +403,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                     teachMeButton.showFloatingActionButton();
                 if (!doneButton.isHidden())
                     doneButton.hideFloatingActionButton();
-
-                String story = db.getStory(currentCharacterSet.currentCharacter());
-                if (story != null && !"".equals(story.trim()))
-                    remindStoryButton.showFloatingActionButton();
-                else
-                    remindStoryButton.hideFloatingActionButton();
             }
         });
 
@@ -552,10 +549,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         String story = db.getStory(currentCharacterSet.currentCharacter());
-        if (story == null || "".equals(story.trim())) {
-            remindStoryButton.setVisibility(View.GONE);
+        if (story != null && !story.trim().equals("")) {
+            remindStoryButton.showFloatingActionButton();
         } else {
-            remindStoryButton.setVisibility(View.VISIBLE);
+            remindStoryButton.hideFloatingActionButton();
         }
 
         this.loadDrawDetails();
