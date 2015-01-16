@@ -268,5 +268,6 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
     @Override
     protected void onDestroy() {
         this.lc.dispose();
+        super.onDestroy();
     }
 }

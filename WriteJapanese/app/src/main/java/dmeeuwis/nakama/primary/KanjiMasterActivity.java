@@ -293,7 +293,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         db = new StoryDataHelper(getApplicationContext());
         remindStoryButton = (FloatingActionButton) findViewById(R.id.remindStoryButton);
-        remindStoryButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkSeaGreen));
+        remindStoryButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkTurquoise));
         remindStoryButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
         remindStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -399,8 +399,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         drawPad.setOnClearListener(new DrawView.OnClearListener() {
             @Override
             public void onClear() {
-                if (teachMeButton.isHidden())
+                if (teachMeButton.isHidden()) {
                     teachMeButton.showFloatingActionButton();
+                }
+                storyButtonUpdate();
+
                 if (!doneButton.isHidden())
                     doneButton.hideFloatingActionButton();
             }
@@ -547,15 +550,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 this.reviewBug.setVisibility(View.VISIBLE);
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
         }
+        storyButtonUpdate();
+        this.loadDrawDetails();
+    }
 
+    private void storyButtonUpdate(){
         String story = db.getStory(currentCharacterSet.currentCharacter());
         if (story != null && !story.trim().equals("")) {
             remindStoryButton.showFloatingActionButton();
         } else {
             remindStoryButton.hideFloatingActionButton();
         }
-
-        this.loadDrawDetails();
     }
 
     private void loadDrawDetails() {
