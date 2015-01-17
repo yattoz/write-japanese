@@ -3,6 +3,7 @@
     <color name="actionbar_main">#FF3F9FE0</color>
     <color name="actionbar_correct">#006400</color>
     <color name="actionbar_incorrect">#8B0000</color>
+    <color name="dark_grey_text">#878787</color>
 
     <color name="White">#FFFFFF</color>
     <color name="Ivory">#FFFFF0</color>

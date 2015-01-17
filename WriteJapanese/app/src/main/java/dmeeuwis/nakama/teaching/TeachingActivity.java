@@ -209,7 +209,7 @@ public class TeachingActivity extends ActionBarActivity {
     	if(Kana.isKanji(kanjiIn)){
     		try {
     			Kanji k = dictSet.kanjiFinder().find(kanjiIn);
-    			actionBar.setTitle("Learn " + k.meanings[0]);
+    			actionBar.setTitle("Studying " + k.meanings[0]);
 
 /*                if(actionBar.getTabCount() == 2){
                     actionBar.addTab(infoTab);      // might have been remove for kana
@@ -219,7 +219,7 @@ public class TeachingActivity extends ActionBarActivity {
     			throw new RuntimeException(e);
     		}
     	} else {
-    		actionBar.setTitle("Learn " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
+    		actionBar.setTitle("Studying " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
 //            if(actionBar.getTabCount() == 3) {
 //                actionBar.removeTab(this.infoTab);
 //            }
