@@ -18,7 +18,7 @@ public final class GridBackgroundDrawer {
         this.gridPaddingTop = gridPaddingTop;
         this.gridPaddingLeft = gridPaddingLeft;
 
-        Log.i("nakama", "GridBackgroundDrawer: using gridPaddings: " + gridPaddingLeft + ", " + gridPaddingTop);
+        Log.i("nakama", "GridBackgroundDrawer: using gridPaddings: top=" + gridPaddingTop + ", left=" + gridPaddingLeft);
     }
 
      private void init(){

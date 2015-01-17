@@ -170,7 +170,6 @@ public class TeachingActivity extends ActionBarActivity {
             @Override
             public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, storyFragment).commit();
-                storyFragment.updateCharacter(self);
             }
 
             @Override
@@ -227,7 +226,6 @@ public class TeachingActivity extends ActionBarActivity {
 
 //        this.infoFragment.updateCharacter(this);
         this.drawFragment.updateCharacter(this);
-        this.storyFragment.updateCharacter(this);
 	}
 
 	@Override

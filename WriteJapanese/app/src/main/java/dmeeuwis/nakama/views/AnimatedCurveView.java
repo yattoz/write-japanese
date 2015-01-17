@@ -113,10 +113,11 @@ public class AnimatedCurveView extends View implements Animatable {
         invalidate();
 	}
 
-    public void setCurvePadding(int paddingTop, int paddingLeft){
+    public void setCurvePaddingPixels(int paddingTop, int paddingLeft){
         this.paddingTop = paddingTop;
         this.paddingLeft = paddingLeft;
         this.invalidate();
+        Log.d("nakama", "AnimatedCurveView: setting padding (grid) to top=" + this.paddingTop + ", left=" + this.paddingLeft);
     }
 
 	/**
