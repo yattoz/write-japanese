@@ -36,14 +36,13 @@ public class DrawView extends View implements OnTouchListener {
 
 	public final static int BACKGROUND_COLOR = 0xFFece5b4;
 
-    private static double DIRECTION_LIMIT = Math.PI / 8;
+    private final static double DIRECTION_LIMIT = Math.PI / 8;
 
 	static final private float MIN_GRADING_POINT_DISTANCE_DP = 30;
 	static final private float MIN_DRAW_POINT_DISTANCE_DP = 5;
 	static final private float PAINT_THICKNESS_DP = 4;
 
 	private float PAINT_THICKNESS_PX;
-	private float PAINT_MIN_THICKNESS_PX;
 	private float MIN_GRADING_POINT_DISTANCE_PX;
 	private float MIN_DRAW_POINT_DISTANCE_PX;
 	
@@ -102,12 +101,12 @@ public class DrawView extends View implements OnTouchListener {
         this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
         this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
         this.grid = new GridBackgroundDrawer(gridPaddingTop, gridPaddingLeft);
+        a.recycle();
 
         Resources r = getContext().getResources();
         MIN_GRADING_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_GRADING_POINT_DISTANCE_DP, r.getDisplayMetrics());
         MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DISTANCE_DP, r.getDisplayMetrics());
         PAINT_THICKNESS_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, r.getDisplayMetrics());
-        PAINT_MIN_THICKNESS_PX = (float)(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, r.getDisplayMetrics()) * 0.35);
 
         Log.i("nakama", "MIN_GRADING_POINT_DISTANCE_PX: " + MIN_GRADING_POINT_DISTANCE_PX);
         Log.i("nakama", "MIN_DRAW_POINT_DISTANCE_PX: " + MIN_DRAW_POINT_DISTANCE_PX);
@@ -121,6 +120,14 @@ public class DrawView extends View implements OnTouchListener {
         this.fingerPaint.setAntiAlias(true);
         this.fingerPaint.setDither(true);
         this.fingerPaint.setStrokeWidth(PAINT_THICKNESS_PX);
+        this.fingerPaint.setColor(Color.BLACK);
+
+        this.fadePaint = new Paint();
+        this.fadePaint.setStyle(Paint.Style.STROKE);
+        this.fadePaint.setStrokeCap(Cap.ROUND);
+        this.fadePaint.setAntiAlias(true);
+        this.fadePaint.setDither(true);
+        this.fadePaint.setStrokeWidth(PAINT_THICKNESS_PX);
         this.fingerPaint.setColor(Color.BLACK);
 	}
 
@@ -140,8 +147,8 @@ public class DrawView extends View implements OnTouchListener {
     }
 	
 	public void clear(){
-		this.linesToDraw = new ArrayList<>(200);
-		this.linesToGrade = new ArrayList<>(100);
+		this.linesToDraw = new ArrayList<>();
+		this.linesToGrade = new ArrayList<>();
 		
 		currentDrawLine = new ArrayList<>(200);
 		currentGradeLine = new ArrayList<>(100);
@@ -174,7 +181,7 @@ public class DrawView extends View implements OnTouchListener {
 	 */
 	private List<List<Point>> drawnPaths(){
 		List<List<Point>> linesToGradeRef = this.linesToGrade;
-		List<List<Point>> drawn = new ArrayList<List<Point>>(linesToGradeRef.size());
+		List<List<Point>> drawn = new ArrayList<>(linesToGradeRef.size());
 		for(List<Point> line: linesToGradeRef){
 			if(line.size() >= 2)
 				drawn.add(line);
@@ -205,17 +212,6 @@ public class DrawView extends View implements OnTouchListener {
 		}
 	}
 	
-	private void redrawFromPoints(List<List<Point>> linesToDrawRef){
-		for(List<Point> line: linesToDrawRef){
-			for(int pi = 1; pi < line.size(); pi++){
-				Point p0 = line.get(pi-1);
-				Point p1 = line.get(pi);
-				//this.fingerPaint.setStrokeWidth(findWidth(p0, p1));
-				drawCanvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
-			}
-		}
-	}
-	
 	private void startFadeTimer(){
 		fadeAlpha = 255;
 		if(fadeTimer == null){
@@ -225,7 +221,7 @@ public class DrawView extends View implements OnTouchListener {
 	}
 	
 	Rect dirtyBox = new Rect();
-	private void moveAction(MotionEvent me, List<Point> drawPoints, List<Point> gradePoints){
+	final private void moveAction(MotionEvent me, List<Point> drawPoints, List<Point> gradePoints){
 		Point lastDraw = drawPoints.get(drawPoints.size()-1);
 		Point lastGrade = gradePoints.get(gradePoints.size()-1);
         Double lastDirection = null;
@@ -308,23 +304,22 @@ public class DrawView extends View implements OnTouchListener {
 			Point prev = currentDrawLineRef.get(currentDrawLineRef.size() - 1);
 		
 			// throw away single dots
-			if(currentDrawLineRef.size() == 1 && endPoint.equals(prev)){
-				return true;
-			}
-			
-			currentDrawLineRef.add(endPoint);
-			currentGradeLineRef.add(endPoint);
-        
-			linesToGradeRef.add(currentGradeLineRef);
-			linesToDrawRef.add(currentDrawLineRef);
-      
-			drawCanvas.drawLine(prev.x, prev.y, endPoint.x, endPoint.y, fingerPaint);
-			
-			if(this.onStrokeListener != null){
-				this.onStrokeListener.onStroke(linesToGradeRef.get(linesToGradeRef.size()-1));
-			} 
-			
-			this.invalidate();
+			if(!(currentDrawLineRef.size() == 1 && endPoint.equals(prev))) {
+
+                currentDrawLineRef.add(endPoint);
+                currentGradeLineRef.add(endPoint);
+
+                linesToGradeRef.add(currentGradeLineRef);
+                linesToDrawRef.add(currentDrawLineRef);
+
+                drawCanvas.drawLine(prev.x, prev.y, endPoint.x, endPoint.y, fingerPaint);
+
+                if (this.onStrokeListener != null) {
+                    this.onStrokeListener.onStroke(linesToGradeRef.get(linesToGradeRef.size() - 1));
+                }
+
+                this.invalidate();
+            }
 		} 
 		
 		if(actionCode == MotionEvent.ACTION_UP){
@@ -355,7 +350,13 @@ public class DrawView extends View implements OnTouchListener {
 		grid.measure(getWidth(), getHeight());
 		grid.draw(drawCanvas);
 		
-		redrawFromPoints(this.linesToDraw);
+        for(List<Point> line: this.linesToDraw){
+            for(int pi = 1; pi < line.size(); pi++){
+                Point p0 = line.get(pi-1);
+                Point p1 = line.get(pi);
+                drawCanvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
+            }
+        }
 	}
 	
 	private final void initGrid(int decidedWidth, int decidedHeight){
@@ -408,22 +409,4 @@ public class DrawView extends View implements OnTouchListener {
 			}
 		}
 	}
-	
-	@Override
-	public void onDetachedFromWindow(){
-        cleanBitmaps();
-		super.onDetachedFromWindow();
-	}
-
-    public void destroy() {
-        cleanBitmaps();
-    }
-
-    private void cleanBitmaps(){
-/*        Log.i("nakama", "DrawView.onDetachedFromWindow: recycling bitmaps.");
-        if(drawBitmap != null) drawBitmap.recycle();
-        drawBitmap = null;
-        System.gc();
-*/
-    }
 }

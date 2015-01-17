@@ -69,6 +69,7 @@ public class AnimatedCurveView extends View implements Animatable {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
         this.paddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
         this.paddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
+        a.recycle();
         Log.i("nakama", "AnimatedCurveView: grid settings are: " + this.paddingLeft + ", " + this.paddingTop);
 
         paint.setStyle(Paint.Style.STROKE);

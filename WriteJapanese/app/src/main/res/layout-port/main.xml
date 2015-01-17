@@ -278,11 +278,6 @@
                 android:layout_gravity="bottom|end"
                 android:elevation="10dp" />
         </FrameLayout>
-
-        <dmeeuwis.nakama.primary.IncorrectScreenView
-            android:id="@+id/incorrectFrame"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
     </dmeeuwis.nakama.primary.SafeViewFlipper>
 
     <View

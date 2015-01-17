@@ -87,6 +87,7 @@
                     android:layout_height="64dp"
                     android:contentDescription="Reviewing"
                     android:src="@drawable/review_bug"
+                    android:elevation="10dp"
                     android:visibility="gone" />
             </FrameLayout>
 
@@ -279,11 +280,6 @@
                     android:layout_gravity="bottom|end" />
             </FrameLayout>
         </LinearLayout>
-
-        <dmeeuwis.nakama.primary.IncorrectScreenView
-            android:id="@+id/incorrectFrame"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
     </dmeeuwis.nakama.primary.SafeViewFlipper>
 
     <View

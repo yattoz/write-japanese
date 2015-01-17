@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-   <color name="primary">#102b6d</color>
-    <color name="secondary">#081345</color>
+    <color name="actionbar_main">#FF3F9FE0</color>
+    <color name="actionbar_correct">#006400</color>
+    <color name="actionbar_incorrect">#8B0000</color>
 
     <color name="White">#FFFFFF</color>
     <color name="Ivory">#FFFFF0</color>

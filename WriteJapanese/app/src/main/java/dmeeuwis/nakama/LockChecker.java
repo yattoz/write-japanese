@@ -254,7 +254,11 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	}
 
     public void dispose(){
-        this.iab.dispose();
+        try {
+            this.iab.dispose();
+        } catch(Throwable t){
+            Log.e("nakama", "Caught error shutting down iab helper", t);
+        }
     }
 
 }

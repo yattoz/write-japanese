@@ -41,5 +41,11 @@
 
     <string name="title_activity_test_draw">TestDrawActivity</string>
     <string name="title_activity_kanji_check">KanjiCheckActivity</string>
+    <string name="locked_icon_content_description">Locked</string>
+    <string name="check_progress_menu_label">Check Progress</string>
+    <string name="unlock_full_version_menu_label">Unlock Full Version</string>
+    <string name="shuffle_order_menu_label">Shuffle Order</string>
+    <string name="reset_progress_menu_label">Reset Progress</string>
+    <string name="credits_menu_label">Credits</string>
 
 </resources>
