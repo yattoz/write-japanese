@@ -69,6 +69,10 @@
             android:name="dmeeuwis.nakama.KanjiCheckActivity"
             android:label="@string/title_activity_kanji_check" >
         </activity>
+        <activity
+            android:name="dmeeuwis.nakama.views.SpenDrawActivity"
+            android:label="@string/title_activity_spen_draw" >
+        </activity>
     </application>
 
 </manifest>

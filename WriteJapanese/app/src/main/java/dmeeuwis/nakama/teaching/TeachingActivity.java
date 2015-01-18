@@ -58,7 +58,7 @@ public class TeachingActivity extends ActionBarActivity {
 			Editor ed = prefs.edit();
 			ed.putString("character", kanjiIn.toString());
 			ed.putString("path", kanjiPath);
-			ed.commit();
+			ed.apply();
 
 		} else {
 			String kanjiInStr = prefs.getString("character", null);
@@ -146,7 +146,7 @@ public class TeachingActivity extends ActionBarActivity {
 
             @Override
             public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, drawFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, drawFragment).commitAllowingStateLoss();
             }
 
             @Override
@@ -169,7 +169,7 @@ public class TeachingActivity extends ActionBarActivity {
 
             @Override
             public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, storyFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, storyFragment).commitAllowingStateLoss();
             }
 
             @Override
@@ -189,7 +189,7 @@ public class TeachingActivity extends ActionBarActivity {
 
             @Override public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
                 Log.d("nakama", "infoTab onTabSelected");
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commitAllowingStateLoss();
             }
 
             @Override public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
