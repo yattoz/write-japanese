@@ -416,9 +416,11 @@ public class DrawingComparator {
 		
 			switch (f) {
 			case START_DIRECTION_DIFFERENCE:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke starts pointing " + cStartDirection + ", but should point " + bStartDirection + ".");
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke starts pointing " + cStartDirection + ", but should point " + bStartDirection + "."
+                + (BuildConfig.DEBUG ? String.format(" [points %.2f, but should be %.2f]", cStartRadians, bStartRadians) : ""));
 			case END_DIRECTION_DIFFERENCE:
-				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke ends pointing " + cEndDirection + ", but should point " + bEndDirection + ".");
+				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke ends pointing " + cEndDirection + ", but should point " + bEndDirection + "."
+                        + (BuildConfig.DEBUG ? String.format(" [points %.2f, but should be %.2f]", cEndRadians, bEndRadians) : ""));
 			case START_POINT_DIFFERENCE:
 				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke's starting point is off.");
 			case END_POINT_DIFFERENCE:

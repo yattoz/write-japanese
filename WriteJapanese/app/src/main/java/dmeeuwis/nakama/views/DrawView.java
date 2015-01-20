@@ -306,26 +306,14 @@ public class DrawView extends View implements OnTouchListener {
 			moveAction(me, currentDrawLineRef, currentGradeLineRef);
 			
 		} else if(actionCode == MotionEvent.ACTION_UP && currentDrawLineRef.size() > 0){
-			
-			// reset current for next stroke
-			this.currentDrawLine = new ArrayList<>(200);
-			this.currentGradeLine = new ArrayList<>(100);
-			
-			Point endPoint = new Point(x, y);
-			Point prev = currentDrawLineRef.get(currentDrawLineRef.size() - 1);
-		
-			// throw away single dots
-			if(!(currentDrawLineRef.size() == 1 && endPoint.equals(prev))) {
+            moveAction(me, currentDrawLineRef, currentGradeLineRef);
 
-                currentDrawLineRef.add(endPoint);
-                currentGradeLineRef.add(endPoint);
+			// throw away single dots
+			if(currentDrawLineRef.size() != 1){
+                Log.d("nakama", "====> Finished a stroke! Points are: " + Util.join(", ", currentGradeLineRef));
 
                 linesToGradeRef.add(currentGradeLineRef);
                 linesToDrawRef.add(currentDrawLineRef);
-
-                Log.d("nakama", "====> Finished a stroke! Points are: " + Util.join(", ", currentGradeLineRef));
-
-                drawCanvas.drawLine(prev.x, prev.y, endPoint.x, endPoint.y, fingerPaint);
 
                 if (this.onStrokeListener != null) {
                     this.onStrokeListener.onStroke(linesToGradeRef.get(linesToGradeRef.size() - 1));
@@ -333,7 +321,11 @@ public class DrawView extends View implements OnTouchListener {
 
                 this.invalidate();
             }
-		} 
+
+            // reset current for next stroke
+            this.currentDrawLine = new ArrayList<>(200);
+            this.currentGradeLine = new ArrayList<>(100);
+		}
 		
 		if(actionCode == MotionEvent.ACTION_UP){
 			v.performClick();
