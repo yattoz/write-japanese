@@ -3,5 +3,6 @@
     <declare-styleable name="DrawView">
         <attr name="gridPaddingLeft" format="dimension" />
         <attr name="gridPaddingTop" format="dimension" />
+        <attr name="hidden" format="boolean" />
     </declare-styleable>
 </resources>

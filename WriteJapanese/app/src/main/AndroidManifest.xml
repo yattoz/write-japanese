@@ -4,6 +4,7 @@
 
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" />
 
     <application
         android:allowBackup="true"
@@ -70,7 +71,7 @@
             android:label="@string/title_activity_kanji_check" >
         </activity>
         <activity
-            android:name="dmeeuwis.nakama.views.SpenDrawActivity"
+            android:name="dmeeuwis.nakama.SpenDrawActivity"
             android:label="@string/title_activity_spen_draw" >
         </activity>
     </application>

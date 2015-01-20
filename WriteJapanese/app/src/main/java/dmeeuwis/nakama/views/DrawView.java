@@ -38,7 +38,7 @@ public class DrawView extends View implements OnTouchListener {
 
     private final static double DIRECTION_LIMIT = Math.PI / 8;
 
-	static final private float MIN_GRADING_POINT_DISTANCE_DP = 30;
+	static final private float MIN_GRADING_POINT_DISTANCE_DP = 25;
 	static final private float MIN_DRAW_POINT_DISTANCE_DP = 5;
 	static final private float PAINT_THICKNESS_DP = 4;
 
@@ -70,7 +70,7 @@ public class DrawView extends View implements OnTouchListener {
 	protected Timer fadeTimer = null;
 	protected int fadeAlpha = 0;
 	protected Integer backgroundColor = Color.WHITE;
-	
+
 	protected GridBackgroundDrawer grid;
 	
 	public interface OnStrokeListener {
@@ -100,7 +100,6 @@ public class DrawView extends View implements OnTouchListener {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
         this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
         this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
-        this.grid = new GridBackgroundDrawer(gridPaddingTop, gridPaddingLeft);
         a.recycle();
 
         Resources r = getContext().getResources();
@@ -129,6 +128,8 @@ public class DrawView extends View implements OnTouchListener {
         this.fadePaint.setDither(true);
         this.fadePaint.setStrokeWidth(PAINT_THICKNESS_PX);
         this.fingerPaint.setColor(Color.BLACK);
+
+        this.grid = new GridBackgroundDrawer(0, 0);
 	}
 
     public DrawView(Context context, AttributeSet attrs) {
@@ -221,7 +222,7 @@ public class DrawView extends View implements OnTouchListener {
 	}
 	
 	Rect dirtyBox = new Rect();
-	final private void moveAction(MotionEvent me, List<Point> drawPoints, List<Point> gradePoints){
+	private void moveAction(MotionEvent me, List<Point> drawPoints, List<Point> gradePoints){
 		Point lastDraw = drawPoints.get(drawPoints.size()-1);
 		Point lastGrade = gradePoints.get(gradePoints.size()-1);
         Double lastDirection = null;
@@ -232,35 +233,43 @@ public class DrawView extends View implements OnTouchListener {
 		dirtyBox.set((int)me.getX(), (int)me.getY(), (int)me.getX(), (int)me.getY());
 		
 		final int history = me.getHistorySize();
-		for(int h = -1; h < history; h++){
-			float hx, hy;
-			if(h == -1){
-				if(history == 0){
-					hx = me.getX();
-					hy = me.getY();
-				} else {
-					continue;
-				}
+		for(int h = 0; h <= history; h++){
+			int hx, hy;
+			if(h == history){
+                hx = (int)me.getX();
+                hy = (int)me.getY();
 			} else {
-				hx = me.getHistoricalX(0, h);
-				hy = me.getHistoricalY(0, h);
+				hx = (int)me.getHistoricalX(0, h);
+				hy = (int)me.getHistoricalY(0, h);
 			}
 
 			double distance = PathCalculator.distance(lastDraw.x, lastDraw.y, hx, hy);
             boolean distanceInclude = distance >= MIN_DRAW_POINT_DISTANCE_PX;
 
+            Log.d("nakama", "\nDistance between points: for index " + h + " ; " + distance + "; points: " + lastDraw.x + ", " + lastDraw.y  + "  " + hx + ", " + hy);
+
 			if(distanceInclude){
+                Log.d("nakama", "Draw point include from distance! " + hx + "," + hy + "; distance was " + distance + " vs limit " + MIN_DRAW_POINT_DISTANCE_PX);
                 double direction = PathCalculator.angle(lastDraw.x, lastDraw.y, hx, hy);
                 boolean directionInclude = lastDirection == null || Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
 
-				Point latest = new Point((int)hx, (int)hy);
+				Point latest = new Point(hx, hy);
 				drawCanvas.drawLine(lastDraw.x, lastDraw.y, hx, hy, fingerPaint);
 				dirtyBox.union(lastDraw.x, lastDraw.y);
-				dirtyBox.union((int)hx, (int)hy);
+				dirtyBox.union(hx, hy);
 
-				if(directionInclude || PathCalculator.distance(lastGrade.x, lastGrade.y, hx, hy) >= MIN_GRADING_POINT_DISTANCE_PX){
-					gradePoints.add(lastDraw);
-					lastGrade = lastDraw;
+                final double gradeDistance = PathCalculator.distance(lastGrade.x, lastGrade.y, hx, hy);
+                final boolean gradeDistanceInclude = gradeDistance >= MIN_GRADING_POINT_DISTANCE_PX;
+
+                Log.d("nakama", String.format("Looking at grade point: gradeDistance: %.2f gradeDistanceInclude: %b", gradeDistance, gradeDistanceInclude));
+				if(directionInclude || gradeDistanceInclude){
+                    if(directionInclude)
+                        Log.d("nakama", "Grade point include via DIRECTION! " + hx + ", " + hy + " : " + direction + " vs min direction " + DIRECTION_LIMIT);
+                    if(gradeDistanceInclude)
+                        Log.d("nakama", "Grade point include via DISTANCE! " + hx + ", " + hy + " : " + gradeDistance + " vs min distance " + MIN_GRADING_POINT_DISTANCE_PX);
+					gradePoints.add(latest);
+					lastGrade = latest;
+                    Log.d("nakama", "Line is now: " + Util.join(", ", gradePoints));
 				}
 				
 				drawPoints.add(latest);
@@ -279,7 +288,6 @@ public class DrawView extends View implements OnTouchListener {
 		final int actionCode = me.getAction();
 		final int x = (int)me.getX();
 		final int y = (int)me.getY();
-
 		List<List<Point>> linesToDrawRef = this.linesToDraw;
 		List<List<Point>> linesToGradeRef = this.linesToGrade;
 
@@ -287,6 +295,9 @@ public class DrawView extends View implements OnTouchListener {
 		List<Point> currentDrawLineRef = currentDrawLine;
 
 		if(actionCode == MotionEvent.ACTION_DOWN){
+            Log.i("nakama", "DrawView: ===============================================");
+            Log.i("nakama", "DrawView: onTouch for stroke " + this.linesToDraw.size());
+
 			Point p = new Point(x, y);
 			currentDrawLineRef.add(p);
 			currentGradeLineRef.add(p);
@@ -311,6 +322,8 @@ public class DrawView extends View implements OnTouchListener {
 
                 linesToGradeRef.add(currentGradeLineRef);
                 linesToDrawRef.add(currentDrawLineRef);
+
+                Log.d("nakama", "====> Finished a stroke! Points are: " + Util.join(", ", currentGradeLineRef));
 
                 drawCanvas.drawLine(prev.x, prev.y, endPoint.x, endPoint.y, fingerPaint);
 
@@ -377,7 +390,7 @@ public class DrawView extends View implements OnTouchListener {
 		if(drawBitmap == null){
 			initGrid(getWidth(), getHeight());
 		}
-		
+
 		canvas.drawBitmap(drawBitmap, 0, 0, null);
 		if(fadeAlpha > 0){
 			fadePaint.setAlpha(fadeAlpha);
