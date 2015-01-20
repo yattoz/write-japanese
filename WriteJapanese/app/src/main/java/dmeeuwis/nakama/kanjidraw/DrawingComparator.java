@@ -94,11 +94,29 @@ public class DrawingComparator {
 			overallFailures.add(OverallFailure.EXTRA_STROKES);
 		
 		StrokeCriticism[][] criticismMatrix = new StrokeCriticism[known.strokeCount()][drawn.strokeCount()];
-		int[][] scoreMatrix = new int[known.strokeCount()][drawn.strokeCount()];
+		Integer[][] scoreMatrix = new Integer[known.strokeCount()][drawn.strokeCount()];
+
+
+        boolean correctDiagonal = true;
+        if(known.strokeCount() == drawn.strokeCount()){
+           for(int i = 0; i < known.strokeCount(); i++) {
+               StrokeCriticism r = compareStroke(i, i);
+               criticismMatrix[i][i] = r;
+               scoreMatrix[i][i] = r.cost;
+               correctDiagonal = r.cost == 0 && correctDiagonal;
+           }
+        }
+
+        if(correctDiagonal){
+            Log.d("nakama", "Correct diagonal detected! Going home early.");
+            return new Criticism();
+        }
 
 		// calculate score and criticism matrix
 		for(int known_i = 0; known_i < known.strokeCount(); known_i++){
 			for(int drawn_i = 0; drawn_i < drawn.strokeCount(); drawn_i++){
+                if(drawn_i == known_i){ continue; }         // calculated in previous block
+
 				StrokeCriticism result = compareStroke(known_i, drawn_i);
 				Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
 				criticismMatrix[known_i][drawn_i] = result;
@@ -208,10 +226,10 @@ public class DrawingComparator {
 	}
 	
 	
-	static List<StrokeResult> findBestPairings(int[][] matrix){
-		Set<Integer> finishedRows = new TreeSet<Integer>();
-		Set<Integer> finishedCols = new TreeSet<Integer>();
-		List<StrokeResult> pairs = new ArrayList<StrokeResult>(Math.max(matrix.length, matrix[0].length));
+	static List<StrokeResult> findBestPairings(Integer[][] matrix){
+		Set<Integer> finishedRows = new TreeSet<>();
+		Set<Integer> finishedCols = new TreeSet<>();
+		List<StrokeResult> pairs = new ArrayList<>(Math.max(matrix.length, matrix[0].length));
 		
 		// first go down the diagonal and accept any 0s
 		for(int i = 0; i < matrix.length && i < matrix[i].length; i++){
@@ -465,7 +483,7 @@ public class DrawingComparator {
 		}
 	}
 
-	public static String printMatrix(int[][] matrix){
+	public static String printMatrix(Integer[][] matrix){
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
 		for(int i = 0; i < matrix.length; i++){
