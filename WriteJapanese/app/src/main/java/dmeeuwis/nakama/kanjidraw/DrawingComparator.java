@@ -97,8 +97,8 @@ public class DrawingComparator {
 		Integer[][] scoreMatrix = new Integer[known.strokeCount()][drawn.strokeCount()];
 
 
-        boolean correctDiagonal = true;
-        if(known.strokeCount() == drawn.strokeCount()){
+        boolean correctDiagonal = known.strokeCount() == drawn.strokeCount();
+        if(correctDiagonal){ // possibly
            for(int i = 0; i < known.strokeCount(); i++) {
                StrokeCriticism r = compareStroke(i, i);
                criticismMatrix[i][i] = r;
