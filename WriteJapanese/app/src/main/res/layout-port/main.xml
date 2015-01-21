@@ -125,6 +125,7 @@
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_margin="3dp"
+                        card_view:contentPadding="0dp"
                         android:layout_weight="1">
 
                         <dmeeuwis.nakama.views.AnimatedCurveView
@@ -148,6 +149,7 @@
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_margin="3dp"
+                        card_view:contentPadding="0dp"
                         android:layout_weight="1">
 
                         <LinearLayout

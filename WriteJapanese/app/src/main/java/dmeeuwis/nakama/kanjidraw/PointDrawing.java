@@ -37,26 +37,11 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	}
 	
 	public Rect findBoundingBox(){
-		if(this.boundingBoxCache == null){
-			Integer left = 0, right = 0, top = 0, bottom = 0;
-			for(Stroke stroke: this.strokes){
-				Rect strokeBox = stroke.findBoundingBox();
-				if(left == null || strokeBox.left < left)
-					left = strokeBox.left;
-				if(right == null || strokeBox.right > right)
-					right = strokeBox.right;
-				if(top == null || strokeBox.top < top)
-					top = strokeBox.top;
-				if(bottom == null || strokeBox.bottom > bottom)
-					bottom = strokeBox.bottom;
-			}
-	
-			if(left == null || top == null || right == null || bottom == null)
-				throw new NullPointerException("Drawing: could not determine bounding box");
-
-			boundingBoxCache = new Rect(left, top, right, bottom);
-		}
-		return this.boundingBoxCache;
+        Rect box = strokes.get(0).findBoundingBox();
+        for(int i = 1; i < this.strokeCount(); i++){
+            box.union(strokes.get(i).findBoundingBox());
+        }
+        return box;
 	}
 	
 	public List<Intersection> findIntersections(){
@@ -68,7 +53,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	}
 	
 	public PointDrawing bufferEnds(int amount){
-		List<Stroke> newList = new ArrayList<Stroke>(strokes.size());
+		List<Stroke> newList = new ArrayList<>(strokes.size());
 		for(Stroke stroke: strokes){
 			Stroke newStroke = stroke.bufferEnds(amount);
 			newList.add(newStroke);
@@ -78,9 +63,9 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 
 	public PointDrawing cutOffEdges(){
 		Rect bounds = this.findBoundingBox();
-		List<List<Point>> newCopy = new ArrayList<List<Point>>(this.strokeCount());
+		List<List<Point>> newCopy = new ArrayList<>(this.strokeCount());
 		for(Stroke stroke: this.strokes){
-			ArrayList<Point> newStroke = new ArrayList<Point>(stroke.pointSize());
+			ArrayList<Point> newStroke = new ArrayList<>(stroke.pointSize());
 			for(Point p: stroke.points){
 				newStroke.add(new Point(p.x - bounds.left, p.y - bounds.top));
 			}
@@ -102,9 +87,9 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 		float increaseXFactor = (float)desiredXSize / currentXSize;
 		float increaseYFactor = (float)desiredYSize / currentYSize;
 		
-		List<List<Point>> scaled = new ArrayList<List<Point>>(this.strokeCount());
+		List<List<Point>> scaled = new ArrayList<>(this.strokeCount());
 		for(Stroke lp: this.strokes){
-			List<Point> sl = new ArrayList<Point>(lp.pointSize());
+			List<Point> sl = new ArrayList<>(lp.pointSize());
 			for(Point p: lp)
 				sl.add(new Point((int)(p.x * increaseXFactor), 
 						         (int)(p.y * increaseYFactor)));
@@ -120,14 +105,15 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	}
 
     @Override
-    public Iterator<ParameterizedEquation> parameterizedEquations(float scale, float padding) {
-        return this.toParameterizedEquations(scale, padding).iterator();
+    public Iterator<ParameterizedEquation> parameterizedEquations(float scale) {
+        return this.toParameterizedEquations(scale).iterator();
     }
 
-	public List<ParameterizedEquation> toParameterizedEquations(float scale, float padding){
-		List<ParameterizedEquation> ret = new ArrayList<ParameterizedEquation>(this.strokeCount());
+    @Override
+	public List<ParameterizedEquation> toParameterizedEquations(float scale){
+		List<ParameterizedEquation> ret = new ArrayList<>(this.strokeCount());
 		for(Stroke stroke: strokes)
-			ret.add(stroke.toParameterizedEquation(scale, padding));
+			ret.add(stroke.toParameterizedEquation(scale, 0));
 		return ret;
 	}
 }

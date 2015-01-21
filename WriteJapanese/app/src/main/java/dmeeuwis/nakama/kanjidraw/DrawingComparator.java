@@ -94,7 +94,7 @@ public class DrawingComparator {
 			overallFailures.add(OverallFailure.EXTRA_STROKES);
 		
 		StrokeCriticism[][] criticismMatrix = new StrokeCriticism[known.strokeCount()][drawn.strokeCount()];
-		Integer[][] scoreMatrix = new Integer[known.strokeCount()][drawn.strokeCount()];
+		int[][] scoreMatrix = new int[known.strokeCount()][drawn.strokeCount()];
 
 
         boolean correctDiagonal = known.strokeCount() == drawn.strokeCount();
@@ -226,7 +226,7 @@ public class DrawingComparator {
 	}
 	
 	
-	static List<StrokeResult> findBestPairings(Integer[][] matrix){
+	static List<StrokeResult> findBestPairings(int[][] matrix){
 		Set<Integer> finishedRows = new TreeSet<>();
 		Set<Integer> finishedCols = new TreeSet<>();
 		List<StrokeResult> pairs = new ArrayList<>(Math.max(matrix.length, matrix[0].length));
@@ -483,7 +483,7 @@ public class DrawingComparator {
 		}
 	}
 
-	public static String printMatrix(Integer[][] matrix){
+	public static String printMatrix(int[][] matrix){
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
 		for(int i = 0; i < matrix.length; i++){

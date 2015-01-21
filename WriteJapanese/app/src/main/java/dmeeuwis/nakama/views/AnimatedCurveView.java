@@ -22,11 +22,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.ParameterizedEquation;
-import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.views.MeasureUtil.ScaleAndOffsets;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
 
@@ -39,6 +38,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	static final private float TIME_INCREMENTS = 1 / (ANIMATION_TIME_PER_STROKE_IN_MS / FRAME_RATE_PER_SEC);
 
 	final Paint paint = new Paint();
+    final Paint debugPaint = new Paint();
 	final ScaleAndOffsets scaleAndOffsets = new ScaleAndOffsets();
 	List<Path> pathsToDraw = new ArrayList<>();
 	List<ParameterizedEquation> eqns = new LinkedList<>();
@@ -51,13 +51,12 @@ public class AnimatedCurveView extends View implements Animatable {
 
 	Drawing drawing = null;
 	RectF unscaledBoundingBox = null;
-	
+
     Timer animateTimer = null;
 	Runnable onAnimationFinishCallback = null;
 	
 	Paint bufferPaint = new Paint();
-	Paint charMarginPaint = new Paint();
-	
+
 	DrawTime drawTime = DrawTime.ANIMATED;
 
 
@@ -80,13 +79,13 @@ public class AnimatedCurveView extends View implements Animatable {
         paint.setStrokeWidth(6);
         paint.setColor(Color.BLACK);
 
+        debugPaint.setStyle(Paint.Style.STROKE);
+        debugPaint.setColor(Color.RED);
+        debugPaint.setStrokeWidth(5);
+
         bufferPaint.setStyle(Style.STROKE);
         bufferPaint.setStrokeWidth(2);
         bufferPaint.setColor(Color.LTGRAY);
-
-        charMarginPaint.setStyle(Style.STROKE);
-        charMarginPaint.setStrokeWidth(2);
-        charMarginPaint.setColor(Color.RED);
     }
 
 	public AnimatedCurveView(Context context, AttributeSet as){
@@ -105,10 +104,12 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * Clears current registered strokes.
 	 */
 	public void clear(){
+        Log.i("nakama", "CLEAR!");
         pathsToDraw = new ArrayList<>();
         time = 0;
         eqn_i = 0;
         time = -1;
+        scaleAndOffsets.initialized = false; // will force recalculation of scale and offsets.
         stopAnimation();
         invalidate();
 	}
@@ -136,43 +137,21 @@ public class AnimatedCurveView extends View implements Animatable {
 		return (this.allowedStrokes++);
 	}
 
-	/**
-	 * Clears current strokes, and registers a new set from point lists.
-	 */
-	public void setDrawing(final PointDrawing drawnPoints, final DrawTime drawTimeParam){
-        if(drawnPoints == null){ throw new IllegalArgumentException("Cannot accept null PointDrawing"); }
+
+    /**
+     * Clears current strokes, and registers a new set from point lists.
+     */
+    public void setDrawing(final Drawing drawing, final DrawTime drawTimeParam){
+        if(drawing == null){ throw new IllegalArgumentException("Cannot accept null Drawing"); }
         clear();
-        scaleAndOffsets.initialized = false; // will force recalculation of scale and offsets.
 
-        unscaledBoundingBox = new RectF(drawnPoints.findBoundingBox());
-        List<ParameterizedEquation> unscaledEqns = drawnPoints.toParameterizedEquations(1, 0);
-        List<ParameterizedEquation> eqnsNew = new LinkedList<>();
-        eqnsNew.addAll(unscaledEqns);
-        eqns = eqnsNew;
-        drawTime = drawTimeParam;
+        this.unscaledBoundingBox = new RectF(drawing.findBoundingBox());
+        this.eqns = drawing.toParameterizedEquations(1);
+
+        this.drawTime = drawTimeParam;
+        this.drawing = drawing;
         invalidate();
-        drawing = drawnPoints;
-	}
-	
-
-	/**
-	 * Clears current strokes, and registers a new set from point lists.
-	 */
-	public void setDrawing(final CurveDrawing goodCurveDrawing, final DrawTime drawTimeParam){
-        if(goodCurveDrawing == null){ throw new IllegalArgumentException("Cannot accept null CurveDrawing"); }
-        clear();
-        allowedStrokes = 1;
-
-        List<ParameterizedEquation> unscaledEqns = goodCurveDrawing.strokes;
-        unscaledBoundingBox = new RectF(goodCurveDrawing.findBoundingBox());
-        List<ParameterizedEquation> eqnsNew = new ArrayList<ParameterizedEquation>(unscaledEqns.size());
-        eqnsNew.addAll(unscaledEqns);
-        AnimatedCurveView.this.eqns = eqnsNew;
-        scaleAndOffsets.initialized = false;
-        drawTime = drawTimeParam;
-        this.drawing = goodCurveDrawing;
-        invalidate();
-	}
+    }
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
@@ -273,7 +252,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		};
 
         this.animateTimer = new Timer();
-		animateTimer.scheduleAtFixedRate(task, delayFirst, (long)(1000.0 / 30));
+		animateTimer.scheduleAtFixedRate(task, delayFirst, (long)(1000.0 / 60));
 	}
 
 	/**
@@ -294,9 +273,8 @@ public class AnimatedCurveView extends View implements Animatable {
 	
 	@Override
 	protected void onDraw(Canvas canvas){
-
         // TODO: move this block out of onDraw. Maybe onMeasure? Figure out inits so this can't happen here
-		if(this.scaleAndOffsets.initialized == false){
+		if(!this.scaleAndOffsets.initialized){
           if(this.animateTimer != null){
 				Log.i("nakama", "AnimatedCurveView: rescaled, resetting animateTimer.");
 				stopAnimation();
@@ -308,11 +286,13 @@ public class AnimatedCurveView extends View implements Animatable {
 			time = 0;
 			scaleAndOffsets.calculate(unscaledBoundingBox, getWidth(), getHeight());
 
+            Log.i("nakama", String.format("unscaled: %.2f %.2f %.2f %.2f; scaled-offsets: x=%.2f y=%.2f",
+                    unscaledBoundingBox.top, unscaledBoundingBox.right, unscaledBoundingBox.bottom, unscaledBoundingBox.left,
+                    scaleAndOffsets.xOffset, scaleAndOffsets.yOffset));
+
 			if(drawTime == DrawTime.STATIC){
 				Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");
-				while(drawIncrement() != DrawStatus.FINISHED){
-					// loop
-				}
+				while(drawIncrement() != DrawStatus.FINISHED){ /* loop */ }
 			}
 			
 		}
@@ -321,5 +301,19 @@ public class AnimatedCurveView extends View implements Animatable {
 		for(Path eachPath: pathsToDraw){
 	    	canvas.drawPath(eachPath, paint);
 		}
+
+/*        if(BuildConfig.DEBUG){
+            if(unscaledBoundingBox != null){
+                RectF scaledBox = new RectF(
+                        unscaledBoundingBox.left * scaleAndOffsets.scale + scaleAndOffsets.xOffset,
+                        unscaledBoundingBox.top * scaleAndOffsets.scale + scaleAndOffsets.yOffset,
+                        unscaledBoundingBox.right * scaleAndOffsets.scale + scaleAndOffsets.xOffset,
+                        unscaledBoundingBox.bottom * scaleAndOffsets.scale + scaleAndOffsets.yOffset
+                );
+                debugPaint.setColor(Color.CYAN);
+                canvas.drawRect(scaledBox, debugPaint);
+            }
+        }
+*/
 	}
 }

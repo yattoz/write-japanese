@@ -6,8 +6,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
-import dmeeuwis.nakama.kanjidraw.PathCalculator;
 import dmeeuwis.util.Util;
 
 public abstract class ParameterizedEquation {
@@ -17,7 +18,6 @@ public abstract class ParameterizedEquation {
 
 	private static final float CURVE_THRESHOLD = (float) (Math.PI / 12);
 	private static final float INCREMENT = 0.05f;
-
 
     public static float[] findHeavyTurns(ParameterizedEquation eqn){
         final List<Float> tPoints = new ArrayList<>();
@@ -52,6 +52,23 @@ public abstract class ParameterizedEquation {
         }
         Arrays.sort(heavyTs);
         return heavyTs;
+    }
+
+    public ParameterizedEquation scale(final float scale){
+        return new ParameterizedEquation() {
+            @Override public float x(float t) { return ParameterizedEquation.this.x(t) * scale; }
+            @Override public float y(float t) { return ParameterizedEquation.this.y(t) * scale; }
+            @Override public float arclength() { return ParameterizedEquation.this.arclength() * scale; }
+        };
+    }
+
+    public Rect findBoundingBox(){
+        Rect box = new Rect((int)x(0), (int)y(0), (int)x(0), (int)y(0));
+        for(float t = INCREMENT; t <= 0.9999; t += INCREMENT){
+            box.union((int)x(t), (int)y(t));
+        }
+        Log.i("nakama", "For param eqn, calculated bounding box " + box);
+        return box;
     }
 
 	public List<Point> toPoints(){

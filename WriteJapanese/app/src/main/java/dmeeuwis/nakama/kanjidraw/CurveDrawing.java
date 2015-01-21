@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.util.Log;
 
 public class CurveDrawing implements Drawing {
 
@@ -24,7 +26,12 @@ public class CurveDrawing implements Drawing {
 	}
 	
 	public Rect findBoundingBox(){
-		return this.pointPointDrawing.findBoundingBox();
+        Rect box = new Rect();
+        for(ParameterizedEquation eqn: this.strokes){
+            box.union(eqn.findBoundingBox());
+        }
+        Log.i("nakama", "For curve drawing, calculated bounding box as " + box);
+        return box;
 	}
 	
 	public PointDrawing bufferEnds(int amount){
@@ -32,7 +39,7 @@ public class CurveDrawing implements Drawing {
 	}
 
     @Override
-    public Iterator<ParameterizedEquation> parameterizedEquations(float scale, float padding) {
+    public Iterator<ParameterizedEquation> parameterizedEquations(float scale) {
         return this.strokes.iterator();
     }
 
@@ -42,11 +49,19 @@ public class CurveDrawing implements Drawing {
 	}
 	
 	public PointDrawing toDrawing(){
-		List<Stroke> asStrokes = new ArrayList<Stroke>(strokes.size());
+		List<Stroke> asStrokes = new ArrayList<>(strokes.size());
 		for(ParameterizedEquation eqn: this.strokes){
 			Stroke s = new Stroke(eqn.toPoints());
 			asStrokes.add(s);
 		}
 		return new PointDrawing(asStrokes);
 	}
+
+    @Override
+    public List<ParameterizedEquation> toParameterizedEquations(float scale){
+        List<ParameterizedEquation> ret = new ArrayList<>(this.strokeCount());
+        for(ParameterizedEquation stroke: strokes)
+            ret.add(stroke.scale(scale));
+        return ret;
+    }
 }

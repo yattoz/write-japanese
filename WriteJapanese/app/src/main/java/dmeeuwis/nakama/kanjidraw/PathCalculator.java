@@ -9,11 +9,16 @@ import java.util.Set;
 
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 import android.util.Pair;
 
 public class PathCalculator {
-	
+
+    public static float findBoxScaling(RectF child, RectF parent){
+        return Math.min(parent.width() / child.width(), parent.height() / child.height() );
+    }
+
 	public final static double reverseDirection(double direction){
 		double n = Math.PI + direction;
 		if(n >= 2*Math.PI){
