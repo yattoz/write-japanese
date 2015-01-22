@@ -127,16 +127,17 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * more after each call to incrementCurveStroke().
 	 */
 	public void setAutoIncrement(boolean val){
-		this.autoIncrement = val;
+        Log.i("nakama", "AnimatedCurveView: setAutoIncrement=" + val);
+        this.autoIncrement = val;
 	}
 	
 	/**
 	 * When not in autoincrement mode, this will increase the number of strokes being animated by one.
 	 */
 	public int incrementCurveStroke(){
-		return (this.allowedStrokes++);
+        Log.i("nakama", "AnimatedCurveView: incrementCurveStroke");
+        return (this.allowedStrokes++);
 	}
-
 
     /**
      * Clears current strokes, and registers a new set from point lists.
@@ -150,6 +151,9 @@ public class AnimatedCurveView extends View implements Animatable {
 
         this.drawTime = drawTimeParam;
         this.drawing = drawing;
+
+        this.allowedStrokes = 1;
+
         invalidate();
     }
 

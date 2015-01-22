@@ -1,26 +1,21 @@
 package dmeeuwis.nakama.teaching;
 
-import java.util.List;
-
-import android.app.Activity;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.kanjidraw.Criticism;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.DrawingComparator;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
-import dmeeuwis.nakama.kanjidraw.CurveDrawing;
-import dmeeuwis.nakama.views.DrawView.OnStrokeListener;
 import dmeeuwis.nakama.views.TracingCurveView;
 import dmeeuwis.nakama.views.TracingCurveView.OnTraceCompleteListener;
 
@@ -41,26 +36,28 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	};
 	
 
+    // data state
 	String character;
 	String[] currentCharacterSvg;
 	CurveDrawing curveDrawing;
     int teachingLevel = 0;
+    TeachingActivity parent;
 
+    // ui state
 	TracingCurveView tracingView;
 	TextView message;
-
     CardView messageCard;
 
 	Animation fadeIn;
 	Animation fadeOut;
 
-    TeachingActivity parent;
 
     public void updateCharacter(TeachingActivity parent){
         this.parent = parent;
         this.character = parent.getCharacter();
         this.currentCharacterSvg = parent.getCurrentCharacterSvg();
         this.curveDrawing = new CurveDrawing(currentCharacterSvg);
+        this.teachingLevel = 0;
     }
 	
 	 @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,11 +78,11 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	 @Override public void onStart() {
 	     this.tracingView.setCurveDrawing(curveDrawing);
          this.message.setText(initialAdvice);
+         this.teachingLevel = 0;
 	     super.onStart();
 	 }
 	 
 	 public void onComplete(PointDrawing pointDrawing){
-         Log.d("nakama", "Character: " + character + "; curveDrawing: " + curveDrawing + "; pointDrawing: " + pointDrawing + "; parent: " + parent);
 		 DrawingComparator comp = new DrawingComparator(character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(parent.getAssets()));
 		 Criticism c = comp.compare();
 
