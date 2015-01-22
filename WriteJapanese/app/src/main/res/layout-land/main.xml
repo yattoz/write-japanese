@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#e5e5e5">
@@ -12,91 +13,83 @@
 
         <!-- Drawing frame, where users test their might. -->
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center_vertical|center_horizontal"
-            android:orientation="horizontal"
-            android:weightSum="1.0">
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="0.5">
-
-                <android.support.v7.widget.CardView
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_margin="5dp">
-
-                    <ImageView
-                        android:id="@+id/other_meanings"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:contentDescription="@string/other_meanings_content_description"
-                        android:padding="5dp"
-                        android:src="@drawable/ic_action_overflow" />
-
-                    <LinearLayout
-                        android:id="@+id/instructionsSpace"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:orientation="vertical">
-
-                        <TextSwitcher
-                            android:id="@+id/instructionsLabel"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                        <TextSwitcher
-                            android:id="@+id/target"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-
-
-                    <dmeeuwis.nakama.views.FloatingActionButton
-                        android:id="@+id/remindStoryButton"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:layout_gravity="bottom|start"
-                        android:layout_marginLeft="106dp"
-                        android:layout_marginStart="106dp"
-
-                        />
-
-                    <dmeeuwis.nakama.views.FloatingActionButton
-                        android:id="@+id/teachButton"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:layout_gravity="bottom|start" />
-
-
-                    <dmeeuwis.nakama.views.FloatingActionButton
-                        android:id="@+id/finishedButton"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:layout_gravity="bottom|end" />
-                </android.support.v7.widget.CardView>
-
-                <ImageView
-                    android:id="@+id/reviewBug"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:contentDescription="Reviewing"
-                    android:src="@drawable/review_bug"
-                    android:elevation="10dp"
-                    android:visibility="gone" />
-            </FrameLayout>
+            android:layout_height="fill_parent">
 
             <dmeeuwis.nakama.views.DrawView
                 android:id="@+id/drawPad"
-                android:layout_width="0dp"
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_weight="0.5" />
-        </LinearLayout>
+                app:gridPaddingLeft="240dp" />
+
+            <android.support.v7.widget.CardView
+                android:layout_width="240dp"
+                android:layout_height="fill_parent"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/other_meanings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:contentDescription="@string/other_meanings_content_description"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_action_overflow" />
+
+                <LinearLayout
+                    android:id="@+id/instructionsSpace"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:orientation="vertical">
+
+                    <TextSwitcher
+                        android:id="@+id/instructionsLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextSwitcher
+                        android:id="@+id/target"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+
+                <dmeeuwis.nakama.views.FloatingActionButton
+                    android:id="@+id/remindStoryButton"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginLeft="106dp"
+                    android:layout_marginStart="106dp"
+
+                    />
+
+                <dmeeuwis.nakama.views.FloatingActionButton
+                    android:id="@+id/teachButton"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="bottom|start" />
+
+
+                <dmeeuwis.nakama.views.FloatingActionButton
+                    android:id="@+id/finishedButton"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="bottom|end" />
+            </android.support.v7.widget.CardView>
+
+            <ImageView
+                android:id="@+id/reviewBug"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="@string/reviewing_content_description"
+                android:elevation="10dp"
+                android:src="@drawable/review_bug"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
         <!-- Incorrect view screen -->
         <FrameLayout
@@ -113,49 +106,48 @@
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:padding="4dp"
-                    >
+                    android:padding="4dp">
 
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="top"
                         android:background="#FFA20D1B"
                         android:padding="6dp"
                         android:text="Drawn"
-                        android:layout_gravity="top"
                         android:textColor="#FFFFFF" />
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/animatedDrawnReplay"
                         android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_gravity="bottom"
-                        android:layout_marginTop="40dp"
-                        android:layout_height="match_parent" />
+                        android:layout_marginTop="40dp" />
                 </android.support.v7.widget.CardView>
 
                 <!-- Correct -->
 
                 <android.support.v7.widget.CardView
                     android:layout_width="0dp"
-                    android:padding="4dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    >
+                    android:padding="4dp">
+
                     <TextView
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="top"
                         android:background="#FF1BA20D"
                         android:padding="6dp"
                         android:text="Correct"
-                        android:layout_gravity="top"
                         android:textColor="#FFFFFF" />
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/animatedKnownReplay"
-                        android:layout_gravity="bottom"
-                        android:layout_marginTop="40dp"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:layout_gravity="bottom"
+                        android:layout_marginTop="40dp" />
                 </android.support.v7.widget.CardView>
 
                 <!-- Advice -->
@@ -163,9 +155,9 @@
                 <android.support.v7.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:padding="4dp"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="4dp">
 
                     <TextView
                         android:layout_width="fill_parent"
@@ -177,9 +169,9 @@
 
                     <ListView
                         android:id="@+id/criticism"
-                        android:layout_marginTop="40dp"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
+                        android:layout_marginTop="40dp"
                         android:layout_weight="1" />
                 </android.support.v7.widget.CardView>
             </LinearLayout>

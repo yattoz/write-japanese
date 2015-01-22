@@ -17,11 +17,13 @@ import android.graphics.Paint.Cap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
@@ -107,10 +109,6 @@ public class DrawView extends View implements OnTouchListener {
         MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DISTANCE_DP, r.getDisplayMetrics());
         PAINT_THICKNESS_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, r.getDisplayMetrics());
 
-        //Log.i("nakama", "MIN_GRADING_POINT_DISTANCE_PX: " + MIN_GRADING_POINT_DISTANCE_PX);
-        //Log.i("nakama", "MIN_DRAW_POINT_DISTANCE_PX: " + MIN_DRAW_POINT_DISTANCE_PX);
-        //Log.i("nakama", "PAINT_THICKNESS_PX: " + PAINT_THICKNESS_PX);
-
         this.setOnTouchListener(this);
 
         this.fingerPaint = new Paint();
@@ -129,7 +127,15 @@ public class DrawView extends View implements OnTouchListener {
         this.fadePaint.setStrokeWidth(PAINT_THICKNESS_PX);
         this.fingerPaint.setColor(Color.BLACK);
 
-        this.grid = new GridBackgroundDrawer(0, 0);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager)context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE); // the results will be higher than using the activity context object or the getWindowManager() shortcut
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
+        Log.i("nakama", String.format("DrawView: setting up grid. Screen res: %dx%d gridLeft: %d, gridRight: %d", screenWidth, screenHeight, gridPaddingLeft, gridPaddingTop));
+        this.grid = new GridBackgroundDrawer(this.gridPaddingTop, this.gridPaddingLeft);
 	}
 
     public DrawView(Context context, AttributeSet attrs) {
@@ -141,6 +147,7 @@ public class DrawView extends View implements OnTouchListener {
 	}
 
     public void setGridPadding(int gridPaddingTop, int gridPaddingLeft){
+        Log.i("nakama", "DrawView: setGridPadding: setting gridPaddingTop=" + gridPaddingTop + ", gridPaddingLeft=" + gridPaddingLeft);
         this.gridPaddingTop = gridPaddingTop;
         this.gridPaddingLeft = gridPaddingLeft;
         this.grid = new GridBackgroundDrawer(gridPaddingTop, gridPaddingLeft);
@@ -341,6 +348,7 @@ public class DrawView extends View implements OnTouchListener {
 	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	    WidthAndHeight wh = MeasureUtil.fillMeasure(widthMeasureSpec, heightMeasureSpec);
 	    setMeasuredDimension(wh.width, wh.height);
+        grid.measure(wh.width, wh.height);
 	}
 	
 	private final void redraw(){
@@ -371,6 +379,7 @@ public class DrawView extends View implements OnTouchListener {
 			drawCanvas = new Canvas(drawBitmap);
 		}
 
+        grid.measure(getWidth(), getHeight());
 		redraw();
 	}
 
@@ -379,6 +388,7 @@ public class DrawView extends View implements OnTouchListener {
 			initGrid(getWidth(), getHeight());
 		}
 
+        grid.draw(canvas);
 		canvas.drawBitmap(drawBitmap, 0, 0, null);
 		if(fadeAlpha > 0){
 			fadePaint.setAlpha(fadeAlpha);

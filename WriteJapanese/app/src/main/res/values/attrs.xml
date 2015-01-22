@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <attr name="gridPaddingLeft" format="dimension" />
+    <attr name="gridPaddingTop" format="dimension" />
+
     <declare-styleable name="DrawView">
-        <attr name="gridPaddingLeft" format="dimension" />
-        <attr name="gridPaddingTop" format="dimension" />
-        <attr name="hidden" format="boolean" />
+        <attr name="gridPaddingLeft"/>
+        <attr name="gridPaddingTop"/>
+    </declare-styleable>
+
+    <declare-styleable name="TracingCurveView">
+        <attr name="gridPaddingLeft"/>
+        <attr name="gridPaddingTop"/>
+    </declare-styleable>
+
+    <declare-styleable name="AnimatedCurveView">
+        <attr name="gridPaddingLeft"/>
+        <attr name="gridPaddingTop"/>
     </declare-styleable>
 </resources>

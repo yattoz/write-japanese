@@ -55,7 +55,7 @@ public class MeasureUtil {
 				scale = 1;
 			} else {
                 final double usableWidth = width * 0.90;
-                final double usableHeight = width * 0.90;
+                final double usableHeight = height * 0.90;
 
 				this.scale = (float) Math.min(usableWidth / unscaledBoundingBox.width(), usableHeight / unscaledBoundingBox.height());
 				

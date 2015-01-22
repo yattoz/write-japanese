@@ -126,36 +126,33 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 
 	public void nextCharacter(){
 		double ran = random.nextDouble();
-
-        //Log.i("nakama", "Selection: Next character ran is " + ran);
-
         this.reviewing = true;
        	int charactersSeen = tracker.getAllScores().size();
-       	this.currentChar = null;
         Set<Character> availSet = new HashSet<>(availableCharactersSet());
         Log.d("nakama", "CharacterStudySet: removed curr chr " + this.currentChar + " from selection.");
         availSet.remove(this.currentChar);
+        Character next = null;
         if(tracker.charactersNotYetSeen(availSet).size() > 0){
 
         	try {
         		// 35% chance of mistaken character
         		if(ran <= 0.35){
-        			this.currentChar = tracker.randomMistakenNext(availSet);
-        			//Log.i("nakama", "Still learning progression: reviewing mistaken character " + this.currentChar);
+        			next = tracker.randomMistakenNext(availSet);
+        			Log.i("nakama", "Still learning progression: reviewing mistaken character " + next);
 
        			// 15% chance of reviewing character
         		} else if(ran <= 0.40){
-        			this.currentChar = tracker.randomReviewingNext(availSet);
-        			//Log.i("nakama", "Still learning progression: reviewing review character " + this.currentChar);
+        			next = tracker.randomReviewingNext(availSet);
+        			Log.i("nakama", "Still learning progression: reviewing review character " + next);
         		}
         	} finally {
         		// 50% chance of new character
-        		if(this.currentChar == null){
+        		if(next == null){
         			this.reviewing = false; 		// this is only case of not-reviewing
-        			this.currentChar = this.shuffling ?
+        			next = this.shuffling ?
         					tracker.shuffleNext(availSet) :
        						tracker.standardNext(availSet);
-        			//Log.i("nakama", "Still learning progression: introducing new character " + this.currentChar);
+        			Log.i("nakama", "Still learning progression: introducing new character " + next);
         		}
         	}
 
@@ -164,28 +161,30 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         	try {
         		// 40% chance of previously mistaken character
         		if(ran <= 0.40 && charactersSeen > 0){
-        			this.currentChar = tracker.randomReviewingNext(availSet);
-        			//Log.i("nakama", "Known set progression: reviewing mistaken character " + this.currentChar);
+        			next = tracker.randomReviewingNext(availSet);
+        			Log.i("nakama", "Known set progression: reviewing mistaken character " + next);
 
        			// 15% chance of reviewing character
         		} else if(ran <= 0.80 && charactersSeen > 0){
-        			this.currentChar = tracker.randomReviewingNext(availSet);
-        			//Log.i("nakama", "Known set progression: reviewing review character " + this.currentChar);
+        			next = tracker.randomReviewingNext(availSet);
+        			Log.i("nakama", "Known set progression: reviewing review character " + next);
 
         		} else {
-                    this.currentChar = tracker.randomCorrectNext(availSet);
-                    //Log.i("nakama", "Known set progression: reviewing previously correct character " + this.currentChar);
+                    next = tracker.randomCorrectNext(availSet);
+                    Log.i("nakama", "Known set progression: reviewing previously correct character " + next);
                 }
         	} finally {
-        		if(this.currentChar == null){
-                    this.currentChar = tracker.shuffleNext(availSet);
+        		if(next == null){
+                    next = tracker.shuffleNext(availSet);
         		}
         	}
         }
 
-        if(this.currentChar == null){
+        if(next == null){
             throw new RuntimeException("Error: currentChar should never be null at the end of this method.");
         }
+
+        this.currentChar = next;
 	}
 
 	public boolean isReviewing(){

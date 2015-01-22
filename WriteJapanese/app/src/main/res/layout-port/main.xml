@@ -23,7 +23,7 @@
                 android:id="@+id/drawPad"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                nakama:gridPaddingTop="30dp" />
+                nakama:gridPaddingTop="50dp" />
 
             <android.support.v7.widget.CardView
                 android:layout_width="fill_parent"
@@ -133,6 +133,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
                             android:layout_gravity="bottom"
+                            card_view:gridPaddingTop="10dp"
                             />
 
                         <TextView
@@ -166,6 +167,7 @@
                                 android:textColor="#FFFFFF" />
 
                             <dmeeuwis.nakama.views.AnimatedCurveView
+                                card_view:gridPaddingTop="10dp"
                                 android:id="@+id/animatedKnownReplay"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent" />
@@ -226,6 +228,7 @@
                             android:id="@+id/correctKnownView"
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
+                            card_view:gridPaddingTop="10dp"
                             android:layout_gravity="bottom"
                             />
                         <TextView
@@ -250,6 +253,7 @@
                             android:id="@+id/correctDrawnView"
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
+                            card_view:gridPaddingTop="10dp"
                             android:layout_gravity="bottom"
                             />
                         <TextView

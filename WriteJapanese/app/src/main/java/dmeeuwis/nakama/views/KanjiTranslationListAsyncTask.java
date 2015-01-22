@@ -25,7 +25,6 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 		this.dictSet = dictSet;
 		this.kanji = kanji;
 		this.adder = adder;
-		Log.d("nakama", "VOCAB TranslationSearchAsyncTask constructor for " + Util.join(":", this.query));
 	}
 	
 	@Override
@@ -37,9 +36,7 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 		try {
 			List<Translation> nextBatch;
 			do {
-				Log.d("nakama", "VOCAB Starting (NEW) KanjiDetail search for " + Util.join(":", this.query));
 				nextBatch = dictSet.querier.orQueries(translationIndex, BATCH_SIZE, this.query);
-				Log.d("nakama", "VOCAB Found batch: " + nextBatch.size() + " -> " + Util.join("; ", nextBatch));
 				translationIndex += BATCH_SIZE;
 			
 				List<Translation> accepted = new ArrayList<Translation>(nextBatch.size());
@@ -50,7 +47,6 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 					}
 				}
 				
-				System.out.println("Done a batch! Got " + nextBatch.size());
 				publishProgress(accepted.toArray(new Translation[0]));
 			} while(nextBatch.size() <= BATCH_SIZE && nextBatch.size() > 0 && translationIndex < MAX_TRANSLATIONS && !this.isCancelled());
 				

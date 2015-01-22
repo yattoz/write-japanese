@@ -65,9 +65,9 @@ public class AnimatedCurveView extends View implements Animatable {
 
         this.setBackgroundColor(Color.WHITE);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
-        this.paddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
-        this.paddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AnimatedCurveView, defStyle, 0);
+        this.paddingLeft = a.getDimensionPixelSize(R.styleable.AnimatedCurveView_gridPaddingLeft, 0);
+        this.paddingTop = a.getDimensionPixelSize(R.styleable.AnimatedCurveView_gridPaddingTop, 0);
         a.recycle();
         Log.i("nakama", "AnimatedCurveView: grid settings are: " + this.paddingLeft + ", " + this.paddingTop);
 
@@ -252,7 +252,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		};
 
         this.animateTimer = new Timer();
-		animateTimer.scheduleAtFixedRate(task, delayFirst, (long)(1000.0 / 60));
+		animateTimer.scheduleAtFixedRate(task, delayFirst, (long)(1000.0 / FRAME_RATE_PER_SEC));
 	}
 
 	/**
@@ -284,7 +284,7 @@ public class AnimatedCurveView extends View implements Animatable {
 			}
 
 			time = 0;
-			scaleAndOffsets.calculate(unscaledBoundingBox, getWidth(), getHeight());
+			scaleAndOffsets.calculate(unscaledBoundingBox, getWidth() - this.paddingLeft, getHeight() - this.paddingTop);
 
             Log.i("nakama", String.format("unscaled: %.2f %.2f %.2f %.2f; scaled-offsets: x=%.2f y=%.2f",
                     unscaledBoundingBox.top, unscaledBoundingBox.right, unscaledBoundingBox.bottom, unscaledBoundingBox.left,

@@ -38,10 +38,10 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 		super(context, attrs, defStyle);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
-        this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
-        this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
+        this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.TracingCurveView_gridPaddingTop, 0);
+        this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.TracingCurveView_gridPaddingLeft, 0);
         a.recycle();
-        Log.i("nakama", "TracingCurveView: grid settings are: " + gridPaddingTop + ", " + gridPaddingTop);
+        Log.i("nakama", "TracingCurveView: grid settings are: " + gridPaddingTop + ", " + gridPaddingLeft);
 
         this.animatedCurve = new AnimatedCurveView(context);
         this.animatedCurve.setCurveColor(Color.LTGRAY);

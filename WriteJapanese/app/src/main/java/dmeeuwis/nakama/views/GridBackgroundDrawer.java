@@ -8,11 +8,12 @@ import android.graphics.Path;
 import android.util.Log;
 
 public final class GridBackgroundDrawer {
-	public int width, height;
     private final int gridPaddingTop, gridPaddingLeft;
-	private Paint gridPaint;
-	private Path gridPath = new Path();
-	
+	private final Paint gridPaint = new Paint();
+	private final Path gridPath = new Path();
+
+    public int width, height;
+
     public GridBackgroundDrawer(int gridPaddingTop, int gridPaddingLeft) {
         init();
         this.gridPaddingTop = gridPaddingTop;
@@ -22,7 +23,6 @@ public final class GridBackgroundDrawer {
     }
 
      private void init(){
-		this.gridPaint = new Paint();
 		this.gridPaint.setColor(Color.LTGRAY);
 		this.gridPaint.setStyle(Paint.Style.STROKE);
 		this.gridPaint.setStrokeWidth(3);
@@ -35,8 +35,11 @@ public final class GridBackgroundDrawer {
 
 		gridPath.reset();
 
-        final float middleX = width / 2 + gridPaddingLeft;
-        final float middleY = height / 2 + gridPaddingTop;
+        final float middleX = (width - gridPaddingLeft) / 2 + gridPaddingLeft;
+        final float middleY = (height - gridPaddingTop) / 2 + gridPaddingTop;
+
+        Log.i("nakama", String.format("GridBackgroundDrawer: width: %d, height: %d, gridPaddingLeft: %d, gridPaddingTop: %d, middleX: %.2f, middleHeight: %.2f",
+                width, height, gridPaddingLeft, gridPaddingTop, middleX, middleY));
 
 		// y-axis: middle to top
 		gridPath.moveTo(middleX, middleY);
@@ -56,7 +59,6 @@ public final class GridBackgroundDrawer {
 	}
 	
 	protected final void draw(Canvas canvas) {
-		Log.i("nakama", "Grid.draw");
 		canvas.drawPath(gridPath, gridPaint);
 	}
 }
