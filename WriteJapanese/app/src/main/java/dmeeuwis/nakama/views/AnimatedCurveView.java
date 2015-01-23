@@ -33,9 +33,9 @@ public class AnimatedCurveView extends View implements Animatable {
     public static enum DrawTime { ANIMATED, STATIC }
     public static enum DrawStatus { DRAWING, FINISHED }
 
-    static final private float ANIMATION_TIME_PER_STROKE_IN_MS = 1500;
 	static final private float FRAME_RATE_PER_SEC = 60;
-	static final private float TIME_INCREMENTS = 1 / (ANIMATION_TIME_PER_STROKE_IN_MS / FRAME_RATE_PER_SEC);
+    static final private float FRAMES_PER_STROKE = 60;
+	static final private float T_INCREMENTS = 1 / FRAMES_PER_STROKE;
 
 	final Paint paint = new Paint();
     final Paint debugPaint = new Paint();
@@ -216,7 +216,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		    		path.lineTo(x, y);
 	    	}
 	    	
-	    	time += TIME_INCREMENTS;
+	    	time += T_INCREMENTS;
 	    	
 		} else {
 			if(eqn_i >= eqnsRef.size()-1){

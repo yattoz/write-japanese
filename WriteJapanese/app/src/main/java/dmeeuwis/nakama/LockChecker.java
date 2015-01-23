@@ -168,7 +168,7 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 		SharedPreferences prefs = getSharedPrefs();
 		Editor ed = prefs.edit();
 		ed.putString(PREFS_KEY, unlockKey());
-		ed.commit();
+		ed.apply();
 	}
 	
 	private static String unlockKey(){
@@ -260,5 +260,4 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
             Log.e("nakama", "Caught error shutting down iab helper", t);
         }
     }
-
 }

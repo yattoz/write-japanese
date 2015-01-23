@@ -78,6 +78,7 @@ import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
+    public final static boolean DEBUG = false;
 
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
@@ -137,7 +138,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
-        if(BuildConfig.DEBUG) {
+        if(DEBUG) {
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
@@ -614,7 +615,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         Log.i("nakama", "KanjiMasterActivity: saveCurrentUsingCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET, this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET_CHAR, Character.toString(this.currentCharacterSet.currentCharacter()));
-        ed.commit();
+        ed.apply();
     }
 
     private void loadCurrentCharacterSet() {
@@ -707,7 +708,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
-        if(BuildConfig.DEBUG) {
+        if(DEBUG) {
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:SpenTest");
             menu.add("DEBUG:KanjiCheck");
@@ -757,17 +758,22 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
-        } else if (item.getTitle().equals("DEBUG:DrawTest")){
-            startActivity(new Intent(this, TestDrawActivity.class));
-        } else if (item.getTitle().equals("DEBUG:KanjiCheck")){
-            startActivity(new Intent(this, KanjiCheckActivity.class));
-        } else if (item.getTitle().equals("DEBUG:SpenTest")){
-            startActivity(new Intent(this, SpenDrawActivity.class));
-	    } else if(item.getTitle().equals("DEBUG:LockUnlock")){
-	    	getLockChecker().coreUnlock();
-	    } else if(item.getTitle().equals("DEBUG:IabConsume")){
-	    	lockChecker.startConsume();
         }
+
+        if(DEBUG) {
+            if (item.getTitle().equals("DEBUG:DrawTest")) {
+                startActivity(new Intent(this, TestDrawActivity.class));
+            } else if (item.getTitle().equals("DEBUG:KanjiCheck")) {
+                startActivity(new Intent(this, KanjiCheckActivity.class));
+            } else if (item.getTitle().equals("DEBUG:SpenTest")) {
+                startActivity(new Intent(this, SpenDrawActivity.class));
+            } else if (item.getTitle().equals("DEBUG:LockUnlock")) {
+                getLockChecker().coreUnlock();
+            } else if (item.getTitle().equals("DEBUG:IabConsume")) {
+                lockChecker.startConsume();
+            }
+        }
+
         return true;
     }
 
@@ -782,7 +788,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Editor ed = prefs.edit();
                 ed.remove(currentCharacterSet.pathPrefix);
-                ed.commit();
+                ed.apply();
                 currentCharacterSet.progressReset(KanjiMasterActivity.this);
                 loadNextCharacter(false);
 

@@ -63,6 +63,7 @@
                     android:layout_gravity="bottom|start"
                     android:layout_marginLeft="106dp"
                     android:layout_marginStart="106dp"
+                    android:elevation="@dimen/elevation_low"
 
                     />
 
@@ -70,14 +71,16 @@
                     android:id="@+id/teachButton"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
-                    android:layout_gravity="bottom|start" />
+                    android:layout_gravity="bottom|start"
+                    android:elevation="@dimen/elevation_low" />
 
 
                 <dmeeuwis.nakama.views.FloatingActionButton
                     android:id="@+id/finishedButton"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
-                    android:layout_gravity="bottom|end" />
+                    android:layout_gravity="bottom|end"
+                    android:elevation="@dimen/elevation_low" />
             </android.support.v7.widget.CardView>
 
             <ImageView
@@ -85,7 +88,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:contentDescription="@string/reviewing_content_description"
-                android:elevation="10dp"
+                android:elevation="@dimen/elevation_high"
                 android:src="@drawable/review_bug"
                 android:visibility="gone" />
 
@@ -181,13 +184,15 @@
                 android:id="@+id/practiceButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_gravity="bottom|start" />
+                android:layout_gravity="bottom|start"
+                android:elevation="@dimen/elevation_low" />
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/nextButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_gravity="bottom|end" />
+                android:layout_gravity="bottom|end"
+                android:elevation="@dimen/elevation_low" />
         </FrameLayout>
 
         <LinearLayout
@@ -269,7 +274,8 @@
                     android:id="@id/correctNextButton"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
-                    android:layout_gravity="bottom|end" />
+                    android:layout_gravity="bottom|end"
+                    android:elevation="@dimen/elevation_low" />
             </FrameLayout>
         </LinearLayout>
     </dmeeuwis.nakama.primary.SafeViewFlipper>
