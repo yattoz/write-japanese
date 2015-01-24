@@ -258,7 +258,11 @@ public class DrawView extends View implements OnTouchListener {
 
 			if(distanceInclude){
                 double direction = PathCalculator.angle(lastDraw.x, lastDraw.y, hx, hy);
-                boolean directionInclude = lastDirection == null || (Math.abs(lastDirection - direction) >= DIRECTION_LIMIT && distance >= MIN_DRAW_POINT_DIRECTION_DISTANCE_PX);
+                boolean directionInclude =
+                        lastDirection == null ||
+                                (Math.abs(lastDirection - direction) >= DIRECTION_LIMIT
+                                && distance >= MIN_DRAW_POINT_DIRECTION_DISTANCE_PX)
+                                && drawPoints.size() > 2;       // ignore sudden changes at beginning of stroke
 
 				Point latest = new Point(hx, hy);
 				drawCanvas.drawLine(lastDraw.x, lastDraw.y, hx, hy, fingerPaint);
