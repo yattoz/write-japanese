@@ -42,12 +42,14 @@ public class DrawView extends View implements OnTouchListener {
 
 	static final private float MIN_GRADING_POINT_DISTANCE_DP = 25;
 	static final private float MIN_DRAW_POINT_DISTANCE_DP = 1;
+    static final private float MIN_DRAW_POINT_DIRECTION_DISTANCE_DP = 5;
 	static final private float PAINT_THICKNESS_DP = 4;
 
 	private float PAINT_THICKNESS_PX;
 	private float MIN_GRADING_POINT_DISTANCE_PX;
 	private float MIN_DRAW_POINT_DISTANCE_PX;
-	
+    private float MIN_DRAW_POINT_DIRECTION_DISTANCE_PX;
+
 	// user input data stored here
 	protected List<List<Point>> linesToDraw = new ArrayList<>();
 	protected List<List<Point>> linesToGrade = new ArrayList<>();
@@ -107,6 +109,7 @@ public class DrawView extends View implements OnTouchListener {
         Resources r = getContext().getResources();
         MIN_GRADING_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_GRADING_POINT_DISTANCE_DP, r.getDisplayMetrics());
         MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DISTANCE_DP, r.getDisplayMetrics());
+        MIN_DRAW_POINT_DIRECTION_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DIRECTION_DISTANCE_DP, r.getDisplayMetrics());
         PAINT_THICKNESS_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, r.getDisplayMetrics());
 
         this.setOnTouchListener(this);
@@ -224,7 +227,7 @@ public class DrawView extends View implements OnTouchListener {
 		fadeAlpha = 255;
 		if(fadeTimer == null){
 			fadeTimer = new Timer();
-			fadeTimer.schedule(new FadeTimerTask(), 0, 20);
+			fadeTimer.schedule(new FadeTimerTask(), 0, 16);
 		}
 	}
 	
@@ -255,7 +258,7 @@ public class DrawView extends View implements OnTouchListener {
 
 			if(distanceInclude){
                 double direction = PathCalculator.angle(lastDraw.x, lastDraw.y, hx, hy);
-                boolean directionInclude = lastDirection == null || Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
+                boolean directionInclude = lastDirection == null || (Math.abs(lastDirection - direction) >= DIRECTION_LIMIT && distance >= MIN_DRAW_POINT_DIRECTION_DISTANCE_PX);
 
 				Point latest = new Point(hx, hy);
 				drawCanvas.drawLine(lastDraw.x, lastDraw.y, hx, hy, fingerPaint);

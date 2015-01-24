@@ -469,7 +469,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             flipperAnimationListener.animateOnFinish = new Animatable[]{correctAnimation, playbackAnimation};
             flipper.setDisplayedChild(State.REVIEWING.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
-
         }
     }
 
