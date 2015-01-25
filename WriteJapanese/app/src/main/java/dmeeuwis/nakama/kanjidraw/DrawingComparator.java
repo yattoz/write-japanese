@@ -35,7 +35,7 @@ public class DrawingComparator {
 	final AssetFinder assetFinder;
     final CharacterStudySet hiraganaSet, katakanaSet;
 
-    static private final boolean debug = true;
+    static private final boolean debug = false;
 	
 	public DrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder){
 		this.target = target; 
