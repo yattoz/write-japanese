@@ -27,7 +27,7 @@ public class ProgressTracker {
 		}
 	}
 	
-	final private Map<Character, Integer> recordSheet;
+	final private LinkedHashMap<Character, Integer> recordSheet;
 
 	public ProgressTracker(String characters){
 		this.recordSheet = new LinkedHashMap<>(characters.length());
@@ -44,7 +44,7 @@ public class ProgressTracker {
 	}
 	
 	
-	private ProgressTracker(Map<Character, Integer> recordSheet){
+	private ProgressTracker(LinkedHashMap<Character, Integer> recordSheet){
 		this.recordSheet = recordSheet;
 	}
 
@@ -162,19 +162,19 @@ public class ProgressTracker {
 		return all;
 	}
 
-	public static ProgressTracker loadFromString(String savedString){
-		Map<Character, Integer> newMap = new HashMap<>();
+	public void updateFromString(String savedString){
+        if(savedString == null) return;
+
 		String[] lines = savedString.split("\n");
 		for(String l: lines){
 			String[] parts = l.split("=");
 			if(parts.length < 2){
 			} else if(parts[1].equals("!")){
-				newMap.put(parts[0].charAt(0), null);
+				this.recordSheet.put(parts[0].charAt(0), null);
 			} else {
-				newMap.put(parts[0].charAt(0), Integer.parseInt(parts[1]));
+				this.recordSheet.put(parts[0].charAt(0), Integer.parseInt(parts[1]));
 			}
 		}
-		return new ProgressTracker(newMap);
 	}
 
 	public String saveToString(){

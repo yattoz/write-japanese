@@ -28,21 +28,21 @@ public class DrawingComparator {
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 	static private final int PERCENTAGE_DISTANCE_DIFF_LIMIT = 100;
 
+    static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null);
+    static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null);
+
 	final char target;
 	final PointDrawing known;
 	final PointDrawing drawn;
 	final int drawingAreaMaxDim;
 	final AssetFinder assetFinder;
-    final CharacterStudySet hiraganaSet, katakanaSet;
 
     static private final boolean debug = false;
 	
 	public DrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder){
 		this.target = target; 
 		this.assetFinder = assetFinder;
-        this.hiraganaSet = CharacterSets.hiragana(null);
-        this.katakanaSet = CharacterSets.katakana(null);
-		
+
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 		Rect drawnBox = this.drawn.findBoundingBox();
 		

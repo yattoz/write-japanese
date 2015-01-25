@@ -1,13 +1,12 @@
 package dmeeuwis.nakama.kanjidraw;
 
+import android.graphics.Point;
+import android.graphics.Rect;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.util.Log;
 
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
 
@@ -15,14 +14,13 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 
 	private final List<Stroke> strokes;
 	
-	private Rect boundingBoxCache = null;
-	
 	public static PointDrawing fromPoints(List<List<Point>> points){
 		List<Stroke> strokes = new ArrayList<>(points.size());
 		for(List<Point> p: points)
 			strokes.add(new Stroke(p));
 		return new PointDrawing(strokes);
 	}
+
 
 	public PointDrawing(List<Stroke> pointStrokes){
 		this.strokes = Collections.unmodifiableList(pointStrokes);
@@ -75,17 +73,10 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	}
 	
 	public PointDrawing scaleToBox(Rect box){
-		Log.i("nakama", "Scaling drawing to box " + box);
 		Rect bbSubject = this.findBoundingBox();
 
-		int desiredXSize = box.right - box.left;
-		int desiredYSize = box.bottom - box.top;
-
-		int currentXSize = bbSubject.right;
-		int currentYSize = bbSubject.bottom;
-		
-		float increaseXFactor = (float)desiredXSize / currentXSize;
-		float increaseYFactor = (float)desiredYSize / currentYSize;
+		float increaseXFactor = (float)(box.right - box.left) / bbSubject.right;
+		float increaseYFactor = (float)(box.bottom - box.top) / bbSubject.bottom;
 		
 		List<List<Point>> scaled = new ArrayList<>(this.strokeCount());
 		for(Stroke lp: this.strokes){

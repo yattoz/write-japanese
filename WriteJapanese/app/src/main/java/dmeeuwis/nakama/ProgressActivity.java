@@ -109,12 +109,8 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 
     	CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(this);
         String existing = cdb.getExistingProgress(callingPath);
-        ProgressTracker tracker;
-        if(existing != null){
-        	tracker = ProgressTracker.loadFromString(existing);
-        } else {
-        	tracker = new ProgressTracker(characterList);
-        }
+        ProgressTracker tracker = new ProgressTracker(characterList);
+       	tracker.updateFromString(existing);
         scores = tracker.getAllScores();
 
 		int passedCount = 0, trainingCount = 0, failedCount = 0;

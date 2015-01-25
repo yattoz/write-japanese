@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Random;
@@ -128,7 +127,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		double ran = random.nextDouble();
         this.reviewing = true;
        	int charactersSeen = tracker.getAllScores().size();
-        Set<Character> availSet = new HashSet<>(availableCharactersSet());
+        Set<Character> availSet = new LinkedHashSet<>(availableCharactersSet());
         Log.d("nakama", "CharacterStudySet: removed curr chr " + this.currentChar + " from selection.");
         availSet.remove(this.currentChar);
         Character next = null;
@@ -202,11 +201,6 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		String existingProgress;
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
 		existingProgress = cdb.getExistingProgress(pathPrefix);
-
-		if(existingProgress == null){
-			tracker = new ProgressTracker(this.allCharactersSet);
-		} else {
-			tracker = ProgressTracker.loadFromString(existingProgress);
-		}
+		tracker.updateFromString(existingProgress);
 	}
 }
