@@ -35,7 +35,7 @@ public class DrawingComparator {
 	final AssetFinder assetFinder;
     final CharacterStudySet hiraganaSet, katakanaSet;
 
-    static private final boolean debug = false;
+    static private final boolean debug = true;
 	
 	public DrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder){
 		this.target = target; 
@@ -175,7 +175,7 @@ public class DrawingComparator {
 				if(!s.knownStrokeIndex.equals(s.drawnStrokeIndex)) {
 					for(StrokeResult subS: bestStrokes){
 						if(s.drawnStrokeIndex.equals(subS.knownStrokeIndex) && subS.score == 0){
-							c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are right, but drawn in the wrong order.");
+							c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.");
 							break best;
 						}
 					}

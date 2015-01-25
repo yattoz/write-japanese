@@ -41,12 +41,14 @@ public class DrawView extends View implements OnTouchListener {
     private final static double DIRECTION_LIMIT = Math.PI / 8;
 
 	static final private float MIN_GRADING_POINT_DISTANCE_DP = 25;
-	static final private float MIN_DRAW_POINT_DISTANCE_DP = 1;
+    static final private float ABSOLUTE_MIN_GRADING_POINT_DISTANCE_DP = 5;
+	static final private float MIN_DRAW_POINT_DISTANCE_DP = 0;
     static final private float MIN_DRAW_POINT_DIRECTION_DISTANCE_DP = 5;
 	static final private float PAINT_THICKNESS_DP = 4;
 
 	private float PAINT_THICKNESS_PX;
 	private float MIN_GRADING_POINT_DISTANCE_PX;
+    private float ABSOLUTE_MIN_GRADING_POINT_DISTANCE_PX;
 	private float MIN_DRAW_POINT_DISTANCE_PX;
     private float MIN_DRAW_POINT_DIRECTION_DISTANCE_PX;
 
@@ -107,6 +109,7 @@ public class DrawView extends View implements OnTouchListener {
         a.recycle();
 
         Resources r = getContext().getResources();
+        ABSOLUTE_MIN_GRADING_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ABSOLUTE_MIN_GRADING_POINT_DISTANCE_DP, r.getDisplayMetrics());
         MIN_GRADING_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_GRADING_POINT_DISTANCE_DP, r.getDisplayMetrics());
         MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DISTANCE_DP, r.getDisplayMetrics());
         MIN_DRAW_POINT_DIRECTION_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DIRECTION_DISTANCE_DP, r.getDisplayMetrics());
@@ -270,9 +273,10 @@ public class DrawView extends View implements OnTouchListener {
 				dirtyBox.union(hx, hy);
 
                 final double gradeDistance = PathCalculator.distance(lastGrade.x, lastGrade.y, hx, hy);
+                final boolean absoluteMinimumGradeDistance = gradeDistance >= ABSOLUTE_MIN_GRADING_POINT_DISTANCE_PX;
                 final boolean gradeDistanceInclude = gradeDistance >= MIN_GRADING_POINT_DISTANCE_PX;
 
-				if(directionInclude || gradeDistanceInclude){
+				if( (absoluteMinimumGradeDistance && directionInclude) || gradeDistanceInclude){
 					gradePoints.add(latest);
 					lastGrade = latest;
 				}

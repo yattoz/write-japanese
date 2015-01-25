@@ -50,6 +50,7 @@ import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.DrawViewTestActivity;
 import dmeeuwis.nakama.KanjiCheckActivity;
 import dmeeuwis.nakama.SpenDrawActivity;
 import dmeeuwis.nakama.TestDrawActivity;
@@ -78,7 +79,7 @@ import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
-    public final static boolean DEBUG = false;
+    public final static boolean DEBUG = true;
 
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
@@ -709,6 +710,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         inflater.inflate(R.menu.actionbar, menu);
         if(DEBUG) {
             menu.add("DEBUG:DrawTest");
+            menu.add("DEBUG:DrawViewComparison");
             menu.add("DEBUG:SpenTest");
             menu.add("DEBUG:KanjiCheck");
             menu.add("DEBUG:LockUnlock");
@@ -764,6 +766,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 startActivity(new Intent(this, TestDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:KanjiCheck")) {
                 startActivity(new Intent(this, KanjiCheckActivity.class));
+            } else if (item.getTitle().equals("DEBUG:DrawViewComparison")) {
+                startActivity(new Intent(this, DrawViewTestActivity.class));
             } else if (item.getTitle().equals("DEBUG:SpenTest")) {
                 startActivity(new Intent(this, SpenDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:LockUnlock")) {
