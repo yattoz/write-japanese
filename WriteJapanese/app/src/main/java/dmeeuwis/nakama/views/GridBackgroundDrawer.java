@@ -18,8 +18,6 @@ public final class GridBackgroundDrawer {
         init();
         this.gridPaddingTop = gridPaddingTop;
         this.gridPaddingLeft = gridPaddingLeft;
-
-        Log.i("nakama", "GridBackgroundDrawer: using gridPaddings: top=" + gridPaddingTop + ", left=" + gridPaddingLeft);
     }
 
      private void init(){
@@ -37,9 +35,6 @@ public final class GridBackgroundDrawer {
 
         final float middleX = (width - gridPaddingLeft) / 2 + gridPaddingLeft;
         final float middleY = (height - gridPaddingTop) / 2 + gridPaddingTop;
-
-        Log.i("nakama", String.format("GridBackgroundDrawer: width: %d, height: %d, gridPaddingLeft: %d, gridPaddingTop: %d, middleX: %.2f, middleHeight: %.2f",
-                width, height, gridPaddingLeft, gridPaddingTop, middleX, middleY));
 
 		// y-axis: middle to top
 		gridPath.moveTo(middleX, middleY);

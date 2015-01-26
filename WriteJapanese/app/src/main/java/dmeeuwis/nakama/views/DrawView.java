@@ -9,7 +9,6 @@ import java.util.TimerTask;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -38,7 +37,7 @@ public class DrawView extends View implements OnTouchListener {
 
 	public final static int BACKGROUND_COLOR = 0xFFece5b4;
 
-	static final private float MIN_DRAW_POINT_DISTANCE_DP = 1;
+	static final private float MIN_DRAW_POINT_DISTANCE_DP = 0.0f;
 	static final private float PAINT_THICKNESS_DP = 4;
 
 	private float PAINT_THICKNESS_PX;
@@ -52,14 +51,11 @@ public class DrawView extends View implements OnTouchListener {
 
 	protected Paint fingerPaint = new Paint();
 	protected Paint fadePaint = new Paint();
-	
+
 	protected OnStrokeListener onStrokeListener = null;
 	protected OnClearListener onClearListener = null;
 	
 	protected List<OnTouchListener> extraListeners = new LinkedList<>();
-
-	protected Bitmap drawBitmap;
-	protected Canvas drawCanvas;
 
     protected Integer gridPaddingLeft = 0, gridPaddingTop = 0;
 
@@ -93,14 +89,15 @@ public class DrawView extends View implements OnTouchListener {
 	public DrawView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
+        DisplayMetrics displayMetrics = new DisplayMetrics();
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
         this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
         this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
         a.recycle();
 
         Resources r = getContext().getResources();
-        MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DISTANCE_DP, r.getDisplayMetrics());
-        PAINT_THICKNESS_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, r.getDisplayMetrics());
+        MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DISTANCE_DP, displayMetrics);
+        PAINT_THICKNESS_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, displayMetrics);
 
         this.setOnTouchListener(this);
 
@@ -118,10 +115,8 @@ public class DrawView extends View implements OnTouchListener {
         this.fadePaint.setAntiAlias(true);
         this.fadePaint.setDither(true);
         this.fadePaint.setStrokeWidth(PAINT_THICKNESS_PX);
-        this.fingerPaint.setColor(Color.BLACK);
+        this.fadePaint.setColor(Color.BLACK);
 
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager wm = (WindowManager)context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE); // the results will be higher than using the activity context object or the getWindowManager() shortcut
         wm.getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels;
@@ -150,7 +145,7 @@ public class DrawView extends View implements OnTouchListener {
 	public void clear(){
 		this.linesToDraw = new ArrayList<>();
 		currentDrawLine = new ArrayList<>(200);
-		redraw();
+		this.invalidate();
 		
 		if(this.onClearListener != null)
 			this.onClearListener.onClear();
@@ -182,7 +177,7 @@ public class DrawView extends View implements OnTouchListener {
         this.linesToFade.add(linesToDrawRef.get(linesToDrawRef.size() - 1));
 		this.linesToDraw = Util.popCopy(linesToDrawRef);
 
-		redraw();
+        this.invalidate();
 		startFadeTimer();
 
 		if(linesToDrawRef.size() == 0 && this.onClearListener != null){
@@ -220,7 +215,6 @@ public class DrawView extends View implements OnTouchListener {
 
 			if(distanceInclude){
 				Point latest = new Point(hx, hy);
-				drawCanvas.drawLine(lastDraw.x, lastDraw.y, hx, hy, fingerPaint);
 				dirtyBox.union(lastDraw.x, lastDraw.y);
 				dirtyBox.union(hx, hy);
 
@@ -290,45 +284,25 @@ public class DrawView extends View implements OnTouchListener {
         grid.measure(wh.width, wh.height);
 	}
 	
-	private final void redraw(){
-        if(drawBitmap == null){ return; }
+	@Override protected void onDraw(Canvas canvas) {
+        canvas.drawColor(backgroundColor);
 
-		drawBitmap.eraseColor(backgroundColor);
+        grid.measure(getWidth(), getHeight());
+        grid.draw(canvas);
 
-		grid.measure(getWidth(), getHeight());
-		grid.draw(drawCanvas);
-		
+        for(int pi = 1; pi < currentDrawLine.size(); pi++){
+            Point p0 = currentDrawLine.get(pi-1);
+            Point p1 = currentDrawLine.get(pi);
+            canvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
+        }
+
         for(List<Point> line: this.linesToDraw){
             for(int pi = 1; pi < line.size(); pi++){
                 Point p0 = line.get(pi-1);
                 Point p1 = line.get(pi);
-                drawCanvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
+                canvas.drawLine(p0.x, p0.y, p1.x, p1.y, this.fingerPaint);
             }
         }
-	}
-	
-	private final void initGrid(int decidedWidth, int decidedHeight){
-		if(decidedWidth == 0 || decidedHeight == 0) return;
-
-		boolean remakeBitmaps = drawBitmap == null || decidedWidth != drawBitmap.getWidth() || decidedHeight != drawBitmap.getHeight();
-		if(remakeBitmaps){
-			//Log.i("nakama", "DrawView initGrid bitmap recreate");
-			if(drawBitmap != null) drawBitmap.recycle();
-			drawBitmap = Bitmap.createBitmap(decidedWidth, decidedHeight, Bitmap.Config.ARGB_4444);     // 6.6MB
-			drawCanvas = new Canvas(drawBitmap);
-		}
-
-        grid.measure(getWidth(), getHeight());
-		redraw();
-	}
-
-	@Override protected void onDraw(Canvas canvas) {
-		if(drawBitmap == null){
-			initGrid(getWidth(), getHeight());
-		}
-
-        grid.draw(canvas);
-		canvas.drawBitmap(drawBitmap, 0, 0, null);
 		if(fadeAlpha > 0){
 			fadePaint.setAlpha(fadeAlpha);
             for(List<Point> l: this.linesToFade){
