@@ -78,7 +78,7 @@ import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
-    public final static boolean DEBUG = false;
+    public final static boolean DEBUG = true;
 
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}

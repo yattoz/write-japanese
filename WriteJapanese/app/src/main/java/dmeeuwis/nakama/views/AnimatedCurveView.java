@@ -290,10 +290,6 @@ public class AnimatedCurveView extends View implements Animatable {
 			time = 0;
 			scaleAndOffsets.calculate(unscaledBoundingBox, getWidth() - this.paddingLeft, getHeight() - this.paddingTop);
 
-            Log.i("nakama", String.format("unscaled: %.2f %.2f %.2f %.2f; scaled-offsets: x=%.2f y=%.2f",
-                    unscaledBoundingBox.top, unscaledBoundingBox.right, unscaledBoundingBox.bottom, unscaledBoundingBox.left,
-                    scaleAndOffsets.xOffset, scaleAndOffsets.yOffset));
-
 			if(drawTime == DrawTime.STATIC){
 				Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");
 				while(drawIncrement() != DrawStatus.FINISHED){ /* loop */ }
