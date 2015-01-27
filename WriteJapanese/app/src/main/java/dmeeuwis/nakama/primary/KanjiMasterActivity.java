@@ -18,6 +18,7 @@ import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
@@ -79,8 +80,6 @@ import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
-    public final static boolean DEBUG = true;
-
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
@@ -139,7 +138,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
-        if(DEBUG) {
+        if(BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
@@ -708,7 +707,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
-        if(DEBUG) {
+        if(BuildConfig.DEBUG) {
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:DrawViewComparison");
             menu.add("DEBUG:SpenTest");
@@ -761,7 +760,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
         }
 
-        if(DEBUG) {
+        if(BuildConfig.DEBUG) {
             if (item.getTitle().equals("DEBUG:DrawTest")) {
                 startActivity(new Intent(this, TestDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:KanjiCheck")) {

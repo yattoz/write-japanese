@@ -10,15 +10,13 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.util.Log;
 import android.util.TypedValue;
 
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
 
 public class PointDrawing implements Iterable<Stroke>, Drawing {
-    static final private float MIN_GRADING_POINT_DISTANCE_DP = 25;
+    static final private float MIN_POINT_DISTANCE_DP = 25;
+    static final private float MIN_POINT_DISTANCE_FOR_DIRECTION_DP = 10;
     private final static double DIRECTION_LIMIT = Math.PI / 8;
 
 	private final List<Stroke> strokes;
@@ -32,7 +30,8 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 
     public static PointDrawing fromDetailedPoints(List<List<Point>> points, Context context){
         Resources r = context.getResources();
-        float MIN_GRADING_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_GRADING_POINT_DISTANCE_DP, r.getDisplayMetrics());
+        float MIN_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_POINT_DISTANCE_DP, r.getDisplayMetrics());
+        float MIN_POINT_DISTANCE_FOR_DIRECTION_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_POINT_DISTANCE_FOR_DIRECTION_DP, r.getDisplayMetrics());
 
         List<Stroke> gradeLines = new ArrayList<>(points.size());
         for(List<Point> line: points){
@@ -43,13 +42,13 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
                 Point p0 = line.get(i - 1);
                 Point p1 = line.get(i);
 
-                double direction = PathCalculator.angle(p0.x, p0.y, p1.x, p1.y);
-                boolean directionInclude = Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
-
                 final double gradeDistance = PathCalculator.distance(lastGrade.x, lastGrade.y, p1.x, p1.y);
-                final boolean gradeDistanceInclude = gradeDistance >= MIN_GRADING_POINT_DISTANCE_PX;
 
-                if (directionInclude || gradeDistanceInclude) {
+                double direction = PathCalculator.angle(p0.x, p0.y, p1.x, p1.y);
+                boolean directionInclude = gradeDistance >= MIN_POINT_DISTANCE_FOR_DIRECTION_PX && Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
+                final boolean gradeDistanceInclude = gradeDistance >= MIN_POINT_DISTANCE_PX;
+
+                if (!lastGrade.equals(p1) && (directionInclude || gradeDistanceInclude)) {
                     gradeLine.add(p1);
                     lastGrade = p1;
                 }

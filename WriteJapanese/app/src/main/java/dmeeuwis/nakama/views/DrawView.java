@@ -42,7 +42,6 @@ public class DrawView extends View implements OnTouchListener {
 
 	private float PAINT_THICKNESS_PX;
 	private float MIN_DRAW_POINT_DISTANCE_PX;
-    private float MIN_DRAW_POINT_DIRECTION_DISTANCE_PX;
 
 	// user input data stored here
 	protected List<List<Point>> linesToDraw = new ArrayList<>();
@@ -90,13 +89,12 @@ public class DrawView extends View implements OnTouchListener {
 	public DrawView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
         this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingLeft, 0);
         this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.DrawView_gridPaddingTop, 0);
         a.recycle();
 
-        Resources r = getContext().getResources();
         MIN_DRAW_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_DRAW_POINT_DISTANCE_DP, displayMetrics);
         PAINT_THICKNESS_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PAINT_THICKNESS_DP, displayMetrics);
 

@@ -37,8 +37,6 @@ public class DrawingComparator {
 	final int drawingAreaMaxDim;
 	final AssetFinder assetFinder;
 
-    static private final boolean debug = false;
-	
 	public DrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder){
 		this.target = target; 
 		this.assetFinder = assetFinder;
@@ -56,12 +54,12 @@ public class DrawingComparator {
 		this.FAIL_POINT_END_DISTANCE = (float)(drawingAreaMaxDim * 0.40);
 		this.CIRCLE_DETECTION_DISTANCE = (float)(drawingAreaMaxDim * 0.10);
 		
-		if(debug) Log.d("nakama", "PathComparator.new: drawingAreaWidth: " + drawingAreaMaxDim);
-		if(debug) Log.d("nakama", "PathComparator.new: scaled drawn to " + this.drawn.findBoundingBox());
-		if(debug) Log.d("nakama", "PathComparator.new: circle detection distance " + this.CIRCLE_DETECTION_DISTANCE);
-		if(debug) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
-		if(debug) Log.d("nakama", "PathComparator.new: known cut bounds: " + cutOffKnown.findBoundingBox());
-		if(debug) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
+		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: drawingAreaWidth: " + drawingAreaMaxDim);
+		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + this.drawn.findBoundingBox());
+		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: circle detection distance " + this.CIRCLE_DETECTION_DISTANCE);
+		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
+		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut bounds: " + cutOffKnown.findBoundingBox());
+		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
 	}
 
 	private static class StrokeCriticism {
@@ -110,7 +108,7 @@ public class DrawingComparator {
         }
 
         if(correctDiagonal){
-            if(debug) Log.d("nakama", "Correct diagonal detected! Going home early.");
+            if(BuildConfig.DEBUG) Log.d("nakama", "Correct diagonal detected! Going home early.");
             return new Criticism();
         }
 
@@ -120,32 +118,32 @@ public class DrawingComparator {
                 if(drawn_i == known_i){ continue; }         // calculated in previous block
 
 				StrokeCriticism result = compareStroke(known_i, drawn_i);
-				if(debug) Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
+				if(BuildConfig.DEBUG) Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
 				criticismMatrix[known_i][drawn_i] = result;
 				scoreMatrix[known_i][drawn_i] = result.cost;
 			}
 		}
 		
 	
-		if(debug) Log.d("nakama", "Score Matrix\n======================" + printMatrix(scoreMatrix) + "====================");
+		if(BuildConfig.DEBUG) Log.d("nakama", "Score Matrix\n======================" + printMatrix(scoreMatrix) + "====================");
 	
-		if(debug) Log.d("nakama", "Scanning for known intersects.");
+		if(BuildConfig.DEBUG) Log.d("nakama", "Scanning for known intersects.");
 		List<Intersection> knownIntersects = this.known.findIntersections();
-		if(debug) Log.d("nakama", "This kanji should have " + knownIntersects.size() + " intersects:\n" + Util.join("\n", knownIntersects) + "\n");
+		if(BuildConfig.DEBUG) Log.d("nakama", "This kanji should have " + knownIntersects.size() + " intersects:\n" + Util.join("\n", knownIntersects) + "\n");
 		
-		if(debug) Log.d("nakama", "Scanning for drawn intersects.");
+		if(BuildConfig.DEBUG) Log.d("nakama", "Scanning for drawn intersects.");
 		List<Intersection> drawnIntersects = this.drawn.findIntersections();
-		if(debug) Log.d("nakama", "This drawn kanji has " + drawnIntersects.size() + " intersects:\n" + Util.join("\n", drawnIntersects + "\n"));
+		if(BuildConfig.DEBUG) Log.d("nakama", "This drawn kanji has " + drawnIntersects.size() + " intersects:\n" + Util.join("\n", drawnIntersects + "\n"));
 
 		int intersectDistanceLimit = (int)(drawingAreaMaxDim * 0.3);
-		if(debug) Log.d("nakama", "Using max intersect distance of " + intersectDistanceLimit);
+		if(BuildConfig.DEBUG) Log.d("nakama", "Using max intersect distance of " + intersectDistanceLimit);
 		outer: for(Intersection knownInt: knownIntersects){
 			for(Intersection drawnInt: drawnIntersects){
 				double distance = PathCalculator.distance(knownInt.intersectPoint, drawnInt.intersectPoint);
 				if(drawnInt.strokesMatch(drawnInt) && distance <= intersectDistanceLimit){
 					continue outer;
 				} else {
-					if(debug) Log.d("nakama", "Saw distance between intersects " + drawnInt + " and known int " + knownInt.intersectPoint + " as " + distance);
+					if(BuildConfig.DEBUG) Log.d("nakama", "Saw distance between intersects " + drawnInt + " and known int " + knownInt.intersectPoint + " as " + distance);
 				}
 			}
 			c.add("Your " + Util.adjectify(knownInt.firstPathIndex, known.strokeCount()) + " and " + Util.adjectify(knownInt.secondPathIndex, known.strokeCount()) + " strokes should meet.");
@@ -163,7 +161,8 @@ public class DrawingComparator {
 			if(extraStrokes == 1){
 				c.add("You drew an extra stroke.");
 			} else {
-				c.add("You drew " + Util.nounify(extraStrokes) + " extra strokes.");
+				c.add("You drew " + Util.nounify(extraStrokes) + " extra strokes." +
+                        (BuildConfig.DEBUG ? "[ drawn=" + this.drawn.strokeCount() + "; known=" + this.known.strokeCount() + "; extra=" + extraStrokes + "]" : ""));
 			}
 		}
 		
@@ -283,26 +282,26 @@ public class DrawingComparator {
 	 * Compares one stroke to another, generating a list of criticisms.
 	 */
 	private StrokeCriticism compareStroke(int baseIndex, int challengerIndex){
-		if(debug) Log.d("nakama", "\n================================================================");
-		if(debug) Log.d("nakama", "Comparing base stroke " + baseIndex + " to challenger stroke " + challengerIndex);
+		if(BuildConfig.DEBUG) Log.d("nakama", "\n================================================================");
+		if(BuildConfig.DEBUG) Log.d("nakama", "Comparing base stroke " + baseIndex + " to challenger stroke " + challengerIndex);
 		List<StrokeCompareFailure> failures = new LinkedList<StrokeCompareFailure>();
 
 
 
 		Stroke bpath = this.known.get(baseIndex);
 		Stroke cpath = this.drawn.get(challengerIndex);
-		if(debug) Log.d("nakama", String.format("%30s:  Base: %6d Drawn: %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
+		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base: %6d Drawn: %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
 
-        if(debug) Log.d("nakama", String.format("Base points: " + Util.join(", ", bpath.points)));
-        if(debug) Log.d("nakama", String.format("Drawn points: " + Util.join(", ", cpath.points)));
+        if(BuildConfig.DEBUG) Log.d("nakama", String.format("Base points: " + Util.join(", ", bpath.points)));
+        if(BuildConfig.DEBUG) Log.d("nakama", String.format("Drawn points: " + Util.join(", ", cpath.points)));
 
 		Point bstart = bpath.startPoint;
 		Point bend = bpath.endPoint;
 		Point cstart = cpath.startPoint;
 		Point cend = cpath.endPoint;
 		
-		if(debug) Log.d("nakama", String.format("%30s:  Base[0]: %s Drawn[0]: %s", "Start points", bstart, cstart));
-		if(debug) Log.d("nakama", String.format("%30s:  Base[-1]: %s Drawn[-1]: %s", "End points", bend, cend));
+		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base[0]: %s Drawn[0]: %s", "Start points", bstart, cstart));
+		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base[-1]: %s Drawn[-1]: %s", "End points", bend, cend));
 		
 		/* Arc length is seeming to be not so accurate, due to all the minor fluctuation in a user's stroke throwing it off.
 		 * Lets rely more on distance traveled (distance from start point to end point ignoring curvature completely).
@@ -326,7 +325,7 @@ public class DrawingComparator {
 		double bDistanceTravelled = bpath.distanceFromStartToEndPoints();
 		double cDistanceTravelled = cpath.distanceFromStartToEndPoints();
 		int percentDiff = (int)(Math.abs(bDistanceTravelled - cDistanceTravelled) / ((bDistanceTravelled + cDistanceTravelled) / 2) * 100);
-		if(debug) Log.d("nakama", String.format("%30s:  %6.2f %6.2f. Percentage diff: %d, limit is %d", "Distance Travelled", bDistanceTravelled, cDistanceTravelled, percentDiff, PERCENTAGE_DISTANCE_DIFF_LIMIT));
+		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  %6.2f %6.2f. Percentage diff: %d, limit is %d", "Distance Travelled", bDistanceTravelled, cDistanceTravelled, percentDiff, PERCENTAGE_DISTANCE_DIFF_LIMIT));
 		if(percentDiff > PERCENTAGE_DISTANCE_DIFF_LIMIT)
 			failures.add(StrokeCompareFailure.DISTANCE_TRAVELLED);
 		
@@ -337,7 +336,7 @@ public class DrawingComparator {
 		final double bEndRadians = bpath.endDirection();
 		final double cEndRadians = cpath.endDirection();
 		
-		if(debug) Log.d("nakama", "Base stroke " + baseIndex + " has points: " + Util.join(", ", bpath.points));
+		if(BuildConfig.DEBUG) Log.d("nakama", "Base stroke " + baseIndex + " has points: " + Util.join(", ", bpath.points));
 		
 		double challengerStartDiff = Math.min((2 * Math.PI) - Math.abs(cStartRadians - cStartRadians), Math.abs(cStartRadians - cStartRadians));
 		double baseStartDiff = Math.min((2 * Math.PI) - Math.abs(bStartRadians - bStartRadians), Math.abs(cStartRadians - cStartRadians));
@@ -346,7 +345,7 @@ public class DrawingComparator {
 		final boolean baseSameStartEndDirection = baseStartDiff < STROKE_DIRECTION_LIMIT_RADIANS;
 		final boolean challengerSameStartEndDirection = challengerStartDiff < STROKE_DIRECTION_LIMIT_RADIANS;
 		if(smallDistance && baseSameStartEndDirection && challengerSameStartEndDirection){
-			if(debug) Log.d("nakama", "SPECIAL CASE: CIRCLE detected, ignoring stroke directions.");
+			if(BuildConfig.DEBUG) Log.d("nakama", "SPECIAL CASE: CIRCLE detected, ignoring stroke directions.");
 			return new StrokeCriticism(null, 0);
 		}
 				
@@ -356,7 +355,7 @@ public class DrawingComparator {
 			if(startDistance > FAIL_POINT_START_DISTANCE){
 				failures.add(StrokeCompareFailure.START_POINT_DIFFERENCE);
 			}
-			if(debug) Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "Start Point Difference", startDistance, bstart, cstart, FAIL_POINT_START_DISTANCE));
+			if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "Start Point Difference", startDistance, bstart, cstart, FAIL_POINT_START_DISTANCE));
 		}
 		
 		// end points should be close to each other.
@@ -365,7 +364,7 @@ public class DrawingComparator {
 			if(endDistance > FAIL_POINT_END_DISTANCE){
 				failures.add(StrokeCompareFailure.END_POINT_DIFFERENCE);
 			}
-			if(debug) Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "End Point Difference", endDistance, bend, cend, FAIL_POINT_END_DISTANCE));
+			if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "End Point Difference", endDistance, bend, cend, FAIL_POINT_END_DISTANCE));
 		}
 
 		// TODO: curvature differences: concave vs convex lines might have same length, but be wrong.
@@ -380,7 +379,7 @@ public class DrawingComparator {
 		String bStartDirection = Util.radiansToEnglish(bStartRadians);
 		String cStartDirection = Util.radiansToEnglish(cStartRadians);
 		double radianStartDiff = Math.min((2 * Math.PI) - Math.abs(bStartRadians - cStartRadians), Math.abs(bStartRadians - cStartRadians));
-		if(debug) Log.d("nakama", String.format("%30s:  %6.2f (%s) %6.2f (%s). Radian difference is %6.2f Limit %f.", "Start angle", bStartRadians, bStartDirection, cStartRadians, cStartDirection, radianStartDiff, STROKE_DIRECTION_LIMIT_RADIANS));
+		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  %6.2f (%s) %6.2f (%s). Radian difference is %6.2f Limit %f.", "Start angle", bStartRadians, bStartDirection, cStartRadians, cStartDirection, radianStartDiff, STROKE_DIRECTION_LIMIT_RADIANS));
 		if(radianStartDiff > STROKE_DIRECTION_LIMIT_RADIANS && !cStartDirection.equals(bStartDirection)){
 			failures.add(StrokeCompareFailure.START_DIRECTION_DIFFERENCE);
 		}
@@ -389,7 +388,7 @@ public class DrawingComparator {
 		String bEndDirection = Util.radiansToEnglish(bEndRadians);
 		String cEndDirection = Util.radiansToEnglish(cEndRadians);
 		double radianEndDiff = Math.min((2 * Math.PI) - Math.abs(bEndRadians - cEndRadians), Math.abs(bEndRadians - cEndRadians));
-		if(debug) Log.d("nakama", String.format("%30s:  %6.2f (%s) %6.2f (%s). Radian difference is %6.2f. Limit %f.", "End angle", bEndRadians, bEndDirection, cEndRadians, cEndDirection, radianEndDiff, STROKE_DIRECTION_LIMIT_RADIANS));
+		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  %6.2f (%s) %6.2f (%s). Radian difference is %6.2f. Limit %f.", "End angle", bEndRadians, bEndDirection, cEndRadians, cEndDirection, radianEndDiff, STROKE_DIRECTION_LIMIT_RADIANS));
 		if(radianEndDiff > STROKE_DIRECTION_LIMIT_RADIANS && !bEndDirection.equals(cEndDirection)){
 			failures.add(StrokeCompareFailure.END_DIRECTION_DIFFERENCE);
 		}
@@ -425,7 +424,7 @@ public class DrawingComparator {
 				//	"base dirs: " + bStartRadians + "; " + bEndRadians + "; challenger dirs: " + cStartRadians + ", " + cEndRadians +
 				//	"; base dirs: " + bStartDirection + ", " + bEndDirection + "; challenger dirs: " + cStartDirection + ", " + cEndDirection));
 		}
-		if(debug) Log.d("nakama", "========================== end of " + baseIndex + " vs " + challengerIndex);
+		if(BuildConfig.DEBUG) Log.d("nakama", "========================== end of " + baseIndex + " vs " + challengerIndex);
 
 		
 		if(failures.size() == 0) {
