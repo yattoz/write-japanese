@@ -50,6 +50,7 @@ import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.DrawViewTestActivity;
 import dmeeuwis.nakama.KanjiCheckActivity;
 import dmeeuwis.nakama.SpenDrawActivity;
 import dmeeuwis.nakama.TestDrawActivity;
@@ -469,7 +470,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             flipperAnimationListener.animateOnFinish = new Animatable[]{correctAnimation, playbackAnimation};
             flipper.setDisplayedChild(State.REVIEWING.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
-
         }
     }
 
@@ -710,6 +710,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         inflater.inflate(R.menu.actionbar, menu);
         if(DEBUG) {
             menu.add("DEBUG:DrawTest");
+            menu.add("DEBUG:DrawViewComparison");
             menu.add("DEBUG:SpenTest");
             menu.add("DEBUG:KanjiCheck");
             menu.add("DEBUG:LockUnlock");
@@ -765,6 +766,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 startActivity(new Intent(this, TestDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:KanjiCheck")) {
                 startActivity(new Intent(this, KanjiCheckActivity.class));
+            } else if (item.getTitle().equals("DEBUG:DrawViewComparison")) {
+                startActivity(new Intent(this, DrawViewTestActivity.class));
             } else if (item.getTitle().equals("DEBUG:SpenTest")) {
                 startActivity(new Intent(this, SpenDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:LockUnlock")) {

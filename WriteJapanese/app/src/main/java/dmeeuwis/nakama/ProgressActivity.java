@@ -36,7 +36,7 @@ import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.views.SingleBarChart;
 import dmeeuwis.nakama.views.SingleBarChart.BarChartEntry;
 
-public class ProgressActivity extends ActionBarActivity implements OnItemClickListener {
+public class ProgressActivity extends ActionBarActivity implements OnItemClickListener, LockCheckerHolder {
 
 	String callingClass;
 	String callingPath;
@@ -89,7 +89,6 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 			});
 
         charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc);
-        charSet = CharacterSets.fromName(callingPath, null, null);
         characterList = charSet.charactersAsString();
 
     	chars = characterList.toCharArray();
@@ -166,8 +165,13 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 			pd.show(this.getSupportFragmentManager(), "purchase");
 		}
 	}
-	
-	public class CharacterGridAdapter extends BaseAdapter {
+
+    @Override
+    public LockChecker getLockChecker() {
+        return this.lc;
+    }
+
+    public class CharacterGridAdapter extends BaseAdapter {
 
 	    final private Context context;
 	    final private String characterList;
@@ -211,7 +215,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 
 			boolean showLock = (unlockedCharacterList.size() != characterList.length()) && !unlockedCharacterList.contains(character);
 			if(showLock){
-				tv.setBackgroundResource(R.drawable.ic_lock_lock);
+				tv.setBackgroundResource(R.drawable.ic_lock_gray);
 				Drawable bg = tv.getBackground();
 				bg.setAlpha(50);
 			} else {

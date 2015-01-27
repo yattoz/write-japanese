@@ -102,9 +102,6 @@ public class TeachingActivity extends ActionBarActivity {
 	}
 	
 	public String getCharacter(){
-		if(this.character == null){
-			setupCharacter();
-		}
 		return this.character;
 	}
 
@@ -113,9 +110,6 @@ public class TeachingActivity extends ActionBarActivity {
     }
 
 	public String[] getCurrentCharacterSvg(){
-		if(this.currentCharacterSvg == null){
-			setupCharacter();
-		}
 		return this.currentCharacterSvg;
 	}
 
@@ -272,6 +266,7 @@ public class TeachingActivity extends ActionBarActivity {
 	}
 
     @Override protected void onNewIntent(Intent intent){
+        Log.i("nakama", "TeachingActivity: onNewIntent");
         this.setIntent(intent);
         setupCharacter();
         passCharacterDataToUi();

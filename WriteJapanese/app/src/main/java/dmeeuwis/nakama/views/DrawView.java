@@ -42,7 +42,8 @@ public class DrawView extends View implements OnTouchListener {
 
 	private float PAINT_THICKNESS_PX;
 	private float MIN_DRAW_POINT_DISTANCE_PX;
-	
+    private float MIN_DRAW_POINT_DIRECTION_DISTANCE_PX;
+
 	// user input data stored here
 	protected List<List<Point>> linesToDraw = new ArrayList<>();
     protected List<List<Point>> linesToFade = new ArrayList<>();
@@ -189,7 +190,7 @@ public class DrawView extends View implements OnTouchListener {
 		fadeAlpha = 255;
 		if(fadeTimer == null){
 			fadeTimer = new Timer();
-			fadeTimer.schedule(new FadeTimerTask(), 0, 20);
+			fadeTimer.schedule(new FadeTimerTask(), 0, 16);
 		}
 	}
 	
