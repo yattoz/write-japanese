@@ -37,18 +37,19 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
         for(List<Point> line: points){
             Point lastGrade = line.get(0);
             List<Point> gradeLine = new ArrayList<>();
+            gradeLine.add(line.get(0));
             double lastDirection = PathCalculator.angle(line.get(0).x, line.get(0).y, line.get(1).x, line.get(1).y);
             for(int i = 1; i < line.size(); i++) {
                 Point p0 = line.get(i - 1);
                 Point p1 = line.get(i);
 
                 final double gradeDistance = PathCalculator.distance(lastGrade.x, lastGrade.y, p1.x, p1.y);
-
-                double direction = PathCalculator.angle(p0.x, p0.y, p1.x, p1.y);
-                boolean directionInclude = gradeDistance >= MIN_POINT_DISTANCE_FOR_DIRECTION_PX && Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
+                final double direction = PathCalculator.angle(p0.x, p0.y, p1.x, p1.y);
+                final boolean directionInclude = gradeDistance >= MIN_POINT_DISTANCE_FOR_DIRECTION_PX && Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
                 final boolean gradeDistanceInclude = gradeDistance >= MIN_POINT_DISTANCE_PX;
+                final boolean lastPointBonusDistanceInclude = (i == (line.size()-1)) && gradeDistance >= (MIN_POINT_DISTANCE_PX / 2);
 
-                if (!lastGrade.equals(p1) && (directionInclude || gradeDistanceInclude)) {
+                if (!lastGrade.equals(p1) && (directionInclude || gradeDistanceInclude || lastPointBonusDistanceInclude)) {
                     gradeLine.add(p1);
                     lastGrade = p1;
                 }

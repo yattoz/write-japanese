@@ -179,7 +179,7 @@ public class DrawView extends View implements OnTouchListener {
         this.invalidate();
 		startFadeTimer();
 
-		if(linesToDrawRef.size() == 0 && this.onClearListener != null){
+		if(linesToDraw.size() == 0 && this.onClearListener != null){
 			this.onClearListener.onClear();
 		}
 	}
