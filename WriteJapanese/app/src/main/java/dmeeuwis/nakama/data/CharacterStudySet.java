@@ -174,8 +174,8 @@ public abstract class CharacterStudySet implements Iterable<Character> {
                 }
         	} finally {
         		if(next == null){
-                    Log.i("nakama", "CharacterStudySe: Known set progression: falling back to shuffle next " + next);
-                    next = tracker.shuffleNext(availSet);
+                    Log.i("nakama", "CharacterStudySe: Known set progression: falling back to random next " + next);
+                    next = tracker.randomNext(availSet);
         		}
         	}
         }

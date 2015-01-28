@@ -19,7 +19,7 @@ public class ProgressTracker {
 				return Progress.UNKNOWN;
 			} else if(in <= -2){
 				return Progress.FAILED;
-			} else if(in <= 2){
+			} else if(in <= 0){
 				return Progress.REVIEWING;
 			} else {
             	return Progress.PASSED;
@@ -89,7 +89,7 @@ public class ProgressTracker {
 	}
 	
 	public Character randomCorrectNext(Set<Character> allowedChars){
-		List<Character> matching = charactersMatchingScore(allowedChars, 1, 2, 3);
+		List<Character> matching = charactersMatchingScore(allowedChars, 1);
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 	
@@ -105,18 +105,21 @@ public class ProgressTracker {
         return shuffleNext(allowedChars);
 	}
 
+    public Character randomNext(Set<Character> allowedChars){
+        List<Character> matching = charactersMatchingScore(allowedChars, -2, -1, 0, 1);
+        if(matching.size() > 0){
+            return matching.get((int)(Math.random() * matching.size()));
+        }
+        throw new RuntimeException("Error: could not find a character to progress to.");
+    }
+
 	public Character shuffleNext(Set<Character> allowedChars){
 		List<Character> matching = charactersNotYetSeen(allowedChars);
 		if(matching.size() > 0){
 			return matching.get((int)(Math.random() * matching.size()));
 		}
 
-		matching = charactersMatchingScore(allowedChars, 0, 1, 2, 3);
-		if(matching.size() > 0){
-			return matching.get((int)(Math.random() * matching.size()));
-		}
-		
-		matching = charactersMatchingScore(allowedChars, -1, -2, -3);
+		matching = charactersMatchingScore(allowedChars, -1, -2, 0, 1);
 		if(matching.size() > 0){
 			return matching.get((int)(Math.random() * matching.size()));
 		}
@@ -139,7 +142,7 @@ public class ProgressTracker {
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
-		recordSheet.put(c, Math.min(3, score + 1));
+		recordSheet.put(c, Math.min(2, score + 1));
 	}
 
 	public void markFailure(Character c){
@@ -167,7 +170,7 @@ public class ProgressTracker {
 			} else if(parts[1].equals("!")){
 				this.recordSheet.put(parts[0].charAt(0), null);
 			} else {
-				this.recordSheet.put(parts[0].charAt(0), Integer.parseInt(parts[1]));
+				this.recordSheet.put(parts[0].charAt(0), Math.max(-2, Math.min(2, Integer.parseInt(parts[1]))));
 			}
 		}
 	}
