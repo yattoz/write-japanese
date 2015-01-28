@@ -137,12 +137,12 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         		// 35% chance of mistaken character
         		if(ran <= 0.35){
         			next = tracker.randomMistakenNext(availSet);
-        			Log.i("nakama", "Still learning progression: reviewing mistaken character " + next);
+        			Log.i("nakama", "CharacterStudySe: Still learning progression: reviewing mistaken character " + next);
 
        			// 15% chance of reviewing character
         		} else if(ran <= 0.40){
         			next = tracker.randomReviewingNext(availSet);
-        			Log.i("nakama", "Still learning progression: reviewing review character " + next);
+        			Log.i("nakama", "CharacterStudySe: Still learning progression: reviewing review character " + next);
         		}
         	} finally {
         		// 50% chance of new character
@@ -151,7 +151,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         			next = this.shuffling ?
         					tracker.shuffleNext(availSet) :
        						tracker.standardNext(availSet);
-        			Log.i("nakama", "Still learning progression: introducing new character " + next);
+        			Log.i("nakama", "CharacterStudySe: Still learning progression: introducing new character " + next);
         		}
         	}
 
@@ -160,20 +160,21 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         	try {
         		// 40% chance of previously mistaken character
         		if(ran <= 0.40 && charactersSeen > 0){
-        			next = tracker.randomReviewingNext(availSet);
-        			Log.i("nakama", "Known set progression: reviewing mistaken character " + next);
+                    next = tracker.randomMistakenNext(availSet);
+        			Log.i("nakama", "CharacterStudySe: Known set progression: reviewing mistaken character " + next);
 
        			// 15% chance of reviewing character
         		} else if(ran <= 0.80 && charactersSeen > 0){
         			next = tracker.randomReviewingNext(availSet);
-        			Log.i("nakama", "Known set progression: reviewing review character " + next);
+        			Log.i("nakama", "CharacterStudySe: Known set progression: reviewing review character " + next);
 
         		} else {
                     next = tracker.randomCorrectNext(availSet);
-                    Log.i("nakama", "Known set progression: reviewing previously correct character " + next);
+                    Log.i("nakama", "CharacterStudySe: Known set progression: reviewing previously correct character " + next);
                 }
         	} finally {
         		if(next == null){
+                    Log.i("nakama", "CharacterStudySe: Known set progression: falling back to shuffle next " + next);
                     next = tracker.shuffleNext(availSet);
         		}
         	}

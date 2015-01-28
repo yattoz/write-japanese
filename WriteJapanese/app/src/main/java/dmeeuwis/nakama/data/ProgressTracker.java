@@ -43,11 +43,6 @@ public class ProgressTracker {
 		}
 	}
 	
-	
-	private ProgressTracker(LinkedHashMap<Character, Integer> recordSheet){
-		this.recordSheet = recordSheet;
-	}
-
 	private List<Character> charactersMatchingScore(Set<Character> allowedChars, Integer... scores){
 		List<Integer> scoresList = Arrays.asList(scores);
 		List<Character> matching = new ArrayList<>();
@@ -89,12 +84,12 @@ public class ProgressTracker {
 
 	
 	public Character randomReviewingNext(Set<Character> allowedChars){
-		List<Character> matching = charactersMatchingScore(allowedChars, -1);
+		List<Character> matching = charactersMatchingScore(allowedChars, -1, 0);
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 	
 	public Character randomCorrectNext(Set<Character> allowedChars){
-		List<Character> matching = charactersMatchingScore(allowedChars, 2);
+		List<Character> matching = charactersMatchingScore(allowedChars, 1, 2, 3);
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 	
@@ -143,7 +138,7 @@ public class ProgressTracker {
 	public void markSuccess(Character c){
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
-		int score = recordSheet.get(c) == null ? 3 : recordSheet.get(c);
+		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
 		recordSheet.put(c, Math.min(3, score + 1));
 	}
 
