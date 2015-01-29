@@ -34,7 +34,7 @@ public class AnimatedCurveView extends View implements Animatable {
     public static enum DrawStatus { DRAWING, FINISHED }
 
 	static final private float FRAME_RATE_PER_SEC = 60;
-    static final private float FRAMES_PER_STROKE = 60;
+    static final private float FRAMES_PER_STROKE = 45;
 	static final private float T_INCREMENTS = 1 / FRAMES_PER_STROKE;
 
 	final Paint paint = new Paint();
