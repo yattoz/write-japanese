@@ -161,6 +161,11 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         		// 40% chance of previously mistaken character
         		if(ran <= 0.40 && charactersSeen > 0){
                     next = tracker.randomMistakenNext(availSet);
+
+                    // if no prev mistaken, then finish up reviewing
+                    if(next == null){
+                        next = tracker.randomReviewingNext(availSet);
+                    }
         			Log.i("nakama", "CharacterStudySe: Known set progression: reviewing mistaken character " + next);
 
        			// 15% chance of reviewing character
