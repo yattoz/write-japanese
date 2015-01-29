@@ -196,12 +196,14 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
 		cdb.recordProgress(pathPrefix, progressAsString);
+        Log.d("nakama", "CharacterStudySet: saved progress for " + pathPrefix + " as " + progressAsString);
 	}
 
 	public void load(Context context){
 		String existingProgress;
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
 		existingProgress = cdb.getExistingProgress(pathPrefix);
+        Log.d("nakama", "CharacterStudySet: loading progress set for " + pathPrefix + " as " + existingProgress);
 		tracker.updateFromString(existingProgress);
 	}
 }

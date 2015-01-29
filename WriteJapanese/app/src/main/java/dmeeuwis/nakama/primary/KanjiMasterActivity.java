@@ -138,16 +138,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
-        if(BuildConfig.DEBUG) {
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog()
-                            //      .penaltyDeath()
-                    .build());
-        }
-
-
-        Log.i("nakama", "MainActivity: onCreate about to make LockChecker.");
         lockChecker = new LockChecker(this,
                 new Runnable() {
                     @Override
@@ -160,12 +150,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                         }
                     }
                 });
-        Log.i("nakama", "MainActivity: onCreate made LockChecker.");
 
         setContentView(R.layout.main);
 
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
-        Log.i("nakama", "MainActivity: onCreate, loading dictionary set took " + (System.currentTimeMillis() - startTime) + "ms.");
 
         Animation outToLeft = AnimationUtils.loadAnimation(this, R.anim.screen_transition_out);
 
@@ -445,8 +433,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     public void setUiState(State requestedState) {
-        Log.i("nakama", "setUiState " + requestedState);
-
         if (requestedState.ordinal() == flipper.getDisplayedChild())
             return;
 
@@ -810,6 +796,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        saveCurrentUsingCharacterSet();
+        currentCharacterSet.save(this.getApplicationContext());
+
         if (!(itemPosition == 0 || itemPosition == 2)) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
@@ -842,6 +831,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 //			Toast.makeText(this, "Showing SS", Toast.LENGTH_SHORT);
 //			this.currentCharacterSet = this.joyouSS;
         }
+        this.currentCharacterSet.load(this.getApplicationContext());
         this.reviewBug.setVisibility(View.GONE);
         loadNextCharacter(false);
         drawPad.clear();

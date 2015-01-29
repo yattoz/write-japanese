@@ -1,5 +1,7 @@
 package dmeeuwis.nakama.data;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -161,6 +163,7 @@ public class ProgressTracker {
 	}
 
 	public void updateFromString(String savedString){
+        Log.d("nakama", "ProgressTracker: updateFromString: " + savedString);
         if(savedString == null) return;
 
 		String[] lines = savedString.split("\n");
