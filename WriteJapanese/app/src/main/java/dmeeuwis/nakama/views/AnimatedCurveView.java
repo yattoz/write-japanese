@@ -190,7 +190,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	private DrawStatus drawIncrement(){
 		List<Path> pathsToDrawRef = this.pathsToDraw;
 		List<ParameterizedEquation> eqnsRef = this.eqns;
-		if(time <= 1 && eqn_i < eqnsRef.size()){
+		if(time <= 0.99f && eqn_i < eqnsRef.size()){
 	    	Path path = null;
 
 	    	// initialize new path
