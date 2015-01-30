@@ -204,21 +204,20 @@ public class TeachingActivity extends ActionBarActivity {
     			Kanji k = dictSet.kanjiFinder().find(kanjiIn);
     			actionBar.setTitle("Studying " + k.meanings[0]);
 
-/*                if(actionBar.getTabCount() == 2){
+                if(actionBar.getTabCount() == 2){
                     actionBar.addTab(infoTab);      // might have been remove for kana
                 }
-*/
+
     		} catch(IOException e){
     			throw new RuntimeException(e);
     		}
     	} else {
     		actionBar.setTitle("Studying " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
-//            if(actionBar.getTabCount() == 3) {
-//                actionBar.removeTab(this.infoTab);
-//            }
+            if(actionBar.getTabCount() == 3) {
+                actionBar.removeTab(this.infoTab);
+            }
     	}
 
-//        this.infoFragment.updateCharacter(this);
         this.drawFragment.updateCharacter(this);
 	}
 

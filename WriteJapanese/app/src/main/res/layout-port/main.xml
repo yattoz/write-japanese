@@ -64,18 +64,18 @@
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/remindStoryButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:layout_gravity="bottom|start"
-                android:layout_marginBottom="96dp"
+                android:layout_marginBottom="72dp"
                 android:elevation="@dimen/elevation_low"
                 android:text="@string/remind_story_button"
                 />
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/teachButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:layout_gravity="bottom|start"
                 android:elevation="@dimen/elevation_low"
                 android:src="@drawable/ic_lock_lock"
