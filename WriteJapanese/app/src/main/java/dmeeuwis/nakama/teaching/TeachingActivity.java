@@ -1,8 +1,5 @@
 package dmeeuwis.nakama.teaching;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -10,20 +7,27 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBar.Tab;
-import android.support.v7.app.ActionBar.TabListener;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.astuetz.PagerSlidingTabStrip;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.Constants;
+import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.util.Util;
 
 public class TeachingActivity extends ActionBarActivity {
@@ -35,9 +39,10 @@ public class TeachingActivity extends ActionBarActivity {
 	
 	String callingClass;
 
-	ActionBar.Tab infoTab;
-	ActionBar.Tab drawTab;
-	ActionBar.Tab storyTab;
+    FragmentPagerAdapter kanjiAdapter, kanaAdapter;
+
+    ViewPager pager;
+    PagerSlidingTabStrip tabStrip;
 	TeachingStoryFragment storyFragment;
 	TeachingDrawFragment drawFragment;
     TeachingInfoFragment infoFragment;
@@ -116,7 +121,6 @@ public class TeachingActivity extends ActionBarActivity {
 	@Override public void onCreate(Bundle saveInstanceState) {
         long startTime = System.currentTimeMillis();
         super.onCreate(saveInstanceState);
-        final TeachingActivity self = this;
 
         Log.i("nakama", "TeachingActivity: onCreate starting.");
         this.setContentView(R.layout.fragment_container);
@@ -128,71 +132,29 @@ public class TeachingActivity extends ActionBarActivity {
 
         actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        pager = (ViewPager)findViewById(R.id.teachingViewPager);
+        final FragmentManager fm = getSupportFragmentManager();
 
         drawFragment = new TeachingDrawFragment();
-        drawTab = actionBar.newTab().setText("Trace"); // .setIcon(R.drawable.ic_action_edit);
-        drawTab.setTabListener(new TabListener() {
-            @Override
-            public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-                // Log.d("nakama", "drawTab onTabUnselected");
-            }
-
-            @Override
-            public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, drawFragment).commitAllowingStateLoss();
-            }
-
-            @Override
-            public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-                // Log.d("nakama", "drawTab onTabReselected");
-            }
-        });
-        actionBar.addTab(drawTab);
-
-        Log.i("nakama", "TeachingActivity: after drawTab: " + (System.currentTimeMillis() - startTime));
-
         storyFragment = new TeachingStoryFragment();
-        storyTab = actionBar.newTab().setText("Story"); //.setIcon(R.drawable.ic_action_edit);
-        storyTab.setTabListener(new TabListener() {
-            @Override
-            public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-                storyFragment.clearFocus();
-                storyFragment.saveStory(self);
-            }
+        infoFragment = new TeachingInfoFragment();
 
-            @Override
-            public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, storyFragment).commitAllowingStateLoss();
-            }
+        kanjiAdapter = new MyFragmentPagerAdapter(fm,
+                new Fragment[] { drawFragment, storyFragment, infoFragment },
+                new String[] { "Draw", "Story", "Usage" });
 
-            @Override
-            public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-                // Log.d("nakama", "storyTab onTabReselected");
-            }
-        });
-        actionBar.addTab(storyTab);
+        kanaAdapter = new MyFragmentPagerAdapter(fm,
+                new Fragment[] { drawFragment, storyFragment },
+                new String[] { "Draw", "Story" });
 
-        infoTab = actionBar.newTab().setText("Usage");
-        this.infoFragment = new TeachingInfoFragment();
-        infoTab.setTabListener(new TabListener() {
+        pager.setAdapter(kanjiAdapter);
 
-            @Override public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-                Log.d("nakama", "infoTab onTabUnselected");
-            }
+        tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
+        tabStrip.setIndicatorColor(getResources().getColor(R.color.actionbar_main));
+        tabStrip.setShouldExpand(true);
+        tabStrip.setViewPager(pager);
 
-            @Override public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-                Log.d("nakama", "infoTab onTabSelected");
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, infoFragment).commitAllowingStateLoss();
-            }
-
-            @Override public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-                Log.d("nakama", "infoTab onTabReselected");
-            }
-        });
-        actionBar.addTab(infoTab);
-
-        Log.i("nakama", "TeachingActivity: after storyTab: " + (System.currentTimeMillis() - startTime));
         passCharacterDataToUi();
         Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms.");
     }
@@ -203,19 +165,15 @@ public class TeachingActivity extends ActionBarActivity {
     		try {
     			Kanji k = dictSet.kanjiFinder().find(kanjiIn);
     			actionBar.setTitle("Studying " + k.meanings[0]);
-
-                if(actionBar.getTabCount() == 2){
-                    actionBar.addTab(infoTab);      // might have been remove for kana
-                }
-
+                pager.setAdapter(kanjiAdapter);
+                tabStrip.setViewPager(pager);
     		} catch(IOException e){
     			throw new RuntimeException(e);
     		}
     	} else {
     		actionBar.setTitle("Studying " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
-            if(actionBar.getTabCount() == 3) {
-                actionBar.removeTab(this.infoTab);
-            }
+            pager.setAdapter(kanaAdapter);
+            tabStrip.setViewPager(pager);
     	}
 
         this.drawFragment.updateCharacter(this);
@@ -239,7 +197,7 @@ public class TeachingActivity extends ActionBarActivity {
 			return true;
 		}
 		
-		return super.onOptionsItemSelected(item); // super.onOptionsItemSelected(item);
+		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
@@ -260,7 +218,6 @@ public class TeachingActivity extends ActionBarActivity {
 	
 	@Override public void onResume(){
 		Log.i("nakama", "TeachingActivity: onResume");
-        drawTab.select();
 		super.onResume();
 	}
 
@@ -269,5 +226,21 @@ public class TeachingActivity extends ActionBarActivity {
         this.setIntent(intent);
         setupCharacter();
         passCharacterDataToUi();
+    }
+
+    private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+        private final Fragment[] fragments;
+        private final String[] titles;
+
+        public MyFragmentPagerAdapter(FragmentManager fm, Fragment[] fragments, String[] titles) {
+            super(fm);
+            Log.e("nakama", "In MyFragmentPagerAdapter, FragmentManager is " + fm);
+            this.fragments = fragments;
+            this.titles = titles;
+        }
+
+        @Override public Fragment getItem(int position) { return fragments[position]; }
+        @Override public int getCount() { return fragments.length; }
+        @Override public String getPageTitle(int position){ return titles[position]; }
     }
 }
