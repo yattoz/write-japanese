@@ -136,7 +136,9 @@ public class AnimatedCurveView extends View implements Animatable {
 	 */
 	public int incrementCurveStroke(){
         Log.i("nakama", "AnimatedCurveView: incrementCurveStroke");
-        return (this.allowedStrokes++);
+        this.allowedStrokes++;
+        this.resumeAnimation();
+        return this.allowedStrokes;
 	}
 
     /**
@@ -222,16 +224,19 @@ public class AnimatedCurveView extends View implements Animatable {
 			if(eqn_i >= eqnsRef.size()-1){
 	    		if(onAnimationFinishCallback != null)
 	    			onAnimationFinishCallback.run();
-	    		return DrawStatus.FINISHED;
+                Log.i("nakama", "AnimatedCurveView: entering FINISHED");
+                return DrawStatus.FINISHED;
 			}
 			
 			if((autoIncrement) || ((eqn_i+1) < allowedStrokes)){
+                Log.i("nakama", "AnimatedCurveView: end of stroke, INCREMENTING");
 				eqn_i++;
 				time = -1;
 				pathsToDrawRef.add(eqn_i, new Path());
-			}
+			}  else {
+                return DrawStatus.FINISHED;
+            }
 		}
-		
 		return DrawStatus.DRAWING;
 	}
 	
@@ -242,22 +247,32 @@ public class AnimatedCurveView extends View implements Animatable {
 	public void startAnimation(int delayFirst){
 		stopAnimation();
 		clear();
-		
-		threadDrawStatus = DrawStatus.DRAWING;
+	    resumeAnimation();
+	}
+
+    public void resumeAnimation(){
+        if(animateTimer != null){
+            Log.i("nakama", "resumeAnimation: returning early, animateTimer not null");
+            return;
+        }
+
+        threadDrawStatus = DrawStatus.DRAWING;
         TimerTask task = new TimerTask() {
-			@Override
-			public void run() {
-				drawIncrementSafe();
-				if(threadDrawStatus == DrawStatus.FINISHED){
-					this.cancel();
-				}
-				postInvalidate();
-			}
-		};
+            @Override
+            public void run() {
+                drawIncrementSafe();
+                if(threadDrawStatus != DrawStatus.DRAWING){
+                    Log.i("nakama", "DrawStatus was " + threadDrawStatus + ", CANCELLING timer");
+                    this.cancel();
+                    animateTimer = null;
+                }
+                postInvalidate();
+            }
+        };
 
         this.animateTimer = new Timer();
-		animateTimer.scheduleAtFixedRate(task, delayFirst, (long)(1000.0 / FRAME_RATE_PER_SEC));
-	}
+        animateTimer.scheduleAtFixedRate(task, 0, (long)(1000.0 / FRAME_RATE_PER_SEC));
+    }
 
 	/**
 	 * Stops current animation exactly where it is.
@@ -292,7 +307,7 @@ public class AnimatedCurveView extends View implements Animatable {
 
 			if(drawTime == DrawTime.STATIC){
 				Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");
-				while(drawIncrement() != DrawStatus.FINISHED){ /* loop */ }
+				while(drawIncrement() == DrawStatus.DRAWING){ /* loop */ }
 			}
 			
 		}

@@ -107,10 +107,6 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 		this.onTraceListener = listener;
 	}
 	
-	public void setOnStrokeListener(OnStrokeListener listener){
-		this.onStrokeListener = listener;
-	}
-	
 	public void setCurveDrawing(CurveDrawing curveDrawing){
 		this.curveDrawing = curveDrawing;
 		this.animatedCurve.setDrawing(curveDrawing, DrawTime.ANIMATED);
