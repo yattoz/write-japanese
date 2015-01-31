@@ -238,10 +238,12 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         pager.setMotionEnabled(position != 0);
 
         if(position == 0) {
-            drawFragment.startAnimation();
+            storyFragment.focusAway(this);
+            drawFragment.startAnimation(300);
         } else if(position == 1){
             storyFragment.startAnimation();
         } else if (position == 2){
+            storyFragment.focusAway(this);
             infoFragment.startAnimation();
         }
     }

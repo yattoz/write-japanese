@@ -77,9 +77,9 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         return view;
     }
 
-    public void startAnimation() {
+    public void startAnimation(int delay) {
         if(this.tracingView != null) {
-            this.tracingView.startAnimation(0);
+            this.tracingView.startAnimation(delay);
         }
     }
 
@@ -144,7 +144,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	
 	@Override
 	public void onResume(){
-        this.startAnimation();
+        this.startAnimation(100);
 		super.onResume();
 	}
 }

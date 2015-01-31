@@ -83,11 +83,22 @@ public class TeachingStoryFragment extends Fragment {
         this.kanim.startAnimation(500);
     }
 
+    public void focusAway(Activity parent){
+        if(storyEditor != null) {
+            storyEditor.clearFocus();
+
+            InputMethodManager imm = (InputMethodManager)parent.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(storyEditor.getWindowToken(), 0);
+        }
+
+    }
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_story, container, false);
 		storyEditor = (EditText) view.findViewById(R.id.storyEditor);
 		//storyEditor.requestFocus();
+
 
 		this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
 

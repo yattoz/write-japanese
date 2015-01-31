@@ -137,7 +137,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	public int incrementCurveStroke(){
         Log.i("nakama", "AnimatedCurveView: incrementCurveStroke");
         this.allowedStrokes++;
-        this.resumeAnimation();
+        this.resumeAnimation(500);
         return this.allowedStrokes;
 	}
 
@@ -247,10 +247,10 @@ public class AnimatedCurveView extends View implements Animatable {
 	public void startAnimation(int delayFirst){
 		stopAnimation();
 		clear();
-	    resumeAnimation();
+	    resumeAnimation(delayFirst);
 	}
 
-    public void resumeAnimation(){
+    public void resumeAnimation(int delayFirst){
         if(animateTimer != null){
             Log.i("nakama", "resumeAnimation: returning early, animateTimer not null");
             return;
@@ -271,7 +271,8 @@ public class AnimatedCurveView extends View implements Animatable {
         };
 
         this.animateTimer = new Timer();
-        animateTimer.scheduleAtFixedRate(task, 0, (long)(1000.0 / FRAME_RATE_PER_SEC));
+        Log.i("nakama", "AnimatedCurveView: animating after " + delayFirst + "ms delay.");
+        animateTimer.scheduleAtFixedRate(task, delayFirst, (long)(1000.0 / FRAME_RATE_PER_SEC));
     }
 
 	/**
@@ -288,6 +289,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	    WidthAndHeight wh = MeasureUtil.fillMeasure(widthMeasureSpec, heightMeasureSpec);
 	    setMeasuredDimension(wh.width, wh.height);
+        this.scaleAndOffsets.initialized = false;
 	}
 	
 	@Override
