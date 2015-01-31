@@ -41,7 +41,6 @@ public class TracingCurveView extends FrameLayout implements Animatable {
         this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.TracingCurveView_gridPaddingTop, 0);
         this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.TracingCurveView_gridPaddingLeft, 0);
         a.recycle();
-        Log.i("nakama", "TracingCurveView: grid settings are: " + gridPaddingTop + ", " + gridPaddingLeft);
 
         this.animatedCurve = new AnimatedCurveView(context);
         this.animatedCurve.setCurveColor(Color.LTGRAY);
@@ -55,10 +54,8 @@ public class TracingCurveView extends FrameLayout implements Animatable {
         this.kanjiPad.addOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.i("nakama", "TracingCurveView: onTouch");
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    int allowed = animatedCurve.incrementCurveStroke();
-                    Log.d("tracing", "Saw touch up event, incremented animated curve by 1 to " + allowed);
+                    animatedCurve.incrementCurveStroke();
                 }
                 return false;
             }
@@ -115,19 +112,16 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 	}
 	
 	public void setCurveDrawing(CurveDrawing curveDrawing){
-		Log.d("TracingCurveView", "Setting strokes to array length " + curveDrawing.strokeCount());
 		this.curveDrawing = curveDrawing;
 		this.animatedCurve.setDrawing(curveDrawing, DrawTime.ANIMATED);
 		this.currentTracingTargetStrokeCount = curveDrawing.strokeCount();
 	}
 	
 	public void startAnimation(int delay){
-		Log.d("TracingCurveView", "Starting stroke animation");
 		this.animatedCurve.startAnimation(delay);
 	}
 
 	public void clear(){
-		Log.i("nakama", "TracingCurveView.clear");
 		this.animatedCurve.clear();
 		this.kanjiPad.clear();
 	}

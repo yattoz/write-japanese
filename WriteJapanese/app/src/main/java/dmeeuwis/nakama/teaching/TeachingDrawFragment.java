@@ -23,58 +23,67 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 
     final static String initialAdvice = "Trace the character";
 
-	final static String[] goodAdvice = {
-		"Good! Trace again, for practice.",
-		"Good! Trace again, for practice.",
-		"Good! Now trace from memory.",
-		"Good! Once more!",
-		"Good! Keep practicing, or move on to the 'story' tab."
-	};
-	
-	final static String[] badAdvice = {
-		"Not quite! Try again."
-	};
-	
+    final static String[] goodAdvice = {
+            "Good! Trace again, for practice.",
+            "Good! Trace again, for practice.",
+            "Good! Now trace from memory.",
+            "Good! Once more!",
+            "Good! Keep practicing, or move on to the 'story' tab."
+    };
+
+    final static String[] badAdvice = {
+            "Not quite! Try again."
+    };
+
 
     // data state
-	String character;
-	String[] currentCharacterSvg;
-	CurveDrawing curveDrawing;
+    String character;
+    String[] currentCharacterSvg;
+    CurveDrawing curveDrawing;
     int teachingLevel = 0;
     TeachingActivity parent;
 
     // ui state
-	TracingCurveView tracingView;
-	TextView message;
+    TracingCurveView tracingView;
+    TextView message;
     CardView messageCard;
 
-	Animation fadeIn;
-	Animation fadeOut;
+    Animation fadeIn;
+    Animation fadeOut;
 
 
-    public void updateCharacter(TeachingActivity parent){
+    public void updateCharacter(TeachingActivity parent) {
         this.parent = parent;
         this.character = parent.getCharacter();
         this.currentCharacterSvg = parent.getCurrentCharacterSvg();
         this.curveDrawing = new CurveDrawing(currentCharacterSvg);
         this.teachingLevel = 0;
     }
-	
-	 @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		 View view = inflater.inflate(R.layout.fragment_draw, container, false);
-		 
-	     this.tracingView = (TracingCurveView)view.findViewById(R.id.tracingPad);
-         this.tracingView.setOnTraceCompleteListener(this);
 
-         this.fadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_edge_card_in);
-         this.fadeOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_edge_card_out);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_draw, container, false);
 
-         this.messageCard = (CardView)view.findViewById(R.id.messageCard);
-         this.message = (TextView)view.findViewById(R.id.tipMessage);
+        this.tracingView = (TracingCurveView) view.findViewById(R.id.tracingPad);
+        this.tracingView.setOnTraceCompleteListener(this);
 
-		 return view;
-	 }
-	 
+        this.fadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_edge_card_in);
+        this.fadeOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_edge_card_out);
+
+        this.messageCard = (CardView) view.findViewById(R.id.messageCard);
+        this.message = (TextView) view.findViewById(R.id.tipMessage);
+
+        this.tracingView.startAnimation(0);
+        return view;
+    }
+
+    public void startAnimation() {
+        if(this.tracingView != null) {
+            this.tracingView.startAnimation(0);
+        }
+    }
+
+
 	 @Override public void onStart() {
 	     this.tracingView.setCurveDrawing(curveDrawing);
          this.message.setText(initialAdvice);
@@ -135,7 +144,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 	
 	@Override
 	public void onResume(){
-		tracingView.startAnimation(300);
+        this.startAnimation();
 		super.onResume();
 	}
 }

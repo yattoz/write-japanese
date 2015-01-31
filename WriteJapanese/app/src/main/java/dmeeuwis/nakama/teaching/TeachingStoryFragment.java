@@ -67,7 +67,6 @@ public class TeachingStoryFragment extends Fragment {
         this.kanjiLabel.setText(Character.toString(this.character), TextView.BufferType.EDITABLE);
 
         this.kanim.setDrawing(currentCharacterCurve, AnimatedCurveView.DrawTime.ANIMATED);
-        this.kanim.startAnimation(500);
 
         this.kanjiLabel.setText(Character.toString(this.character), TextView.BufferType.EDITABLE);
 
@@ -80,11 +79,15 @@ public class TeachingStoryFragment extends Fragment {
         super.onResume();
     }
 
+    public void startAnimation(){
+        this.kanim.startAnimation(500);
+    }
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_story, container, false);
 		storyEditor = (EditText) view.findViewById(R.id.storyEditor);
-		storyEditor.requestFocus();
+		//storyEditor.requestFocus();
 
 		this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
 

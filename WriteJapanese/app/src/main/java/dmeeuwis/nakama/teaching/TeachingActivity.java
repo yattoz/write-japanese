@@ -9,12 +9,10 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -30,7 +28,7 @@ import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.util.Util;
 
-public class TeachingActivity extends ActionBarActivity {
+public class TeachingActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener {
 	ActionBar actionBar;
 	
 	private String character;
@@ -41,7 +39,7 @@ public class TeachingActivity extends ActionBarActivity {
 
     FragmentPagerAdapter kanjiAdapter, kanaAdapter;
 
-    ViewPager pager;
+    MyViewPager pager;
     PagerSlidingTabStrip tabStrip;
 	TeachingStoryFragment storyFragment;
 	TeachingDrawFragment drawFragment;
@@ -133,7 +131,7 @@ public class TeachingActivity extends ActionBarActivity {
         actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        pager = (ViewPager)findViewById(R.id.teachingViewPager);
+        pager = (MyViewPager)findViewById(R.id.teachingViewPager);
         final FragmentManager fm = getSupportFragmentManager();
 
         drawFragment = new TeachingDrawFragment();
@@ -149,11 +147,13 @@ public class TeachingActivity extends ActionBarActivity {
                 new String[] { "Draw", "Story" });
 
         pager.setAdapter(kanjiAdapter);
+        pager.setMotionEnabled(false);
 
         tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
         tabStrip.setIndicatorColor(getResources().getColor(R.color.actionbar_main));
         tabStrip.setShouldExpand(true);
         tabStrip.setViewPager(pager);
+        tabStrip.setOnPageChangeListener(this);
 
         passCharacterDataToUi();
         Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms.");
@@ -202,7 +202,7 @@ public class TeachingActivity extends ActionBarActivity {
 	
 	@Override
 	public void onBackPressed(){
-		if(actionBar.getSelectedNavigationIndex() == 0 && drawFragment.undo()){
+		if(drawFragment.undo()){
 			return;
 		}
 		finish();
@@ -218,6 +218,7 @@ public class TeachingActivity extends ActionBarActivity {
 	
 	@Override public void onResume(){
 		Log.i("nakama", "TeachingActivity: onResume");
+        onPageSelected(pager.getCurrentItem());
 		super.onResume();
 	}
 
@@ -227,6 +228,24 @@ public class TeachingActivity extends ActionBarActivity {
         setupCharacter();
         passCharacterDataToUi();
     }
+
+    @Override public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { /* nothing */  }
+    @Override public void onPageScrollStateChanged(int state) { /* nothing */  }
+
+    @Override
+    public void onPageSelected(int position) {
+        Log.i("nakama", "TeachingActivity: onPageSelected " + position);
+        pager.setMotionEnabled(position != 0);
+
+        if(position == 0) {
+            drawFragment.startAnimation();
+        } else if(position == 1){
+            storyFragment.startAnimation();
+        } else if (position == 2){
+            infoFragment.startAnimation();
+        }
+    }
+
 
     private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
         private final Fragment[] fragments;

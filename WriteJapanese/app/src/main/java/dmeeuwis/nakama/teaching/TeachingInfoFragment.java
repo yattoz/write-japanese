@@ -64,6 +64,10 @@ public class TeachingInfoFragment extends Fragment {
         this.searchTask.cancel(true);
         super.onDetach();
     }
+
+    public void startAnimation(){
+        this.kanim.startAnimation(500);
+    }
 	
 	 @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.d("nakama", "TeachingInfoFragment onCreateView: thi.kanjis is " + this.kanji);
@@ -72,8 +76,7 @@ public class TeachingInfoFragment extends Fragment {
 		CurveDrawing animCurveDrawing = new CurveDrawing(currentCharacterSvg);
 		this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
 		this.kanim.setDrawing(animCurveDrawing, AnimatedCurveView.DrawTime.ANIMATED);
-		this.kanim.startAnimation(500);
-		
+
 		kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);
 		kanjiLabel.setText(Character.toString(this.kanji.kanji));
 		
