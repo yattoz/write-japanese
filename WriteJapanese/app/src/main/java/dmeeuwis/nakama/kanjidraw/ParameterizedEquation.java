@@ -8,7 +8,6 @@ import java.util.List;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
 import dmeeuwis.util.Util;
 
 public abstract class ParameterizedEquation {
@@ -67,7 +66,6 @@ public abstract class ParameterizedEquation {
         for(float t = INCREMENT; t <= 0.9999; t += INCREMENT){
             box.union((int)x(t), (int)y(t));
         }
-        Log.i("nakama", "For param eqn, calculated bounding box " + box);
         return box;
     }
 
@@ -83,7 +81,7 @@ public abstract class ParameterizedEquation {
 		points.add(0, new Point( (int)x(0.0f), (int)y(0.0f)));
 		points.add(   new Point( (int)x(0.9999f), (int)y(0.9999f))); // TODO: fix error in param eqns where xy(1.0) was going way off from xy(0.999)
 		
-		Log.d("nakama", "Discretized ParameterizedEquation into " + points.size() + " points: " + Util.join(", ", points));
+		//Log.d("nakama", "Discretized ParameterizedEquation into " + points.size() + " points: " + Util.join(", ", points));
 		return points;
 	}
 }

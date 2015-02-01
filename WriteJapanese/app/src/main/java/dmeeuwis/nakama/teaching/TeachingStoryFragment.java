@@ -43,6 +43,7 @@ public class TeachingStoryFragment extends Fragment {
 
 	@Override
 	public void onAttach(Activity activity) {
+        Log.i("nakama", "TeachingStoryFragment lifecycle: onAttach");
 		loadFileTask = new LoadRadicalsFile(activity);
 		loadFileTask.execute();
 
@@ -51,36 +52,49 @@ public class TeachingStoryFragment extends Fragment {
 
     @Override
     public void onResume() {
-        TeachingActivity parent = (TeachingActivity)this.getActivity();
-        char pc = parent.getCharacter().charAt(0);
-        Log.d("nakama", "TeachingStory: updateCharacter " + pc);
+        Log.i("nakama", "TeachingStoryFragment lifecycle: onResume; getView=" + getView());
+        TeachingActivity parent = (TeachingActivity)getActivity();
 
-        this.character = pc;
+        this.character = parent.getCharacter().charAt(0);
         this.kanji = parent.getKanji();
-        CurveDrawing currentCharacterCurve = new CurveDrawing(parent.getCurrentCharacterSvg());
 
         StoryDataHelper db = new StoryDataHelper(parent);
         String s = db.getStory(this.character);
         if(s == null){ s = ""; }
+
+        View view = getView();
+        this.storyEditor = (EditText)view.findViewById(R.id.storyEditor);
+        this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
+        this.kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);
+        this.radicalsCard = view.findViewById(R.id.radicalsCard);
+        this.gridView = (GridView)view.findViewById(R.id.radicalsGrid);
+
+        CurveDrawing currentCharacterCurve = new CurveDrawing(parent.getCurrentCharacterSvg());
         this.storyEditor.setText(s, TextView.BufferType.EDITABLE);
-
+        this.kanjiLabel.setText(Character.toString(this.character), TextView.BufferType.EDITABLE);
+        this.kanim.setDrawing(currentCharacterCurve, AnimatedCurveView.DrawTime.ANIMATED);
         this.kanjiLabel.setText(Character.toString(this.character), TextView.BufferType.EDITABLE);
 
         this.kanim.setDrawing(currentCharacterCurve, AnimatedCurveView.DrawTime.ANIMATED);
 
-        this.kanjiLabel.setText(Character.toString(this.character), TextView.BufferType.EDITABLE);
-
-        this.kanim.setDrawing(currentCharacterCurve, AnimatedCurveView.DrawTime.ANIMATED);
-        this.kanim.startAnimation(500);
-
-        radicalAdapter = new RadicalAdapter(this.getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
+        radicalAdapter = new RadicalAdapter(parent, android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
         gridView.setAdapter(radicalAdapter);
 
+        startAnimation();
         super.onResume();
     }
 
+    public void clear(){
+        this.kanim.clear();
+    }
+
     public void startAnimation(){
-        this.kanim.startAnimation(500);
+        if(this.kanim != null) {
+            Log.e("nakama", "TeachingStoryFragment lifecycle: startAnimation success.");
+            this.kanim.startAnimation(500);
+        } else {
+            Log.e("nakama", "TeachingStoryFragment lifecycle: startAnimation: can't startAnimation, null reference to kanjim");
+        }
     }
 
     public void focusAway(Activity parent){
@@ -95,19 +109,8 @@ public class TeachingStoryFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_story, container, false);
-		storyEditor = (EditText) view.findViewById(R.id.storyEditor);
-		//storyEditor.requestFocus();
-
-
-		this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
-
-		this.kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);
-		this.radicalsCard = view.findViewById(R.id.radicalsCard);
-
-		gridView = (GridView) view.findViewById(R.id.radicalsGrid);
-
-		return view;
+        Log.i("nakama", "TeachingStoryFragment lifecycle: onCreateView");
+		return inflater.inflate(R.layout.fragment_story, container, false);
 	}
 	
 	private class RadicalAdapter extends ArrayAdapter<Kanji> {
@@ -125,14 +128,6 @@ public class TeachingStoryFragment extends Fragment {
 			return convertView;
 		}
 
-	}
-
-	public void clearFocus() {
-		if(isAdded()){
-			storyEditor.clearFocus();
-			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(storyEditor.getWindowToken(), 0);
-		}
 	}
 
 	public void saveStory(Activity act) {

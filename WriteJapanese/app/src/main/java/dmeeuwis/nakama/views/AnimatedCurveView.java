@@ -137,7 +137,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	public int incrementCurveStroke(){
         Log.i("nakama", "AnimatedCurveView: incrementCurveStroke");
         this.allowedStrokes++;
-        this.resumeAnimation(500);
+        this.resumeAnimation(250);
         return this.allowedStrokes;
 	}
 

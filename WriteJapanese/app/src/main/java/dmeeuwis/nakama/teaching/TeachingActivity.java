@@ -13,7 +13,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -37,13 +39,11 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	String callingClass;
 
-    FragmentPagerAdapter kanjiAdapter, kanaAdapter;
+    MyFragmentPagerAdapter kanjiAdapter, kanaAdapter;
+    MyFragmentPagerAdapter adapter;
 
     MyViewPager pager;
     PagerSlidingTabStrip tabStrip;
-	TeachingStoryFragment storyFragment;
-	TeachingDrawFragment drawFragment;
-    TeachingInfoFragment infoFragment;
 
 	DictionarySet dictSet;
 	
@@ -117,10 +117,10 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	}
 
 	@Override public void onCreate(Bundle saveInstanceState) {
+        Log.i("nakama", "TeachingActivity lifecycle: onCreate");
         long startTime = System.currentTimeMillis();
         super.onCreate(saveInstanceState);
 
-        Log.i("nakama", "TeachingActivity: onCreate starting.");
         this.setContentView(R.layout.fragment_container);
         this.dictSet = DictionarySet.get(this);
 
@@ -132,21 +132,17 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         pager = (MyViewPager)findViewById(R.id.teachingViewPager);
+        pager.setOffscreenPageLimit(2);
         final FragmentManager fm = getSupportFragmentManager();
 
-        drawFragment = new TeachingDrawFragment();
-        storyFragment = new TeachingStoryFragment();
-        infoFragment = new TeachingInfoFragment();
-
         kanjiAdapter = new MyFragmentPagerAdapter(fm,
-                new Fragment[] { drawFragment, storyFragment, infoFragment },
                 new String[] { "Draw", "Story", "Usage" });
 
         kanaAdapter = new MyFragmentPagerAdapter(fm,
-                new Fragment[] { drawFragment, storyFragment },
                 new String[] { "Draw", "Story" });
 
         pager.setAdapter(kanjiAdapter);
+        adapter = kanjiAdapter;
         pager.setMotionEnabled(false);
 
         tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
@@ -156,7 +152,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         tabStrip.setOnPageChangeListener(this);
 
         passCharacterDataToUi();
-        Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms.");
+        Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms");
     }
 
     private void passCharacterDataToUi(){
@@ -167,16 +163,16 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
     			actionBar.setTitle("Studying " + k.meanings[0]);
                 pager.setAdapter(kanjiAdapter);
                 tabStrip.setViewPager(pager);
+                adapter = kanjiAdapter;
     		} catch(IOException e){
     			throw new RuntimeException(e);
     		}
     	} else {
     		actionBar.setTitle("Studying " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
             pager.setAdapter(kanaAdapter);
+            adapter = kanaAdapter;
             tabStrip.setViewPager(pager);
     	}
-
-        this.drawFragment.updateCharacter(this);
 	}
 
 	@Override
@@ -202,6 +198,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	@Override
 	public void onBackPressed(){
+        TeachingDrawFragment drawFragment = (TeachingDrawFragment)adapter.getRegisteredFragment(0);
 		if(drawFragment.undo()){
 			return;
 		}
@@ -210,58 +207,118 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	@Override 
 	public void onPause(){
-		Log.i("nakama", "TeachingActivity: onPause starting.");
+        TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
 		storyFragment.saveStory(this);
-		Log.i("nakama", "TeachingActivity: onPause passing to super.");
 		super.onPause();
 	}
 	
 	@Override public void onResume(){
-		Log.i("nakama", "TeachingActivity: onResume");
-        onPageSelected(pager.getCurrentItem());
-		super.onResume();
+        Log.i("nakama", "TeachingActivity lifecycle: onResume; adapter is " + adapter);
+/*        int position = pager.getCurrentItem();
+
+        if(position == 0){
+            TeachingDrawFragment drawFragment = (TeachingDrawFragment)adapter.getRegisteredFragment(0);
+            drawFragment.startAnimation(300);
+
+        } else if(position == 1){
+            TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
+            storyFragment.startAnimation();
+
+        } else if(position == 2){
+            TeachingInfoFragment infoFragment = (TeachingInfoFragment)adapter.getRegisteredFragment(2);
+            infoFragment.startAnimation();
+        }
+	*/
+        super.onResume();
 	}
 
     @Override protected void onNewIntent(Intent intent){
-        Log.i("nakama", "TeachingActivity: onNewIntent");
         this.setIntent(intent);
         setupCharacter();
         passCharacterDataToUi();
     }
 
     @Override public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { /* nothing */  }
-    @Override public void onPageScrollStateChanged(int state) { /* nothing */  }
+
+    int previousScrollState = ViewPager.SCROLL_STATE_IDLE;
+    @Override public void onPageScrollStateChanged(int state) {
+        TeachingDrawFragment drawFragment = (TeachingDrawFragment)adapter.getRegisteredFragment(0);
+        TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
+        TeachingInfoFragment infoFragment = (TeachingInfoFragment)adapter.getRegisteredFragment(2);
+
+        int position = pager.getCurrentItem();
+
+        if(previousScrollState == ViewPager.SCROLL_STATE_IDLE && state == ViewPager.SCROLL_STATE_SETTLING) {
+            storyFragment.clear();
+            infoFragment.clear();
+            drawFragment.clear();
+        } else if(previousScrollState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE){
+            if(position == 0) {
+                drawFragment.startAnimation(300);
+            } else if(position == 1){
+                storyFragment.startAnimation();
+            } else if (position == 2){
+                infoFragment.startAnimation();
+            }
+        }
+        previousScrollState = state;
+    }
 
     @Override
     public void onPageSelected(int position) {
         Log.i("nakama", "TeachingActivity: onPageSelected " + position);
         pager.setMotionEnabled(position != 0);
+        TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
+        if(storyFragment == null){
+            Log.e("nakama", "NULL story fragment (1) in TeachingActivity");
+        }
 
-        if(position == 0) {
+        if(storyFragment != null && (position == 0 || position == 2)) {
             storyFragment.focusAway(this);
-            drawFragment.startAnimation(300);
-        } else if(position == 1){
-            storyFragment.startAnimation();
-        } else if (position == 2){
-            storyFragment.focusAway(this);
-            infoFragment.startAnimation();
         }
     }
 
 
     private static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-        private final Fragment[] fragments;
         private final String[] titles;
 
-        public MyFragmentPagerAdapter(FragmentManager fm, Fragment[] fragments, String[] titles) {
+        SparseArray<Fragment> registeredFragments = new SparseArray<>();
+
+        public MyFragmentPagerAdapter(FragmentManager fm, String[] titles) {
             super(fm);
-            Log.e("nakama", "In MyFragmentPagerAdapter, FragmentManager is " + fm);
-            this.fragments = fragments;
             this.titles = titles;
         }
 
-        @Override public Fragment getItem(int position) { return fragments[position]; }
-        @Override public int getCount() { return fragments.length; }
+        @Override public Fragment getItem(int position) {
+            if(position == 0){
+                return new TeachingDrawFragment();
+            } else if(position == 1){
+                return new TeachingStoryFragment();
+            } else if (position == 2){
+                return new TeachingInfoFragment();
+            }
+            return null;
+        }
+
+        @Override public int getCount() { return 3; }
         @Override public String getPageTitle(int position){ return titles[position]; }
+
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+            registeredFragments.put(position, fragment);
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            registeredFragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
+
+        public Fragment getRegisteredFragment(int position) {
+            return registeredFragments.get(position);
+        }
     }
 }
