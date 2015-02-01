@@ -44,9 +44,6 @@ public class TeachingStoryFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
         Log.i("nakama", "TeachingStoryFragment lifecycle: onAttach");
-		loadFileTask = new LoadRadicalsFile(activity);
-		loadFileTask.execute();
-
 		super.onAttach(activity);
 	}
 
@@ -79,6 +76,9 @@ public class TeachingStoryFragment extends Fragment {
 
         radicalAdapter = new RadicalAdapter(parent, android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
         gridView.setAdapter(radicalAdapter);
+
+        loadFileTask = new LoadRadicalsFile(parent);
+        loadFileTask.execute();
 
         startAnimation();
         super.onResume();

@@ -1,13 +1,6 @@
 package dmeeuwis.nakama.views;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -24,9 +17,15 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.kanjidraw.PathCalculator;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
 import dmeeuwis.util.Util;
 
@@ -217,7 +216,6 @@ public class DrawView extends View implements OnTouchListener {
 				dirtyBox.union(lastDraw.x, lastDraw.y);
 				dirtyBox.union(hx, hy);
 
-                Log.i("nakama", "ACTION_MOVE: adding point " + latest + "; distance from prev " + lastDraw + " was " + distance + "; min was " + MIN_DRAW_POINT_DISTANCE_PX);
 				drawPoints.add(latest);
 				lastDraw = latest;
 			}

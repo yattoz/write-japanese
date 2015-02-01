@@ -69,7 +69,6 @@ public class AnimatedCurveView extends View implements Animatable {
         this.paddingLeft = a.getDimensionPixelSize(R.styleable.AnimatedCurveView_gridPaddingLeft, 0);
         this.paddingTop = a.getDimensionPixelSize(R.styleable.AnimatedCurveView_gridPaddingTop, 0);
         a.recycle();
-        Log.i("nakama", "AnimatedCurveView: grid settings are: " + this.paddingLeft + ", " + this.paddingTop);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Join.ROUND);
@@ -104,7 +103,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * Clears current registered strokes.
 	 */
 	public void clear(){
-        Log.i("nakama", "CLEAR!");
         pathsToDraw = new ArrayList<>();
         time = 0;
         eqn_i = 0;
@@ -118,7 +116,6 @@ public class AnimatedCurveView extends View implements Animatable {
         this.paddingTop = paddingTop;
         this.paddingLeft = paddingLeft;
         this.invalidate();
-        Log.d("nakama", "AnimatedCurveView: setting padding (grid) to top=" + this.paddingTop + ", left=" + this.paddingLeft);
     }
 
 	/**
@@ -127,7 +124,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * more after each call to incrementCurveStroke().
 	 */
 	public void setAutoIncrement(boolean val){
-        Log.i("nakama", "AnimatedCurveView: setAutoIncrement=" + val);
         this.autoIncrement = val;
 	}
 	
@@ -135,7 +131,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * When not in autoincrement mode, this will increase the number of strokes being animated by one.
 	 */
 	public int incrementCurveStroke(){
-        Log.i("nakama", "AnimatedCurveView: incrementCurveStroke");
         this.allowedStrokes++;
         this.resumeAnimation(250);
         return this.allowedStrokes;
@@ -224,12 +219,10 @@ public class AnimatedCurveView extends View implements Animatable {
 			if(eqn_i >= eqnsRef.size()-1){
 	    		if(onAnimationFinishCallback != null)
 	    			onAnimationFinishCallback.run();
-                Log.i("nakama", "AnimatedCurveView: entering FINISHED");
                 return DrawStatus.FINISHED;
 			}
 			
 			if((autoIncrement) || ((eqn_i+1) < allowedStrokes)){
-                Log.i("nakama", "AnimatedCurveView: end of stroke, INCREMENTING");
 				eqn_i++;
 				time = -1;
 				pathsToDrawRef.add(eqn_i, new Path());
@@ -271,7 +264,6 @@ public class AnimatedCurveView extends View implements Animatable {
         };
 
         this.animateTimer = new Timer();
-        Log.i("nakama", "AnimatedCurveView: animating after " + delayFirst + "ms delay.");
         animateTimer.scheduleAtFixedRate(task, delayFirst, (long)(1000.0 / FRAME_RATE_PER_SEC));
     }
 

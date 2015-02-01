@@ -120,7 +120,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
                     message.setText(newMessage);
                     messageCard.startAnimation(fadeIn);
                 } catch(NullPointerException e){
-                    Log.i("nakama", "A view element was nulled before end of animation", e);
+                    Log.i("nakama", "TeachingDrawFragment.changeCardMessage: A view element was nulled before end of animation", e);
                 }
             }
         });
@@ -128,7 +128,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         try {
             messageCard.startAnimation(this.fadeOut);
         } catch(NullPointerException e){
-            Log.i("nakama", "A view element was nulled while changing card message.");
+            Log.i("nakama", "TeachingDrawFragment.changeCardMessage: A view element was nulled while changing card message.");
         }
     }
 

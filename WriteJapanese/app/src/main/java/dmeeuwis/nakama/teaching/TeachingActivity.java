@@ -97,7 +97,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	        } finally {
 	        	is.close();
 	        }
-			Log.d("nakama", "Read path hints as: \n" + Util.join("\n", currentCharacterSvg));
 		} catch (IOException e) {
 			Log.e("nakama", "Error loading path: " + path + " for character " + kanjiIn + " (" + unicodeValue + ")");
 			throw new RuntimeException(e);
@@ -124,9 +123,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         this.setContentView(R.layout.fragment_container);
         this.dictSet = DictionarySet.get(this);
 
-        Log.i("nakama", "TeachingActivity: before setupCharacter: " + (System.currentTimeMillis() - startTime));
         setupCharacter();
-        Log.i("nakama", "TeachingActivity: after setupCharacter: " + (System.currentTimeMillis() - startTime));
 
         actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -177,8 +174,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d("nakama", "ActionBar: in onOptionsItemSelected: " + item.toString());
-	
 		if(item.getItemId() == android.R.id.home){
 			try {
 				Intent backUp = new Intent(this, Class.forName(callingClass));
@@ -218,21 +213,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	@Override public void onResume(){
         Log.i("nakama", "TeachingActivity lifecycle: onResume; adapter is " + adapter);
-/*        int position = pager.getCurrentItem();
-
-        if(position == 0){
-            TeachingDrawFragment drawFragment = (TeachingDrawFragment)adapter.getRegisteredFragment(0);
-            drawFragment.startAnimation(300);
-
-        } else if(position == 1){
-            TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
-            storyFragment.startAnimation();
-
-        } else if(position == 2){
-            TeachingInfoFragment infoFragment = (TeachingInfoFragment)adapter.getRegisteredFragment(2);
-            infoFragment.startAnimation();
-        }
-	*/
         super.onResume();
 	}
 
@@ -270,11 +250,10 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
     @Override
     public void onPageSelected(int position) {
-        Log.i("nakama", "TeachingActivity: onPageSelected " + position);
         pager.setMotionEnabled(position != 0);
         TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
         if(storyFragment == null){
-            Log.e("nakama", "NULL story fragment (1) in TeachingActivity");
+            Log.e("nakama", "TeachingActivity.onPageSelected(" + position + "): NULL story fragment (1) in TeachingActivity");
         }
 
         if(storyFragment != null && (position == 0 || position == 2)) {

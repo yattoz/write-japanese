@@ -163,7 +163,6 @@ public class ProgressTracker {
 	}
 
 	public void updateFromString(String savedString){
-        Log.d("nakama", "ProgressTracker: updateFromString: " + savedString);
         if(savedString == null) return;
 
 		String[] lines = savedString.split("\n");
