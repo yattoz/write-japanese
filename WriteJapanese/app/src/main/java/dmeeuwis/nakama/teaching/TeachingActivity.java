@@ -207,8 +207,12 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	@Override 
 	public void onPause(){
-        TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
-		storyFragment.saveStory(this);
+        try {
+            TeachingStoryFragment storyFragment = (TeachingStoryFragment) adapter.getRegisteredFragment(1);
+            storyFragment.saveStory(this);
+        } catch(NullPointerException e){
+            Log.i("nakama", "Ignoring null fragment at onPause.");
+        }
 		super.onPause();
 	}
 	

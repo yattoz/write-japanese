@@ -54,6 +54,10 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
                     lastGrade = p1;
                 }
             }
+
+            if(gradeLine.size() == 1){
+                gradeLine.add(line.get(line.size()-1));
+            }
             gradeLines.add(new Stroke(gradeLine));
         }
         return new PointDrawing(gradeLines);

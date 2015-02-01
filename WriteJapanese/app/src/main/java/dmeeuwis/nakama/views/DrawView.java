@@ -37,7 +37,7 @@ public class DrawView extends View implements OnTouchListener {
 
 	public final static int BACKGROUND_COLOR = 0xFFece5b4;
 
-	static final private float MIN_DRAW_POINT_DISTANCE_DP = 0.0f;
+	static final private float MIN_DRAW_POINT_DISTANCE_DP = 2.5f;
 	static final private float PAINT_THICKNESS_DP = 4;
 
 	private float PAINT_THICKNESS_PX;
@@ -217,6 +217,7 @@ public class DrawView extends View implements OnTouchListener {
 				dirtyBox.union(lastDraw.x, lastDraw.y);
 				dirtyBox.union(hx, hy);
 
+                Log.i("nakama", "ACTION_MOVE: adding point " + latest + "; distance from prev " + lastDraw + " was " + distance + "; min was " + MIN_DRAW_POINT_DISTANCE_PX);
 				drawPoints.add(latest);
 				lastDraw = latest;
 			}
@@ -239,6 +240,7 @@ public class DrawView extends View implements OnTouchListener {
 
 		if(actionCode == MotionEvent.ACTION_DOWN){
 			Point p = new Point(x, y);
+            Log.i("nakama", "ACTION_DOWN: adding point " + p);
 			currentDrawLineRef.add(p);
 
 		} else if(actionCode == MotionEvent.ACTION_MOVE && currentDrawLineRef.size() > 0){
@@ -248,7 +250,8 @@ public class DrawView extends View implements OnTouchListener {
             moveAction(me, currentDrawLineRef);
 
 			// throw away single dots
-			if(currentDrawLineRef.size() != 1){
+			if(currentDrawLineRef.size() >= 2){
+                Log.i("nakama", "ACTION_UP: currentDrawLineRef (" + currentDrawLineRef.size() + " is: " + Util.join(", ", currentDrawLineRef));
                 linesToDrawRef.add(currentDrawLineRef);
 
                 if (this.onStrokeListener != null) {
