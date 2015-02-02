@@ -138,9 +138,9 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         kanaAdapter = new MyFragmentPagerAdapter(fm,
                 new String[] { "Draw", "Story" });
 
-        pager.setAdapter(kanjiAdapter);
-        adapter = kanjiAdapter;
-        pager.setMotionEnabled(false);
+        this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
+
+        pager.setAdapter(adapter);
 
         tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
         tabStrip.setIndicatorColor(getResources().getColor(R.color.actionbar_main));
@@ -212,7 +212,9 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	}
 	
 	@Override public void onResume(){
-        Log.i("nakama", "TeachingActivity lifecycle: onResume; adapter is " + adapter);
+        Log.i("nakama", "TeachingActivity lifecycle: onResume");
+        this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
+        Log.i("nakama", "TeachingActivity : onResume");
         super.onResume();
 	}
 
@@ -283,8 +285,10 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
             return null;
         }
 
-        @Override public int getCount() { return 3; }
-        @Override public String getPageTitle(int position){ return titles[position]; }
+        @Override public int getCount() { return titles.length; }
+        @Override public String getPageTitle(int position){
+            return titles[Math.min(titles.length, position)];
+        }
 
 
         @Override
