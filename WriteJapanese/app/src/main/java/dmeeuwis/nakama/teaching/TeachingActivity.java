@@ -47,62 +47,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
 	DictionarySet dictSet;
 	
-	public void setupCharacter(){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		
-    	Bundle params = getIntent().getExtras();
-		Character kanjiIn;
-		String kanjiPath;
-		if(params.size() > 0){
-			callingClass = params.getString("parent");
-			kanjiIn = params.getChar(Constants.KANJI_PARAM);
-			kanjiPath = params.getString(Constants.KANJI_PATH_PARAM);
-
-			Editor ed = prefs.edit();
-			ed.putString("character", kanjiIn.toString());
-			ed.putString("path", kanjiPath);
-			ed.apply();
-
-		} else {
-			String kanjiInStr = prefs.getString("character", null);
-			if(kanjiInStr == null || kanjiInStr.length() == 0){
-				try {
-					startActivity(new Intent(this, Class.forName("dmeeuwis.nakama.primary.KanjiMasterActivity")));
-					return;
-				} catch (ClassNotFoundException e) {
-					throw new RuntimeException(e);
-				}
-			}
-			kanjiIn = prefs.getString("character", null).charAt(0);            
-			kanjiPath = prefs.getString("path", null);
-		}
-    	
-		this.character = kanjiIn.toString();
-
-        DictionarySet sd = DictionarySet.get(this);
-        try {
-            this.kanji = sd.kanjiFinder().find(getCharacter().charAt(0));
-        } catch (IOException e) {
-            Log.e("nakama", "Error: can't find kanji for: " + this.kanji, e);
-            Toast.makeText(this, "Internal Error: can't find kanji information for: " + this.kanji, Toast.LENGTH_LONG).show();
-        }
-
-        int unicodeValue = kanjiIn;
-        String path = kanjiPath + "/" + Integer.toHexString(unicodeValue) + ".path";
-        AssetManager assets = getAssets();
-        try {
-	        InputStream is = assets.open(path);
-	        try {
-				currentCharacterSvg = Util.slurp(is).split("\n");
-	        } finally {
-	        	is.close();
-	        }
-		} catch (IOException e) {
-			Log.e("nakama", "Error loading path: " + path + " for character " + kanjiIn + " (" + unicodeValue + ")");
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public String getCharacter(){
 		return this.character;
 	}
@@ -123,15 +67,13 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         this.setContentView(R.layout.fragment_container);
         this.dictSet = DictionarySet.get(this);
 
-        setupCharacter();
-
         actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         pager = (MyViewPager)findViewById(R.id.teachingViewPager);
         pager.setOffscreenPageLimit(2);
-        final FragmentManager fm = getSupportFragmentManager();
 
+        final FragmentManager fm = getSupportFragmentManager();
         kanjiAdapter = new MyFragmentPagerAdapter(fm,
                 new String[] { "Draw", "Story", "Usage" });
 
@@ -140,37 +82,90 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
         this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
 
-        pager.setAdapter(adapter);
 
         tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
         tabStrip.setIndicatorColor(getResources().getColor(R.color.actionbar_main));
         tabStrip.setShouldExpand(true);
-        tabStrip.setViewPager(pager);
         tabStrip.setOnPageChangeListener(this);
 
-        passCharacterDataToUi();
         Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms");
     }
 
-    private void passCharacterDataToUi(){
-    	char kanjiIn = this.character.charAt(0);
-    	if(Kana.isKanji(kanjiIn)){
-    		try {
-    			Kanji k = dictSet.kanjiFinder().find(kanjiIn);
-    			actionBar.setTitle("Studying " + k.meanings[0]);
-                pager.setAdapter(kanjiAdapter);
-                tabStrip.setViewPager(pager);
+    @Override public void onResume(){
+        Log.i("nakama", "TeachingActivity lifecycle: onResume");
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        Bundle params = getIntent().getExtras();
+        Character kanjiIn;
+        String kanjiPath;
+        if(params.size() > 0){
+            callingClass = params.getString("parent");
+            kanjiIn = params.getChar(Constants.KANJI_PARAM);
+            kanjiPath = params.getString(Constants.KANJI_PATH_PARAM);
+
+            Editor ed = prefs.edit();
+            ed.putString("character", kanjiIn.toString());
+            ed.putString("path", kanjiPath);
+            ed.apply();
+
+        } else {
+            String kanjiInStr = prefs.getString("character", null);
+            if(kanjiInStr == null || kanjiInStr.length() == 0){
+                try {
+                    startActivity(new Intent(this, Class.forName("dmeeuwis.nakama.primary.KanjiMasterActivity")));
+                    return;
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            kanjiIn = prefs.getString("character", null).charAt(0);
+            kanjiPath = prefs.getString("path", null);
+        }
+
+        this.character = kanjiIn.toString();
+
+        DictionarySet sd = DictionarySet.get(this);
+        try {
+            this.kanji = sd.kanjiFinder().find(getCharacter().charAt(0));
+        } catch (IOException e) {
+            Log.e("nakama", "Error: can't find kanji for: " + this.kanji, e);
+            Toast.makeText(this, "Internal Error: can't find kanji information for: " + this.kanji, Toast.LENGTH_LONG).show();
+        }
+
+        int unicodeValue = kanjiIn;
+        String path = kanjiPath + "/" + Integer.toHexString(unicodeValue) + ".path";
+        AssetManager assets = getAssets();
+        try {
+            InputStream is = assets.open(path);
+            try {
+                currentCharacterSvg = Util.slurp(is).split("\n");
+            } finally {
+                is.close();
+            }
+        } catch (IOException e) {
+            Log.e("nakama", "Error loading path: " + path + " for character " + kanjiIn + " (" + unicodeValue + ")");
+            throw new RuntimeException(e);
+        }
+
+        if(Kana.isKanji(kanjiIn)){
+            try {
+                Kanji k = dictSet.kanjiFinder().find(kanjiIn);
+                actionBar.setTitle("Studying " + k.meanings[0]);
                 adapter = kanjiAdapter;
-    		} catch(IOException e){
-    			throw new RuntimeException(e);
-    		}
-    	} else {
-    		actionBar.setTitle("Studying " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
-            pager.setAdapter(kanaAdapter);
+            } catch(IOException e){
+                throw new RuntimeException(e);
+            }
+        } else {
+            actionBar.setTitle("Studying " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
             adapter = kanaAdapter;
-            tabStrip.setViewPager(pager);
-    	}
-	}
+        }
+
+        pager.setAdapter(adapter);
+        tabStrip.setViewPager(pager);
+
+        super.onResume();
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -211,17 +206,9 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 		super.onPause();
 	}
 	
-	@Override public void onResume(){
-        Log.i("nakama", "TeachingActivity lifecycle: onResume");
-        this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
-        Log.i("nakama", "TeachingActivity : onResume");
-        super.onResume();
-	}
-
     @Override protected void onNewIntent(Intent intent){
+        Log.i("nakama", "TeachingActivity lifecycle onNewIntent");
         this.setIntent(intent);
-        setupCharacter();
-        passCharacterDataToUi();
     }
 
     @Override public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { /* nothing */  }
@@ -275,6 +262,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         }
 
         @Override public Fragment getItem(int position) {
+            Log.i("nakama", "TeachingActivity adapter.getItem " + position);
             if(position == 0){
                 return new TeachingDrawFragment();
             } else if(position == 1){
@@ -285,14 +273,20 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
             return null;
         }
 
-        @Override public int getCount() { return titles.length; }
+        @Override public int getCount() {
+            Log.i("nakama", "TeachingActivity adapter.getCount; will return " + titles.length);
+            return titles.length;
+        }
+
         @Override public String getPageTitle(int position){
+            Log.i("nakama", "TeachingActivity adapter.getPageTitle " + position);
             return titles[Math.min(titles.length, position)];
         }
 
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
+            Log.i("nakama", "TeachingActivity adapter.instantiateItem " + position);
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
             registeredFragments.put(position, fragment);
             return fragment;
@@ -300,11 +294,13 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
+            Log.i("nakama", "TeachingActivity adapter.destroyItem " + position);
             registeredFragments.remove(position);
             super.destroyItem(container, position, object);
         }
 
         public Fragment getRegisteredFragment(int position) {
+            Log.i("nakama", "TeachingActivity adapter.getRegisteredFragment " + position);
             return registeredFragments.get(position);
         }
     }

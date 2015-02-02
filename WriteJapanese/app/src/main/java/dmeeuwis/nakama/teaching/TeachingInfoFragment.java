@@ -92,7 +92,9 @@ public class TeachingInfoFragment extends Fragment {
     }
 
     @Override public void onDetach(){
-        this.searchTask.cancel(true);
+        if(this.searchTask != null) {
+            this.searchTask.cancel(true);
+        }
         super.onDetach();
     }
 
