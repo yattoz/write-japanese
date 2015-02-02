@@ -51,38 +51,36 @@ public class TracingCurveView extends FrameLayout implements Animatable {
         this.kanjiPad = new DrawView(context);
         this.kanjiPad.setBackgroundColor(0x00FFFFFF);
         this.kanjiPad.setGridPadding(gridPaddingTop, gridPaddingLeft);
-        this.kanjiPad.addOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    animatedCurve.incrementCurveStroke();
-                }
-                return false;
-            }
-        });
 
         this.kanjiPad.setOnStrokeListener(new OnStrokeListener() {
             @Override public void onStroke(List<Point> stroke) {
-                if(TracingCurveView.this.onStrokeListener != null){
-                    TracingCurveView.this.onStrokeListener.onStroke(stroke);
+                if(onStrokeListener != null){
+                    onStrokeListener.onStroke(stroke);
                 }
-                if(TracingCurveView.this.currentTracingTargetStrokeCount != null &&
-                        TracingCurveView.this.currentTracingTargetStrokeCount == TracingCurveView.this.kanjiPad.getStrokeCount()){
+                if(currentTracingTargetStrokeCount != null &&
+                        currentTracingTargetStrokeCount == kanjiPad.getStrokeCount()){
 
-                    PointDrawing drawn = TracingCurveView.this.kanjiPad.getDrawing();
+                    PointDrawing drawn = kanjiPad.getDrawing();
 
                     if(onTraceListener != null)
                         onTraceListener.onComplete(drawn);
 
-                    TracingCurveView.this.postDelayed(new Runnable(){
-                                                          @Override public void run() {
-                                                              if(animState == AnimationState.RUNNING){
-                                                                  TracingCurveView.this.kanjiPad.clear();
-                                                                  TracingCurveView.this.startAnimation(0);
-                                                              }
-                                                          }
-                                                      },
-                            1000);
+                    postDelayed(new Runnable(){
+                        @Override public void run() {
+                            if(animState == AnimationState.RUNNING){
+                                clear();
+                                startAnimation(0);
+                            }
+                        }
+                    }, 1000);
+                } else {
+                    animatedCurve.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            animatedCurve.incrementCurveStroke();
+                        }
+                    }, 300);
+
                 }
             }
         });

@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -58,7 +59,8 @@ public class DrawView extends View implements OnTouchListener {
 
     protected Integer gridPaddingLeft = 0, gridPaddingTop = 0;
 
-	protected Timer fadeTimer = null;
+    protected Handler fadeHandler = new Handler();
+    protected Runnable fadeTimerTask = new FadeTimerTask();
 	protected int fadeAlpha = 0;
 	protected Integer backgroundColor = Color.WHITE;
 
@@ -72,14 +74,13 @@ public class DrawView extends View implements OnTouchListener {
 		public void onClear();
 	}
 
-	private class FadeTimerTask extends TimerTask {
+	private class FadeTimerTask implements Runnable {
 		@Override public void run() {
 			if(fadeAlpha >= 0){
 				fadeAlpha -= 25;
-				postInvalidate();
+                fadeHandler.postDelayed(this, 16);
+                postInvalidate();
 			} else {
-				fadeTimer.cancel();
-				fadeTimer = null;
                 linesToFade.clear();
 			}
 		}
@@ -185,10 +186,7 @@ public class DrawView extends View implements OnTouchListener {
 	
 	private void startFadeTimer(){
 		fadeAlpha = 255;
-		if(fadeTimer == null){
-			fadeTimer = new Timer();
-			fadeTimer.schedule(new FadeTimerTask(), 0, 16);
-		}
+        fadeHandler.post(fadeTimerTask);
 	}
 	
 	Rect dirtyBox = new Rect();
@@ -324,13 +322,6 @@ public class DrawView extends View implements OnTouchListener {
 	}
 	
 	public void stopAnimation(){
-		if(fadeTimer != null){
-			try {
-				fadeTimer.cancel();
-				fadeTimer = null;
-			} catch(Throwable t){
-				Log.e("nakama", "Error when stopping DrawView animations", t);
-			}
-		}
+        fadeHandler.removeCallbacksAndMessages(null);
 	}
 }

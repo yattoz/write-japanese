@@ -98,6 +98,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 			teachingLevel = Math.max(0, Math.min(teachingLevel-1, goodAdvice.length-1));
 			changeCardMessage(badAdvice[0]);
 		 }
+         Log.i("nakama", "TeachingDrawFragment onComplete; teachingLevel becomes " + teachingLevel);
 
 		 tracingView.clear();
 
