@@ -263,7 +263,6 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * Stops current animation exactly where it is.
      **/
 	public void stopAnimation(){
-        Log.i("nakama", "AnimatedCurveView: STOPping animation.", new Exception());
         this.playingState = PlayStatus.STOPPED;
         stopAnimationInternal();
 	}
