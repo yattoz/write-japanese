@@ -150,6 +150,11 @@ public class AnimatedCurveView extends View implements Animatable {
         if(drawing == null){ throw new IllegalArgumentException("Cannot accept null Drawing"); }
         clear();
 
+        if(drawTimeParam == DrawTime.STATIC){
+            // force block in onDraw that draw static version
+            this.scaleAndOffsets.initialized = false;
+        }
+
         this.unscaledBoundingBox = new RectF(drawing.findBoundingBox());
         this.eqns = drawing.toParameterizedEquations(1);
 
@@ -174,7 +179,7 @@ public class AnimatedCurveView extends View implements Animatable {
 
 	DrawStatus threadDrawStatus = DrawStatus.FINISHED;
 	private DrawStatus drawIncrement(){
-        //Log.i("nakama", "AnimatedCurveView: drawIncrement " + time);
+        Log.i("nakama", "AnimatedCurveView: drawIncrement " + time);
 		List<Path> pathsToDrawRef = this.pathsToDraw;
 		List<ParameterizedEquation> eqnsRef = this.eqns;
 		if(time <= 0.99f && eqn_i < eqnsRef.size()){
@@ -293,13 +298,14 @@ public class AnimatedCurveView extends View implements Animatable {
             clear();
             startAnimationInternal();
 
-			if(drawTime == DrawTime.STATIC){
-				Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");
-				while(drawIncrement() == DrawStatus.DRAWING){ /* loop */ }
-			}
-			
-		}
-		
+            if(drawTime == DrawTime.STATIC){
+                Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");
+                while(drawIncrement() == DrawStatus.DRAWING){ /* loop */ }
+            }
+
+
+        }
+
 		// draw the paths
 		for(Path eachPath: pathsToDraw){
 	    	canvas.drawPath(eachPath, paint);
