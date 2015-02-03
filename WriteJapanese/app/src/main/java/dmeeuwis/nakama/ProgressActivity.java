@@ -51,6 +51,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	
 	GridView characterGrid;
 	CharacterGridAdapter gridAdapter;
+    SingleBarChart chart;
 	
 	static final int PASSED_BORDER = Color.parseColor("#006C02");
 	static final int PASSED_COLOR = Color.parseColor("#A0DAFFDD");
@@ -72,77 +73,84 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 
     	ActionBar actionBar = this.getSupportActionBar();
     	actionBar.setDisplayHomeAsUpEnabled(true);
+
+        characterGrid = (GridView)this.findViewById(R.id.character_grid);
+        chart = (SingleBarChart)this.findViewById(R.id.barChart);
+
     	
-    	Bundle params = getIntent().getExtras();
-    	callingClass = params.getString("parent");
-    	callingPath = params.getString(Constants.KANJI_PATH_PARAM);
+		Log.i("nakama", "ProgressActivity oncreate finished.");
+	}
+
+    @Override public void onResume(){
+        Bundle params = getIntent().getExtras();
+        callingClass = params.getString("parent");
+        callingPath = params.getString(Constants.KANJI_PATH_PARAM);
 
         DictionarySet dictSet = DictionarySet.get(this.getApplicationContext());
+        if(lc != null){ lc.dispose(); }
         lc = new LockChecker(this,
-			 new Runnable(){
-				@Override public void run() {
-					Log.i("nakama", "ProgressActivity: notifyDataSetChanged");
-					gridAdapter = new CharacterGridAdapter(ProgressActivity.this, characterList, charSet.availableCharactersSet());
-					characterGrid.setAdapter(gridAdapter);
-					characterGrid.invalidateViews();
-				}
-			});
+                new Runnable(){
+                    @Override public void run() {
+                        Log.i("nakama", "ProgressActivity: notifyDataSetChanged");
+                        gridAdapter = new CharacterGridAdapter(ProgressActivity.this, characterList, charSet.availableCharactersSet());
+                        characterGrid.setAdapter(gridAdapter);
+                        characterGrid.invalidateViews();
+                    }
+                });
 
         charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc);
         characterList = charSet.charactersAsString();
 
-    	chars = characterList.toCharArray();
-    	strings = new String[chars.length];
-    	for(int i = 0; i < chars.length; i++){
-    		strings[i] = Character.toString(chars[i]);
-    	}
-    	
-    	characterGrid = (GridView)this.findViewById(R.id.character_grid);
-    	gridAdapter = new CharacterGridAdapter(this, characterList, charSet.availableCharactersSet());
-    	characterGrid.setAdapter(gridAdapter);
-    	characterGrid.setOnItemClickListener(this);
+        chars = characterList.toCharArray();
+        strings = new String[chars.length];
+        for(int i = 0; i < chars.length; i++){
+            strings[i] = Character.toString(chars[i]);
+        }
 
-    	final int gridFontSizeDp = 48 + 6;
-    	Resources res = getResources();
-    	float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gridFontSizeDp , res.getDisplayMetrics()); // 12 * 2 = 24 padding
-    	characterGrid.setColumnWidth((int)px);
+        gridAdapter = new CharacterGridAdapter(this, characterList, charSet.availableCharactersSet());
+        characterGrid.setAdapter(gridAdapter);
+        characterGrid.setOnItemClickListener(this);
 
-    	CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(this);
+        final int gridFontSizeDp = 48 + 6;
+        Resources res = getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gridFontSizeDp , res.getDisplayMetrics()); // 12 * 2 = 24 padding
+        characterGrid.setColumnWidth((int)px);
+
+        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(this);
         String existing = cdb.getExistingProgress(callingPath);
         ProgressTracker tracker = new ProgressTracker(characterList);
-       	tracker.updateFromString(existing);
+        tracker.updateFromString(existing);
         scores = tracker.getAllScores();
 
-		int passedCount = 0, trainingCount = 0, failedCount = 0;
+        int passedCount = 0, trainingCount = 0, failedCount = 0;
         for(Map.Entry<Character, Progress> s: scores.entrySet()){
-        	Progress r = s.getValue();
-			if(r == Progress.PASSED){
-				passedCount++;
-			} else if(r == Progress.REVIEWING){
-				trainingCount++;
-			} else if(r == Progress.FAILED){
-				failedCount++;
-			}
-		}
+            Progress r = s.getValue();
+            if(r == Progress.PASSED){
+                passedCount++;
+            } else if(r == Progress.REVIEWING){
+                trainingCount++;
+            } else if(r == Progress.FAILED){
+                failedCount++;
+            }
+        }
         int unknownCount = characterList.length() - passedCount - trainingCount - failedCount;
-        Log.d("nakama", "Counted progress: scores has " + scores.size() + " entries; passed=" + passedCount + 
-        				"; training=" + trainingCount + "; failed=" + failedCount + "; unknwon=" + unknownCount);
-    	
-    	SingleBarChart chart = (SingleBarChart)this.findViewById(R.id.barChart);
-    	chart.setPercents(new BarChartEntry((int)(100*(float)passedCount / characterList.length()), PASSED_BORDER, PASSED_COLOR, "Passed"), 
-    					  new BarChartEntry((int)(100*(float)trainingCount / characterList.length()), TRAINING_BORDER, TRAINING_COLOR, "Reviewing"),
-    					  new BarChartEntry((int)(100*(float)failedCount / characterList.length()), FAILED_BORDER, FAILED_COLOR, "Failed"),
-    					  new BarChartEntry((int)(100*(float)unknownCount / characterList.length()), UNKNOWN_BORDER, UNKNOWN_COLOR, "Untested")
-    	);
+        Log.d("nakama", "Counted progress: scores has " + scores.size() + " entries; passed=" + passedCount +
+                "; training=" + trainingCount + "; failed=" + failedCount + "; unknwon=" + unknownCount);
 
-    	TextView chartLegend = (TextView)findViewById(R.id.chartLegend);
-    	chartLegend.setText(Html.fromHtml(
-    			"<font color='" + PASSED_BORDER + "'>Passed</font> " +
-    		    "<font color='" + TRAINING_BORDER + "'>Reviewing</font> " +
-    			"<font color='" + FAILED_BORDER + "'>Failed</font> " + 
-    		    "<font color='" + UNKNOWN_BORDER + "'>Untested</font>"));
-		Log.i("nakama", "ProgressActivity oncreate finished.");
-	}
+        chart.setPercents(new BarChartEntry((int)(100*(float)passedCount / characterList.length()), PASSED_BORDER, PASSED_COLOR, "Passed"),
+                new BarChartEntry((int)(100*(float)trainingCount / characterList.length()), TRAINING_BORDER, TRAINING_COLOR, "Reviewing"),
+                new BarChartEntry((int)(100*(float)failedCount / characterList.length()), FAILED_BORDER, FAILED_COLOR, "Failed"),
+                new BarChartEntry((int)(100*(float)unknownCount / characterList.length()), UNKNOWN_BORDER, UNKNOWN_COLOR, "Untested")
+        );
+
+        TextView chartLegend = (TextView)findViewById(R.id.chartLegend);
+        chartLegend.setText(Html.fromHtml(
+                "<font color='" + PASSED_BORDER + "'>Passed</font> " +
+                        "<font color='" + TRAINING_BORDER + "'>Reviewing</font> " +
+                        "<font color='" + FAILED_BORDER + "'>Failed</font> " +
+                        "<font color='" + UNKNOWN_BORDER + "'>Untested</font>"));
+
+    }
 
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Character selected = chars[position];
@@ -269,5 +277,10 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
     protected void onDestroy() {
         this.lc.dispose();
         super.onDestroy();
+    }
+
+    @Override protected void onNewIntent(Intent intent){
+        Log.i("nakama", "ProgressActivity lifecycle onNewIntent");
+        this.setIntent(intent);
     }
 }
