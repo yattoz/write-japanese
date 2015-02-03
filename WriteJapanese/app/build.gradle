@@ -8,8 +8,8 @@ android {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 28
-        versionName "1.28"
+        versionCode 29
+        versionName "1.29"
     }
     buildTypes {
         release {
