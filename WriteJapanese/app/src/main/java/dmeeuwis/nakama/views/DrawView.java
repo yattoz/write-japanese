@@ -21,8 +21,6 @@ import android.view.WindowManager;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.kanjidraw.PathCalculator;
@@ -167,14 +165,13 @@ public class DrawView extends View implements OnTouchListener {
 	}
 	
 	public void undo(){
-		List<List<Point>> linesToDrawRef = this.linesToDraw;
-
-		if(linesToDrawRef.size() == 0){
+		if(linesToDraw.size() == 0){
 			return;
 		}
 
-        this.linesToFade.add(linesToDrawRef.get(linesToDrawRef.size() - 1));
-		this.linesToDraw = Util.popCopy(linesToDrawRef);
+        int last = linesToDraw.size()-1;
+        this.linesToFade.add(linesToDraw.get(last));
+		this.linesToDraw.remove(last);
 
         this.invalidate();
 		startFadeTimer();
@@ -230,28 +227,25 @@ public class DrawView extends View implements OnTouchListener {
 		final int actionCode = me.getAction();
 		final int x = (int)me.getX();
 		final int y = (int)me.getY();
-		List<List<Point>> linesToDrawRef = this.linesToDraw;
-
-		List<Point> currentDrawLineRef = currentDrawLine;
 
 		if(actionCode == MotionEvent.ACTION_DOWN){
 			Point p = new Point(x, y);
             Log.i("nakama", "ACTION_DOWN: adding point " + p);
-			currentDrawLineRef.add(p);
+			currentDrawLine.add(p);
 
-		} else if(actionCode == MotionEvent.ACTION_MOVE && currentDrawLineRef.size() > 0){
-			moveAction(me, currentDrawLineRef);
+		} else if(actionCode == MotionEvent.ACTION_MOVE && currentDrawLine.size() > 0){
+			moveAction(me, currentDrawLine);
 			
-		} else if(actionCode == MotionEvent.ACTION_UP && currentDrawLineRef.size() > 0){
-            moveAction(me, currentDrawLineRef);
+		} else if(actionCode == MotionEvent.ACTION_UP && currentDrawLine.size() > 0){
+            moveAction(me, currentDrawLine);
 
 			// throw away single dots
-			if(currentDrawLineRef.size() >= 2){
-                Log.i("nakama", "ACTION_UP: currentDrawLineRef (" + currentDrawLineRef.size() + " is: " + Util.join(", ", currentDrawLineRef));
-                linesToDrawRef.add(currentDrawLineRef);
+			if(currentDrawLine.size() >= 2){
+                Log.i("nakama", "ACTION_UP: currentDrawLine(" + currentDrawLine.size() + " is: " + Util.join(", ", currentDrawLine));
+                linesToDraw.add(currentDrawLine);
 
                 if (this.onStrokeListener != null) {
-                    this.onStrokeListener.onStroke(linesToDrawRef.get(linesToDrawRef.size() - 1));
+                    this.onStrokeListener.onStroke(linesToDraw.get(linesToDraw.size() - 1));
                 }
 
                 this.invalidate();
@@ -271,10 +265,6 @@ public class DrawView extends View implements OnTouchListener {
 		return true;
 	}
 
-    public void addOnTouchListener(OnTouchListener t){
-        this.extraListeners.add(t);
-    }
-	
 	@Override protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec){
 	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	    WidthAndHeight wh = MeasureUtil.fillMeasure(widthMeasureSpec, heightMeasureSpec);

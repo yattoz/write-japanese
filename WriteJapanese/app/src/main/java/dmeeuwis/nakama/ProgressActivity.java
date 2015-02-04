@@ -82,6 +82,8 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	}
 
     @Override public void onResume(){
+        super.onResume();
+
         Bundle params = getIntent().getExtras();
         callingClass = params.getString("parent");
         callingPath = params.getString(Constants.KANJI_PATH_PARAM);
@@ -149,7 +151,6 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
                         "<font color='" + TRAINING_BORDER + "'>Reviewing</font> " +
                         "<font color='" + FAILED_BORDER + "'>Failed</font> " +
                         "<font color='" + UNKNOWN_BORDER + "'>Untested</font>"));
-
     }
 
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
