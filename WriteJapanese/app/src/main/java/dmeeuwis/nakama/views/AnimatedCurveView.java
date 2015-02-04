@@ -110,6 +110,7 @@ public class AnimatedCurveView extends View implements Animatable {
         eqn_i = 0;
         time = -1;
         allowedStrokes = 1;
+        stopAnimationInternal();
         invalidate();
 	}
 
@@ -152,6 +153,7 @@ public class AnimatedCurveView extends View implements Animatable {
 
         this.unscaledBoundingBox = new RectF(drawing.findBoundingBox());
         this.eqns = drawing.toParameterizedEquations(1);
+        this.scaleAndOffsets.initialized = false;
 
         this.drawTime = drawTimeParam;
         this.drawing = drawing;
@@ -229,8 +231,9 @@ public class AnimatedCurveView extends View implements Animatable {
 	 */
 	public void startAnimation(int delayFirst){
         Log.i("nakama", "AnimatedCurveView startAnimation " + delayFirst);
-        playingState = PlayStatus.PLAYING;
+        stopAnimationInternal();
 		clear();
+        playingState = PlayStatus.PLAYING;
 	    resumeAnimation(delayFirst);
 	}
 
@@ -253,21 +256,24 @@ public class AnimatedCurveView extends View implements Animatable {
         }
     }
 
-    public void resumeAnimation(int delayFirst){
+    private void resumeAnimation(int delayFirst){
         Log.i("nakama", "AnimatedCurveView resumeAnimation " + delayFirst);
         threadDrawStatus = DrawStatus.DRAWING;
         this.animateHandler.postDelayed(animationRunnable, delayFirst);
     }
 
-	/**
-	 * Stops current animation exactly where it is.
-     **/
+    /**
+     * Stops and resets animation.
+     */
 	public void stopAnimation(){
         Log.i("nakama", "AnimatedCurveView: STOPping animation.", new Exception());
         this.playingState = PlayStatus.STOPPED;
         stopAnimationInternal();
 	}
 
+    /**
+     * Stops current animation exactly where it is.
+     **/
     public void stopAnimationInternal(){
         Log.i("nakama", "AnimatedCurveView: stopAnimationInternal.");
         animateHandler.removeCallbacksAndMessages(null);
@@ -290,9 +296,11 @@ public class AnimatedCurveView extends View implements Animatable {
 		if(!this.scaleAndOffsets.initialized){
             scaleAndOffsets.calculate(unscaledBoundingBox, getWidth() - this.paddingLeft, getHeight() - this.paddingTop);
 
-            Log.i("nakama", "AnimatedCurveView: rescaled, resetting animateTimer.");
+            Log.i("nakama", "AnimatedCurveView: rescaled, resetting animateTimer. threadDrawStatus: " + threadDrawStatus);
             clear();
-            startAnimationInternal();
+            if(playingState == PlayStatus.PLAYING){
+                startAnimationInternal();
+            }
 
 			if(drawTime == DrawTime.STATIC){
 				Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");

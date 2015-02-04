@@ -318,19 +318,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         correctAnimation = (AnimatedCurveView) findViewById(R.id.animatedKnownReplay);
         playbackAnimation = (AnimatedCurveView) findViewById(R.id.animatedDrawnReplay);
 
-        correctAnimation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playbackAnimation.startAnimation(0);
-            }
-        });
-        playbackAnimation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                correctAnimation.startAnimation(0);
-            }
-        });
-
         criticism = (ListView) findViewById(R.id.criticism);
         criticismArrayAdapter = new ArrayAdapter<>(this, R.layout.critique_list_item, R.id.critique_label, new ArrayList<String>(0));
         criticism.setAdapter(criticismArrayAdapter);
