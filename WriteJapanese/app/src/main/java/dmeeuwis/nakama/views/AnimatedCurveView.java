@@ -128,7 +128,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	public void setAutoIncrement(boolean val){
         this.autoIncrement = val;
 	}
-	
+
 	/**
 	 * When not in autoincrement mode, this will increase the number of strokes being animated by one.
 	 */
@@ -173,7 +173,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		super.onTouchEvent(event);
 		if(drawTime == DrawTime.STATIC)
 			return false;
-		
+
 		clear();
 		startAnimationInternal();
 		return true;
@@ -181,7 +181,7 @@ public class AnimatedCurveView extends View implements Animatable {
 
 	DrawStatus threadDrawStatus = DrawStatus.FINISHED;
 	private DrawStatus drawIncrement(){
-        Log.i("nakama", "AnimatedCurveView: drawIncrement " + time);
+        //Log.i("nakama", "AnimatedCurveView: drawIncrement " + time);
 		List<Path> pathsToDrawRef = this.pathsToDraw;
 		List<ParameterizedEquation> eqnsRef = this.eqns;
 		if(time <= 0.99f && eqn_i < eqnsRef.size()){
@@ -310,8 +310,6 @@ public class AnimatedCurveView extends View implements Animatable {
                 Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");
                 while(drawIncrement() == DrawStatus.DRAWING){ /* loop */ }
             }
-
-
         }
 
 		// draw the paths
