@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import dmeeuwis.Kanji;
 import dmeeuwis.KanjiRadicalFinder;
@@ -26,8 +28,12 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
+import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.KanjiWithMeaningView;
+import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
+import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
 
 public class TeachingStoryFragment extends Fragment {
 
@@ -39,13 +45,19 @@ public class TeachingStoryFragment extends Fragment {
 	GridView gridView;
 	ArrayAdapter<Kanji> radicalAdapter;
 	LoadRadicalsFile loadFileTask;
+    NetworkStoriesAsyncTask loadRemoteStories;
+    LinearLayout storiesCard;
 	View radicalsCard;
+
+    UUID iid;
 
 	@Override
 	public void onAttach(Activity activity) {
         Log.i("nakama", "TeachingStoryFragment lifecycle: onAttach");
 		super.onAttach(activity);
-	}
+
+        this.iid = Iid.get(activity.getApplication());
+    }
 
     @Override
     public void onResume() {
@@ -79,6 +91,16 @@ public class TeachingStoryFragment extends Fragment {
 
         loadFileTask = new LoadRadicalsFile(parent);
         loadFileTask.execute();
+
+        this.storiesCard = (LinearLayout)view.findViewById(R.id.networkStoriesCard);
+        loadRemoteStories = new NetworkStoriesAsyncTask(this.character, new NetworkStoriesAsyncTask.AddString() {
+            @Override public void add(String s) {
+                TextView tv = new TextView(getActivity());
+                tv.setText(s);
+                storiesCard.addView(tv);
+                storiesCard.setVisibility(View.VISIBLE);
+            }
+        });
 
         startAnimation();
         super.onResume();
@@ -135,6 +157,9 @@ public class TeachingStoryFragment extends Fragment {
             StoryDataHelper db = new StoryDataHelper(act);
             String story = storyEditor.getText().toString();
 			db.recordStory(this.character, story);
+
+            NetworkStorySaveAsyncTask saveRemove =
+                new NetworkStorySaveAsyncTask(this.character, story, iid);
 		}
 	}
 

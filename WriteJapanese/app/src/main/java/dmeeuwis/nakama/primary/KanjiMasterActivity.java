@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -132,7 +134,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        long startTime = System.currentTimeMillis();
         Log.i("nakama", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
 
