@@ -57,6 +57,7 @@ public class TeachingStoryFragment extends Fragment {
 		super.onAttach(activity);
 
         this.iid = Iid.get(activity.getApplication());
+        Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class TeachingStoryFragment extends Fragment {
         loadFileTask.execute();
 
         this.storiesCard = (LinearLayout)view.findViewById(R.id.networkStoriesCard);
-        loadRemoteStories = new NetworkStoriesAsyncTask(this.character, new NetworkStoriesAsyncTask.AddString() {
+        this.loadRemoteStories = new NetworkStoriesAsyncTask(this.character, new NetworkStoriesAsyncTask.AddString() {
             @Override public void add(String s) {
                 TextView tv = new TextView(getActivity());
                 tv.setText(s);
@@ -101,6 +102,7 @@ public class TeachingStoryFragment extends Fragment {
                 storiesCard.setVisibility(View.VISIBLE);
             }
         });
+        this.loadRemoteStories.execute();
 
         startAnimation();
         super.onResume();
@@ -112,10 +114,7 @@ public class TeachingStoryFragment extends Fragment {
 
     public void startAnimation(){
         if(this.kanim != null) {
-            Log.e("nakama", "TeachingStoryFragment lifecycle: startAnimation success.");
             this.kanim.startAnimation(500);
-        } else {
-            Log.e("nakama", "TeachingStoryFragment lifecycle: startAnimation: can't startAnimation, null reference to kanjim");
         }
     }
 
@@ -160,6 +159,7 @@ public class TeachingStoryFragment extends Fragment {
 
             NetworkStorySaveAsyncTask saveRemove =
                 new NetworkStorySaveAsyncTask(this.character, story, iid);
+            saveRemove.execute();
 		}
 	}
 

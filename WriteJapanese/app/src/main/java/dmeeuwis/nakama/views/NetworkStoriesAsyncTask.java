@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<String>> {
@@ -30,12 +31,13 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
     protected List<String> doInBackground(Character... params) {
         try {
             URL url = new URL("http://dmeeuwis.com/write-japanese/stories/" + c);
+            Log.i("nakama", "Network: Starting network request for: " + url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestMethod("GET");
                 int statusCode = urlConnection.getResponseCode();
+                Log.d("nakama", "Network: saw response " + statusCode + " for " + c);
 
-                    /* 200 represents HTTP OK */
                 if (statusCode == 200) {
                     BufferedReader r = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                     StringBuilder response = new StringBuilder();
@@ -49,8 +51,9 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
                     for (int i = 0; i < jar.length(); i++) {
                         storyList.add(jar.getString(i));
                     }
+                    return storyList;
                 } else {
-                    // indicate in UI, could not connect to network
+                    return Arrays.asList("Network error: " + statusCode);
                 }
 
             } finally {
@@ -58,13 +61,18 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
             }
 
         } catch (Exception e) {
-            Log.d("nakama", e.getLocalizedMessage());
+            Log.d("nakama", "Network: Error reading network stories for " + c, e);
         }
         return null;
     }
 
     @Override
     protected void onPostExecute(final List<String> result) {
+        if(result == null){
+            sa.add("Network error");
+            return;
+        }
+
         for(String s: result){
             sa.add(s);
         }
