@@ -26,6 +26,7 @@ public class NetworkStorySaveAsyncTask extends AsyncTask<Character, String, Void
     protected Void doInBackground(Character... params) {
         try {
             URL url = new URL("http://dmeeuwis.com/write-japanese/stories/" + c + "?iid=" + installId);
+            Log.i("nakama", "Saving story to: " + url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestMethod("POST");

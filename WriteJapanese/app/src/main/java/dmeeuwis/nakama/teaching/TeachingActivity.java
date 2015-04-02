@@ -274,19 +274,19 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         }
 
         @Override public int getCount() {
-            Log.i("nakama", "TeachingActivity adapter.getCount; will return " + titles.length);
+            //Log.i("nakama", "TeachingActivity adapter.getCount; will return " + titles.length);
             return titles.length;
         }
 
         @Override public String getPageTitle(int position){
-            Log.i("nakama", "TeachingActivity adapter.getPageTitle " + position);
+            //Log.i("nakama", "TeachingActivity adapter.getPageTitle " + position);
             return titles[Math.min(titles.length, position)];
         }
 
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            Log.i("nakama", "TeachingActivity adapter.instantiateItem " + position);
+            //Log.i("nakama", "TeachingActivity adapter.instantiateItem " + position);
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
             registeredFragments.put(position, fragment);
             return fragment;
@@ -294,13 +294,13 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            Log.i("nakama", "TeachingActivity adapter.destroyItem " + position);
+            //Log.i("nakama", "TeachingActivity adapter.destroyItem " + position);
             registeredFragments.remove(position);
             super.destroyItem(container, position, object);
         }
 
         public Fragment getRegisteredFragment(int position) {
-            Log.i("nakama", "TeachingActivity adapter.getRegisteredFragment " + position);
+            //Log.i("nakama", "TeachingActivity adapter.getRegisteredFragment " + position);
             return registeredFragments.get(position);
         }
     }

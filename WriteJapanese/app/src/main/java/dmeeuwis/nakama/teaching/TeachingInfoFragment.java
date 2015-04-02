@@ -62,7 +62,6 @@ public class TeachingInfoFragment extends Fragment {
         // TODO: this should probably be made into a RecyclerView
         AddTranslation adder = new AddTranslation(){
             public void add(Translation t){
-                Log.i("nakama", "Inflating translation View for: " + t.toString());
                 View newTranslation = View.inflate(parent, R.layout.translation_slide, null);
                 AdvancedFuriganaTextView af = (AdvancedFuriganaTextView) newTranslation.findViewById(R.id.kanji);
                 af.setTranslation(t, dictSet.kanjiFinder());

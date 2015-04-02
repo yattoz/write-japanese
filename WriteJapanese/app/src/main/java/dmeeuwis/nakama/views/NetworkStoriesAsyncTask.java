@@ -12,25 +12,28 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<String>> {
 
     private final AddString sa;
     private final Character c;
+    private final UUID iid;
 
     public interface AddString {
         public void add(String s);
     }
 
-    public NetworkStoriesAsyncTask(Character c, AddString sa){
+    public NetworkStoriesAsyncTask(Character c, UUID iid, AddString sa){
         this.c = c;
         this.sa = sa;
+        this.iid = iid;
     }
 
     @Override
     protected List<String> doInBackground(Character... params) {
         try {
-            URL url = new URL("http://dmeeuwis.com/write-japanese/stories/" + c);
+            URL url = new URL("http://dmeeuwis.com/write-japanese/stories/" + c + "?iid=" + iid);
             Log.i("nakama", "Network: Starting network request for: " + url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {

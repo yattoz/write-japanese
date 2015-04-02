@@ -94,7 +94,7 @@ public class TeachingStoryFragment extends Fragment {
         loadFileTask.execute();
 
         this.storiesCard = (LinearLayout)view.findViewById(R.id.networkStoriesCard);
-        this.loadRemoteStories = new NetworkStoriesAsyncTask(this.character, new NetworkStoriesAsyncTask.AddString() {
+        this.loadRemoteStories = new NetworkStoriesAsyncTask(this.character, this.iid, new NetworkStoriesAsyncTask.AddString() {
             @Override public void add(String s) {
                 TextView tv = new TextView(getActivity());
                 tv.setText(s);
