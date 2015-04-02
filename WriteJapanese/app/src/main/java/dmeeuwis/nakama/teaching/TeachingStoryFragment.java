@@ -51,15 +51,6 @@ public class TeachingStoryFragment extends Fragment {
 
     UUID iid;
 
-	@Override
-	public void onAttach(Activity activity) {
-        Log.i("nakama", "TeachingStoryFragment lifecycle: onAttach");
-		super.onAttach(activity);
-
-        this.iid = Iid.get(activity.getApplication());
-        Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
-    }
-
     @Override
     public void onResume() {
         Log.i("nakama", "TeachingStoryFragment lifecycle: onResume; getView=" + getView());
@@ -67,6 +58,9 @@ public class TeachingStoryFragment extends Fragment {
 
         this.character = parent.getCharacter().charAt(0);
         this.kanji = parent.getKanji();
+
+        this.iid = Iid.get(parent.getApplication());
+        Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
 
         StoryDataHelper db = new StoryDataHelper(parent);
         String s = db.getStory(this.character);
