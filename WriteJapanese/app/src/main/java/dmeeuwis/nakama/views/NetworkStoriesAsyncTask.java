@@ -77,6 +77,7 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
         }
 
         for(String s: result){
+            Log.i("nakama", "Adding network story: " + s);
             sa.add(s);
         }
     }

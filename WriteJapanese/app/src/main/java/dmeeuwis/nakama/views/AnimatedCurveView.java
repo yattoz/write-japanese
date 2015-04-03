@@ -105,7 +105,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * Clears current registered strokes.
 	 */
 	public void clear(){
-        Log.i("nakama", "AnimatedCurveView clear");
+        //Log.i("nakama", "AnimatedCurveView clear");
         pathsToDraw = new ArrayList<>();
         eqn_i = 0;
         time = -1;
@@ -133,11 +133,11 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * When not in autoincrement mode, this will increase the number of strokes being animated by one.
 	 */
 	public int incrementCurveStroke(){
-        Log.i("nakama", "AnimatedCurveView: incrementCurveStroke to " + allowedStrokes + " + 1; playstate " + this.playingState);
+        //Log.i("nakama", "AnimatedCurveView: incrementCurveStroke to " + allowedStrokes + " + 1; playstate " + this.playingState);
         this.allowedStrokes++;
 
         if(playingState == PlayStatus.PLAYING){
-            Log.i("nakama", "AnimatedCurveView: incrementCurveStroke; playstate is PLAYING, so will resumeAnimation()");
+            //Log.i("nakama", "AnimatedCurveView: incrementCurveStroke; playstate is PLAYING, so will resumeAnimation()");
             resumeAnimation(0);
         }
 
@@ -235,7 +235,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	 * @param delayFirst How long in ms to delay before starting animation.
 	 */
 	public void startAnimation(int delayFirst){
-        Log.i("nakama", "AnimatedCurveView startAnimation " + delayFirst);
+        //Log.i("nakama", "AnimatedCurveView startAnimation " + delayFirst);
         stopAnimationInternal();
 		clear();
         playingState = PlayStatus.PLAYING;
@@ -243,7 +243,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	}
 
     private void startAnimationInternal(){
-        Log.i("nakama", "AnimatedCurveView startAnimationInternal ");
+        //Log.i("nakama", "AnimatedCurveView startAnimationInternal ");
         clear();
         resumeAnimation(0);
     }
@@ -254,7 +254,7 @@ public class AnimatedCurveView extends View implements Animatable {
             if(threadDrawStatus == DrawStatus.DRAWING) {
                 animateHandler.postDelayed(this, 16);
             } else {
-                Log.i("nakama", "DrawStatus was " + threadDrawStatus + ", CANCELLING timer");
+                //Log.i("nakama", "DrawStatus was " + threadDrawStatus + ", CANCELLING timer");
                 animateHandler.removeCallbacksAndMessages(null);
             }
             postInvalidate();
@@ -262,7 +262,7 @@ public class AnimatedCurveView extends View implements Animatable {
     }
 
     private void resumeAnimation(int delayFirst){
-        Log.i("nakama", "AnimatedCurveView resumeAnimation " + delayFirst);
+        //Log.i("nakama", "AnimatedCurveView resumeAnimation " + delayFirst);
         threadDrawStatus = DrawStatus.DRAWING;
         this.animateHandler.postDelayed(animationRunnable, delayFirst);
     }
@@ -279,7 +279,7 @@ public class AnimatedCurveView extends View implements Animatable {
      * Stops current animation exactly where it is.
      **/
     public void stopAnimationInternal(){
-        Log.i("nakama", "AnimatedCurveView: stopAnimationInternal.");
+        //Log.i("nakama", "AnimatedCurveView: stopAnimationInternal.");
         animateHandler.removeCallbacksAndMessages(null);
     }
 
@@ -300,14 +300,14 @@ public class AnimatedCurveView extends View implements Animatable {
 		if(!this.scaleAndOffsets.initialized){
             scaleAndOffsets.calculate(unscaledBoundingBox, getWidth() - this.paddingLeft, getHeight() - this.paddingTop);
 
-            Log.i("nakama", "AnimatedCurveView: rescaled, resetting animateTimer. threadDrawStatus: " + threadDrawStatus);
+            //Log.i("nakama", "AnimatedCurveView: rescaled, resetting animateTimer. threadDrawStatus: " + threadDrawStatus);
             clear();
             if(playingState == PlayStatus.PLAYING){
                 startAnimationInternal();
             }
 
             if(drawTime == DrawTime.STATIC){
-                Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");
+                //Log.i("nakama", "Pre-drawing STATIC AnimatedCurveView in onDraw");
                 while(drawIncrement() == DrawStatus.DRAWING){ /* loop */ }
             }
         }

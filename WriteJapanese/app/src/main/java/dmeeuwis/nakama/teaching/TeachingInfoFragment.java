@@ -37,16 +37,9 @@ public class TeachingInfoFragment extends Fragment {
 	private KanjiTranslationListAsyncTask searchTask;
 
     @Override
-    public void onAttach(Activity activity) {
-        Log.i("nakama", "TeachingInfoFragment lifecycle: onAttach");
-        super.onAttach(activity);
-    }
-
-
-    @Override
     public void onResume(){
         View view = getView();
-        Log.i("nakama", "TeachingInfoFragment lifecycle: onResume; getView=" + view + ", id=" + System.identityHashCode(this));
+        //Log.i("nakama", "TeachingInfoFragment lifecycle: onResume; getView=" + view + ", id=" + System.identityHashCode(this));
         final TeachingActivity parent = (TeachingActivity)getActivity();
 
         Kanji kanji = parent.getKanji();
@@ -81,7 +74,7 @@ public class TeachingInfoFragment extends Fragment {
         addTextViewsToLayout((LinearLayout)view.findViewById(R.id.meanings), kanji.meanings);
 
         startAnimation();
-        Log.i("nakama", "TeachingInfoFragment lifecycle: at end of onResume, kanim is " + this.kanim + "; kanjiLabel is " + this.kanjiLabel);
+        //Log.i("nakama", "TeachingInfoFragment lifecycle: at end of onResume, kanim is " + this.kanim + "; kanjiLabel is " + this.kanjiLabel);
 
         super.onResume();
     }
@@ -99,15 +92,13 @@ public class TeachingInfoFragment extends Fragment {
 
     public void startAnimation(){
         if(this.kanim != null) {
-            Log.e("nakama", "TeachingInfoFragment lifecycle: startAnimation success. " + System.identityHashCode(this));
+            //Log.d("nakama", "TeachingInfoFragment lifecycle: startAnimation success. " + System.identityHashCode(this));
             this.kanim.startAnimation(500);
-        } else {
-            Log.e("nakama", "TeachingInfoFragment lifecycle: can't startAnimation, null reference to kanjim; " + System.identityHashCode(this));
         }
     }
 	
 	 @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("nakama", "TeachingInfoFragment lifecycle: onCreateView");
+        //Log.d("nakama", "TeachingInfoFragment lifecycle: onCreateView");
 		return inflater.inflate(R.layout.activity_teaching, container, false);
 	}
 	 
@@ -122,7 +113,7 @@ public class TeachingInfoFragment extends Fragment {
 			on.setText(joined);
 			on.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			Log.d("nakama", "Set a text view: " + joined);
+			//Log.d("nakama", "Set a text view: " + joined);
 			l.addView(on, params);
 		}
 	}

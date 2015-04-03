@@ -53,14 +53,14 @@ public class TeachingStoryFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.i("nakama", "TeachingStoryFragment lifecycle: onResume; getView=" + getView());
+        //Log.i("nakama", "TeachingStoryFragment lifecycle: onResume; getView=" + getView());
         TeachingActivity parent = (TeachingActivity)getActivity();
 
         this.character = parent.getCharacter().charAt(0);
         this.kanji = parent.getKanji();
 
         this.iid = Iid.get(parent.getApplication());
-        Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
+        //Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
 
         StoryDataHelper db = new StoryDataHelper(parent);
         String s = db.getStory(this.character);
@@ -124,7 +124,7 @@ public class TeachingStoryFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("nakama", "TeachingStoryFragment lifecycle: onCreateView");
+        //Log.i("nakama", "TeachingStoryFragment lifecycle: onCreateView");
 		return inflater.inflate(R.layout.fragment_story, container, false);
 	}
 	
@@ -134,7 +134,7 @@ public class TeachingStoryFragment extends Fragment {
 		}
 
 		public View getView(int position, View convertView, ViewGroup parentViewgroup){
-			Log.i("nakama", "RadicalAdapter.getView " + convertView);
+			//Log.i("nakama", "RadicalAdapter.getView " + convertView);
 			if(convertView == null){
 				convertView = new KanjiWithMeaningView(this.getContext());
 			}
@@ -190,7 +190,7 @@ public class TeachingStoryFragment extends Fragment {
         protected void onPostExecute(List<Kanji> result) {
        		if(result.size() > 0){
        			for(Kanji k: result){ 
-       				Log.i("nakama", "Adding results to radicalAdapter: " + k);
+       				//Log.i("nakama", "Adding results to radicalAdapter: " + k);
        				radicalAdapter.add(k); 
        			}
        			radicalsCard.setVisibility(View.VISIBLE);
