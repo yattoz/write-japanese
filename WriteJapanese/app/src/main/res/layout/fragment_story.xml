@@ -120,6 +120,8 @@
             android:background="@drawable/bg_card"
             android:gravity="center_horizontal"
             android:orientation="vertical"
+            android:showDividers="middle"
+            android:divider="?android:listDivider"
             android:visibility="gone" >
 
             <TextView

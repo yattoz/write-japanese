@@ -9,10 +9,12 @@ import java.util.UUID;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,8 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import dmeeuwis.Kanji;
 import dmeeuwis.KanjiRadicalFinder;
 import dmeeuwis.kanjimaster.R;
@@ -51,10 +55,12 @@ public class TeachingStoryFragment extends Fragment {
 
     UUID iid;
 
+    List<String> networkStories = new ArrayList<>();
+
     @Override
     public void onResume() {
         //Log.i("nakama", "TeachingStoryFragment lifecycle: onResume; getView=" + getView());
-        TeachingActivity parent = (TeachingActivity)getActivity();
+        final TeachingActivity parent = (TeachingActivity)getActivity();
 
         this.character = parent.getCharacter().charAt(0);
         this.kanji = parent.getKanji();
@@ -87,13 +93,26 @@ public class TeachingStoryFragment extends Fragment {
         loadFileTask = new LoadRadicalsFile(parent);
         loadFileTask.execute();
 
+        final Resources r = this.getResources();
         this.storiesCard = (LinearLayout)view.findViewById(R.id.networkStoriesCard);
+        final int paddingPx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, this.getResources().getDisplayMetrics());
         this.loadRemoteStories = new NetworkStoriesAsyncTask(this.character, this.iid, new NetworkStoriesAsyncTask.AddString() {
-            @Override public void add(String s) {
+            @Override public void add(final String s) {
                 TextView tv = new TextView(getActivity());
                 tv.setText(s);
+                tv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+                tv.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_story, 0);
                 storiesCard.addView(tv);
                 storiesCard.setVisibility(View.VISIBLE);
+
+                tv.setClickable(true);
+                tv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        storyEditor.setText(s);
+                        Toast.makeText(parent, "Your story for this character has been updated.", Toast.LENGTH_SHORT ).show();
+                    }
+                });
             }
         });
         this.loadRemoteStories.execute();
@@ -150,6 +169,14 @@ public class TeachingStoryFragment extends Fragment {
             StoryDataHelper db = new StoryDataHelper(act);
             String story = storyEditor.getText().toString();
 			db.recordStory(this.character, story);
+
+            // check if story matches a network story exactly, and optimize out one network request.
+            // server protects itself from duplicates, so fine if one accidentally goes out, just uses user bandwidth.
+            for(String s: this.networkStories){
+                if(s != null && story.equals(s)){
+                    return;
+                }
+            }
 
             NetworkStorySaveAsyncTask saveRemove =
                 new NetworkStorySaveAsyncTask(this.character, story, iid);
