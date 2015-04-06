@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +35,7 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
     @Override
     protected List<String> doInBackground(Character... params) {
         try {
-            URL url = new URL("http://dmeeuwis.com/write-japanese/stories/" + c + "?iid=" + iid);
+            URL url = new URL("http://dmeeuwis.com/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + iid);
             Log.i("nakama", "Network: Starting network request for: " + url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
