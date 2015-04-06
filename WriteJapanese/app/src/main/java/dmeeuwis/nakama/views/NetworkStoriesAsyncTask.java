@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<String>> {
@@ -56,6 +57,9 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
                     }
                     return storyList;
                 } else {
+                    Map<String, List<String>> map = urlConnection.getHeaderFields();
+                    Log.e("nakama", "Error response message: " + urlConnection.getResponseMessage());
+                    Log.e("nakama", "Error response headers: " + Arrays.toString(map.entrySet().toArray()));
                     return Arrays.asList("Network error: " + statusCode);
                 }
 
