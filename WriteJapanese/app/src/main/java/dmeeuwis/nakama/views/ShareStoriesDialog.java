@@ -12,7 +12,7 @@ public class ShareStoriesDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         builder.setTitle("Story Sharing");
-        builder.setMessage("Story sharing shares your kanji stories with others, and lets you see stories from other users around the globe." +
+        builder.setMessage("Story sharing shares your kanji stories with other users, and lets you see stories from users around the globe." +
                             "\n\nStories are inspected for content before being made visible to other users.\n\nYou can opt in or out at any time in the settings menu.");
 
         builder.setPositiveButton("Share", new DialogInterface.OnClickListener() {
