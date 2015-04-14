@@ -56,6 +56,7 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
                     for (int i = 0; i < jar.length(); i++) {
                         storyList.add(jar.getString(i));
                     }
+                    Log.d("nakama", "Network: response has " +  storyList.size() + " stories.");
                     return storyList;
                 } else {
                     Map<String, List<String>> map = urlConnection.getHeaderFields();

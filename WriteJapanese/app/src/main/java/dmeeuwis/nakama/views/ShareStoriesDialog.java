@@ -8,21 +8,21 @@ import android.preference.PreferenceManager;
 
 public class ShareStoriesDialog {
 
-    public static void show(final Context context, final Runnable after){
+    public static void show(final Context context, final Runnable chooseYes, final Runnable chooseNo){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         builder.setTitle("Story Sharing");
-        builder.setMessage("Story sharing shares you kanji stories with others, and lets you see stories from other users around the globe." +
-                            "\nStories are inspected for content before being shared. You can opt in or out at any time in the settings menu.");
+        builder.setMessage("Story sharing shares your kanji stories with others, and lets you see stories from other users around the globe." +
+                            "\n\nStories are inspected for content before being made visible to other users.\n\nYou can opt in or out at any time in the settings menu.");
 
         builder.setPositiveButton("Share", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor edit = prefs.edit();
                 edit.putBoolean("share", true);
-                edit.commit();
+                edit.apply();
                 dialog.dismiss();
-                after.run();
+                chooseYes.run();
             }
         });
 
@@ -33,9 +33,9 @@ public class ShareStoriesDialog {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor edit = prefs.edit();
                 edit.putBoolean("share", false);
-                edit.commit();
+                edit.apply();
                 dialog.dismiss();
-                after.run();
+                chooseNo.run();
             }
         });
 

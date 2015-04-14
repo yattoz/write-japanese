@@ -62,6 +62,7 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.kanjidraw.DrawingComparator;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.KanjiVocabRecyclerAdapter;
 import dmeeuwis.nakama.LockChecker;
@@ -79,6 +80,7 @@ import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
+import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
@@ -688,6 +690,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:KanjiCheck");
             menu.add("DEBUG:LockUnlock");
             menu.add("DEBUG:IabConsume");
+            menu.add("DEBUG:ResetStorySharing");
         }
         return true;
     }
@@ -702,6 +705,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         Log.d("nakama", "KanjiMaster.onPrepareOptionsMenus: setting actionbar lock to: " +
                 (lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED) + " (" + lockChecker.getPurchaseStatus() + ")");
         lockItem.setVisible(lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED);
+
+        MenuItem shareCheck = menu.findItem(R.id.menu_share_stories);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String sharing = prefs.getString(TeachingStoryFragment.STORY_SHARING_KEY, null);
+        shareCheck.setChecked("true".equals(sharing));
+
         return true;
     }
 
@@ -730,6 +739,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             for (CharacterStudySet c : characterSets.values()) {
                 c.setShuffle(item.isChecked());
             }
+        } else if (item.getItemId() == R.id.menu_share_stories) {
+            item.setChecked(!item.isChecked());
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            Editor e = prefs.edit();
+            e.putString(TeachingStoryFragment.STORY_SHARING_KEY, String.valueOf(item.isChecked()));
+            e.apply();
+
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
         }
@@ -747,6 +763,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 getLockChecker().coreUnlock();
             } else if (item.getTitle().equals("DEBUG:IabConsume")) {
                 lockChecker.startConsume();
+            } else if (item.getTitle().equals("DEBUG:ResetStorySharing")){
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                Editor e = prefs.edit();
+                e.putString(TeachingStoryFragment.STORY_SHARING_KEY, null);
+                e.apply();
             }
         }
 

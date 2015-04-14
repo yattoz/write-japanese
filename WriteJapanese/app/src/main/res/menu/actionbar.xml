@@ -18,6 +18,10 @@
         android:checkable="true"
         android:title="@string/shuffle_order_menu_label"/>
     <item
+        android:id="@+id/menu_share_stories"
+        android:checkable="true"
+        android:title="@string/share_kanji_stories"/>
+    <item
         android:id="@+id/menu_reset_progress"
         android:title="@string/reset_progress_menu_label"/>
     <item

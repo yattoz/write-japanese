@@ -8,10 +8,13 @@ import java.util.UUID;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
@@ -22,7 +25,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +43,11 @@ import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.KanjiWithMeaningView;
 import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
 import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
+import dmeeuwis.nakama.views.ShareStoriesDialog;
+import dmeeuwis.util.Util;
 
 public class TeachingStoryFragment extends Fragment {
+    public static final String STORY_SHARING_KEY = "storySharing";
 
 	char character;
 	Kanji kanji;        // may be null for kana
@@ -56,6 +64,38 @@ public class TeachingStoryFragment extends Fragment {
     UUID iid;
 
     List<String> networkStories = new ArrayList<>();
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser){
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+            String value = prefs.getString(STORY_SHARING_KEY, null);
+            if("true".equals(value)) {
+               loadRemoteStories.execute();
+            } else if("false".equals(value)){
+               // do nothing
+            } else {
+                ShareStoriesDialog.show(getActivity(), new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences.Editor e = prefs.edit();
+                        e.putString(STORY_SHARING_KEY, "true");
+                        e.apply();
+                        loadRemoteStories.execute();
+                    }
+                }, new Runnable(){
+
+                    @Override
+                    public void run() {
+                        SharedPreferences.Editor e = prefs.edit();
+                        e.putString(STORY_SHARING_KEY, "false");
+                        e.apply();
+                    }
+                });
+            }
+       }
+    }
 
     @Override
     public void onResume() {
@@ -97,25 +137,51 @@ public class TeachingStoryFragment extends Fragment {
         this.storiesCard = (LinearLayout)view.findViewById(R.id.networkStoriesCard);
         final int paddingPx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, this.getResources().getDisplayMetrics());
         this.loadRemoteStories = new NetworkStoriesAsyncTask(this.character, this.iid, new NetworkStoriesAsyncTask.AddString() {
-            @Override public void add(final String s) {
-                TextView tv = new TextView(getActivity());
-                tv.setText(s);
-                tv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
-                tv.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_story, 0);
-                storiesCard.addView(tv);
-                storiesCard.setVisibility(View.VISIBLE);
 
-                tv.setClickable(true);
-                tv.setOnClickListener(new View.OnClickListener() {
+            @Override public void add(final String s) {
+                Log.d("nakama", "Adding story as view: " + s);
+                TextView tv = new TextView(getActivity());
+                int tid = Util.generateViewId();
+                tv.setText(s);
+                tv.setId(tid);
+                tv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+
+                ImageView iv = new ImageView(getActivity());
+                iv.setImageDrawable(r.getDrawable(R.drawable.ic_story_for_white_bg));
+                iv.setClickable(true);
+                iv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+                int imageWidth = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, r.getDisplayMetrics());
+                iv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         storyEditor.setText(s);
-                        Toast.makeText(parent, "Your story for this character has been updated.", Toast.LENGTH_SHORT ).show();
+                        Toast.makeText(parent, "Your story for this character has been updated.", Toast.LENGTH_SHORT).show();
                     }
                 });
+
+                RelativeLayout layout = new RelativeLayout(getActivity());
+                {
+                    RelativeLayout.LayoutParams ll = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    ll.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                    ll.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    layout.addView(tv, ll);
+                }
+
+                {
+                    RelativeLayout.LayoutParams llv = new RelativeLayout.LayoutParams(imageWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    llv.addRule(RelativeLayout.ALIGN_RIGHT, tid);
+                    llv.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    llv.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    layout.addView(iv, llv);
+                }
+
+                storiesCard.setVisibility(View.VISIBLE);
+                storiesCard.addView(layout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                Log.d("nakama", "Added story as view: " + s);
             }
         });
-        this.loadRemoteStories.execute();
+        //this.loadRemoteStories.execute();
 
         startAnimation();
         super.onResume();
