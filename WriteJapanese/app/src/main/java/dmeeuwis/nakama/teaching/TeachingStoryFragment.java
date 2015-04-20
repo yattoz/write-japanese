@@ -57,7 +57,6 @@ public class TeachingStoryFragment extends Fragment {
 	GridView gridView;
 	ArrayAdapter<Kanji> radicalAdapter;
 	LoadRadicalsFile loadFileTask;
-    NetworkStoriesAsyncTask loadRemoteStories;
     LinearLayout storiesCard;
 	View radicalsCard;
 
@@ -72,7 +71,7 @@ public class TeachingStoryFragment extends Fragment {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
             String value = prefs.getString(STORY_SHARING_KEY, null);
             if("true".equals(value)) {
-               loadRemoteStories.execute();
+                loadRemoteStories();
             } else if("false".equals(value)){
                // do nothing
             } else {
@@ -82,7 +81,7 @@ public class TeachingStoryFragment extends Fragment {
                         SharedPreferences.Editor e = prefs.edit();
                         e.putString(STORY_SHARING_KEY, "true");
                         e.apply();
-                        loadRemoteStories.execute();
+                        loadRemoteStories();
                     }
                 }, new Runnable(){
 
@@ -133,10 +132,15 @@ public class TeachingStoryFragment extends Fragment {
         loadFileTask = new LoadRadicalsFile(parent);
         loadFileTask.execute();
 
-        final Resources r = this.getResources();
         this.storiesCard = (LinearLayout)view.findViewById(R.id.networkStoriesCard);
+        startAnimation();
+        super.onResume();
+    }
+
+    public void loadRemoteStories(){
+        final Resources r = this.getResources();
         final int paddingPx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, this.getResources().getDisplayMetrics());
-        this.loadRemoteStories = new NetworkStoriesAsyncTask(this.character, this.iid, new NetworkStoriesAsyncTask.AddString() {
+        NetworkStoriesAsyncTask loadRemoteStories = new NetworkStoriesAsyncTask(this.character, this.iid, new NetworkStoriesAsyncTask.AddString() {
 
             @Override public void add(final String s) {
                 Log.d("nakama", "Adding story as view: " + s);
@@ -155,7 +159,7 @@ public class TeachingStoryFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         storyEditor.setText(s);
-                        Toast.makeText(parent, "Your story for this character has been updated.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Your story for this character has been updated.", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -181,10 +185,7 @@ public class TeachingStoryFragment extends Fragment {
                 Log.d("nakama", "Added story as view: " + s);
             }
         });
-        //this.loadRemoteStories.execute();
-
-        startAnimation();
-        super.onResume();
+        loadRemoteStories.execute();
     }
 
     public void clear(){
