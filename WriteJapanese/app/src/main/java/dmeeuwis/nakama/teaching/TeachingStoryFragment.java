@@ -18,12 +18,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -147,7 +149,6 @@ public class TeachingStoryFragment extends Fragment {
                 TextView tv = new TextView(getActivity());
                 int tid = Util.generateViewId();
                 tv.setText(s);
-                tv.setId(tid);
                 tv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
 
                 ImageView iv = new ImageView(getActivity());
@@ -163,19 +164,16 @@ public class TeachingStoryFragment extends Fragment {
                     }
                 });
 
-                RelativeLayout layout = new RelativeLayout(getActivity());
+                FrameLayout layout = new FrameLayout(getActivity());
                 {
-                    RelativeLayout.LayoutParams ll = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    ll.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    ll.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    FrameLayout.LayoutParams ll = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    ll.setMargins(0, 0, imageWidth, 0);
                     layout.addView(tv, ll);
                 }
 
                 {
-                    RelativeLayout.LayoutParams llv = new RelativeLayout.LayoutParams(imageWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    llv.addRule(RelativeLayout.ALIGN_RIGHT, tid);
-                    llv.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    llv.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    FrameLayout.LayoutParams llv = new FrameLayout.LayoutParams(imageWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    llv.gravity = Gravity.RIGHT;
                     layout.addView(iv, llv);
                 }
 
