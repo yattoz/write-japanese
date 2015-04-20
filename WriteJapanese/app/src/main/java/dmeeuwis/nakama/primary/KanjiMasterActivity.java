@@ -715,7 +715,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.menu_progress) {
             Intent teachIntent = new Intent(this, ProgressActivity.class);
             Bundle params = new Bundle();
@@ -740,11 +740,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 c.setShuffle(item.isChecked());
             }
         } else if (item.getItemId() == R.id.menu_share_stories) {
-            item.setChecked(!item.isChecked());
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            Editor e = prefs.edit();
-            e.putString(TeachingStoryFragment.STORY_SHARING_KEY, String.valueOf(item.isChecked()));
-            e.apply();
+            ShareStoriesDialog.show(this, new Runnable() {
+                @Override public void run() {   // yes, share
+                    item.setChecked(true);
+                    updateStorySharingPreferences(true);
+                }
+            }, new Runnable() {
+                @Override public void run() {   // no, don't share
+                    item.setChecked(false);
+                    updateStorySharingPreferences(false);
+                }
+            });
 
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
@@ -772,6 +778,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         return true;
+    }
+
+    public void updateStorySharingPreferences(boolean sharing){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Editor e = prefs.edit();
+        e.putString(TeachingStoryFragment.STORY_SHARING_KEY, String.valueOf(sharing));
+        e.apply();
     }
 
     public void queryProgressReset() {
