@@ -80,6 +80,7 @@ import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
+import dmeeuwis.nakama.views.SetInfoDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
@@ -733,6 +734,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             startActivity(creditsIntent);
         } else if (item.getItemId() == R.id.menu_reset_progress) {
             queryProgressReset();
+        } else if (item.getItemId() == R.id.menu_about_set) {
+            SetInfoDialog.show(this, currentCharacterSet.name, currentCharacterSet.description);
         } else if (item.getItemId() == R.id.menu_shuffle) {
             item.setChecked(!item.isChecked());
 
@@ -741,12 +744,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         } else if (item.getItemId() == R.id.menu_share_stories) {
             ShareStoriesDialog.show(this, new Runnable() {
-                @Override public void run() {   // yes, share
+                @Override
+                public void run() {   // yes, share
                     item.setChecked(true);
                     updateStorySharingPreferences(true);
                 }
             }, new Runnable() {
-                @Override public void run() {   // no, don't share
+                @Override
+                public void run() {   // no, don't share
                     item.setChecked(false);
                     updateStorySharingPreferences(false);
                 }

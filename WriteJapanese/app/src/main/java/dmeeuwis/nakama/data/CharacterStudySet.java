@@ -21,7 +21,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 
 	final public Set<Character> freeCharactersSet;
 	final public Set<Character> allCharactersSet;
-	final public String name;
+	final public String name, description;
 
 	final private LockChecker lockChecker;
     private ProgressTracker tracker;
@@ -37,8 +37,9 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		return String.format("%s (%d)", this.name, this.allCharactersSet.size());
 	}
 
-	public CharacterStudySet(String name, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker lockChecker){
+	public CharacterStudySet(String name, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker lockChecker){
 		this.name = name;
+        this.description = description;
 		this.locked = locked;
 
 		this.freeCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(freeCharacters)));

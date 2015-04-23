@@ -46,6 +46,7 @@
     <string name="unlock_full_version_menu_label">Unlock Full Version</string>
     <string name="shuffle_order_menu_label">Shuffle Order</string>
     <string name="share_kanji_stories">Share Stories</string>
+    <string name="about_this_set">About this Set</string>
     <string name="reset_progress_menu_label">Reset Progress</string>
     <string name="credits_menu_label">Credits</string>
     <string name="title_activity_spen_draw">SpenDrawActivity</string>
