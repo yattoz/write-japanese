@@ -128,6 +128,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected TextSwitcher target;
     protected ColorDrawable actionBarBackground;
 
+    protected TextView introCharsetLabel, introCharsetDesc;
+
     protected String[] currentCharacterSvg;
 
     private static class KanjiMasterUncaughtHandler implements Thread.UncaughtExceptionHandler {
@@ -385,6 +387,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         });
 
+        this.introCharsetLabel = (TextView)findViewById(R.id.introCharsetLabel);
+        this.introCharsetDesc = (TextView)findViewById(R.id.introCharsetDescription);
+
     	hiraganaCharacterSet = CharacterSets.hiragana(lockChecker);
     	katakanaCharacterSet = CharacterSets.katakana(lockChecker);
     	joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), lockChecker);
@@ -611,6 +616,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.currentCharacterSet = this.characterSets.get("j1");
         }
         Log.i("nakama", "loadCurrentCharacterSet: setting to " + set + " (" + this.currentCharacterSet.pathPrefix + ")");
+
+        this.introCharsetLabel.setText(this.currentCharacterSet.label());
+        this.introCharsetDesc.setText(this.currentCharacterSet.description);
 
         // current character
         String currChar = prefs.getString(CHAR_SET_CHAR, null);
