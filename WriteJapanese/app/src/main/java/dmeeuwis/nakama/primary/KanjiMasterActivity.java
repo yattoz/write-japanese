@@ -600,6 +600,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String set = prefs.getString(CHAR_SET, "j1");
         this.currentCharacterSet = this.characterSets.get(set);
+        if(this.currentCharacterSet == null){
+            Log.e("nakama", "Invalid character set: " + set + "; defaulting to j1");
+            this.currentCharacterSet = this.characterSets.get("j1");
+        }
         Log.i("nakama", "loadCurrentCharacterSet: setting to " + set + " (" + this.currentCharacterSet.pathPrefix + ")");
 
         // current character
