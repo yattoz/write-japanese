@@ -52,4 +52,7 @@
     <string name="title_activity_spen_draw">SpenDrawActivity</string>
     <string name="title_activity_draw_view_test">DrawViewTestActivity</string>
 
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

@@ -20,6 +20,7 @@ import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -84,7 +85,7 @@ import dmeeuwis.nakama.views.SetInfoDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
-public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder {
+public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener {
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
@@ -401,6 +402,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     	this.characterSets.put("j4", joyouG4);
     	this.characterSets.put("j5", joyouG5);
     	this.characterSets.put("j6", joyouG6);
+
+        CharacterSetStatusFragment charsetFrag = (CharacterSetStatusFragment)getFragmentManager().findFragmentById(R.id.charSetInfoFragment);
+        if(charsetFrag != null) {
+            charsetFrag.setCharset(joyouG1);
+        }
 
     	ActionBar actionBar = getSupportActionBar();
         this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
@@ -907,5 +913,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         public void onAnimationRepeat(Animation animation) {
             // nothing to do
         }
+    }
+
+    public void onFragmentInteraction(Uri uri){
+        Log.i("nakama", "KanjiMasterActivity: onFragmeentInteraction called, " + uri);
     }
 }
