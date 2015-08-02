@@ -132,6 +132,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     protected String[] currentCharacterSvg;
 
+    protected CharacterSetStatusFragment charSetFrag;
+
     private static class KanjiMasterUncaughtHandler implements Thread.UncaughtExceptionHandler {
         @Override public void uncaughtException(Thread thread, Throwable ex) {
             Log.e("nakama", "Uncaught exception from thread " + thread, ex);
@@ -408,9 +410,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     	this.characterSets.put("j5", joyouG5);
     	this.characterSets.put("j6", joyouG6);
 
-        CharacterSetStatusFragment charsetFrag = (CharacterSetStatusFragment)getFragmentManager().findFragmentById(R.id.charSetInfoFragment);
-        if(charsetFrag != null) {
-            charsetFrag.setCharset(joyouG1);
+        this.charSetFrag = (CharacterSetStatusFragment)getFragmentManager().findFragmentById(R.id.charSetInfoFragment);
+        if(this.charSetFrag != null) {
+            this.charSetFrag.setCharset(joyouG1);
         }
 
     	ActionBar actionBar = getSupportActionBar();
@@ -877,6 +879,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 //			this.currentCharacterSet = this.joyouSS;
         }
         this.currentCharacterSet.load(this.getApplicationContext());
+        if(this.charSetFrag != null){
+            this.charSetFrag.setCharset(this.currentCharacterSet);
+        }
         this.reviewBug.setVisibility(View.GONE);
         loadNextCharacter(false);
         drawPad.clear();

@@ -55,14 +55,14 @@ public class CharacterSetStatusFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public void setDate(int year, int month, int day){
+    private void setDate(int year, int month, int day){
         Toast.makeText(this.getActivity(), "Set Date Target: " + year + ", " + month + ", " + day, Toast.LENGTH_LONG).show();
         charSet.setStudyGoal(new GregorianCalendar(year, month, day));
         updateProgress();
         updateGoals();
     }
 
-    public void updateProgress(){
+    private void updateProgress(){
         CharacterStudySet.SetProgress sp = charSet.getProgress();
         progressText.setText("Known: " + sp.passed + "\n" +
                 "Reviewing: " + sp.reviewing + "\n" +
@@ -70,10 +70,14 @@ public class CharacterSetStatusFragment extends Fragment {
                 "Unknown: " + sp.unknown);
     }
 
-    public void updateGoals(){
+    private void updateGoals(){
         if(charSet.hasStudyGoal()){
             CharacterStudySet.GoalProgress gp = charSet.getGoalProgress();
-            progressGoalsText.setText("Days Remaining: " + gp.daysLeft);
+            progressGoalsText.setText(
+                    "Days Remaining: " + gp.daysLeft + "\n" +
+                    "Kanji Per Day: " + gp.perDay
+
+            );
         }
     }
 
@@ -97,6 +101,9 @@ public class CharacterSetStatusFragment extends Fragment {
 
         progressText = (TextView)v.findViewById(R.id.charset_progress_text);
         progressGoalsText = (TextView)v.findViewById(R.id.charset_goal_progress_text);
+
+        updateProgress();
+        updateGoals();
     }
 
     @Override

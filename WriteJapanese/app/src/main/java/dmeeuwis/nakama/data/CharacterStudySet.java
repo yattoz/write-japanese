@@ -34,7 +34,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 	private LockLevel locked;
 	public final String pathPrefix;
 
-	private GregorianCalendar studyGoal;
+	private GregorianCalendar studyGoal, goalStarted;
 
     public static class SetProgress {
         public final int passed;
@@ -50,19 +50,32 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         }
     }
 
-    public static class GoalProgress {
-        public final GregorianCalendar goal;
-        public final int passed;
-        public final int reviewing;
-        public final int expected;
-        public final int daysLeft;
+    public static int daysDifference(GregorianCalendar a, GregorianCalendar b){
+        return (int)(Math.abs(a.getTimeInMillis() - b.getTimeInMillis()) / (1000 * 60 * 60 * 24));
+    }
 
-        public GoalProgress(GregorianCalendar goal, int passed, int reviewing, int expected, int daysLeft){
-            this.reviewing = reviewing;
-            this.daysLeft = daysLeft;
-            this.expected = expected;
-            this.passed = passed;
+    public static class GoalProgress {
+        public final GregorianCalendar goal, goalStarted;
+        public final int passed, remaining, daysLeft;
+        public final int perDay, expected;
+
+        public GoalProgress(GregorianCalendar goalStarted, GregorianCalendar goal, SetProgress s, GregorianCalendar today){
+            this.goalStarted = goalStarted;
+            this.remaining = s.failing + s.reviewing + s.unknown;
+            this.passed = s.passed;
             this.goal = goal;
+
+            if(this.goal.before(today)){
+                daysLeft = 0;
+            } else {
+                daysLeft = Math.max(1, daysDifference(goal, today));
+            }
+            this.perDay = remaining / daysLeft;
+
+            int totalDays = daysDifference(goalStarted, goal);
+            this.expected = (s.failing + s.unknown + s.reviewing + s.passed) / totalDays;
+
+            Log.i("nakama", "Goal Calcs; Start: " + goalStarted + ", goal: " + goal + "; remaining: " + remaining + "; daysLeft: " + daysLeft + "; remaining: " + remaining);
         }
     }
 
@@ -93,29 +106,15 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 
     public void setStudyGoal(GregorianCalendar g){
         this.studyGoal = g;
+        this.goalStarted = new GregorianCalendar();
     }
 
     public GoalProgress getGoalProgress(){
         if(this.studyGoal == null){ return null; }
         SetProgress s = this.getProgress();
-        int daysLeft = Math.max(1, getDayRemainingInGoal());
-        return new GoalProgress(this.studyGoal, s.passed, s.reviewing, (s.reviewing + s.unknown + s.failing) / daysLeft, daysLeft);
+        return new GoalProgress(this.goalStarted, this.studyGoal, s, new GregorianCalendar());
     }
 
-
-    public Integer getDayRemainingInGoal(){
-        if(this.studyGoal == null){
-            return null;
-        }
-
-        GregorianCalendar today = new GregorianCalendar();
-        if(this.studyGoal.before(today)){
-            return 0;
-        }
-
-        long daysDiff = (studyGoal.getTimeInMillis() - today.getTimeInMillis()) / (1000 * 60 * 60 * 24 );
-        return (int)daysDiff;
-    }
 
     public SetProgress getProgress(){
         return this.tracker.calculateProgress();
