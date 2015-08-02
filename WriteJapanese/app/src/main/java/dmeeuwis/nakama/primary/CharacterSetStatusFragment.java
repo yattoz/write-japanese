@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterStudySet;
@@ -36,6 +37,8 @@ public class CharacterSetStatusFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private TextView progressText, progressGoalsText;
+
     /**
      * @param charset Name of the CharacterStudySet.
      * @return A new instance of fragment CharacterSetStatusFragment.
@@ -53,7 +56,25 @@ public class CharacterSetStatusFragment extends Fragment {
     }
 
     public void setDate(int year, int month, int day){
-        Toast.makeText(this.getActivity(), "Set Date tArget: " + year + ", " + month + ", " + day, Toast.LENGTH_LONG).show();
+        Toast.makeText(this.getActivity(), "Set Date Target: " + year + ", " + month + ", " + day, Toast.LENGTH_LONG).show();
+        charSet.setStudyGoal(new GregorianCalendar(year, month, day));
+        updateProgress();
+        updateGoals();
+    }
+
+    public void updateProgress(){
+        CharacterStudySet.SetProgress sp = charSet.getProgress();
+        progressText.setText("Known: " + sp.passed + "\n" +
+                "Reviewing: " + sp.reviewing + "\n" +
+                "Failed: " + sp.failing + "\n" +
+                "Unknown: " + sp.unknown);
+    }
+
+    public void updateGoals(){
+        if(charSet.hasStudyGoal()){
+            CharacterStudySet.GoalProgress gp = charSet.getGoalProgress();
+            progressGoalsText.setText("Days Remaining: " + gp.daysLeft);
+        }
     }
 
     @Override
@@ -71,10 +92,11 @@ public class CharacterSetStatusFragment extends Fragment {
         TextView descLabel = (TextView)v.findViewById(R.id.charset_desc);
         descLabel.setText(charSet.description);
 
-        PieProgressView pie = (PieProgressView)v.findViewById(R.id.charset_progress_chart);
-        pie.setProgressLevels(30, 20, 20, 30);
+//        PieProgressView pie = (PieProgressView)v.findViewById(R.id.charset_progress_chart);
+//        pie.setProgressLevels(30, 20, 20, 30);
 
-        TextView progressText = (TextView)v.findViewById(R.id.charset_progress_text);
+        progressText = (TextView)v.findViewById(R.id.charset_progress_text);
+        progressGoalsText = (TextView)v.findViewById(R.id.charset_goal_progress_text);
     }
 
     @Override

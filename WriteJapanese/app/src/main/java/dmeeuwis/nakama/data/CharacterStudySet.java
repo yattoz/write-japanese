@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Random;
@@ -17,7 +18,7 @@ import dmeeuwis.util.Util;
  */
 public abstract class CharacterStudySet implements Iterable<Character> {
 
-	public static enum LockLevel { NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED }
+	public enum LockLevel { NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED }
 
 	final public Set<Character> freeCharactersSet;
 	final public Set<Character> allCharactersSet;
@@ -32,6 +33,39 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 	private boolean reviewing = false;
 	private LockLevel locked;
 	public final String pathPrefix;
+
+	private GregorianCalendar studyGoal;
+
+    public static class SetProgress {
+        public final int passed;
+        public final int reviewing;
+        public final int failing;
+        public final int unknown;
+
+        public SetProgress(int passed, int reviewing, int failing, int unknown){
+            this.passed = passed;
+            this.reviewing = reviewing;
+            this.failing = failing;
+            this.unknown = unknown;
+        }
+    }
+
+    public static class GoalProgress {
+        public final GregorianCalendar goal;
+        public final int passed;
+        public final int reviewing;
+        public final int expected;
+        public final int daysLeft;
+
+        public GoalProgress(GregorianCalendar goal, int passed, int reviewing, int expected, int daysLeft){
+            this.reviewing = reviewing;
+            this.daysLeft = daysLeft;
+            this.expected = expected;
+            this.passed = passed;
+            this.goal = goal;
+        }
+    }
+
 
 	public String toString(){
 		return String.format("%s (%d)", this.name, this.allCharactersSet.size());
@@ -51,6 +85,45 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 
 		nextCharacter();
 	}
+
+
+    public boolean hasStudyGoal(){
+        return this.studyGoal != null;
+    }
+
+    public void setStudyGoal(GregorianCalendar g){
+        this.studyGoal = g;
+    }
+
+    public GoalProgress getGoalProgress(){
+        if(this.studyGoal == null){ return null; }
+        SetProgress s = this.getProgress();
+        int daysLeft = Math.max(1, getDayRemainingInGoal());
+        return new GoalProgress(this.studyGoal, s.passed, s.reviewing, (s.reviewing + s.unknown + s.failing) / daysLeft, daysLeft);
+    }
+
+
+    public Integer getDayRemainingInGoal(){
+        if(this.studyGoal == null){
+            return null;
+        }
+
+        GregorianCalendar today = new GregorianCalendar();
+        if(this.studyGoal.before(today)){
+            return 0;
+        }
+
+        long daysDiff = (studyGoal.getTimeInMillis() - today.getTimeInMillis()) / (1000 * 60 * 60 * 24 );
+        return (int)daysDiff;
+    }
+
+    public SetProgress getProgress(){
+        return this.tracker.calculateProgress();
+    }
+
+    public void setProgressNotifications(boolean enable){
+
+    }
 
 	public boolean locked(){
         if(lockChecker == null){ return false; }

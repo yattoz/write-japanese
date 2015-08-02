@@ -44,6 +44,22 @@ public class ProgressTracker {
 			this.recordSheet.put(c, null);
 		}
 	}
+
+    public CharacterStudySet.SetProgress calculateProgress(){
+        int known = 0, reviewing = 0, failed = 0, unknown = 0;
+        for(Map.Entry<Character, Progress> c: getAllScores().entrySet()){
+            if(c.getValue() == Progress.FAILED){
+                failed++;
+            } else if(c.getValue() == Progress.REVIEWING){
+                reviewing++;
+            } else if(c.getValue() == Progress.PASSED){
+                known++;
+            } else if(c.getValue() == Progress.UNKNOWN){
+                unknown++;
+            }
+        }
+        return new CharacterStudySet.SetProgress(known, reviewing, failed, unknown);
+    }
 	
 	private List<Character> charactersMatchingScore(Set<Character> allowedChars, Integer... scores){
 		List<Integer> scoresList = Arrays.asList(scores);
