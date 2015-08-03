@@ -56,7 +56,6 @@ public class CharacterSetStatusFragment extends Fragment {
     }
 
     private void setDate(int year, int month, int day){
-        Toast.makeText(this.getActivity(), "Set Date Target: " + year + ", " + month + ", " + day, Toast.LENGTH_LONG).show();
         charSet.setStudyGoal(new GregorianCalendar(year, month, day));
         updateProgress();
         updateGoals();
@@ -74,9 +73,11 @@ public class CharacterSetStatusFragment extends Fragment {
         if(charSet.hasStudyGoal()){
             CharacterStudySet.GoalProgress gp = charSet.getGoalProgress();
             progressGoalsText.setText(
+                    "Learned since starting goal: xx " + "\n" +
                     "Days Remaining: " + gp.daysLeft + "\n" +
-                    "Kanji Per Day: " + gp.perDay
-
+                    "Kanji Needed Per Day: " + gp.perDay + "\n" +
+                    "Kanji Scheduled Per Day: " + gp.perDay + "\n" +
+                    "Learned Today: "               + "\n"
             );
         }
     }

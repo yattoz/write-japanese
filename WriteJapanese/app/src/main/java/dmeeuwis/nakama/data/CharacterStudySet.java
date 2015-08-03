@@ -2,6 +2,7 @@ package dmeeuwis.nakama.data;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -70,7 +71,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
             } else {
                 daysLeft = Math.max(1, daysDifference(goal, today));
             }
-            this.perDay = remaining / daysLeft;
+            this.perDay = (int)Math.ceil(1.0f * remaining / daysLeft);
 
             int totalDays = daysDifference(goalStarted, goal);
             this.expected = (s.failing + s.unknown + s.reviewing + s.passed) / totalDays;
@@ -273,12 +274,18 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
 		cdb.recordProgress(pathPrefix, progressAsString);
+        cdb.recordGoals(pathPrefix, goalStarted, studyGoal);
 	}
 
 	public void load(Context context){
 		String existingProgress;
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
-		existingProgress = cdb.getExistingProgress(pathPrefix);
+        Pair<GregorianCalendar, GregorianCalendar> goals = cdb.getExistingGoals(pathPrefix);
+        if(goals != null) {
+            this.goalStarted = goals.first;
+            this.studyGoal = goals.second;
+        }
+        existingProgress = cdb.getExistingProgress(pathPrefix);
 		tracker.updateFromString(existingProgress);
 	}
 }

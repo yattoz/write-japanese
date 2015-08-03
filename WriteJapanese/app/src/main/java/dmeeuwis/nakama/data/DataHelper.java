@@ -1,28 +1,37 @@
 package dmeeuwis.nakama.data;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
-
 public class DataHelper {
 
-    public List<Map<String, String>> selectRecords(SQLiteDatabase db, String sql, Object ... params){
-    	List<Map<String, String>> result = null;
+	public static Map<String, String> selectRecord(SQLiteDatabase db, String sql, Object ... params){
+		List<Map<String, String>> out = selectRecords(db, sql, params);
+		if(out.size() == 0){ return null; }
+		if(out.size() > 1){
+			throw(new RuntimeException("Bad query; selectRecord called, but multiple rows returned. Query was:\n" + sql));
+		}
+
+		return out.get(0);
+	}
+
+
+    public static List<Map<String, String>> selectRecords(SQLiteDatabase db, String sql, Object ... params){
+    	List<Map<String, String>> result = new ArrayList<>();
     	String[] sparams = asStringArray(params);
     	Cursor c = db.rawQuery(sql,sparams);
     	try {
 	        if(c != null && c.moveToFirst()){
 	        	result = new ArrayList<>(c.getCount());
 	        	int columnCount = c.getColumnCount();
-	        	
+
 	        	Map<String, String> m = new HashMap<String, String>();
 	        	for(int i = 0; i < columnCount; i++){
 	        		String colName = c.getColumnName(i);
@@ -36,7 +45,7 @@ public class DataHelper {
     	}
     	return result;
     }
-    
+
     public static Integer selectInteger(SQLiteDatabase db, String sql, Object ... params){
     	Cursor c = db.rawQuery(sql, asStringArray(params));
     	try {
@@ -58,7 +67,7 @@ public class DataHelper {
     	}
     	throw new SQLiteException("Could not find id from newly created vocab list.");
     }
-    
+
     public static String selectStringOrNull(SQLiteDatabase db, String sql, Object ... params){
     	Cursor c = db.rawQuery(sql, asStringArray(params));
     	try {
@@ -69,7 +78,7 @@ public class DataHelper {
     	}
     	return null;
     }
-    
+
     public static List<String> selectStringList(SQLiteDatabase db, String sql, Object ... params){
     	List<String> entries = new LinkedList<String>();
     	Cursor c =  db.rawQuery(sql, asStringArray(params));
@@ -85,7 +94,7 @@ public class DataHelper {
     	}
     	return entries;
     }
-    
+
     public static List<Integer> selectIntegerList(SQLiteDatabase db, String sql, Object ... params){
     	List<Integer> entries = new LinkedList<Integer>();
     	Cursor c =  db.rawQuery(sql, asStringArray(params));
