@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 4;
+	private static final int DB_VERSION = 5;
 
 	public WriteJapaneseOpenHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -34,9 +34,20 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         Log.d("nakama", "Creating character progress table.");
         sqlite.execSQL("CREATE TABLE charset_goals ( " +
                 "charset TEXT NOT NULL PRIMARY KEY, " +
+                "timestamp TEXT NOT NULL," +
                 "goal_start TEXT NOT NULL," +
                 "goal TEXT NOT NULL" +
-                ")");
+        ")");
+    }
+
+    private void createPracticeLog(SQLiteDatabase sqlite){
+        Log.d("nakama", "Creating practice log table.");
+        sqlite.execSQL("CREATE TABLE practice_log ( " +
+                "character TEXT NOT NULL PRIMARY KEY," +
+                "charset TEXT NOT NULL, " +
+                "timestamp TEXT NOT NULL," +
+                "score TEXT NOT NULL" +
+        ")");
     }
 
 	@Override
@@ -45,6 +56,10 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         if(oldVersion <= 3){
            createCharset(dbase);
+        }
+
+        if(oldVersion <= 4){
+            createPracticeLog(dbase);
         }
 	}
 }

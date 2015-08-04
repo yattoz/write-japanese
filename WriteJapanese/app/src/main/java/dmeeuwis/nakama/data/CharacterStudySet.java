@@ -58,7 +58,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
     public static class GoalProgress {
         public final GregorianCalendar goal, goalStarted;
         public final int passed, remaining, daysLeft;
-        public final int perDay, expected;
+        public final int neededPerDay, scheduledPerDay;
 
         public GoalProgress(GregorianCalendar goalStarted, GregorianCalendar goal, SetProgress s, GregorianCalendar today){
             this.goalStarted = goalStarted;
@@ -71,10 +71,10 @@ public abstract class CharacterStudySet implements Iterable<Character> {
             } else {
                 daysLeft = Math.max(1, daysDifference(goal, today));
             }
-            this.perDay = (int)Math.ceil(1.0f * remaining / daysLeft);
+            this.neededPerDay = (int)Math.ceil(1.0f * remaining / daysLeft);
 
             int totalDays = daysDifference(goalStarted, goal);
-            this.expected = (s.failing + s.unknown + s.reviewing + s.passed) / totalDays;
+            this.scheduledPerDay = (int)Math.ceil((1.0 * s.failing + s.unknown + s.reviewing + s.passed) / totalDays);
 
             Log.i("nakama", "Goal Calcs; Start: " + goalStarted + ", goal: " + goal + "; remaining: " + remaining + "; daysLeft: " + daysLeft + "; remaining: " + remaining);
         }
@@ -157,7 +157,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		return (availableCharactersSet()).iterator();
 	}
 
-	public void markCurrent(boolean pass){
+	public void markCurrent(boolean pass, Context context){
 		Character c = currentCharacter();
 		try {
 			if(pass){
@@ -165,6 +165,8 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 			} else {
 				this.tracker.markFailure(c);
 			}
+            CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
+            cdb.recordPractice(pathPrefix, currentCharacter().toString(), pass ? 100 : 0);
 		} catch(Throwable t){
 			Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
 			throw new RuntimeException(t);

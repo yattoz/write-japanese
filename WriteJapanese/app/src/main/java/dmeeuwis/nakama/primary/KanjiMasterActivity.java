@@ -247,7 +247,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                         new AssetFinder(KanjiMasterActivity.this.getAssets()));
                 final Criticism critique = comparator.compare();
 
-                currentCharacterSet.markCurrent(critique.pass);
+                currentCharacterSet.markCurrent(critique.pass, KanjiMasterActivity.this);
 
                 if (critique.pass) {
                     correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC);
@@ -696,6 +696,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
+
         if(BuildConfig.DEBUG) {
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:DrawViewComparison");
@@ -771,6 +772,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
+        } else if (item.getItemId() == R.id.menu_set_goals){
+            String charset = currentCharacterSet.pathPrefix;
+            Intent intent = new Intent(this, CharsetInfoActivity.class);
+            Bundle params = new Bundle();
+            params.putString("charset", charset);
+            intent.putExtras(params);
+            startActivity(intent);
         }
 
         if(BuildConfig.DEBUG) {

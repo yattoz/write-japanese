@@ -50,6 +50,17 @@ public class CharacterProgressDataHelper {
         }
     }
 
+
+    public void recordPractice(String charset, String character, int score){
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        try {
+            db.getWritableDatabase().execSQL("INSERT INTO practice_log(character, charset, timestamp, score) VALUES(?, ?, NOW(), ?)",
+                    new String[]{ character, charset, Integer.toString(score) });
+        } finally {
+            db.close();
+        }
+    }
+
     public void recordGoals(String charset, GregorianCalendar goalStart, GregorianCalendar goal) {
         SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
 

@@ -73,11 +73,9 @@ public class CharacterSetStatusFragment extends Fragment {
         if(charSet.hasStudyGoal()){
             CharacterStudySet.GoalProgress gp = charSet.getGoalProgress();
             progressGoalsText.setText(
-                    "Learned since starting goal: xx " + "\n" +
                     "Days Remaining: " + gp.daysLeft + "\n" +
-                    "Kanji Needed Per Day: " + gp.perDay + "\n" +
-                    "Kanji Scheduled Per Day: " + gp.perDay + "\n" +
-                    "Learned Today: "               + "\n"
+                    "Kanji Needed Per Day: " + gp.neededPerDay + "\n" +
+                    "Kanji Scheduled Per Day: " + gp.scheduledPerDay + "\n"
             );
         }
     }

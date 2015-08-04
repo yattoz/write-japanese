@@ -78,6 +78,10 @@
             android:name="dmeeuwis.nakama.DrawViewTestActivity"
             android:label="@string/title_activity_draw_view_test" >
         </activity>
+        <activity
+            android:name="dmeeuwis.nakama.primary.CharsetInfoActivity"
+            android:label="@string/title_activity_charset_info" >
+        </activity>
     </application>
 
 </manifest>
