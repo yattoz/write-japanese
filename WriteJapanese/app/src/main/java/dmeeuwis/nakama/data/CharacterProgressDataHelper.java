@@ -3,6 +3,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class CharacterProgressDataHelper {
     public void recordPractice(String charset, String character, int score){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
-            db.getWritableDatabase().execSQL("INSERT INTO practice_log(character, charset, timestamp, score) VALUES(?, ?, NOW(), ?)",
+            db.getWritableDatabase().execSQL("INSERT INTO practice_log(character, charset, timestamp, score) VALUES(?, ?, current_timestamp, ?)",
                     new String[]{ character, charset, Integer.toString(score) });
         } finally {
             db.close();
@@ -76,10 +77,10 @@ public class CharacterProgressDataHelper {
             String goalStr = sd.format(goal.getTime());
             Pair<GregorianCalendar, GregorianCalendar> goals = getExistingGoals(charset);
             if (goals == null) {
-                db.getWritableDatabase().execSQL("INSERT INTO charset_goals(charset, goal_start, goal) VALUES(?, ?, ?)",
+                db.getWritableDatabase().execSQL("INSERT INTO charset_goals(charset, goal_start, goal, timestamp) VALUES(?, ?, ?, current_timestamp)",
                         new String[]{charset, goalStartStr, goalStr});
             } else {
-                db.getWritableDatabase().execSQL("UPDATE charset_goals SET goal_start = ?, goal = ? WHERE charset = ?",
+                db.getWritableDatabase().execSQL("UPDATE charset_goals SET goal_start = ?, goal = ?, timestamp=current_timestamp WHERE charset = ?",
                         new String[]{goalStartStr, goalStr, charset});
             }
         } finally {

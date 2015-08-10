@@ -5,43 +5,51 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="8dp"
     tools:context="dmeeuwis.nakama.primary.CharacterSetStatusFragment">
 
     <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"/>
 
-    <TextView
-        android:id="@+id/charset_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <LinearLayout
+        android:layout_width="256dp"
         android:gravity="center"
-        android:textSize="26sp"
-        />
-
-    <TextView
-        android:id="@+id/charset_desc"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/charset_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="26sp"
+            />
+
+        <TextView
+            android:id="@+id/charset_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="16sp"
+            />
+    </LinearLayout>
 
     <Space
-        android:layout_width="1dp"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"/>
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
         android:background="@color/LightGrey"/>
 
     <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"/>
 
     <TextView
@@ -50,24 +58,25 @@
         android:layout_height="wrap_content"/>
 
     <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"/>
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
         android:background="@color/LightGrey"/>
 
     <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"/>
 
     <LinearLayout
         android:id="@+id/goal_absent_space"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical">
 
         <Button
@@ -76,19 +85,19 @@
             android:layout_height="wrap_content"
             android:text="Set Completion Goal"
             />
-
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/goal_present_space"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/charset_goal_progress_text"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <CheckBox
@@ -100,8 +109,8 @@
     </LinearLayout>
 
     <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"/>
 
 </LinearLayout>

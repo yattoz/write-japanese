@@ -4,23 +4,23 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterStudySet;
-import dmeeuwis.nakama.views.PieProgressView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,7 +37,9 @@ public class CharacterSetStatusFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private TextView progressText, progressGoalsText;
+    private TextView progressText, progressGoalsText, charLabel, descLabel;
+    private View goalPresentArea, goalAbsentArea;
+    private CheckBox notifications;
 
     /**
      * @param charset Name of the CharacterStudySet.
@@ -65,18 +67,25 @@ public class CharacterSetStatusFragment extends Fragment {
         CharacterStudySet.SetProgress sp = charSet.getProgress();
         progressText.setText("Known: " + sp.passed + "\n" +
                 "Reviewing: " + sp.reviewing + "\n" +
-                "Failed: " + sp.failing + "\n" +
+                "Mistaken: " + sp.failing + "\n" +
                 "Unknown: " + sp.unknown);
     }
 
     private void updateGoals(){
         if(charSet.hasStudyGoal()){
             CharacterStudySet.GoalProgress gp = charSet.getGoalProgress();
+            DateFormat df = DateFormat.getDateInstance();
             progressGoalsText.setText(
+                    "Target date: " + df.format(gp.goal.getTime()) + "\n" +
                     "Days Remaining: " + gp.daysLeft + "\n" +
-                    "Kanji Needed Per Day: " + gp.neededPerDay + "\n" +
-                    "Kanji Scheduled Per Day: " + gp.scheduledPerDay + "\n"
+                    "Kanji Scheduled Per Day: " + gp.scheduledPerDay + "\n" +
+                    "Kanji Needed Per Day: " + gp.neededPerDay + "\n"
             );
+            goalAbsentArea.setVisibility(View.GONE);
+            goalPresentArea.setVisibility(View.VISIBLE);
+        } else {
+            goalAbsentArea.setVisibility(View.VISIBLE);
+            goalPresentArea.setVisibility(View.GONE);
         }
     }
 
@@ -87,19 +96,12 @@ public class CharacterSetStatusFragment extends Fragment {
 
     public void setCharset(CharacterStudySet charSet){
         this.charSet = charSet;
-        View v = getView();
 
-        TextView charLabel = (TextView)v.findViewById(R.id.charset_label);
         charLabel.setText(charSet.name);
-
-        TextView descLabel = (TextView)v.findViewById(R.id.charset_desc);
         descLabel.setText(charSet.description);
 
 //        PieProgressView pie = (PieProgressView)v.findViewById(R.id.charset_progress_chart);
 //        pie.setProgressLevels(30, 20, 20, 30);
-
-        progressText = (TextView)v.findViewById(R.id.charset_progress_text);
-        progressGoalsText = (TextView)v.findViewById(R.id.charset_goal_progress_text);
 
         updateProgress();
         updateGoals();
@@ -111,14 +113,25 @@ public class CharacterSetStatusFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_character_set_status, container, false);
 
-        Button setDateButton = (Button)view.findViewById(R.id.charset_progress_set_date);
-        setDateButton.setOnClickListener(new View.OnClickListener() {
+        Button setGoalsButton = (Button)view.findViewById(R.id.charset_progress_set_date);
+        setGoalsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogFragment newFragment = new DatePickerFragment(CharacterSetStatusFragment.this);
                 newFragment.show(getActivity().getFragmentManager(), "datePicker");
             }
         });
+
+        progressText = (TextView)view.findViewById(R.id.charset_progress_text);
+        progressGoalsText = (TextView)view.findViewById(R.id.charset_goal_progress_text);
+
+        charLabel = (TextView)view.findViewById(R.id.charset_label);
+        descLabel = (TextView)view.findViewById(R.id.charset_desc);
+
+        goalPresentArea = view.findViewById(R.id.goal_present_space);
+        goalAbsentArea = view.findViewById(R.id.goal_absent_space);
+
+        notifications = (CheckBox)view.findViewById(R.id.goal_notifications_enabled);
 
         return view;
     }

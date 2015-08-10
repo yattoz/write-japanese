@@ -697,6 +697,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
 
+        if(charSetFrag != null) {
+            menu.findItem(R.id.menu_set_goals).setVisible(false);
+        }
+
         if(BuildConfig.DEBUG) {
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:DrawViewComparison");
