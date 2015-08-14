@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.data.CharacterStudySet;
 
 /**
@@ -100,9 +102,6 @@ public class CharacterSetStatusFragment extends Fragment {
         charLabel.setText(charSet.name);
         descLabel.setText(charSet.description);
 
-//        PieProgressView pie = (PieProgressView)v.findViewById(R.id.charset_progress_chart);
-//        pie.setProgressLevels(30, 20, 20, 30);
-
         updateProgress();
         updateGoals();
     }
@@ -132,6 +131,21 @@ public class CharacterSetStatusFragment extends Fragment {
         goalAbsentArea = view.findViewById(R.id.goal_absent_space);
 
         notifications = (CheckBox)view.findViewById(R.id.goal_notifications_enabled);
+        notifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+               if(isChecked){
+                   ReminderManager.scheduleRemindersFor(
+                           CharacterSetStatusFragment.this.getActivity().getApplicationContext(),
+                           CharacterSetStatusFragment.this.charSet);
+               } else {
+                   ReminderManager.clearReminders(
+                           CharacterSetStatusFragment.this.getActivity().getApplicationContext(),
+                           CharacterSetStatusFragment.this.charSet);
+
+               }
+            }
+        });
 
         return view;
     }

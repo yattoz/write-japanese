@@ -23,6 +23,7 @@
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name="dmeeuwis.nakama.ReminderManager" />
         <activity
             android:name="dmeeuwis.nakama.primary.CharsetInfoActivity"
             android:label="Study Goals"

@@ -56,6 +56,7 @@ import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.DrawViewTestActivity;
 import dmeeuwis.nakama.KanjiCheckActivity;
+import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.SpenDrawActivity;
 import dmeeuwis.nakama.TestDrawActivity;
 import dmeeuwis.nakama.data.CharacterSets;
@@ -709,6 +710,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:LockUnlock");
             menu.add("DEBUG:IabConsume");
             menu.add("DEBUG:ResetStorySharing");
+            menu.add("DEBUG:Notify");
         }
         return true;
     }
@@ -803,6 +805,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 Editor e = prefs.edit();
                 e.putString(TeachingStoryFragment.STORY_SHARING_KEY, null);
                 e.apply();
+            } else if (item.getTitle().equals("DEBUG:Notify")){
+                ReminderManager.scheduleRemindersFor(this.getApplicationContext(), currentCharacterSet);
             }
         }
 
