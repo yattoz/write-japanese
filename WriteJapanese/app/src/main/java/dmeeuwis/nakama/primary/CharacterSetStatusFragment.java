@@ -7,6 +7,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.text.DateFormat;
@@ -32,7 +34,7 @@ import dmeeuwis.nakama.data.CharacterStudySet;
  * Use the {@link CharacterSetStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CharacterSetStatusFragment extends Fragment {
+public class CharacterSetStatusFragment extends Fragment implements CompoundButton.OnCheckedChangeListener{
     private static final String ARG_CHARSET = "charset";
 
     private CharacterStudySet charSet;
@@ -79,12 +81,16 @@ public class CharacterSetStatusFragment extends Fragment {
             DateFormat df = DateFormat.getDateInstance();
             progressGoalsText.setText(
                     "Target date: " + df.format(gp.goal.getTime()) + "\n" +
-                    "Days Remaining: " + gp.daysLeft + "\n" +
-                    "Kanji Scheduled Per Day: " + gp.scheduledPerDay + "\n" +
-                    "Kanji Needed Per Day: " + gp.neededPerDay + "\n"
+                            "Days Remaining: " + gp.daysLeft + "\n" +
+                            "Kanji Scheduled Per Day: " + gp.scheduledPerDay + "\n" +
+                            "Kanji Needed Per Day: " + gp.neededPerDay + "\n"
             );
             goalAbsentArea.setVisibility(View.GONE);
             goalPresentArea.setVisibility(View.VISIBLE);
+
+            notifications.setChecked(
+                ReminderManager.reminderExists(this.getActivity().getApplicationContext(), this.charSet));
+
         } else {
             goalAbsentArea.setVisibility(View.VISIBLE);
             goalPresentArea.setVisibility(View.GONE);
@@ -102,8 +108,12 @@ public class CharacterSetStatusFragment extends Fragment {
         charLabel.setText(charSet.name);
         descLabel.setText(charSet.description);
 
+
         updateProgress();
+
+        notifications.setOnCheckedChangeListener(null);
         updateGoals();
+        notifications.setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -131,23 +141,23 @@ public class CharacterSetStatusFragment extends Fragment {
         goalAbsentArea = view.findViewById(R.id.goal_absent_space);
 
         notifications = (CheckBox)view.findViewById(R.id.goal_notifications_enabled);
-        notifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               if(isChecked){
-                   ReminderManager.scheduleRemindersFor(
-                           CharacterSetStatusFragment.this.getActivity().getApplicationContext(),
-                           CharacterSetStatusFragment.this.charSet);
-               } else {
-                   ReminderManager.clearReminders(
-                           CharacterSetStatusFragment.this.getActivity().getApplicationContext(),
-                           CharacterSetStatusFragment.this.charSet);
-
-               }
-            }
-        });
 
         return view;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Log.i("nakama", "onCheckedChanged listener fired; checked is " + isChecked);
+        if(isChecked){
+            ReminderManager.scheduleRemindersFor(
+                    CharacterSetStatusFragment.this.getActivity().getApplicationContext(),
+                    CharacterSetStatusFragment.this.charSet);
+        } else {
+            ReminderManager.clearReminders(
+                    CharacterSetStatusFragment.this.getActivity().getApplicationContext(),
+                    CharacterSetStatusFragment.this.charSet);
+
+        }
     }
 
     @Override

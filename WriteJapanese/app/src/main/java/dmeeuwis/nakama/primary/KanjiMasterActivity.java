@@ -711,6 +711,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:IabConsume");
             menu.add("DEBUG:ResetStorySharing");
             menu.add("DEBUG:Notify");
+            menu.add("DEBUG:ClearAllNotify");
         }
         return true;
     }
@@ -807,6 +808,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 e.apply();
             } else if (item.getTitle().equals("DEBUG:Notify")){
                 ReminderManager.scheduleRemindersFor(this.getApplicationContext(), currentCharacterSet);
+            } else if (item.getTitle().equals("DEBUG:ClearAllNotify")){
+                ReminderManager.clearAllReminders(this.getApplicationContext());
             }
         }
 

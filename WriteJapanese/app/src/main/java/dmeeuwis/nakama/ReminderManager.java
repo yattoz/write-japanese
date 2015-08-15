@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
@@ -21,34 +23,59 @@ public class ReminderManager extends BroadcastReceiver {
 
     private static final String INTENT_CHARSET = "charset";
 
-    public static void scheduleRemindersFor(Context c, CharacterStudySet charset) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.HOUR, 24);
-        calendar.set(Calendar.HOUR, 9);
-        calendar.set(Calendar.MINUTE, 0);
-
+    private static Intent makeIntent(Context c, CharacterStudySet charset){
+        int id = charset.name.hashCode();
         Intent intent = new Intent(c, ReminderManager.class);
         intent.putExtra("charset", charset.pathPrefix);
-        intent.putExtra("scheduled", charset.getGoalProgress().scheduledPerDay);
+        return intent;
+    }
 
-        int id = charset.name.hashCode();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    private static int makePendingId(CharacterStudySet charset) {
+        return charset.name.hashCode();
+    }
+
+    public static void scheduleRemindersFor(Context c, CharacterStudySet charset) {
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Calendar calendar = GregorianCalendar.getInstance();
+        Log.i("nakama", "Current time is: " + df.format(calendar.getTime()));
+
+        calendar.add(Calendar.HOUR, 24);
+        calendar.set(Calendar.HOUR_OF_DAY, 6);
+        calendar.set(Calendar.MINUTE, 00);
+
+        Log.i("nakama", "Setting study reminder for " + df.format(calendar.getTime()));
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, makePendingId(charset),
+                    makeIntent(c, charset), PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         Log.i("nakama", "ReminderManager: scheduled a notification!");
     }
 
+    public static void clearAllReminders(Context c){
+        final String[] set = { "j1", "j2", "j3", "j4", "j5", "j6", "hiragana", "katakana" };
+        for(String s: set){
+            CharacterStudySet charset = CharacterSets.fromName(s, null, null);
+            charset.load(c);
+            clearReminders(c, charset);
+        }
+        Log.i("nakama", "ReminderManager: cleared all notification!");
+    }
+
+    public static boolean reminderExists(Context c, CharacterStudySet charset){
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, makePendingId(charset),
+                makeIntent(c, charset), PendingIntent.FLAG_NO_CREATE);
+        return pendingIntent != null;
+    }
+
     public static void clearReminders(Context c, CharacterStudySet charset){
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         int id = charset.name.hashCode();
-        Intent intent = new Intent(c, ReminderManager.class);
-        intent.putExtra("charset", charset.pathPrefix);
-        intent.putExtra("scheduled", charset.getGoalProgress().scheduledPerDay);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, makeIntent(c, charset), PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
+        Log.i("nakama", "ReminderManager: cleared notification for " + charset.pathPrefix);
     }
 
     public void onReceive(Context context, Intent intent) {
