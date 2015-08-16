@@ -6,6 +6,7 @@
              android:background="#e5e5e5">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/charsetInfoCard"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
@@ -23,205 +24,203 @@
             />
     </android.support.v7.widget.CardView>
 
-    <dmeeuwis.nakama.primary.SafeViewFlipper
-        android:id="@+id/viewflipper"
+    <dmeeuwis.nakama.views.DrawView
+        android:id="@+id/drawPad"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:padding="0dp">
+        app:gridPaddingLeft="240dp"/>
 
-        <!-- Drawing frame, where users test their might. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="240dp">
 
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-            <dmeeuwis.nakama.views.DrawView
-                android:id="@+id/drawPad"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                app:gridPaddingLeft="240dp"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="240dp">
-
-                <android.support.v7.widget.CardView
-                    android:layout_width="340dp"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_margin="10dp"
-                    android:elevation="300dp"
-                    >
-
-                    <ImageView
-                        android:id="@+id/other_meanings"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:contentDescription="@string/other_meanings_content_description"
-                        android:padding="5dp"
-                        android:src="@drawable/ic_action_overflow"/>
-
-                    <LinearLayout
-                        android:id="@+id/instructionsSpace"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:orientation="vertical">
-
-                        <TextSwitcher
-                            android:id="@+id/instructionsLabel"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-
-                        <TextSwitcher
-                            android:id="@+id/target"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-            </FrameLayout>
+        <android.support.v7.widget.CardView
+            android:id="@+id/instructionCard"
+            android:layout_width="340dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:elevation="300dp"
+            >
 
             <ImageView
-                android:id="@+id/reviewBug"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:contentDescription="@string/reviewing_content_description"
-                android:elevation="500dp"
-                android:src="@drawable/review_bug"
-                android:visibility="gone"/>
-
-            <dmeeuwis.nakama.views.FloatingActionButton
-                android:id="@+id/remindStoryButton"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
-                android:layout_gravity="bottom|start"
-                android:layout_marginLeft="280dp"
-                android:layout_marginStart="120dp"
-                android:elevation="@dimen/elevation_high"
-                />
-
-            <dmeeuwis.nakama.views.FloatingActionButton
-                android:id="@+id/teachButton"
-                android:layout_width="92dp"
-                android:layout_height="92dp"
-                android:layout_gravity="bottom|start"
-                android:layout_marginLeft="280dp"
-                android:layout_marginStart="120dp"
-                android:elevation="@dimen/elevation_low"/>
-
-
-            <dmeeuwis.nakama.views.FloatingActionButton
-                android:id="@+id/finishedButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="bottom|end"
-                android:elevation="@dimen/elevation_low"/>
-
-        </FrameLayout>
-
-        <!-- Incorrect view screen -->
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+                android:id="@+id/other_meanings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:contentDescription="@string/other_meanings_content_description"
+                android:padding="5dp"
+                android:src="@drawable/ic_action_overflow"/>
 
             <LinearLayout
+                android:id="@+id/instructionsSpace"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:orientation="horizontal">
+                android:gravity="center_horizontal|center_vertical"
+                android:orientation="vertical">
 
-                <!-- Drawn -->
-                <android.support.v7.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:padding="4dp">
+                <TextSwitcher
+                    android:id="@+id/instructionsLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:background="#FFA20D1B"
-                        android:padding="6dp"
-                        android:text="Drawn"
-                        android:textColor="#FFFFFF"/>
-
-                    <dmeeuwis.nakama.views.AnimatedCurveView
-                        android:id="@+id/animatedDrawnReplay"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="bottom"
-                        android:layout_marginTop="40dp"/>
-                </android.support.v7.widget.CardView>
-
-                <!-- Correct -->
-
-                <android.support.v7.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:background="#FF1BA20D"
-                        android:padding="6dp"
-                        android:text="Correct"
-                        android:textColor="#FFFFFF"/>
-
-                    <dmeeuwis.nakama.views.AnimatedCurveView
-                        android:id="@+id/animatedKnownReplay"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="bottom"
-                        android:layout_marginTop="40dp"/>
-                </android.support.v7.widget.CardView>
-
-                <!-- Advice -->
-
-                <android.support.v7.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#449def"
-                        android:padding="6dp"
-                        android:text="Advice"
-                        android:textColor="#FFFFFF"/>
-
-                    <ListView
-                        android:id="@+id/criticism"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_marginTop="40dp"
-                        android:layout_weight="1"/>
-                </android.support.v7.widget.CardView>
+                <TextSwitcher
+                    android:id="@+id/target"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
+        </android.support.v7.widget.CardView>
+    </FrameLayout>
 
-            <dmeeuwis.nakama.views.FloatingActionButton
-                android:id="@+id/practiceButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="bottom|start"
-                android:elevation="@dimen/elevation_low"/>
+    <ImageView
+        android:id="@+id/reviewBug"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:contentDescription="@string/reviewing_content_description"
+        android:elevation="500dp"
+        android:src="@drawable/review_bug"
+        />
 
-            <dmeeuwis.nakama.views.FloatingActionButton
-                android:id="@+id/nextButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="bottom|end"
-                android:elevation="@dimen/elevation_low"/>
-        </FrameLayout>
+    <dmeeuwis.nakama.views.FloatingActionButton
+        android:id="@+id/remindStoryButton"
+        android:layout_width="92dp"
+        android:layout_height="92dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginLeft="280dp"
+        android:layout_marginStart="120dp"
+        android:elevation="@dimen/elevation_high"
+        />
+
+    <dmeeuwis.nakama.views.FloatingActionButton
+        android:id="@+id/teachButton"
+        android:layout_width="92dp"
+        android:layout_height="92dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginLeft="280dp"
+        android:layout_marginStart="120dp"
+        android:elevation="@dimen/elevation_low"/>
+
+
+    <dmeeuwis.nakama.views.FloatingActionButton
+        android:id="@+id/finishedButton"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_gravity="bottom|end"
+        android:elevation="@dimen/elevation_low"/>
+
+
+    <!-- Incorrect view screen -->
+    <android.support.v7.widget.CardView
+        android:id="@+id/incorrectCard"
+        android:layout_width="800dp"
+        android:layout_height="500dp"
+        android:layout_gravity="center"
+>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal">
+
+            <!-- Drawn -->
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:padding="4dp">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:background="#FFA20D1B"
+                    android:padding="6dp"
+                    android:text="Drawn"
+                    android:textColor="#FFFFFF"/>
+
+                <dmeeuwis.nakama.views.AnimatedCurveView
+                    android:id="@+id/animatedDrawnReplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="40dp"/>
+            </android.support.v7.widget.CardView>
+
+            <!-- Correct -->
+
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:padding="4dp">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:background="#FF1BA20D"
+                    android:padding="6dp"
+                    android:text="Correct"
+                    android:textColor="#FFFFFF"/>
+
+                <dmeeuwis.nakama.views.AnimatedCurveView
+                    android:id="@+id/animatedKnownReplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="40dp"/>
+            </android.support.v7.widget.CardView>
+
+            <!-- Advice -->
+
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="4dp">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#449def"
+                    android:padding="6dp"
+                    android:text="Advice"
+                    android:textColor="#FFFFFF"/>
+
+                <ListView
+                    android:id="@+id/criticism"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="40dp"
+                    android:layout_weight="1"/>
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+
+
+        <dmeeuwis.nakama.views.FloatingActionButton
+            android:id="@+id/practiceButton"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="bottom|start"
+            android:elevation="@dimen/elevation_low"/>
+
+        <dmeeuwis.nakama.views.FloatingActionButton
+            android:id="@+id/nextButton"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="bottom|end"
+            android:elevation="@dimen/elevation_low"/>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/correctCard"
+        android:layout_width="800dp"
+        android:layout_height="500dp"
+        android:layout_gravity="center"
+        >
 
         <LinearLayout
             android:id="@+id/correctLayout"
@@ -306,7 +305,7 @@
                     android:elevation="@dimen/elevation_low"/>
             </FrameLayout>
         </LinearLayout>
-    </dmeeuwis.nakama.primary.SafeViewFlipper>
+    </android.support.v7.widget.CardView>
 
     <View
         android:id="@+id/maskView"

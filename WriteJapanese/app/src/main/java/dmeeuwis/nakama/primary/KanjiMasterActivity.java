@@ -1,17 +1,9 @@
 package dmeeuwis.nakama.primary;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
-
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,12 +13,11 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
@@ -50,44 +41,51 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.Constants;
+import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.nakama.DrawViewTestActivity;
 import dmeeuwis.nakama.KanjiCheckActivity;
-import dmeeuwis.nakama.ReminderManager;
-import dmeeuwis.nakama.SpenDrawActivity;
-import dmeeuwis.nakama.TestDrawActivity;
-import dmeeuwis.nakama.data.CharacterSets;
-import dmeeuwis.nakama.data.CharacterStudySet;
-import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
-import dmeeuwis.nakama.kanjidraw.DrawingComparator;
-import dmeeuwis.nakama.kanjidraw.PointDrawing;
-import dmeeuwis.nakama.teaching.TeachingStoryFragment;
-import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
-import dmeeuwis.nakama.views.KanjiVocabRecyclerAdapter;
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.ProgressActivity;
-import dmeeuwis.nakama.views.PurchaseDialog;
-import dmeeuwis.nakama.data.StoryDataHelper;
-import dmeeuwis.nakama.teaching.TeachingActivity;
+import dmeeuwis.nakama.ReminderManager;
+import dmeeuwis.nakama.SpenDrawActivity;
+import dmeeuwis.nakama.TestDrawActivity;
 import dmeeuwis.nakama.data.AssetFinder;
+import dmeeuwis.nakama.data.CharacterSets;
+import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
-import dmeeuwis.nakama.Constants;
+import dmeeuwis.nakama.kanjidraw.DrawingComparator;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.teaching.TeachingActivity;
+import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
+import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
+import dmeeuwis.nakama.views.KanjiVocabRecyclerAdapter;
+import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.SetInfoDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener {
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
+
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
     public static final String CHAR_SET = "currCharSet";
@@ -120,7 +118,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected ViewFlipper flipper;
     protected FlipperAnimationListener flipperAnimationListener;
     protected View maskView;
-    protected FloatingActionButton remindStoryButton;
+    protected FloatingActionButton remindStoryButton, doneButton;
     protected ImageView otherMeaningsButton;
     protected ListView criticism;           // TODO: to RecyclerView
     protected ArrayAdapter<String> criticismArrayAdapter;
@@ -129,12 +127,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected TextSwitcher target;
     protected ColorDrawable actionBarBackground;
 
+    protected CardView incorrectCard, correctCard, charsetCard, instructionCard;
+
     protected String[] currentCharacterSvg;
 
     protected CharacterSetStatusFragment charSetFrag;
 
     private static class KanjiMasterUncaughtHandler implements Thread.UncaughtExceptionHandler {
-        @Override public void uncaughtException(Thread thread, Throwable ex) {
+        @Override
+        public void uncaughtException(Thread thread, Throwable ex) {
             Log.e("nakama", "Uncaught exception from thread " + thread, ex);
         }
     }
@@ -166,12 +167,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         Animation outToLeft = AnimationUtils.loadAnimation(this, R.anim.screen_transition_out);
 
         flipper = (ViewFlipper) findViewById(R.id.viewflipper);
-        flipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.screen_transition_in));
-        flipper.setOutAnimation(outToLeft);
-        flipper.setAnimationCacheEnabled(true);
+        if (flipper != null) {
+            flipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.screen_transition_in));
+            flipper.setOutAnimation(outToLeft);
+            flipper.setAnimationCacheEnabled(true);
 
-        flipperAnimationListener = new FlipperAnimationListener();
-        outToLeft.setAnimationListener(flipperAnimationListener);
+            flipperAnimationListener = new FlipperAnimationListener();
+            outToLeft.setAnimationListener(flipperAnimationListener);
+        }
 
         maskView = findViewById(R.id.maskView);
 
@@ -230,7 +233,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         });
 
-        final FloatingActionButton doneButton = (FloatingActionButton) findViewById(R.id.finishedButton);
+        doneButton = (FloatingActionButton) findViewById(R.id.finishedButton);
         doneButton.hideInstantly();
         doneButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
         doneButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
@@ -339,7 +342,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         };
 
-        final FloatingActionButton next = (FloatingActionButton) findViewById(R.id.nextButton);
+        FloatingActionButton next = (FloatingActionButton) findViewById(R.id.nextButton);
         next.setOnClickListener(nextButtonListener);
         next.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
         next.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
@@ -388,51 +391,71 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         });
 
-    	hiraganaCharacterSet = CharacterSets.hiragana(lockChecker);
-    	katakanaCharacterSet = CharacterSets.katakana(lockChecker);
-    	joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), lockChecker);
-    	joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), lockChecker);
-    	joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), lockChecker);
-    	joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), lockChecker);
-    	joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), lockChecker);
-    	joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), lockChecker);
+        correctCard = (CardView) findViewById(R.id.correctCard);
+        incorrectCard = (CardView) findViewById(R.id.incorrectCard);
+        charsetCard = (CardView) findViewById(R.id.charsetInfoCard);
+        instructionCard = (CardView) findViewById(R.id.instructionCard);
+        if(correctCard != null){
+            correctCard.setTranslationY(-1 * ANIMATE_OUT_HEIGHT);
+            incorrectCard.setTranslationY(-1 * ANIMATE_OUT_HEIGHT);
+        }
 
-    	this.characterSets.put("hiragana", hiraganaCharacterSet);
-    	this.characterSets.put("katakana", katakanaCharacterSet);
-    	this.characterSets.put("j1", joyouG1);
-    	this.characterSets.put("j2", joyouG2);
-    	this.characterSets.put("j3", joyouG3);
-    	this.characterSets.put("j4", joyouG4);
-    	this.characterSets.put("j5", joyouG5);
-    	this.characterSets.put("j6", joyouG6);
+        hiraganaCharacterSet = CharacterSets.hiragana(lockChecker);
+        katakanaCharacterSet = CharacterSets.katakana(lockChecker);
+        joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), lockChecker);
+        joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), lockChecker);
+        joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), lockChecker);
+        joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), lockChecker);
+        joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), lockChecker);
+        joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), lockChecker);
 
-        this.charSetFrag = (CharacterSetStatusFragment)getFragmentManager().findFragmentById(R.id.charSetInfoFragment);
-        if(this.charSetFrag != null) {
+        this.characterSets.put("hiragana", hiraganaCharacterSet);
+        this.characterSets.put("katakana", katakanaCharacterSet);
+        this.characterSets.put("j1", joyouG1);
+        this.characterSets.put("j2", joyouG2);
+        this.characterSets.put("j3", joyouG3);
+        this.characterSets.put("j4", joyouG4);
+        this.characterSets.put("j5", joyouG5);
+        this.characterSets.put("j6", joyouG6);
+
+        this.charSetFrag = (CharacterSetStatusFragment) getFragmentManager().findFragmentById(R.id.charSetInfoFragment);
+        if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(joyouG1);
         }
 
-    	ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
         actionBar.setBackgroundDrawable(this.actionBarBackground);
-    	LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
+        LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
-    	actionBar.setListNavigationCallbacks(characterSetAdapter, this);
-    	actionBar.show();
-    	actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
+        actionBar.show();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
     }
 
-    public void animateActionBar(Integer colorTo){
+    public void animateActionBar(Integer colorTo) {
         Integer colorFrom = this.actionBarBackground.getColor();
         ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override public void onAnimationUpdate(ValueAnimator animator) {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
                 actionBarBackground.setColor((Integer) animator.getAnimatedValue());
             }
         });
         colorAnimation.start();
     }
 
+
     public void setUiState(State requestedState) {
+        if (flipper != null) {
+            setSmallUiState(requestedState);
+        } else {
+            setLargeUiState(requestedState);
+        }
+    }
+
+
+    public void setSmallUiState(State requestedState) {
         if (requestedState.ordinal() == flipper.getDisplayedChild())
             return;
 
@@ -455,6 +478,61 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             flipperAnimationListener.animateOnFinish = new Animatable[]{correctAnimation, playbackAnimation};
             flipper.setDisplayedChild(State.REVIEWING.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
+        }
+    }
+
+    final int ANIMATE_OUT_HEIGHT = 1500;
+    private State currentState = State.DRAWING;
+
+    private void slideIn(View ... views){
+        for(View v: views) {
+            v.animate().translationYBy(ANIMATE_OUT_HEIGHT);
+        }
+    }
+    private void slideOut(View ... views){
+        for(View v: views) {
+            v.animate().translationYBy(-1 * ANIMATE_OUT_HEIGHT);
+        }
+    }
+
+    public void setLargeUiState(State requestedState) {
+        if (requestedState == currentState) {
+            return;
+        }
+        if (requestedState == State.DRAWING) {
+            Log.d("nakama", "In DRAWING state change; starting flip");
+            animateActionBar(getResources().getColor(R.color.actionbar_main));
+            drawPad.clear();
+
+            if(correctCard.getY() >= 0) slideOut(correctCard);
+            if(incorrectCard.getY() >= 0) slideOut(incorrectCard);
+
+            slideIn(instructionCard, charsetCard);
+            doneButton.showFloatingActionButton();
+
+            currentState = State.DRAWING;
+
+        } else if (requestedState == State.CORRECT_ANSWER) {
+            Log.d("nakama", "In CORRECT_ANSWER state change; starting flip");
+            animateActionBar(getResources().getColor(R.color.actionbar_correct));
+
+            correctCard.animate().translationY(ANIMATE_OUT_HEIGHT);
+
+            slideIn(correctCard);
+            slideOut(instructionCard, charsetCard);
+            doneButton.hideFloatingActionButton();
+
+            currentState = State.CORRECT_ANSWER;
+
+        } else if (requestedState == State.REVIEWING) {
+            Log.d("nakama", "In REVIEWING state change; starting flip");
+            animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
+
+            slideIn(incorrectCard);
+            slideOut(instructionCard, charsetCard);
+            doneButton.hideFloatingActionButton();
+
+            currentState = State.REVIEWING;
         }
     }
 
@@ -546,7 +624,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         this.loadDrawDetails();
     }
 
-    private void storyButtonUpdate(){
+    private void storyButtonUpdate() {
         String story = db.getStory(currentCharacterSet.currentCharacter());
         if (story != null && !story.trim().equals("")) {
             remindStoryButton.showFloatingActionButton();
@@ -592,7 +670,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     private void saveCurrentUsingCharacterSet() {
-        if(this.currentCharacterSet.currentCharacter() == null){
+        if (this.currentCharacterSet.currentCharacter() == null) {
             return;         // TODO: fix this. Should never be null, how is it happening?
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -609,7 +687,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String set = prefs.getString(CHAR_SET, "j1");
         this.currentCharacterSet = this.characterSets.get(set);
-        if(this.currentCharacterSet == null){
+        if (this.currentCharacterSet == null) {
             Log.e("nakama", "Invalid character set: " + set + "; defaulting to j1");
             this.currentCharacterSet = this.characterSets.get("j1");
         }
@@ -671,7 +749,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         Log.i("nakama", "KanjiMasterActivity.onDestroy");
         this.lockChecker.dispose();
         super.onDestroy();
@@ -698,11 +776,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
 
-        if(charSetFrag != null) {
+        if (charSetFrag != null) {
             menu.findItem(R.id.menu_set_goals).setVisible(false);
         }
 
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:DrawViewComparison");
             menu.add("DEBUG:SpenTest");
@@ -779,7 +857,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
-        } else if (item.getItemId() == R.id.menu_set_goals){
+        } else if (item.getItemId() == R.id.menu_set_goals) {
             String charset = currentCharacterSet.pathPrefix;
             Intent intent = new Intent(this, CharsetInfoActivity.class);
             Bundle params = new Bundle();
@@ -788,7 +866,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             startActivity(intent);
         }
 
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             if (item.getTitle().equals("DEBUG:DrawTest")) {
                 startActivity(new Intent(this, TestDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:KanjiCheck")) {
@@ -801,14 +879,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 getLockChecker().coreUnlock();
             } else if (item.getTitle().equals("DEBUG:IabConsume")) {
                 lockChecker.startConsume();
-            } else if (item.getTitle().equals("DEBUG:ResetStorySharing")){
+            } else if (item.getTitle().equals("DEBUG:ResetStorySharing")) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Editor e = prefs.edit();
                 e.putString(TeachingStoryFragment.STORY_SHARING_KEY, null);
                 e.apply();
-            } else if (item.getTitle().equals("DEBUG:Notify")){
+            } else if (item.getTitle().equals("DEBUG:Notify")) {
                 ReminderManager.scheduleRemindersFor(this.getApplicationContext(), currentCharacterSet);
-            } else if (item.getTitle().equals("DEBUG:ClearAllNotify")){
+            } else if (item.getTitle().equals("DEBUG:ClearAllNotify")) {
                 ReminderManager.clearAllReminders(this.getApplicationContext());
             }
         }
@@ -816,7 +894,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         return true;
     }
 
-    public void updateStorySharingPreferences(boolean sharing){
+    public void updateStorySharingPreferences(boolean sharing) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Editor e = prefs.edit();
         e.putString(TeachingStoryFragment.STORY_SHARING_KEY, String.valueOf(sharing));
@@ -890,7 +968,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 //			this.currentCharacterSet = this.joyouSS;
         }
         this.currentCharacterSet.load(this.getApplicationContext());
-        if(this.charSetFrag != null){
+        if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(this.currentCharacterSet);
         }
         this.reviewBug.setVisibility(View.GONE);
@@ -939,7 +1017,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    public void onFragmentInteraction(Uri uri){
+    public void onFragmentInteraction(Uri uri) {
         Log.i("nakama", "KanjiMasterActivity: onFragmeentInteraction called, " + uri);
     }
 }
