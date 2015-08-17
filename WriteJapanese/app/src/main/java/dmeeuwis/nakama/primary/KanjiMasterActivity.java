@@ -467,17 +467,20 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             drawPad.clear();
 
             flipper.setDisplayedChild(State.DRAWING.ordinal());
+            currentState = State.DRAWING;
 
         } else if (requestedState == State.CORRECT_ANSWER) {
             Log.d("nakama", "In CORRECT_ANSWER state change; starting flip");
             flipper.setDisplayedChild(State.CORRECT_ANSWER.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_correct));
+            currentState = State.CORRECT_ANSWER;
 
         } else if (requestedState == State.REVIEWING) {
             Log.d("nakama", "In REVIEWING state change; starting flip");
             flipperAnimationListener.animateOnFinish = new Animatable[]{correctAnimation, playbackAnimation};
             flipper.setDisplayedChild(State.REVIEWING.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
+            currentState = State.REVIEWING;
         }
     }
 
@@ -549,9 +552,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public void onBackPressed() {
-        State currentUiState = State.values()[flipper.getDisplayedChild()];
-
-        if (currentUiState == State.DRAWING) {
+        if (currentState == State.DRAWING) {
             if (this.drawPad.getStrokeCount() > 0) {
                 this.drawPad.undo();
             } else {

@@ -1,0 +1,32 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="dmeeuwis.nakama.teaching.TeachingCombinedStoryInfoFragment">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_card"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <dmeeuwis.nakama.views.AnimatedCurveView
+            android:id="@+id/kanji_animation"
+            android:layout_width="0"
+            android:layout_height="170sp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/bigkanji"
+            android:layout_width="0"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:includeFontPadding="false"
+            android:textSize="160sp"/>
+    </LinearLayout>
+</LinearLayout>
