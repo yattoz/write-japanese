@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/fragment_container"
+<FrameLayout android:id="@+id/fragment_container"
               xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="horizontal"
-              android:baselineAligned="false">
-
-    <fragment
-        android:id="@+id/combined_fragment"
-        class="dmeeuwis.nakama.teaching.TeachingCombinedStoryInfoFragment"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
+              >
 
     <fragment
         android:id="@+id/teaching_draw_fragment"
         class="dmeeuwis.nakama.teaching.TeachingDrawFragment"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         />
 
-</LinearLayout>
+
+    <fragment
+        android:id="@+id/combined_fragment"
+        class="dmeeuwis.nakama.teaching.TeachingCombinedStoryInfoFragment"
+        android:layout_width="350dp"
+        android:layout_height="match_parent"
+        />
+</FrameLayout>

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -37,6 +37,7 @@ import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
 import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
+import dmeeuwis.nakama.views.TallGridView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,6 +56,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     private UUID iid;
 
     private LinearLayout combinedExamplesLayout, combinedStoriesLayout;
+    private TallGridView radicalsGrid;
     private EditText storyEditor;
 
     private KanjiTranslationListAsyncTask searchTask;
@@ -88,10 +90,12 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
         this.combinedStoriesLayout = (LinearLayout)v.findViewById(R.id.combined_stories);
         this.combinedExamplesLayout = (LinearLayout)v.findViewById(R.id.combined_examples);
+        this.radicalsGrid = (TallGridView)v.findViewById(R.id.combinedRadicalsGrid);
         this.storyEditor = (EditText)v.findViewById(R.id.combined_story_edit);
 
-        this.radicalsCard = (View)v.findViewById(R.id.combinedRadicalsCard);
+        this.radicalsCard = v.findViewById(R.id.combinedRadicalsCard);
         this.radicalAdapter = new RadicalAdapter(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
+        this.radicalsGrid.setAdapter(this.radicalAdapter);
 
         this.dictionarySet = new DictionarySet(this.getActivity());
 
@@ -225,6 +229,26 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
             NetworkStorySaveAsyncTask saveRemove =
                     new NetworkStorySaveAsyncTask(this.character, story, this.getIid());
+            saveRemove.execute();
+        }
+    }
+
+    public void saveStory(Activity act) {
+        if (storyEditor != null && storyEditor.getText() != null && !storyEditor.getText().toString().trim().equals("")){
+            StoryDataHelper db = new StoryDataHelper(act);
+            String story = storyEditor.getText().toString();
+            db.recordStory(this.character, story);
+
+            // check if story matches a network story exactly, and optimize out one network request.
+            // server protects itself from duplicates, so fine if one accidentally goes out, just uses user bandwidth.
+            for(String s: this.networkStories){
+                if(s != null && story.equals(s)){
+                    return;
+                }
+            }
+
+            NetworkStorySaveAsyncTask saveRemove =
+                    new NetworkStorySaveAsyncTask(this.character, story, iid);
             saveRemove.execute();
         }
     }

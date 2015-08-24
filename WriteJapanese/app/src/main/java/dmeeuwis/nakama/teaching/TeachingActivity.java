@@ -44,6 +44,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
     MyFragmentPagerAdapter adapter;
 
     TeachingCombinedStoryInfoFragment combinedFragment;
+    TeachingDrawFragment drawFragment;
 
     MyViewPager pager;
     PagerSlidingTabStrip tabStrip;
@@ -95,7 +96,8 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         }
 
         // large layout
-        combinedFragment = (TeachingCombinedStoryInfoFragment) getFragmentManager().findFragmentById(R.id.combined_fragment);
+        combinedFragment = (TeachingCombinedStoryInfoFragment) getSupportFragmentManager().findFragmentById(R.id.combined_fragment);
+        drawFragment = (TeachingDrawFragment) getSupportFragmentManager().findFragmentById(R.id.teaching_draw_fragment);
 
         Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms");
     }
@@ -178,6 +180,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         if(combinedFragment != null){
             combinedFragment.setCharacter(this.getCharacter().charAt(0));
         }
+
         super.onResume();
     }
 
@@ -214,8 +217,14 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	@Override 
 	public void onPause(){
         try {
-            TeachingStoryFragment storyFragment = (TeachingStoryFragment) adapter.getRegisteredFragment(1);
-            storyFragment.saveStory(this);
+            if(adapter != null) {
+                TeachingStoryFragment storyFragment = (TeachingStoryFragment) adapter.getRegisteredFragment(1);
+                storyFragment.saveStory(this);
+            }
+
+            if(combinedFragment != null){
+                combinedFragment.saveStory(this);
+            }
         } catch(NullPointerException e){
             Log.i("nakama", "Ignoring null fragment at onPause.");
         }
