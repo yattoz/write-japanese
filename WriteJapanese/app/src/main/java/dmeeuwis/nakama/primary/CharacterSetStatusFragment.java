@@ -21,10 +21,13 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.views.CircleLabel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,9 +44,13 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
     private OnFragmentInteractionListener mListener;
 
+    private CircleLabel circleLabel;
     private TextView progressText, progressGoalsText, charLabel, descLabel;
     private View goalPresentArea, goalAbsentArea;
     private CheckBox notifications;
+
+    private Map<String, String> charsetCircleLabels;
+    private Map<String, String> charsetCircleColors;
 
     /**
      * @param charset Name of the CharacterStudySet.
@@ -108,6 +115,8 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         charLabel.setText(charSet.name);
         descLabel.setText(charSet.description);
 
+        //circleLabel.setLabel(charSet.pathPrefix);
+        //circleLabel.setLabel(charSet.pathPrefix);
 
         updateProgress();
 
@@ -121,6 +130,8 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_character_set_status, container, false);
+
+        //circleLabel = (CircleLabel)view.findViewById(R.id.circleLabel);
 
         Button setGoalsButton = (Button)view.findViewById(R.id.charset_progress_set_date);
         setGoalsButton.setOnClickListener(new View.OnClickListener() {

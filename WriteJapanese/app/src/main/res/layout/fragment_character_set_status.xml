@@ -13,7 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
-
+<!--
+    <dmeeuwis.nakama.views.CircleLabel
+        android:id="@+id/circleLabel"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        />
+-->
     <TextView
         android:id="@+id/charset_label"
         android:layout_width="match_parent"

@@ -57,5 +57,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_charset_info">CharsetInfoActivity</string>
     <string name="daily_notifications_string">Daily Reminders</string>
+    <string name="edit_story_hint">Write a small story here, to help you remember this character</string>
+    <string name="radicals_label">Radicals</string>
 
 </resources>

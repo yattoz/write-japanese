@@ -55,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:hint="Write a small story here, to help you remember this character"
+                android:hint="@string/edit_story_hint"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine|textAutoCorrect"
                 android:lines="4"
@@ -100,7 +100,7 @@
                 android:id="@+id/radicals_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Radicals"
+                android:text="@string/radicals_label"
                 android:textColor="#878787"
                 android:textSize="18sp" />
 

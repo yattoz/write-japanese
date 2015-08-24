@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -30,7 +31,7 @@ import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.util.Util;
 
-public class TeachingActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener {
+public class TeachingActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener, TeachingCombinedStoryInfoFragment.OnFragmentInteractionListener {
 	ActionBar actionBar;
 	
 	private String character;
@@ -41,6 +42,8 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
     MyFragmentPagerAdapter kanjiAdapter, kanaAdapter;
     MyFragmentPagerAdapter adapter;
+
+    TeachingCombinedStoryInfoFragment combinedFragment;
 
     MyViewPager pager;
     PagerSlidingTabStrip tabStrip;
@@ -70,23 +73,29 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        // small layout
         pager = (MyViewPager)findViewById(R.id.teachingViewPager);
-        pager.setOffscreenPageLimit(2);
+        if(pager != null) {
+            pager.setOffscreenPageLimit(2);
 
-        final FragmentManager fm = getSupportFragmentManager();
-        kanjiAdapter = new MyFragmentPagerAdapter(fm,
-                new String[] { "Draw", "Story", "Usage" });
+            final FragmentManager fm = getSupportFragmentManager();
+            kanjiAdapter = new MyFragmentPagerAdapter(fm,
+                    new String[] { "Draw", "Story", "Usage" });
 
-        kanaAdapter = new MyFragmentPagerAdapter(fm,
-                new String[] { "Draw", "Story" });
+            kanaAdapter = new MyFragmentPagerAdapter(fm,
+                    new String[] { "Draw", "Story" });
 
-        this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
+            this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
 
 
-        tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
-        tabStrip.setIndicatorColor(getResources().getColor(R.color.actionbar_main));
-        tabStrip.setShouldExpand(true);
-        tabStrip.setOnPageChangeListener(this);
+            tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
+            tabStrip.setIndicatorColor(getResources().getColor(R.color.actionbar_main));
+            tabStrip.setShouldExpand(true);
+            tabStrip.setOnPageChangeListener(this);
+        }
+
+        // large layout
+        combinedFragment = (TeachingCombinedStoryInfoFragment) getFragmentManager().findFragmentById(R.id.combined_fragment);
 
         Log.i("nakama", "TeachingActivity: onCreate finishing. Took " + (System.currentTimeMillis() - startTime) + "ms");
     }
@@ -119,7 +128,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
                     throw new RuntimeException(e);
                 }
             }
-            kanjiIn = prefs.getString("character", null).charAt(0);
+            kanjiIn = kanjiInStr.charAt(0);
             kanjiPath = prefs.getString("path", null);
         }
 
@@ -161,9 +170,14 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
             adapter = kanaAdapter;
         }
 
-        pager.setAdapter(adapter);
-        tabStrip.setViewPager(pager);
+        if(pager != null) {
+            pager.setAdapter(adapter);
+            tabStrip.setViewPager(pager);
+        }
 
+        if(combinedFragment != null){
+            combinedFragment.setCharacter(this.getCharacter().charAt(0));
+        }
         super.onResume();
     }
 
@@ -188,10 +202,12 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	@Override
 	public void onBackPressed(){
-        TeachingDrawFragment drawFragment = (TeachingDrawFragment)adapter.getRegisteredFragment(0);
-		if(drawFragment.undo()){
-			return;
-		}
+        if(adapter != null) {
+            TeachingDrawFragment drawFragment = (TeachingDrawFragment) adapter.getRegisteredFragment(0);
+            if (drawFragment.undo()){
+                return;
+            }
+        }
 		finish();
 	}
 	
@@ -248,6 +264,11 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         if(storyFragment != null && (position == 0 || position == 2)) {
             storyFragment.focusAway(this);
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.i("nakama", "TeachingActivity.onFragmentInteraction: " + uri);
     }
 
 
