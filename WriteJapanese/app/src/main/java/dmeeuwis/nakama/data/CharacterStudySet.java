@@ -110,6 +110,11 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         this.goalStarted = new GregorianCalendar();
     }
 
+    public void clearStudyGoal(){
+        this.studyGoal = null;
+        this.goalStarted = null;
+    }
+
     public GoalProgress getGoalProgress(){
         if(this.studyGoal == null){ return null; }
         SetProgress s = this.getProgress();

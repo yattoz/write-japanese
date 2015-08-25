@@ -16,7 +16,8 @@
     <fragment
         android:id="@+id/combined_fragment"
         class="dmeeuwis.nakama.teaching.TeachingCombinedStoryInfoFragment"
-        android:layout_width="350dp"
+        android:layout_width="380dp"
         android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
         />
 </FrameLayout>

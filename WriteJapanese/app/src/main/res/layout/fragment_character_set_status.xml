@@ -103,6 +103,13 @@
             android:layout_height="wrap_content"
             android:text="@string/daily_notifications_string"
             />
+
+        <Button
+            android:id="@+id/charset_progress_clear_goal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear Goal"
+            />
     </LinearLayout>
 
     <Space

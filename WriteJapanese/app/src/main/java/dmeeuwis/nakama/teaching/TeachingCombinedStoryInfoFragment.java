@@ -126,6 +126,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
             this.searchTask = new KanjiTranslationListAsyncTask(adder, dictionarySet, k.kanji);
             this.searchTask.execute();
 
+            this.radicalAdapter.clear();
             this.loadFileTask = new LoadRadicalsFile(this.getActivity(), this.character, this.radicalAdapter, this.radicalsCard);
             this.loadFileTask.execute();
 
@@ -211,26 +212,6 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
             }
         });
         loadRemoteStories.execute();
-    }
-
-    public void saveStory(char c, Activity act) {
-        if (storyEditor != null && storyEditor.getText() != null && !storyEditor.getText().toString().trim().equals("")){
-            StoryDataHelper db = new StoryDataHelper(act);
-            String story = storyEditor.getText().toString();
-            db.recordStory(this.character, story);
-
-            // check if story matches a network story exactly, and optimize out one network request.
-            // server protects itself from duplicates, so fine if one accidentally goes out, just uses user bandwidth.
-            for(String s: this.networkStories){
-                if(s != null && story.equals(s)){
-                    return;
-                }
-            }
-
-            NetworkStorySaveAsyncTask saveRemove =
-                    new NetworkStorySaveAsyncTask(this.character, story, this.getIid());
-            saveRemove.execute();
-        }
     }
 
     public void saveStory(Activity act) {

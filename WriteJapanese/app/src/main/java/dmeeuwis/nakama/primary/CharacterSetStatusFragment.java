@@ -151,6 +151,15 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         goalPresentArea = view.findViewById(R.id.goal_present_space);
         goalAbsentArea = view.findViewById(R.id.goal_absent_space);
 
+        Button progressGoalClearButton = (Button)view.findViewById(R.id.charset_progress_clear_goal);
+        progressGoalClearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                charSet.clearStudyGoal();
+                updateGoals();
+            }
+        });
+
         notifications = (CheckBox)view.findViewById(R.id.goal_notifications_enabled);
 
         return view;

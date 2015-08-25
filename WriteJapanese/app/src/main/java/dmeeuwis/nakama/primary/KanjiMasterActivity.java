@@ -118,7 +118,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected ViewFlipper flipper;
     protected FlipperAnimationListener flipperAnimationListener;
     protected View maskView;
-    protected FloatingActionButton remindStoryButton, doneButton;
+    protected FloatingActionButton remindStoryButton, doneButton, teachMeButton;
     protected ImageView otherMeaningsButton;
     protected ListView criticism;           // TODO: to RecyclerView
     protected ArrayAdapter<String> criticismArrayAdapter;
@@ -127,7 +127,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected TextSwitcher target;
     protected ColorDrawable actionBarBackground;
 
-    protected CardView incorrectCard, correctCard, charsetCard, instructionCard;
+    protected CardView correctCard, charsetCard, instructionCard;
+    protected View incorrectCard;
 
     protected String[] currentCharacterSvg;
 
@@ -314,7 +315,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         });
 
-        final FloatingActionButton teachMeButton = (FloatingActionButton) findViewById(R.id.teachButton);
+        teachMeButton = (FloatingActionButton) findViewById(R.id.teachButton);
         teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
         teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_learning));
         teachMeButton.setOnClickListener(new View.OnClickListener() {
@@ -392,7 +393,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         });
 
         correctCard = (CardView) findViewById(R.id.correctCard);
-        incorrectCard = (CardView) findViewById(R.id.incorrectCard);
+        incorrectCard = findViewById(R.id.incorrectCard);
         charsetCard = (CardView) findViewById(R.id.charsetInfoCard);
         instructionCard = (CardView) findViewById(R.id.instructionCard);
         if(correctCard != null){
@@ -511,7 +512,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             if(incorrectCard.getY() >= 0) slideOut(incorrectCard);
 
             slideIn(instructionCard, charsetCard);
-            doneButton.showFloatingActionButton();
+            teachMeButton.showFloatingActionButton();
 
             currentState = State.DRAWING;
 
@@ -534,6 +535,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             slideIn(incorrectCard);
             slideOut(instructionCard, charsetCard);
             doneButton.hideFloatingActionButton();
+
+            correctAnimation.startAnimation(200);
+            playbackAnimation.startAnimation(200);
 
             currentState = State.REVIEWING;
         }
