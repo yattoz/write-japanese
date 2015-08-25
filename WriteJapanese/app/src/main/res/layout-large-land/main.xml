@@ -115,14 +115,15 @@
     <!-- Incorrect view screen -->
     <FrameLayout
         android:id="@+id/incorrectCard"
-        android:layout_width="800dp"
-        android:layout_height="500dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
 >
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:layout_margin="100dp"
             android:orientation="horizontal">
 
             <!-- Drawn -->

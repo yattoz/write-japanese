@@ -127,8 +127,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected TextSwitcher target;
     protected ColorDrawable actionBarBackground;
 
-    protected CardView correctCard, charsetCard, instructionCard;
-    protected View incorrectCard;
+    protected View correctCard, charsetCard, instructionCard, incorrectCard;
 
     protected String[] currentCharacterSvg;
 
@@ -392,7 +391,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         });
 
-        correctCard = (CardView) findViewById(R.id.correctCard);
+        correctCard = findViewById(R.id.correctCard);
         incorrectCard = findViewById(R.id.incorrectCard);
         charsetCard = (CardView) findViewById(R.id.charsetInfoCard);
         instructionCard = (CardView) findViewById(R.id.instructionCard);

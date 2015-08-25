@@ -16,8 +16,8 @@
 
     <LinearLayout
         android:layout_width="256dp"
-        android:layout_height="wrap_content"
         android:gravity="center"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
@@ -91,9 +91,9 @@
         android:id="@+id/goal_present_space"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/charset_goal_progress_text"
@@ -105,9 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/daily_notifications_string"
-
             />
-
         <Button
             android:id="@+id/charset_progress_clear_goal"
             android:layout_width="wrap_content"

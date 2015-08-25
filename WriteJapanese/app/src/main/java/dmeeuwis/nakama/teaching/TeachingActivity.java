@@ -265,14 +265,12 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
     @Override
     public void onPageSelected(int position) {
         pager.setMotionEnabled(position != 0);
-        TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
-        if(storyFragment == null){
-            Log.e("nakama", "TeachingActivity.onPageSelected(" + position + "): NULL story fragment (1) in TeachingActivity");
-        }
 
+    /* Maybe not desirable? Certainly not on the tablet layout....
         if(storyFragment != null && (position == 0 || position == 2)) {
             storyFragment.focusAway(this);
         }
+    */
     }
 
     @Override
