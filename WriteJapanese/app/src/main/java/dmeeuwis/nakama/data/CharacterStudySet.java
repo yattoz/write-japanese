@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
+import java.text.DateFormat;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -52,7 +53,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
     }
 
     public static int daysDifference(GregorianCalendar a, GregorianCalendar b){
-        return (int)(Math.abs(a.getTimeInMillis() - b.getTimeInMillis()) / (1000 * 60 * 60 * 24));
+        return (int)Math.ceil(Math.abs(a.getTimeInMillis() - b.getTimeInMillis()) / (1000.0 * 60 * 60 * 24));
     }
 
     public static class GoalProgress {
@@ -72,11 +73,10 @@ public abstract class CharacterStudySet implements Iterable<Character> {
                 daysLeft = Math.max(1, daysDifference(goal, today));
             }
             this.neededPerDay = (int)Math.ceil(1.0f * remaining / daysLeft);
+            this.scheduledPerDay = (int)Math.ceil((1.0 * s.failing + s.unknown + s.reviewing + s.passed) / daysLeft);
 
-            int totalDays = daysDifference(goalStarted, goal);
-            this.scheduledPerDay = (int)Math.ceil((1.0 * s.failing + s.unknown + s.reviewing + s.passed) / totalDays);
-
-            Log.i("nakama", "Goal Calcs; Start: " + goalStarted + ", goal: " + goal + "; remaining: " + remaining + "; daysLeft: " + daysLeft + "; remaining: " + remaining);
+            DateFormat df = DateFormat.getDateInstance();
+            Log.i("nakama", "Goal Calcs; Start: " + df.format(goalStarted.getTime()) + ", goal: " + df.format(goal.getTime()) + "; remaining: " + remaining + "; daysLeft: " + daysLeft + "; remaining: " + remaining);
         }
     }
 

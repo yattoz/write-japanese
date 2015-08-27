@@ -86,12 +86,30 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         if(charSet.hasStudyGoal()){
             CharacterStudySet.GoalProgress gp = charSet.getGoalProgress();
             DateFormat df = DateFormat.getDateInstance();
-            progressGoalsText.setText(
-                    "Target date: " + df.format(gp.goal.getTime()) + "\n" +
-                            "Days Remaining: " + gp.daysLeft + "\n" +
-                            "Kanji Scheduled Per Day: " + gp.scheduledPerDay + "\n" +
-                            "Kanji Needed Per Day: " + gp.neededPerDay + "\n"
-            );
+
+            GregorianCalendar now = new GregorianCalendar();
+            Log.i("nakama", "Now is " + df.format(now.getTime()));
+            Log.i("nakama", "Goal is " + df.format(gp.goal.getTime()));
+
+            if(df.format(now.getTime()).equals(df.format(gp.goal.getTime()))){
+               progressGoalsText.setText(
+                       "Today is the last day for your goal!\n" +
+                               "Target date: " + df.format(gp.goal.getTime()) + "\n" +
+                               "Kanji Remaining: " + gp.remaining + "\n");
+            } else if(gp.goal.before(now)){
+               progressGoalsText.setText(
+                       "Your study goal has passed!\n" +
+                       "Target date: " + df.format(gp.goal.getTime()) + "\n" +
+                       "Kanji Remaining: " + gp.remaining + "\n");
+
+            } else {
+               progressGoalsText.setText(
+                       "Target date: " + df.format(gp.goal.getTime()) + "\n" +
+                               "Days Remaining: " + gp.daysLeft + "\n" +
+                               "Kanji Scheduled Per Day: " + gp.scheduledPerDay + "\n" +
+                               (gp.neededPerDay == gp.scheduledPerDay ? "" :
+                               "Kanji Needed Per Day: " + gp.neededPerDay));
+            }
             goalAbsentArea.setVisibility(View.GONE);
             goalPresentArea.setVisibility(View.VISIBLE);
 
