@@ -52,7 +52,6 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     private char character;
-    private DictionarySet dictionarySet;
     private UUID iid;
 
     private LinearLayout combinedExamplesLayout, combinedStoriesLayout;
@@ -99,23 +98,21 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
         this.radicalAdapter = new RadicalAdapter(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
         this.radicalsGrid.setAdapter(this.radicalAdapter);
 
-        this.dictionarySet = new DictionarySet(this.getActivity());
 
         return v;
     }
 
-
-    public void setCharacter(char c){
-        this.character = c;
-        Log.i("nakama", "TeachingCombinedStoryInfoFragment.setCharacter " + c);
+    @Override
+    public void onResume() {
+        Log.i("nakama", "TeachingCombinedStoryInfoFragment.setCharacter " + this.character);
         try {
-            Kanji k = this.dictionarySet.kanjiFinder().find(c);
-            Log.i("nakama", "Setting meanings for " + c + " to " + k.toMeaningString());
+            final DictionarySet dictionarySet = new DictionarySet(getActivity());
+            Kanji k = dictionarySet.kanjiFinder().find(this.character);
+            Log.i("nakama", "Setting meanings for " + this.character + " to " + k.toMeaningString());
 
-            final Context parent = this.getActivity();
             KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation(){
                 public void add(Translation t){
-                    View newTranslation = View.inflate(parent, R.layout.translation_slide_contents, null);
+                    View newTranslation = View.inflate(getActivity(), R.layout.translation_slide_contents, null);
 
                     AdvancedFuriganaTextView af = (AdvancedFuriganaTextView) newTranslation.findViewById(R.id.kanji);
                     af.setTranslation(t, dictionarySet.kanjiFinder());
@@ -128,14 +125,24 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
             this.searchTask = new KanjiTranslationListAsyncTask(adder, dictionarySet, k.kanji);
             this.searchTask.execute();
 
-            this.radicalAdapter.clear();
-            this.loadFileTask = new LoadRadicalsFile(this.getActivity(), this.character, this.radicalAdapter, this.radicalsCard);
-            this.loadFileTask.execute();
+            if(this.radicalAdapter != null) {
+                this.radicalAdapter.clear();
+                this.loadFileTask = new LoadRadicalsFile(this.getActivity(), this.character, this.radicalAdapter, this.radicalsCard);
+                this.loadFileTask.execute();
 
-            this.loadRemoteStories(c);
+                this.loadRemoteStories(this.character);
+            }
+
         } catch (IOException e) {
-            Log.e("nakama", "Error finding kanji support for: " + c);
+            Log.e("nakama", "Error finding kanji support for: " + this.character);
         }
+
+        super.onResume();
+    }
+
+    public void setCharacter(char c, final Activity parent){
+        Log.i("nakama", "TeachingCombinedStoryInfoFragment.setCharacter " + c);
+        this.character = c;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -20,13 +20,13 @@
 
             <dmeeuwis.nakama.views.AnimatedCurveView
                 android:id="@+id/kanji_animation"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="170sp"
                 android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/bigkanji"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layerType="software"

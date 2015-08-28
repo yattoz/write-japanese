@@ -68,7 +68,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         long startTime = System.currentTimeMillis();
         super.onCreate(saveInstanceState);
 
-        this.setContentView(R.layout.fragment_container);
+        this.setContentView(R.layout.teaching_activity);
         this.dictSet = DictionarySet.get(this);
 
         actionBar = this.getSupportActionBar();
@@ -178,7 +178,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         }
 
         if(combinedFragment != null){
-            combinedFragment.setCharacter(this.getCharacter().charAt(0));
+            combinedFragment.setCharacter(this.getCharacter().charAt(0), this);
         }
 
         super.onResume();

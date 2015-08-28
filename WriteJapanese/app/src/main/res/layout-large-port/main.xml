@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="fill_parent"
              android:layout_height="fill_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              android:background="#e5e5e5">
 
     <android.support.v7.widget.CardView
@@ -27,6 +28,7 @@
         android:id="@+id/drawPad"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        app:gridPaddingTop="-80dp"
         />
 
     <!-- Drawing frame, where users test their might. -->

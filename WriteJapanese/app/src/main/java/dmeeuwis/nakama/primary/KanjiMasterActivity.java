@@ -22,6 +22,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -391,6 +392,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         });
 
+
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        ANIMATE_OUT_HEIGHT = dm.heightPixels;
+
         correctCard = findViewById(R.id.correctCard);
         incorrectCard = findViewById(R.id.incorrectCard);
         charsetCard = (CardView) findViewById(R.id.charsetInfoCard);
@@ -431,6 +436,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         actionBar.setListNavigationCallbacks(characterSetAdapter, this);
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
     }
 
     public void animateActionBar(Integer colorTo) {
@@ -484,7 +490,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    final int ANIMATE_OUT_HEIGHT = 1500;
+    int ANIMATE_OUT_HEIGHT = 1500;
     private State currentState = State.DRAWING;
 
     private void slideIn(View ... views){

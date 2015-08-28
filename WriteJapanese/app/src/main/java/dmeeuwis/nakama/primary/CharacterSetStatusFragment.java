@@ -106,9 +106,9 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
                progressGoalsText.setText(
                        "Target date: " + df.format(gp.goal.getTime()) + "\n" +
                                "Days Remaining: " + gp.daysLeft + "\n" +
-                               "Kanji Scheduled Per Day: " + gp.scheduledPerDay + "\n" +
-                               (gp.neededPerDay == gp.scheduledPerDay ? "" :
-                               "Kanji Needed Per Day: " + gp.neededPerDay));
+                               "Kanji Needed Per Day: " + gp.neededPerDay + "\n" );
+                              // + (gp.neededPerDay == gp.scheduledPerDay ? "" :
+                              // "Kanji Needed Per Day: " + gp.neededPerDay));
             }
             goalAbsentArea.setVisibility(View.GONE);
             goalPresentArea.setVisibility(View.VISIBLE);
