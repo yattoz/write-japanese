@@ -15,23 +15,30 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase dbase) {
-		Log.d("nakama", "Creating story table.");
-		dbase.execSQL("CREATE TABLE kanji_stories ( " +
-                "character char NOT NULL PRIMARY KEY, " +
-                "story TEXT NOT NULL" +
-        ")");
-
-		Log.d("nakama", "Creating character progress table.");
-		dbase.execSQL("CREATE TABLE character_progress ( " +
-                "charset TEXT NOT NULL PRIMARY KEY, " +
-                "progress TEXT NOT NULL" +
-        ")");
-
+        createProgressTable(dbase);
+        createStoryTables(dbase);
         createCharset(dbase);
+        createPracticeLog(dbase);
 	}
 
-    private void createCharset(SQLiteDatabase sqlite){
+    private void createProgressTable(SQLiteDatabase dbase){
         Log.d("nakama", "Creating character progress table.");
+        dbase.execSQL("CREATE TABLE character_progress ( " +
+                "charset TEXT NOT NULL PRIMARY KEY, " +
+                "progress TEXT NOT NULL" +
+                ")");
+
+    }
+    private void createStoryTables(SQLiteDatabase dbase){
+        Log.d("nakama", "Creating story table.");
+        dbase.execSQL("CREATE TABLE kanji_stories ( " +
+                "character char NOT NULL PRIMARY KEY, " +
+                "story TEXT NOT NULL" +
+                ")");
+    }
+
+    private void createCharset(SQLiteDatabase sqlite){
+        Log.d("nakama", "Creating charset goals table.");
         sqlite.execSQL("DROP TABLE IF EXISTS charset_goals;");
         sqlite.execSQL("CREATE TABLE charset_goals ( " +
                 "charset TEXT NOT NULL PRIMARY KEY, " +

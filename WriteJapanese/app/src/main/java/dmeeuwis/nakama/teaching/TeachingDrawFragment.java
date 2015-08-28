@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import dmeeuwis.kanjimaster.R;
@@ -73,13 +71,13 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         return view;
     }
 
-    public void clear(){
+    public void clear() {
         this.tracingView.clear();
     }
 
     public void startAnimation(int delay) {
         Log.i("nakama", "TeachingDrawFragment lifecycle: startAnimation");
-        if(tracingView != null) {
+        if (tracingView != null) {
             Log.e("nakama", "TeachingDrawFragment lifecycle: startAnimation success.");
             tracingView.startAnimation(delay);
         } else {
@@ -88,32 +86,37 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
     }
 
     @Override
-    public void onComplete(PointDrawing pointDrawing){
-		 DrawingComparator comp = new DrawingComparator(character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(parent.getAssets()));
-		 Criticism c = comp.compare();
+    public void onComplete(PointDrawing pointDrawing) {
+        DrawingComparator comp = new DrawingComparator(character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(parent.getAssets()));
+        Criticism c = comp.compare();
 
-		 if(c.pass){
-			teachingLevel = Math.max(0, Math.min(goodAdvice.length-1, teachingLevel+1));
-			changeCardMessage(goodAdvice[teachingLevel]);
-		 } else {
-			teachingLevel = Math.max(0, Math.min(teachingLevel-1, goodAdvice.length-1));
-			changeCardMessage(badAdvice[0]);
-		 }
-         Log.i("nakama", "TeachingDrawFragment onComplete; teachingLevel becomes " + teachingLevel);
+        if (c.pass) {
+            teachingLevel = Math.max(0, Math.min(goodAdvice.length - 1, teachingLevel + 1));
+            changeCardMessage(goodAdvice[teachingLevel]);
+        } else {
+            teachingLevel = Math.max(0, Math.min(teachingLevel - 1, goodAdvice.length - 1));
+            changeCardMessage(badAdvice[0]);
+        }
+        Log.i("nakama", "TeachingDrawFragment onComplete; teachingLevel becomes " + teachingLevel);
 
-		 tracingView.clear();
+        tracingView.clear();
 
-		 if(teachingLevel >= 2){
-			 tracingView.stopAnimation();
-		 } else {
-			 tracingView.startAnimation(500);
-		 }
-	 }
+        if (teachingLevel >= 2) {
+            tracingView.stopAnimation();
+        } else {
+            tracingView.startAnimation(500);
+        }
+    }
 
-    void changeCardMessage(final String newMessage){
+    void changeCardMessage(final String newMessage) {
         fadeOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override public void onAnimationStart(Animation animation) { }
-            @Override public void onAnimationRepeat(Animation animation) { }
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
 
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -121,7 +124,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
                     fadeOut.setAnimationListener(null);
                     message.setText(newMessage);
                     messageCard.startAnimation(fadeIn);
-                } catch(NullPointerException e){
+                } catch (NullPointerException e) {
                     Log.i("nakama", "TeachingDrawFragment.changeCardMessage: A view element was nulled before end of animation", e);
                 }
             }
@@ -129,25 +132,25 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 
         try {
             messageCard.startAnimation(this.fadeOut);
-        } catch(NullPointerException e){
+        } catch (NullPointerException e) {
             Log.i("nakama", "TeachingDrawFragment.changeCardMessage: A view element was nulled while changing card message.");
         }
     }
 
-	public boolean undo(){
-		if(tracingView.drawnStrokeCount() > 0){
-			tracingView.undo();
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public void onPause(){
-		tracingView.stopAnimation();
+    public boolean undo() {
+        if (tracingView.drawnStrokeCount() > 0) {
+            tracingView.undo();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onPause() {
+        tracingView.stopAnimation();
         tracingView.clear();
-		super.onPause();
-	}
+        super.onPause();
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -155,22 +158,22 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         super.onAttach(activity);
     }
 
-	@Override
-	public void onResume(){
+    @Override
+    public void onResume() {
         Log.i("nakama", "TeachingDrawFragment lifecycle: onResume; getView=" + getView());
         updateCharacter((TeachingActivity) this.getActivity());
         this.teachingLevel = 0;
 
-        tracingView = (TracingCurveView)getView().findViewById(R.id.tracingPad);
+        tracingView = (TracingCurveView) getView().findViewById(R.id.tracingPad);
         tracingView.setOnTraceCompleteListener(this);
         tracingView.setCurveDrawing(curveDrawing);
 
         message = (TextView) getView().findViewById(R.id.tipMessage);
         message.setText(initialAdvice);
 
-        messageCard = (CardView)getView().findViewById(R.id.messageCard);
+        messageCard = (CardView) getView().findViewById(R.id.messageCard);
         startAnimation(300);
 
-		super.onResume();
-	}
+        super.onResume();
+    }
 }

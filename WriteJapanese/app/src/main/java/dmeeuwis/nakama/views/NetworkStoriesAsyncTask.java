@@ -78,12 +78,11 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
     @Override
     protected void onPostExecute(final List<String> result) {
         if(result == null){
-            sa.add("Network error");
+            sa.add("Network error while loading shared stories, please try again later.");
             return;
         }
 
         for(String s: result){
-            Log.i("nakama", "Adding network story: " + s);
             sa.add(s);
         }
     }

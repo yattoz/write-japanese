@@ -58,6 +58,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     private LinearLayout combinedExamplesLayout, combinedStoriesLayout;
     private TallGridView radicalsGrid;
     private EditText storyEditor;
+    private TextView loadingStoriesLabel;
 
     private KanjiTranslationListAsyncTask searchTask;
     private OnFragmentInteractionListener mListener;
@@ -92,6 +93,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
         this.combinedExamplesLayout = (LinearLayout)v.findViewById(R.id.combined_examples);
         this.radicalsGrid = (TallGridView)v.findViewById(R.id.combinedRadicalsGrid);
         this.storyEditor = (EditText)v.findViewById(R.id.combined_story_edit);
+        this.loadingStoriesLabel = (TextView)v.findViewById(R.id.combined_loading_stories_label);
 
         this.radicalsCard = v.findViewById(R.id.combinedRadicalsCard);
         this.radicalAdapter = new RadicalAdapter(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
@@ -113,7 +115,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
             final Context parent = this.getActivity();
             KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation(){
                 public void add(Translation t){
-                    View newTranslation = View.inflate(parent, R.layout.translation_slide, null);
+                    View newTranslation = View.inflate(parent, R.layout.translation_slide_contents, null);
 
                     AdvancedFuriganaTextView af = (AdvancedFuriganaTextView) newTranslation.findViewById(R.id.kanji);
                     af.setTranslation(t, dictionarySet.kanjiFinder());
@@ -170,28 +172,21 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
     public void loadRemoteStories(char character){
         final Resources r = this.getResources();
-        final int paddingPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, this.getResources().getDisplayMetrics());
+        final int paddingPx = 0;
 
         NetworkStoriesAsyncTask loadRemoteStories = new NetworkStoriesAsyncTask(character, this.getIid(), new NetworkStoriesAsyncTask.AddString() {
 
             @Override public void add(final String s) {
                 Log.d("nakama", "Adding story as view: " + s);
+                if (s.startsWith("Network error")) {
+                    return;
+                }
+
                 TextView tv = new TextView(getActivity());
                 tv.setText(s);
                 tv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
 
-                ImageView iv = new ImageView(getActivity());
-                iv.setImageDrawable(r.getDrawable(R.drawable.ic_story_for_white_bg));
-                iv.setClickable(true);
-                iv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
-                int imageWidth = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, r.getDisplayMetrics());
-                iv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        storyEditor.setText(s);
-                        Toast.makeText(getActivity(), "Your story for this character has been updated.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                int imageWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, r.getDisplayMetrics());
 
                 FrameLayout layout = new FrameLayout(getActivity());
                 {
@@ -200,12 +195,25 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
                     layout.addView(tv, ll);
                 }
 
+                ImageView iv = new ImageView(getActivity());
+                iv.setImageDrawable(r.getDrawable(R.drawable.ic_story_for_white_bg));
+                iv.setClickable(true);
+                iv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+                iv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        storyEditor.setText(s);
+                        Toast.makeText(getActivity(), "Your story for this character has been updated.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 {
                     FrameLayout.LayoutParams llv = new FrameLayout.LayoutParams(imageWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
                     llv.gravity = Gravity.RIGHT;
                     layout.addView(iv, llv);
                 }
 
+                combinedStoriesLayout.setVisibility(View.VISIBLE);
                 combinedStoriesLayout.addView(layout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
                 Log.d("nakama", "Added story as view: " + s);
