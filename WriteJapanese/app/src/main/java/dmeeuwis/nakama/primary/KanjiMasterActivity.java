@@ -516,7 +516,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             if(correctCard.getY() >= 0) slideOut(correctCard);
             if(incorrectCard.getY() >= 0) slideOut(incorrectCard);
 
-            slideIn(instructionCard, charsetCard);
+            slideIn(instructionCard, charsetCard, reviewBug);
             teachMeButton.showFloatingActionButton();
 
             currentState = State.DRAWING;
@@ -528,7 +528,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             correctCard.animate().translationY(ANIMATE_OUT_HEIGHT);
 
             slideIn(correctCard);
-            slideOut(instructionCard, charsetCard);
+            slideOut(instructionCard, charsetCard, reviewBug);
             doneButton.hideFloatingActionButton();
 
             currentState = State.CORRECT_ANSWER;
@@ -538,7 +538,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
 
             slideIn(incorrectCard);
-            slideOut(instructionCard, charsetCard);
+            slideOut(instructionCard, charsetCard, reviewBug);
             doneButton.hideFloatingActionButton();
 
             correctAnimation.startAnimation(200);
