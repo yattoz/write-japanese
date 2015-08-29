@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -57,14 +58,15 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     private LinearLayout combinedExamplesLayout, combinedStoriesLayout;
     private TallGridView radicalsGrid;
     private EditText storyEditor;
-    private TextView loadingStoriesLabel;
+    private CardView combinedStoriesCard;
 
     private KanjiTranslationListAsyncTask searchTask;
+    private NetworkStoriesAsyncTask networkStoriesAsyncTask;
     private OnFragmentInteractionListener mListener;
 
     ArrayAdapter<Kanji> radicalAdapter;
     LoadRadicalsFile loadFileTask;
-    View radicalsCard;
+    View radicalsCard, examplesCard;
 
     List<String> networkStories = new ArrayList<>();
 
@@ -89,10 +91,11 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_teaching_combined_story_info, container, false);
 
         this.combinedStoriesLayout = (LinearLayout)v.findViewById(R.id.combined_stories);
+        this.combinedStoriesCard = (CardView)v.findViewById(R.id.combined_stories_card);
+        this.examplesCard = v.findViewById(R.id.combined_examples_card);
         this.combinedExamplesLayout = (LinearLayout)v.findViewById(R.id.combined_examples);
         this.radicalsGrid = (TallGridView)v.findViewById(R.id.combinedRadicalsGrid);
         this.storyEditor = (EditText)v.findViewById(R.id.combined_story_edit);
-        this.loadingStoriesLabel = (TextView)v.findViewById(R.id.combined_loading_stories_label);
 
         this.radicalsCard = v.findViewById(R.id.combinedRadicalsCard);
         this.radicalAdapter = new RadicalAdapter(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
@@ -108,7 +111,6 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
         try {
             final DictionarySet dictionarySet = new DictionarySet(getActivity());
             Kanji k = dictionarySet.kanjiFinder().find(this.character);
-            Log.i("nakama", "Setting meanings for " + this.character + " to " + k.toMeaningString());
 
             KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation(){
                 public void add(Translation t){
@@ -119,13 +121,17 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
                     TextView eng = (TextView) newTranslation.findViewById(R.id.english);
                     eng.setText(t.toEnglishString());
                     combinedExamplesLayout.addView(newTranslation);
+
+                    examplesCard.setVisibility(View.VISIBLE);
                 }
             };
 
-            this.searchTask = new KanjiTranslationListAsyncTask(adder, dictionarySet, k.kanji);
-            this.searchTask.execute();
+            if(searchTask == null && k != null){
+                this.searchTask = new KanjiTranslationListAsyncTask(adder, dictionarySet, k.kanji);
+                this.searchTask.execute();
+            }
 
-            if(this.radicalAdapter != null) {
+            if(this.radicalAdapter != null && k != null) {
                 this.radicalAdapter.clear();
                 this.loadFileTask = new LoadRadicalsFile(this.getActivity(), this.character, this.radicalAdapter, this.radicalsCard);
                 this.loadFileTask.execute();
@@ -178,10 +184,13 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     }
 
     public void loadRemoteStories(char character){
+        if(networkStoriesAsyncTask != null){
+            return;
+        }
+
         final Resources r = this.getResources();
         final int paddingPx = 0;
-
-        NetworkStoriesAsyncTask loadRemoteStories = new NetworkStoriesAsyncTask(character, this.getIid(), new NetworkStoriesAsyncTask.AddString() {
+        networkStoriesAsyncTask = new NetworkStoriesAsyncTask(character, this.getIid(), new NetworkStoriesAsyncTask.AddString() {
 
             @Override public void add(final String s) {
                 Log.d("nakama", "Adding story as view: " + s);
@@ -220,13 +229,13 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
                     layout.addView(iv, llv);
                 }
 
-                combinedStoriesLayout.setVisibility(View.VISIBLE);
+                combinedStoriesCard.setVisibility(View.VISIBLE);
                 combinedStoriesLayout.addView(layout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
                 Log.d("nakama", "Added story as view: " + s);
             }
         });
-        loadRemoteStories.execute();
+        networkStoriesAsyncTask.execute();
     }
 
     public void saveStory(Activity act) {
