@@ -28,6 +28,10 @@
             android:name="dmeeuwis.nakama.primary.CharsetInfoActivity"
             android:label="Study Goals"
             android:launchMode="singleInstance" >
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dmeeuwis.nakama.primary.KanjiMasterActivity" />
         </activity>
         <activity
             android:name="dmeeuwis.nakama.teaching.TeachingActivity"

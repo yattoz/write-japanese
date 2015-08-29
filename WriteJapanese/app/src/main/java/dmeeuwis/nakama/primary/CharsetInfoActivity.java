@@ -2,6 +2,7 @@ package dmeeuwis.nakama.primary;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
@@ -20,6 +21,9 @@ public class CharsetInfoActivity extends ActionBarActivity implements CharacterS
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charset_info);
+
+        ActionBar actionBar = this.getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
         String charsetName = getIntent().getExtras().getString("charset");
