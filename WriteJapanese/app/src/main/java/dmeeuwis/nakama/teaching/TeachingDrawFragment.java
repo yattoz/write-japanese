@@ -29,7 +29,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
             "Good! Trace again, for practice.",
             "Good! Now trace from memory.",
             "Good! Once more!",
-            "Good! Keep practicing, or move on to the 'story' tab."
+            "Good! Keep practicing, or write a story to remember the kanji with."
     };
 
     final static String[] badAdvice = {

@@ -14,12 +14,17 @@
 
     <android.support.v7.widget.CardView
         android:id="@+id/messageCard"
-        android:layout_width="250dp"
+        android:layout_width="350dp"
         android:layout_height="80dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="180dp"
         android:layout_marginTop="10dp"
-        android:padding="25dp">
+        >
+
+<!--        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@color/DarkGreen"/> -->
 
         <TextView
             android:id="@+id/tipMessage"
@@ -27,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            android:padding="25dp"
             android:textSize="18sp" />
     </android.support.v7.widget.CardView>
 

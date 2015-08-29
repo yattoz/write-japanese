@@ -45,6 +45,15 @@
             >
 
             <ImageView
+                android:id="@+id/reviewBug"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/reviewing_content_description"
+                android:visibility="gone"
+                android:src="@drawable/review_bug"
+                />
+
+            <ImageView
                 android:id="@+id/other_meanings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -73,16 +82,6 @@
 
         </android.support.v7.widget.CardView>
     </FrameLayout>
-
-    <ImageView
-        android:id="@+id/reviewBug"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:contentDescription="@string/reviewing_content_description"
-        android:elevation="500dp"
-        android:visibility="gone"
-        android:src="@drawable/review_bug"
-        />
 
     <dmeeuwis.nakama.views.FloatingActionButton
         android:id="@+id/remindStoryButton"
