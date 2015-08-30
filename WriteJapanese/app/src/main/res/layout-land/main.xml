@@ -61,7 +61,7 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:layout_gravity="bottom|start"
-                    android:layout_marginLeft="106dp"
+                    android:layout_marginLeft="72dp"
                     android:layout_marginStart="106dp"
                     android:elevation="@dimen/elevation_low"
 
