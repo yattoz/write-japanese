@@ -1,5 +1,7 @@
 package dmeeuwis.nakama.primary;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -141,12 +143,26 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
+    public static Account getAccount(AccountManager accountManager) {
+        Account[] accounts = accountManager.getAccountsByType("com.google");
+        Account account;
+        if (accounts.length > 0) {
+            account = accounts[0];
+        } else {
+            account = null;
+        }
+        Log.i("nakama", "Found account as: " + account.name);
+        return account;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i("nakama", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
+
+        getAccount(AccountManager.get(this));
 
         lockChecker = new LockChecker(this,
                 new Runnable() {
