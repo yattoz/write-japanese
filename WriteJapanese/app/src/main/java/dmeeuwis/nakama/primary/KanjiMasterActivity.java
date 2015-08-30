@@ -84,7 +84,7 @@ import dmeeuwis.nakama.views.SetInfoDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
-public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener {
+public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener, OnGoalPickListener {
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
 
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
@@ -423,7 +423,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         this.characterSets.put("j5", joyouG5);
         this.characterSets.put("j6", joyouG6);
 
-        this.charSetFrag = (CharacterSetStatusFragment) getFragmentManager().findFragmentById(R.id.charSetInfoFragment);
+        this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(joyouG1);
         }
@@ -1030,4 +1030,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public void onFragmentInteraction(Uri uri) {
         Log.i("nakama", "KanjiMasterActivity: onFragmeentInteraction called, " + uri);
     }
+
+    @Override
+    public void setGoal(int year, int month, int day) {
+        charSetFrag.setGoal(year, month, day);
+    }
+
 }

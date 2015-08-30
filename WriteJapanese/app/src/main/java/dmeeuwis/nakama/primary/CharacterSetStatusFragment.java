@@ -3,10 +3,10 @@ package dmeeuwis.nakama.primary;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +15,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Map;
 
 import dmeeuwis.kanjimaster.R;
@@ -32,12 +30,13 @@ import dmeeuwis.nakama.views.CircleLabel;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CharacterSetStatusFragment.OnFragmentInteractionListener} interface
+ * {@link OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link CharacterSetStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CharacterSetStatusFragment extends Fragment implements CompoundButton.OnCheckedChangeListener{
+public class CharacterSetStatusFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, OnGoalPickListener {
+
     private static final String ARG_CHARSET = "charset";
 
     private CharacterStudySet charSet;
@@ -68,7 +67,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         // Required empty public constructor
     }
 
-    private void setDate(int year, int month, int day){
+    public void setGoal(int year, int month, int day){
         charSet.setStudyGoal(new GregorianCalendar(year, month, day));
         updateProgress();
         updateGoals();
@@ -155,8 +154,8 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         setGoalsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment newFragment = new DatePickerFragment(CharacterSetStatusFragment.this);
-                newFragment.show(getActivity().getFragmentManager(), "datePicker");
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
             }
         });
 
@@ -231,11 +230,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
     }
 
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-        CharacterSetStatusFragment frag;
-
-        public DatePickerFragment(CharacterSetStatusFragment frag){
-           this.frag = frag;
-        }
+        public DatePickerFragment(){ }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -250,7 +245,8 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
-            frag.setDate(year, month, day);
+            OnGoalPickListener parent = (OnGoalPickListener)getActivity();
+            parent.setGoal(year, month, day);
         }
     }
 }
