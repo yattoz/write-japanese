@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Map;
+import java.util.UUID;
 
 public class CharacterProgressDataHelper {
     private final Context context;
@@ -55,8 +56,8 @@ public class CharacterProgressDataHelper {
     public void recordPractice(String charset, String character, int score){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
-            db.getWritableDatabase().execSQL("INSERT INTO practice_log(character, charset, timestamp, score) VALUES(?, ?, current_timestamp, ?)",
-                    new String[]{ character, charset, Integer.toString(score) });
+            db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, character, charset, timestamp, score) VALUES(?, ?, ?, current_timestamp, ?)",
+                    new String[]{UUID.randomUUID().toString(), character, charset, Integer.toString(score) });
         } finally {
             db.close();
         }
