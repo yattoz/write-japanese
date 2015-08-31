@@ -8,7 +8,7 @@ android {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 40
+        versionCode 41
         versionName "2.0"
     }
     buildTypes {
