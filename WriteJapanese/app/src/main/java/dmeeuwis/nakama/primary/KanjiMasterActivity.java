@@ -44,6 +44,9 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.Scopes;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -68,6 +71,7 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.data.GetAccountTokenAsync;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
@@ -143,16 +147,55 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    public static Account getAccount(AccountManager accountManager) {
+
+    final private int REQUEST_CODE_PICK_ACCOUNT = 0x983443;
+    public void findAccount() {
+        AccountManager accountManager = AccountManager.get(this);
         Account[] accounts = accountManager.getAccountsByType("com.google");
-        Account account;
-        if (accounts.length > 0) {
-            account = accounts[0];
-        } else {
-            account = null;
+        if (accounts.length == 1) {
+            Log.i("nakama", "Found only 1 com.google account: " + accounts[0].name);
+            accountFound(accounts[0].name);
+        } else if (accounts.length > 1) {
+            Log.i("nakama", "Found multiple google accounts: prompting user");
+            String[] accountTypes = new String[]{"com.google"};
+            Intent intent = AccountManager.newChooseAccountIntent(null, null,
+                    accountTypes, false, null, null, null, null);
+            startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
+            // show account picker
         }
-        Log.i("nakama", "Found account as: " + account.name);
-        return account;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("nakama", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
+
+        if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
+            Log.i("nakama", "Got activity result for request account pick!");
+            // Receiving a result from the AccountPicker
+            if (resultCode == RESULT_OK) {
+                String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                Log.i("nakama", "Account selected was: " + mEmail);
+                accountFound(mEmail);
+            } else if (resultCode == RESULT_CANCELED) {
+                // The account picker dialog closed without selecting an account.
+                // Notify users that they must pick an account to proceed.
+                Toast.makeText(this, "You must choose a Google account to enable network sync", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        //TODO: set a requestCode for the lockChecker
+        if (!lockChecker.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        } else {
+            Log.d("nakama", "AbstractMasterActivity: onActivityResult handled by IABUtil.");
+        }
+    }
+
+    public void accountFound(String accountName){
+        Log.i("nakama", "Found account as: " + accountName);
+        GetAccountTokenAsync getter = new GetAccountTokenAsync(this, accountName, Scopes.PROFILE);
+        getter.execute();
     }
 
     @Override
@@ -162,7 +205,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
-        getAccount(AccountManager.get(this));
+        findAccount();
 
         lockChecker = new LockChecker(this,
                 new Runnable() {
@@ -779,18 +822,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         Log.i("nakama", "KanjiMasterActivity.onDestroy");
         this.lockChecker.dispose();
         super.onDestroy();
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("nakama", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
-
-        if (!lockChecker.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        } else {
-            Log.d("nakama", "AbstractMasterActivity: onActivityResult handled by IABUtil.");
-        }
     }
 
     public LockChecker getLockChecker() {
