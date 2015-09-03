@@ -73,6 +73,18 @@
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
             android:value="598.0dip" />
 
+
+        <service
+            android:name="dmeeuwis.nakama.data.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                       android:resource="@xml/syncadapter" />
+        </service>
+
         <activity
             android:name="dmeeuwis.nakama.TestDrawActivity"
             android:label="@string/title_activity_test_draw" >
