@@ -153,10 +153,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         AccountManager accountManager = AccountManager.get(this);
         Account[] accounts = accountManager.getAccountsByType("com.google");
         if (accounts.length == 1) {
-            Log.i("nakama", "Found only 1 com.google account: " + accounts[0].name);
+            Log.i("nakama-auth", "Found only 1 com.google account: " + accounts[0].name);
             accountFound(accounts[0].name);
         } else if (accounts.length > 1) {
-            Log.i("nakama", "Found multiple google accounts: prompting user");
+            Log.i("nakama-auth", "Found multiple google accounts: prompting user");
             String[] accountTypes = new String[]{"com.google"};
             Intent intent = AccountManager.newChooseAccountIntent(null, null,
                     accountTypes, false, null, null, null, null);
@@ -170,11 +170,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         Log.d("nakama", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
 
         if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
-            Log.i("nakama", "Got activity result for request account pick!");
+            Log.i("nakama-auth", "Got activity result for request account pick!");
             // Receiving a result from the AccountPicker
             if (resultCode == RESULT_OK) {
                 String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                Log.i("nakama", "Account selected was: " + mEmail);
+                Log.i("nakama-auth", "Account selected was: " + mEmail);
                 accountFound(mEmail);
             } else if (resultCode == RESULT_CANCELED) {
                 // The account picker dialog closed without selecting an account.
@@ -192,9 +192,23 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
+    static private final String AUTHCODE_SHARED_PREF_KEY = "authcode";
+    protected void recordAuthToken(String authcode){
+        Log.i("nakama-auth", "Recording authcode to shared prefs: " + authcode);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        Editor ed = prefs.edit();
+        ed.putString(AUTHCODE_SHARED_PREF_KEY, authcode);
+        ed.apply();
+    }
+
     public void accountFound(String accountName){
-        Log.i("nakama", "Found account as: " + accountName);
-        GetAccountTokenAsync getter = new GetAccountTokenAsync(this, accountName, Scopes.PROFILE);
+        Log.i("nakama-auth", "Found account as: " + accountName);
+        GetAccountTokenAsync getter = new GetAccountTokenAsync(this, accountName,
+            new GetAccountTokenAsync.RunWithAuthcode(){
+                @Override public void exec(String authcode) {
+                    recordAuthToken(authcode);
+                }
+            });
         getter.execute();
     }
 
@@ -205,6 +219,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
+        Log.i("nakama-auth", "Starting find account process");
         findAccount();
 
         lockChecker = new LockChecker(this,
