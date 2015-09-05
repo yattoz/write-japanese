@@ -97,6 +97,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
+    public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
 
     protected DictionarySet dictionarySet;
     protected LockChecker lockChecker;
@@ -192,7 +193,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    static private final String AUTHCODE_SHARED_PREF_KEY = "authcode";
     protected void recordAuthToken(String authcode){
         Log.i("nakama-auth", "Recording authcode to shared prefs: " + authcode);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

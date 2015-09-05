@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -38,7 +39,10 @@ public class PracticeLogSync {
             throw new RuntimeException(e);
         }
 
-        URLConnection urlConnection = syncUrl.openConnection();
+        HttpURLConnection urlConnection = (HttpURLConnection)syncUrl.openConnection();
+        urlConnection.setDoOutput(true);
+        urlConnection.setDoInput(true);
+        urlConnection.setRequestMethod("POST");
         Writer netWriter = new OutputStreamWriter(urlConnection.getOutputStream());
         JsonWriter jw = new JsonWriter(netWriter);
 
