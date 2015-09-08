@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 8;
+	private static final int DB_VERSION = 10;
 
 	public WriteJapaneseOpenHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -22,7 +22,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	}
 
     private void createProgressTable(SQLiteDatabase dbase){
-        Log.d("nakama", "Creating character progress table.");
+        Log.d("nakama-db", "Creating character progress table.");
         dbase.execSQL("CREATE TABLE character_progress ( " +
                 "charset TEXT NOT NULL PRIMARY KEY, " +
                 "progress TEXT NOT NULL" +
@@ -30,7 +30,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
     }
     private void createStoryTables(SQLiteDatabase dbase){
-        Log.d("nakama", "Creating story table.");
+        Log.d("nakama-db", "Creating story table.");
         dbase.execSQL("CREATE TABLE kanji_stories ( " +
                 "character char NOT NULL PRIMARY KEY, " +
                 "story TEXT NOT NULL" +
@@ -38,7 +38,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
     }
 
     private void createCharset(SQLiteDatabase sqlite){
-        Log.d("nakama", "Creating charset goals table.");
+        Log.d("nakama-db", "Creating charset goals table.");
         sqlite.execSQL("DROP TABLE IF EXISTS charset_goals;");
         sqlite.execSQL("CREATE TABLE charset_goals ( " +
                 "charset TEXT NOT NULL PRIMARY KEY, " +
@@ -49,25 +49,27 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
     }
 
     private void createPracticeLog(SQLiteDatabase sqlite){
-        Log.d("nakama", "Creating practice log table.");
+        Log.d("nakama-db", "Creating practice log table.");
         sqlite.execSQL("DROP TABLE IF EXISTS practice_log;");
         sqlite.execSQL("CREATE TABLE practice_log ( " +
-                "character TEXT NOT NULL," +
+                "id TEXT NOT NULL PRIMARY KEY, " +
+                "install_id TEXT NOT NULL, " +
+                "character TEXT NOT NULL, " +
                 "charset TEXT NOT NULL, " +
-                "timestamp TEXT NOT NULL," +
+                "timestamp TEXT NOT NULL, " +
                 "score TEXT NOT NULL" +
         ")");
     }
 
 	@Override
 	public void onUpgrade(SQLiteDatabase dbase, int oldVersion, int newVersion) {
-		Log.i("nakama", "Upgrading db from " + oldVersion + " to " + newVersion);
+		Log.i("nakama-db", "Upgrading db from " + oldVersion + " to " + newVersion);
 
         if(oldVersion <= 7){
            createCharset(dbase);
         }
 
-        if(oldVersion <= 6){
+        if(oldVersion <= 9){
             createPracticeLog(dbase);
         }
 	}

@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
@@ -72,6 +73,7 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.GetAccountTokenAsync;
+import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
@@ -479,14 +481,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             incorrectCard.setTranslationY(-1 * ANIMATE_OUT_HEIGHT);
         }
 
-        hiraganaCharacterSet = CharacterSets.hiragana(lockChecker);
-        katakanaCharacterSet = CharacterSets.katakana(lockChecker);
-        joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), lockChecker);
+        UUID iid = Iid.get(this.getApplication());
+        hiraganaCharacterSet = CharacterSets.hiragana(lockChecker, iid);
+        katakanaCharacterSet = CharacterSets.katakana(lockChecker, iid);
+        joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), lockChecker, iid);
 
         this.characterSets.put("hiragana", hiraganaCharacterSet);
         this.characterSets.put("katakana", katakanaCharacterSet);
@@ -862,6 +865,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:ResetStorySharing");
             menu.add("DEBUG:Notify");
             menu.add("DEBUG:ClearAllNotify");
+            menu.add("DEBUG:Sync");
         }
         return true;
     }
@@ -959,7 +963,18 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             } else if (item.getTitle().equals("DEBUG:Notify")) {
                 ReminderManager.scheduleRemindersFor(this.getApplicationContext(), currentCharacterSet);
             } else if (item.getTitle().equals("DEBUG:ClearAllNotify")) {
-                ReminderManager.clearAllReminders(this.getApplicationContext());
+                ReminderManager.clearAllReminders(this);
+            } else if (item.getTitle().equals("DEBUG:Sync")) {
+                new Thread(){
+                    @Override
+                    public void run() {
+                        try {
+                            new PracticeLogSync(KanjiMasterActivity.this).sync();
+                        } catch(IOException e){
+                            Toast.makeText(KanjiMasterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }.start();
             }
         }
 

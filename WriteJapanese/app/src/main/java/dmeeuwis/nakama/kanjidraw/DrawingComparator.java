@@ -28,8 +28,8 @@ public class DrawingComparator {
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 	static private final int PERCENTAGE_DISTANCE_DIFF_LIMIT = 100;
 
-    static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null);
-    static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null);
+    static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
+    static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
 
 	final char target;
 	final PointDrawing known;

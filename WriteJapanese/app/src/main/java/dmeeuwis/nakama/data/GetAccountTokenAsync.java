@@ -49,7 +49,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
             Log.i("nakama-auth", "Found auth token as: " + token);
 
             // Register authcode to server with: iid, device name
-            URL registerUrl = new URL("https://dmeeuwis.com/network_sync_setup");
+            URL registerUrl = new URL("http://dmeeuwis.com/write-japanese/network-sync-register");
             HttpURLConnection urlConnection = (HttpURLConnection) registerUrl.openConnection();
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
@@ -75,6 +75,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
             netWriter.close();
 
             try {
+                Log.i("nakama", "Registereing authcode, saw response: " + urlConnection.getResponseCode());
                 if (urlConnection.getResponseCode() != 200) {
                     // didn't register, don't record on device
                     return null;
@@ -86,8 +87,9 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
             return token;
         } catch (UserRecoverableAuthException userAuthEx) {
             // Start the user recoverable action using the intent returned by getIntent()
+            Log.e("nakama-auth", "Saw UserRecoverableAuthException while getting token", userAuthEx);
             mActivity.startActivityForResult(userAuthEx.getIntent(), AUTH_REQUEST_ACTIVITY_CODE);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Log.e("nakama-auth", "GetAccountTokenAsync: caught exception fetching token", e);
             // The fetchToken() method handles Google-specific exceptions,
             // so this indicates something went wrong at a higher level.

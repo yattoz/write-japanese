@@ -26,7 +26,7 @@ public class Iid {
         try {
             iid = UUID.fromString(existingInstallId);
         } catch(Throwable t){
-            Log.e("nakama", "Error parsing iid; ignoring.", t);
+            Log.d("nakama", "Error parsing iid; ignoring.", t);
         }
         if(iid == null) {
             SharedPreferences.Editor ed = prefs.edit();

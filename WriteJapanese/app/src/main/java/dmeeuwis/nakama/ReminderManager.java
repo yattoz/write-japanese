@@ -1,5 +1,6 @@
 package dmeeuwis.nakama;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,10 +14,12 @@ import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.UUID;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 
 public class ReminderManager extends BroadcastReceiver {
@@ -54,12 +57,12 @@ public class ReminderManager extends BroadcastReceiver {
         Log.i("nakama", "ReminderManager: scheduled a notification!");
     }
 
-    public static void clearAllReminders(Context c){
+    public static void clearAllReminders(Activity c){
         final String[] set = { "j1", "j2", "j3", "j4", "j5", "j6", "hiragana", "katakana" };
         for(String s: set){
-            CharacterStudySet charset = CharacterSets.fromName(s, null, null);
-            charset.load(c);
-            clearReminders(c, charset);
+            CharacterStudySet charset = CharacterSets.fromName(s, null, null, Iid.get(c.getApplication()));
+            charset.load(c.getApplicationContext());
+            clearReminders(c.getApplicationContext(), charset);
         }
         Log.i("nakama", "ReminderManager: cleared all notification!");
     }
@@ -82,7 +85,9 @@ public class ReminderManager extends BroadcastReceiver {
         Log.i("nakama", "ReminderManager.onReceive: wakeup!");
         String charset = intent.getStringExtra(INTENT_CHARSET);
 
-        CharacterStudySet set = CharacterSets.fromName(charset, null, null);
+        //TODO: Is this evil?
+        UUID iid = Iid.get(((Activity)context).getApplication());
+        CharacterStudySet set = CharacterSets.fromName(charset, null, null, iid);
         set.load(context);
         CharacterStudySet.GoalProgress gp = set.getGoalProgress();
         int charCount = gp.neededPerDay;

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.util.Util;
@@ -29,6 +30,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 	final private LockChecker lockChecker;
     private ProgressTracker tracker;
 	final private Random random = new Random();
+    final private UUID iid;
 
 	private boolean shuffling = false;
 	private Character currentChar;
@@ -85,10 +87,11 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		return String.format("%s (%d)", this.name, this.allCharactersSet.size());
 	}
 
-	public CharacterStudySet(String name, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker lockChecker){
+	public CharacterStudySet(String name, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker lockChecker, UUID iid){
 		this.name = name;
         this.description = description;
 		this.locked = locked;
+        this.iid = iid;
 
 		this.freeCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(freeCharacters)));
 		this.allCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(allCharacters)));
@@ -170,7 +173,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 			} else {
 				this.tracker.markFailure(c);
 			}
-            CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
+            CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
             cdb.recordPractice(pathPrefix, currentCharacter().toString(), pass ? 100 : 0);
 		} catch(Throwable t){
 			Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
@@ -194,7 +197,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 	public void progressReset(Context context){
 		this.tracker.progressReset();
 
-        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
+        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
         cdb.clearProgress(pathPrefix);
 	}
 
@@ -279,14 +282,14 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 	public void save(Context context){
 		String progressAsString = tracker.saveToString();
 
-        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
+        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
 		cdb.recordProgress(pathPrefix, progressAsString);
         cdb.recordGoals(pathPrefix, goalStarted, studyGoal);
 	}
 
 	public void load(Context context){
 		String existingProgress;
-        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context);
+        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
         Pair<GregorianCalendar, GregorianCalendar> goals = cdb.getExistingGoals(pathPrefix);
         if(goals != null) {
             this.goalStarted = goals.first;
