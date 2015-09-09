@@ -50,8 +50,8 @@ public class PracticeLogSync {
         Writer netWriter = new OutputStreamWriter(urlConnection.getOutputStream());
         JsonWriter jw = new JsonWriter(netWriter);
 
-        jw.name("install_id");
-        jw.value(iid);
+        jw.beginObject();
+        jw.name("install_id").value(iid);
 
         sqlite.beginTransaction();
         try {
@@ -120,6 +120,8 @@ public class PracticeLogSync {
                 jr.endObject();
             }
             jr.endArray();
+            jr.endObject();
+            jr.close();
 
         } finally {
             db.close();

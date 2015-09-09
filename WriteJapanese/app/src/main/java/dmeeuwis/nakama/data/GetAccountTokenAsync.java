@@ -58,19 +58,10 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
             JsonWriter jw = new JsonWriter(netWriter);
 
             jw.beginObject();
-
-            jw.name("email");
-            jw.value(mEmail);
-
-            jw.name("iid");
-            jw.value(Iid.get(mActivity.getApplication()).toString());
-
-            jw.name("authcode");
-            jw.value(token);
-
-            jw.name("device");
-            jw.value(android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT);
-
+            jw.name("email").value(mEmail);
+            jw.name("iid").value(Iid.get(mActivity.getApplication()).toString());
+            jw.name("authcode").value(token);
+            jw.name("device").value(android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT);
             jw.endObject();
             netWriter.close();
 
