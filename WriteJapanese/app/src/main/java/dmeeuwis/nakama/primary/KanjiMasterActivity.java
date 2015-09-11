@@ -971,7 +971,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                         try {
                             new PracticeLogSync(KanjiMasterActivity.this).sync();
                         } catch(IOException e){
-                            Toast.makeText(KanjiMasterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            Log.e("nakama", "Caught sync exception", e);
                         }
                     }
                 }.start();

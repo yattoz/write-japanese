@@ -61,6 +61,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         ")");
     }
 
+
 	@Override
 	public void onUpgrade(SQLiteDatabase dbase, int oldVersion, int newVersion) {
 		Log.i("nakama-db", "Upgrading db from " + oldVersion + " to " + newVersion);

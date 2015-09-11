@@ -8,7 +8,9 @@ import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,6 +27,8 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
 
     // service id
     final static String SCOPE = "audience:server:client_id:120575778353-iv0lut9pspdt19qluq5n14g9tq2k17ch.apps.googleusercontent.com";
+
+    final static String SEND_URL = "http://192.168.1.99:8080/write-japanese/network-sync-register";
     public final int AUTH_REQUEST_ACTIVITY_CODE = 0x7832;
 
     public interface RunWithAuthcode {
@@ -49,24 +53,35 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
             Log.i("nakama-auth", "Found auth token as: " + token);
 
             // Register authcode to server with: iid, device name
-            URL registerUrl = new URL("http://dmeeuwis.com/write-japanese/network-sync-register");
+            URL registerUrl = new URL(SEND_URL);
             HttpURLConnection urlConnection = (HttpURLConnection) registerUrl.openConnection();
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
             urlConnection.setRequestMethod("POST");
-            Writer netWriter = new OutputStreamWriter(urlConnection.getOutputStream());
-            JsonWriter jw = new JsonWriter(netWriter);
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+
+            Writer stringWriter = new StringWriter();
+            JsonWriter jw = new JsonWriter(stringWriter);
 
             jw.beginObject();
-            jw.name("email").value(mEmail);
+            jw.name("account").value(mEmail);
             jw.name("iid").value(Iid.get(mActivity.getApplication()).toString());
             jw.name("authcode").value(token);
             jw.name("device").value(android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT);
             jw.endObject();
-            netWriter.close();
+            jw.close();
+            String jsonOut = stringWriter.toString();
+
+            Log.i("nakama", "jsonOut is " + jsonOut);
+            OutputStream out = urlConnection.getOutputStream();
+            try {
+                out.write(jsonOut.getBytes("UTF-8"));
+            } finally {
+                out.close();
+            }
 
             try {
-                Log.i("nakama", "Registereing authcode, saw response: " + urlConnection.getResponseCode());
+                Log.i("nakama", "Registering authcode, saw response: " + urlConnection.getResponseCode());
                 if (urlConnection.getResponseCode() != 200) {
                     // didn't register, don't record on device
                     return null;
