@@ -3,11 +3,14 @@ package dmeeuwis.nakama.data;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,8 +24,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import dmeeuwis.nakama.primary.Iid;
@@ -30,14 +36,34 @@ import dmeeuwis.util.Util;
 
 public class PracticeLogSync {
 
-    final private static String SERVER_SYNC_PREFS_KEY = "last-progress-server-sync-time";
-    final private static String DEVICE_SYNC_PREFS_KEY = "last-progress-server-sync-time";
+    final private static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
+    final private static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
     final private static String SYNC_URL = "http://192.168.1.99:8080/write-japanese/progress-sync";
 
     final Activity activity;
 
     public PracticeLogSync(Activity activity) {
         this.activity = activity;
+    }
+
+
+    public void debugPrintLog(){
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.activity.getApplicationContext());
+        SQLiteDatabase sqlite = db.getReadableDatabase();
+
+        List<Map<String, String>> all = DataHelper.selectRecords(sqlite, "SELECT * FROM practice_log");
+        for(Map<String, String> r: all){
+            Log.i("nakama-sync", new JSONObject(r).toString());
+        }
+
+    }
+
+    public void clearSync(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
+        SharedPreferences.Editor e = prefs.edit();
+        e.putString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
+        e.putString(DEVICE_SYNC_PREFS_KEY, "0");
+        e.apply();
     }
 
     public void sync() throws IOException {
@@ -51,7 +77,8 @@ public class PracticeLogSync {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
         String lastSyncServerTimestamp = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
-        String lastSyncDeviceTimestamp = prefs.getString(DEVICE_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
+        String lastSyncDeviceTimestamp = prefs.getString(DEVICE_SYNC_PREFS_KEY, "0");
+        Log.i("nakama-sync", "Doing sync with last-server-sync: " + lastSyncServerTimestamp + "; last device sync: " + lastSyncDeviceTimestamp);
 
         HttpURLConnection urlConnection = (HttpURLConnection) syncUrl.openConnection();
         urlConnection.setDoOutput(true);
@@ -69,7 +96,9 @@ public class PracticeLogSync {
         SQLiteDatabase sqlite = db.getReadableDatabase();
         try {
             jw.name("prev-sync-timestamp").value(lastSyncServerTimestamp);
-            Cursor c = sqlite.rawQuery("SELECT * FROM practice_log WHERE timestamp > ? AND install_id = ?", new String[]{lastSyncDeviceTimestamp, iid});
+            Cursor c = sqlite.rawQuery("SELECT id, install_id, character, charset, timestamp, score " +
+                            "FROM practice_log WHERE timestamp > ? AND install_id = ?",
+                    new String[]{lastSyncDeviceTimestamp, iid});
             try {
                 // stream over all rows since that time
                 jw.name("practice_logs");
@@ -77,8 +106,6 @@ public class PracticeLogSync {
                 while (c.moveToNext()) {
                     jw.beginObject();
                     for (int i = 0; i < c.getColumnCount(); i++) {
-                        Log.i("nakama", "Reading column " + i + ": " + c.getColumnName(i));
-                        Log.i("nakama", "Reading column value " + c.getString(i));
                         jw.name(c.getColumnName(i));
                         jw.value(c.getString(i));
                     }
@@ -90,6 +117,7 @@ public class PracticeLogSync {
             jw.endArray();
             jw.endObject();
             jw.close();
+
             String jsonPost = netWriter.toString();
             Log.i("nakama", "Posting JSON sync: " + jsonPost);
 
@@ -114,9 +142,10 @@ public class PracticeLogSync {
             Log.i("nakama-sync", "Saw JSON response object sync values: " + syncTimestampName + " = " + syncTimestampValue);
 
             SharedPreferences.Editor e = prefs.edit();
-            e.putString(DEVICE_SYNC_PREFS_KEY, syncTimestampValue);
+            e.putString(DEVICE_SYNC_PREFS_KEY, DataHelper.selectString(sqlite, "SELECT MAX(timestamp) FROM practice_log"));
             e.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
             e.apply();
+            Log.i("nakama-sync", "Recording device-sync timestamp as " + prefs.getString(DEVICE_SYNC_PREFS_KEY, "MISSED!"));
 
             Map<String, String> values = new HashMap<>();
             jr.nextName();      // "practice_logs" key
@@ -125,19 +154,16 @@ public class PracticeLogSync {
                 jr.beginObject();
                 while (jr.hasNext()) {
                     values.put(jr.nextName(), jr.nextString());
-                    try {
-                        String[] insert = new String[]{values.get("id"), values.get("install_id"),
-                                values.get("charset"), values.get("character"), values.get("score"),
-                                values.get("timestamp")};
-                        Log.i("nakama-sync", "Inserting remove log: " + Util.join(", ", insert));
-                        DataHelper.selectRecord(sqlite, "INSERT INTO practice_log(install_id, id, charset, character, score, timestamp", insert);
-                    } catch (RuntimeException t) {
-                        if (t.getCause() instanceof SQLException) {
-                            Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()));
-                        } else {
-                            throw t;
-                        }
-                    }
+                }
+
+                try {
+                    String[] insert = new String[]{values.get("id"), values.get("install_id"),
+                            values.get("charset"), values.get("character"), values.get("score"),
+                            values.get("device_timestamp")};
+                    Log.i("nakama-sync", "Inserting remote log: " + Util.join(", ", insert));
+                    DataHelper.selectRecord(sqlite, "INSERT INTO practice_log(id, install_id, charset, character, score, timestamp) VALUES(?, ?, ?, ?, ?, ?)", (Object[])insert);
+                } catch (SQLiteConstraintException t) {
+                    Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
                 }
                 jr.endObject();
             }

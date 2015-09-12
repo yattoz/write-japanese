@@ -866,6 +866,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:Notify");
             menu.add("DEBUG:ClearAllNotify");
             menu.add("DEBUG:Sync");
+            menu.add("DEBUG:ClearSync");
+            menu.add("DEBUG:PrintPracticeLog");
         }
         return true;
     }
@@ -964,6 +966,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 ReminderManager.scheduleRemindersFor(this.getApplicationContext(), currentCharacterSet);
             } else if (item.getTitle().equals("DEBUG:ClearAllNotify")) {
                 ReminderManager.clearAllReminders(this);
+            } else if (item.getTitle().equals("DEBUG:ClearSync")) {
+                new PracticeLogSync(KanjiMasterActivity.this).clearSync();
+            } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
+                new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
             } else if (item.getTitle().equals("DEBUG:Sync")) {
                 new Thread(){
                     @Override

@@ -61,7 +61,7 @@ public class CharacterProgressDataHelper {
     public void recordPractice(String charset, String character, int score){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
-            db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, timestamp, score) VALUES(?, ?, ?, ?, current_timestamp, ?)",
+            db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)",
                     new String[]{UUID.randomUUID().toString(), iid.toString(), character, charset, Integer.toString(score) });
         } finally {
             db.close();
