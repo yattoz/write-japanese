@@ -153,18 +153,27 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     final private int REQUEST_CODE_PICK_ACCOUNT = 0x983443;
     public void findAccount() {
-        AccountManager accountManager = AccountManager.get(this);
-        Account[] accounts = accountManager.getAccountsByType("com.google");
-        if (accounts.length == 1) {
-            Log.i("nakama-auth", "Found only 1 com.google account: " + accounts[0].name);
-            accountFound(accounts[0].name);
-        } else if (accounts.length > 1) {
-            Log.i("nakama-auth", "Found multiple google accounts: prompting user");
-            String[] accountTypes = new String[]{"com.google"};
-            Intent intent = AccountManager.newChooseAccountIntent(null, null,
-                    accountTypes, false, null, null, null, null);
-            startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
-            // show account picker
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String auth = pref.getString(AUTHCODE_SHARED_PREF_KEY, null);
+
+        if(auth != null){
+            Log.i("nakama-sync", "Found existing authcode, already registered for server sync");
+        } else {
+            Log.i("nakama-sync", "No existing authcode, launch process to resiter server sync");
+
+            AccountManager accountManager = AccountManager.get(this);
+            Account[] accounts = accountManager.getAccountsByType("com.google");
+            if (accounts.length == 1) {
+                Log.i("nakama-auth", "Found only 1 com.google account: " + accounts[0].name);
+                accountFound(accounts[0].name);
+            } else if (accounts.length > 1) {
+                Log.i("nakama-auth", "Found multiple google accounts: prompting user");
+                String[] accountTypes = new String[]{"com.google"};
+                Intent intent = AccountManager.newChooseAccountIntent(null, null,
+                        accountTypes, false, null, null, null, null);
+                startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
+                // show account picker
+            }
         }
     }
 

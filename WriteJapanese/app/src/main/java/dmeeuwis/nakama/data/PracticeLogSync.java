@@ -23,10 +23,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,10 +144,10 @@ public class PracticeLogSync {
             e.apply();
             Log.i("nakama-sync", "Recording device-sync timestamp as " + prefs.getString(DEVICE_SYNC_PREFS_KEY, "MISSED!"));
 
-            Map<String, String> values = new HashMap<>();
             jr.nextName();      // "practice_logs" key
             jr.beginArray();
             while (jr.hasNext()) {
+                Map<String, String> values = new HashMap<>();
                 jr.beginObject();
                 while (jr.hasNext()) {
                     values.put(jr.nextName(), jr.nextString());
@@ -169,6 +166,60 @@ public class PracticeLogSync {
             }
             jr.endArray();
             jr.endObject();
+
+
+            jr.nextName();      // "kanji_stories" key
+            jr.beginArray();
+            while (jr.hasNext()) {
+                Map<String, String> values = new HashMap<>();
+                jr.beginObject();
+                while (jr.hasNext()) {
+                    values.put(jr.nextName(), jr.nextString());
+                }
+
+                try {
+                    DataHelper.selectRecord(sqlite, "UPDATE OR IGNORE kanji_stories SET story=? WHERE character = ? AND  creation_time < ?) VALUES(?, ?, ?)",
+                            (Object[])(new String[]{ values.get("story"), values.get("character"), values.get("creation_time")}));
+
+                    DataHelper.selectRecord(sqlite, "INSERT OR IGNORE INTO kanji_stories(character, story, creation_time) VALUES(?, ?, ?)",
+                            new String[]{values.get("character"), values.get("story"), values.get("creation_time") });
+
+                    Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
+                } catch (SQLiteConstraintException t) {
+                    Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                }
+                jr.endObject();
+            }
+            jr.endArray();
+            jr.endObject();
+
+
+            jr.nextName();      // "charset_goals" key
+            jr.beginArray();
+            while (jr.hasNext()) {
+                Map<String, String> values = new HashMap<>();
+                jr.beginObject();
+                while (jr.hasNext()) {
+                    values.put(jr.nextName(), jr.nextString());
+                }
+
+                try {
+                    DataHelper.selectRecord(sqlite, "UPDATE OR IGNORE charset_goals SET goal=?, goal_start=? WHERE charset = ? AND timestamp < ?) VALUES(?, ?, ?, ?)",
+                        (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
+
+                    DataHelper.selectRecord(sqlite, "INSERT OR IGNORE INTO charset_goals(goal, goal_start, charset, timestamp) VALUES(?, ?, ?, ?)",
+                        (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
+
+                    Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
+                } catch (SQLiteConstraintException t) {
+                    Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                }
+                jr.endObject();
+            }
+            jr.endArray();
+            jr.endObject();
+
+
             jr.close();
             rin.close();
             inStream.close();
