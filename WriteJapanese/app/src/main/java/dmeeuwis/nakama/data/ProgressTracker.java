@@ -1,7 +1,5 @@
 package dmeeuwis.nakama.data;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +17,7 @@ public class ProgressTracker {
 		public static Progress parse(Integer in){
         	if(in == null){
 				return Progress.UNKNOWN;
-			} else if(in <= -2){
+			} else if(in <= -200){
 				return Progress.FAILED;
 			} else if(in <= 0){
 				return Progress.REVIEWING;
@@ -29,7 +27,7 @@ public class ProgressTracker {
 		}
 	}
 	
-	final private LinkedHashMap<Character, Integer> recordSheet;
+	final private Map<Character, Integer> recordSheet;
 
 	public ProgressTracker(String characters){
 		this.recordSheet = new LinkedHashMap<>(characters.length());
@@ -44,6 +42,10 @@ public class ProgressTracker {
 			this.recordSheet.put(c, null);
 		}
 	}
+
+    public ProgressTracker(Map<Character, Integer> recordSheet){
+        this.recordSheet = recordSheet;
+    }
 
     public CharacterStudySet.SetProgress calculateProgress(){
         int known = 0, reviewing = 0, failed = 0, unknown = 0;
@@ -178,32 +180,6 @@ public class ProgressTracker {
 		return all;
 	}
 
-	public void updateFromString(String savedString){
-        if(savedString == null) return;
-
-		String[] lines = savedString.split("\n");
-		for(String l: lines){
-			String[] parts = l.split("=");
-			if(parts.length < 2){
-			} else if(parts[1].equals("!")){
-				this.recordSheet.put(parts[0].charAt(0), null);
-			} else {
-				this.recordSheet.put(parts[0].charAt(0), Math.max(-2, Math.min(2, Integer.parseInt(parts[1]))));
-			}
-		}
-	}
-
-	public String saveToString(){
-		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<Character, Integer> entry: recordSheet.entrySet()){
-			sb.append(entry.getKey().toString());        	
-			sb.append("=");
-			sb.append(entry.getValue() == null ? "!" : entry.getValue().toString());
-			sb.append("\n");
-		}
-		return sb.toString();
-	}
-	
 	public String toString(){
 		return "[ProgressTracker: " + Util.join(", ", this.recordSheet.keySet()) + "]";
 	}

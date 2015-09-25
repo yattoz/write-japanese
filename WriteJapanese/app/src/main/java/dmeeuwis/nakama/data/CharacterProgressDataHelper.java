@@ -7,6 +7,8 @@ import android.util.Pair;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,6 +62,7 @@ public class CharacterProgressDataHelper {
 
     public void recordPractice(String charset, String character, int score){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        Log.i("nakama-record", "Recording practice: " + charset + "; " + character + "; " + score);
         try {
             db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, timestamp, score) VALUES(?, ?, ?, ?, current_timestamp, ?)",
                     new String[]{UUID.randomUUID().toString(), iid.toString(), character, charset, Integer.toString(score) });
@@ -105,6 +108,31 @@ public class CharacterProgressDataHelper {
         } finally {
             db.close();
         }
+    }
+
+    public Map<Character, Integer> getRecordSheetForCharset(String charsetName){
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        Map<Character, Integer> recordSheet = new HashMap<>();
+        try {
+            List<Map<String, String>> rec = DataHelper.selectRecords(db.getReadableDatabase(),
+                    "SELECT character, score FROM practice_log WHERE charset = ?", charsetName);
+            Log.i("nakama", "-----> Found " + rec.size() + " practice logs to read");
+            for(Map<String, String> r: rec) {
+                Character character = r.get("character").charAt(0);
+                Integer score = Integer.parseInt(r.get("score"));
+
+                Integer sheetScore = recordSheet.get(character);
+                if (sheetScore != null) {
+                    sheetScore += score;
+                } else {
+                    sheetScore = score;
+                }
+                recordSheet.put(character, sheetScore);
+            }
+        } finally {
+            db.close();
+        }
+        return recordSheet;
     }
 
     private static GregorianCalendar parseCalendarString(String in){

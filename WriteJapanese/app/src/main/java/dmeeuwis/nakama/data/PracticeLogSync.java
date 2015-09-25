@@ -130,7 +130,7 @@ public class PracticeLogSync {
                                 values.get("charset"), values.get("character"), values.get("score"),
                                 values.get("timestamp")};
                         Log.i("nakama-sync", "Inserting remove log: " + Util.join(", ", insert));
-                        DataHelper.selectRecord(sqlite, "INSERT INTO practice_log(install_id, id, charset, character, score, timestamp", insert);
+                        DataHelper.selectRecord(sqlite, "INSERT INTO practice_log(install_id, id, charset, character, score, timestamp", (Object[])insert);
                     } catch (RuntimeException t) {
                         if (t.getCause() instanceof SQLException) {
                             Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()));

@@ -24,14 +24,13 @@ public class DataHelper {
 
 
     public static List<Map<String, String>> selectRecords(SQLiteDatabase db, String sql, Object ... params){
-    	List<Map<String, String>> result = new ArrayList<>();
+    	List<Map<String, String>> result;
     	String[] sparams = asStringArray(params);
     	Cursor c = db.rawQuery(sql,sparams);
     	try {
-	        if(c != null && c.moveToFirst()){
-	        	result = new ArrayList<>(c.getCount());
-	        	int columnCount = c.getColumnCount();
-
+            result = new ArrayList<>(c.getCount());
+            int columnCount = c.getColumnCount();
+            while(c.moveToNext()){
 	        	Map<String, String> m = new HashMap<String, String>();
 	        	for(int i = 0; i < columnCount; i++){
 	        		String colName = c.getColumnName(i);

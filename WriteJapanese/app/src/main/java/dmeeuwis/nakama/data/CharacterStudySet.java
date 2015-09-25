@@ -7,8 +7,10 @@ import android.util.Pair;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -127,10 +129,6 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 
     public SetProgress getProgress(){
         return this.tracker.calculateProgress();
-    }
-
-    public void setProgressNotifications(boolean enable){
-
     }
 
 	public boolean locked(){
@@ -280,22 +278,28 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 	}
 
 	public void save(Context context){
-		String progressAsString = tracker.saveToString();
-
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
-		cdb.recordProgress(pathPrefix, progressAsString);
         cdb.recordGoals(pathPrefix, goalStarted, studyGoal);
 	}
 
 	public void load(Context context){
-		String existingProgress;
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
         Pair<GregorianCalendar, GregorianCalendar> goals = cdb.getExistingGoals(pathPrefix);
         if(goals != null) {
             this.goalStarted = goals.first;
             this.studyGoal = goals.second;
         }
-        existingProgress = cdb.getExistingProgress(pathPrefix);
-		tracker.updateFromString(existingProgress);
+        Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.pathPrefix);
+        Log.i("nakama", "Loading progress as: " + existing);
+        for(Character c: this.availableCharactersSet()){
+            if(!existing.containsKey(c)){
+                existing.put(c, null);
+            }
+        }
+		tracker = new ProgressTracker(existing);
 	}
+
+    public Map<Character, ProgressTracker.Progress> getRecordSheet(){
+        return this.tracker.getAllScores();
+    }
 }

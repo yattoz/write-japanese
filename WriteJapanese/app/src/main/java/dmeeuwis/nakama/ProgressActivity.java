@@ -26,7 +26,6 @@ import java.util.Set;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.data.ProgressTracker.Progress;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.views.PurchaseDialog;
@@ -102,6 +101,8 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
                 });
 
         charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc, Iid.get(this.getApplication()));
+        charSet.load(this.getApplicationContext());
+        scores = charSet.getRecordSheet();
         characterList = charSet.charactersAsString();
 
         chars = characterList.toCharArray();
@@ -118,12 +119,6 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         Resources res = getResources();
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gridFontSizeDp , res.getDisplayMetrics()); // 12 * 2 = 24 padding
         characterGrid.setColumnWidth((int)px);
-
-        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(this, Iid.get(this.getApplication()));
-        String existing = cdb.getExistingProgress(callingPath);
-        ProgressTracker tracker = new ProgressTracker(characterList);
-        tracker.updateFromString(existing);
-        scores = tracker.getAllScores();
 
         int passedCount = 0, trainingCount = 0, failedCount = 0;
         for(Map.Entry<Character, Progress> s: scores.entrySet()){
