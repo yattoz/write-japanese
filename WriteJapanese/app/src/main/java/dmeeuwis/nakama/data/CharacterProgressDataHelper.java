@@ -111,6 +111,8 @@ public class CharacterProgressDataHelper {
     }
 
     public Map<Character, Integer> getRecordSheetForCharset(String charsetName){
+        long start = System.currentTimeMillis();
+
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         Map<Character, Integer> recordSheet = new HashMap<>();
         try {
@@ -132,6 +134,8 @@ public class CharacterProgressDataHelper {
         } finally {
             db.close();
         }
+
+        Log.i("nakama-progress", "Time to load record sheet: " + (System.currentTimeMillis() - start) + "ms");
         return recordSheet;
     }
 
