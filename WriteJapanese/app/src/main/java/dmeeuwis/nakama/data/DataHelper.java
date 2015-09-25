@@ -113,7 +113,11 @@ public class DataHelper {
     private static String[] asStringArray(Object[] params){
     	String[] sparams = new String[params.length];
     	for(int i = 0; i < params.length; i++){
-    		sparams[i] = params[i].toString();
+            if(params[i] == null){
+                sparams[i] = null;
+            } else {
+                sparams[i] = params[i].toString();
+            }
     	}
     	return sparams;
     }

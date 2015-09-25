@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 10;
+	private static final int DB_VERSION = 12;
 
 	public WriteJapaneseOpenHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -56,9 +56,16 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                 "install_id TEXT NOT NULL, " +
                 "character TEXT NOT NULL, " +
                 "charset TEXT NOT NULL, " +
-                "timestamp TEXT NOT NULL, " +
+                "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 "score TEXT NOT NULL" +
         ")");
+
+    }
+
+    private void addTimestampToStories(SQLiteDatabase sqlite){
+        Log.d("nakama-db", "Adding timestamp to stories table");
+        sqlite.execSQL("ALTER TABLE kanji_stories ADD COLUMN creation_time TIMESTAMP");
+        sqlite.execSQL("UPDATE kanji_stories SET creation_time = CURRENT_TIMESTAMP");
     }
 
 
@@ -70,8 +77,12 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
            createCharset(dbase);
         }
 
-        if(oldVersion <= 9){
+        if(oldVersion <= 11){
             createPracticeLog(dbase);
+        }
+
+        if(oldVersion <= 12){
+            addTimestampToStories(dbase);
         }
 	}
 }
