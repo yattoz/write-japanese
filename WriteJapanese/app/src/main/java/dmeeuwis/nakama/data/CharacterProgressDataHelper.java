@@ -1,18 +1,15 @@
 package dmeeuwis.nakama.data;
-import android.app.Activity;
+
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import dmeeuwis.nakama.primary.Iid;
 
 public class CharacterProgressDataHelper {
     private final Context context;
@@ -24,42 +21,17 @@ public class CharacterProgressDataHelper {
         this.iid = iid;
     }
     
-    public void recordProgress(String charSet, String progressString){
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
-        try {
-            String existing = getExistingProgress(charSet);
-            if (existing == null) {
-                Log.i("nakama", "INSERT INTO character_progress(charset, progress) VALUES(?, ?)" + " " + charSet + "; " + progressString);
-                db.getWritableDatabase().execSQL("INSERT INTO character_progress(charset, progress) VALUES(?, ?)",
-                        new String[]{charSet, progressString});
-            } else {
-                db.getWritableDatabase().execSQL("UPDATE character_progress SET progress = ? WHERE charset = ?",
-                        new String[]{progressString, charSet});
-            }
-        } finally {
-            db.close();
-        }
-    }
-
     public void clearProgress(String charSet){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
-            db.getWritableDatabase().execSQL("DELETE FROM character_progress WHERE charset = ?", new String[]{charSet});
+            // 0 to indicate reset progress? Am I being silly...?
+            db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)",
+                    new String[]{ UUID.randomUUID().toString(), iid.toString(), "R", charSet, "0" });
         } finally {
             db.close();
         }
     }
     
-    public String getExistingProgress(String charset){
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
-        try {
-            return DataHelper.selectStringOrNull(db.getReadableDatabase(), "SELECT progress FROM character_progress WHERE charset = ?", charset);
-        } finally {
-            db.close();
-        }
-    }
-
-
     public void recordPractice(String charset, String character, int score){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         Log.i("nakama-record", "Recording practice: " + charset + "; " + character + "; " + score);
@@ -118,18 +90,24 @@ public class CharacterProgressDataHelper {
         try {
             List<Map<String, String>> rec = DataHelper.selectRecords(db.getReadableDatabase(),
                     "SELECT character, score FROM practice_log WHERE charset = ?", charsetName);
-            Log.i("nakama", "-----> Found " + rec.size() + " practice logs to read");
+            Log.i("nakama-record", "-----> Found " + rec.size() + " practice logs to read");
             for(Map<String, String> r: rec) {
                 Character character = r.get("character").charAt(0);
                 Integer score = Integer.parseInt(r.get("score"));
 
-                Integer sheetScore = recordSheet.get(character);
-                if (sheetScore != null) {
-                    sheetScore += score;
+                Integer sheetScore;
+                if(character.toString().equals("R") && score.intValue() == 0){
+                    // indicates reset progress for all characters
+                    recordSheet.clear();
                 } else {
-                    sheetScore = score;
+                    sheetScore = recordSheet.get(character);
+                    if (sheetScore != null) {
+                        sheetScore = Math.max(0, Math.min(200, sheetScore + score));
+                    } else {
+                        sheetScore = score;
+                    }
+                    recordSheet.put(character, sheetScore);
                 }
-                recordSheet.put(character, sheetScore);
             }
         } finally {
             db.close();

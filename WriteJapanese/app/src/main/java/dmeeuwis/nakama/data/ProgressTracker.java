@@ -29,13 +29,6 @@ public class ProgressTracker {
 	
 	final private Map<Character, Integer> recordSheet;
 
-	public ProgressTracker(String characters){
-		this.recordSheet = new LinkedHashMap<>(characters.length());
-		for(int i = 0; i < characters.length(); i++){
-			this.recordSheet.put(characters.charAt(i), null);
-		}
-	}
-
 	public ProgressTracker(Collection<Character> characters){
 		this.recordSheet = new LinkedHashMap<>(characters.size());
 		for(Character c: characters){
