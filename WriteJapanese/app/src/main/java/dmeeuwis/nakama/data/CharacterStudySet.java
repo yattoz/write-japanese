@@ -172,7 +172,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 				this.tracker.markFailure(c);
 			}
             CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
-            cdb.recordPractice(pathPrefix, currentCharacter().toString(), pass ? 100 : 0);
+            cdb.recordPractice(pathPrefix, currentCharacter().toString(), pass ? 100 : -100);
 		} catch(Throwable t){
 			Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
 			throw new RuntimeException(t);

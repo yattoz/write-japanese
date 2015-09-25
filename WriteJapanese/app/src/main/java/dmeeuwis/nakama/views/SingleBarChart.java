@@ -147,7 +147,7 @@ public class SingleBarChart extends View {
 			}
 
 			startX += width;
-			Log.d("nakama", "Bar " + i + " is border " + entryBorderRects[i] + " with inner " + entryRects[i] + "; " + entries[i].percent + " % => width of bar: " + width);
+			//Log.d("nakama", "Bar " + i + " is border " + entryBorderRects[i] + " with inner " + entryRects[i] + "; " + entries[i].percent + " % => width of bar: " + width);
 		}
 	}
 	
@@ -156,9 +156,9 @@ public class SingleBarChart extends View {
 			if(entryBorderRects[i].left != entryBorderRects[i].right){
 				canvas.drawRect(entryBorderRects[i], entryBorderPaints[i]);
 				canvas.drawRect(entryRects[i], entryPaints[i]);
-				Log.i("nakama", "Rect " + i + " is " + entryRects[i]);
+				//Log.i("nakama", "Rect " + i + " is " + entryRects[i]);
 				if(entries[i].drawLabel){
-					Log.i("nakama", "Drawing bar label for " + entries[i].label + " at " + entries[i].drawLabelX + ", " + entries[i].drawLabelY);
+					//Log.i("nakama", "Drawing bar label for " + entries[i].label + " at " + entries[i].drawLabelX + ", " + entries[i].drawLabelY);
 					canvas.drawText(entries[i].label, entries[i].drawLabelX, entries[i].drawLabelY, textPaint);
 				}
 			}

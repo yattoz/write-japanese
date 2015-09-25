@@ -123,6 +123,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         int passedCount = 0, trainingCount = 0, failedCount = 0;
         for(Map.Entry<Character, Progress> s: scores.entrySet()){
             Progress r = s.getValue();
+            //Log.i("nakama-progress", "Progress entry: " + s.getKey() + " has progress " + s.getValue());
             if(r == Progress.PASSED){
                 passedCount++;
             } else if(r == Progress.REVIEWING){
