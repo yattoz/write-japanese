@@ -165,8 +165,6 @@ public class PracticeLogSync {
                 jr.endObject();
             }
             jr.endArray();
-            jr.endObject();
-
 
             jr.nextName();      // "kanji_stories" key
             jr.beginArray();
@@ -191,8 +189,6 @@ public class PracticeLogSync {
                 jr.endObject();
             }
             jr.endArray();
-            jr.endObject();
-
 
             jr.nextName();      // "charset_goals" key
             jr.beginArray();
