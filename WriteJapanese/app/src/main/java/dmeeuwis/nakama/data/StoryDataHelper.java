@@ -14,10 +14,10 @@ public class StoryDataHelper {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         try {
             if (existing == null) {
-                db.getWritableDatabase().execSQL("INSERT INTO kanji_stories(character, story, creation_time) VALUES(?, ?, CURRENT_TIMESTAMP)",
+                db.getWritableDatabase().execSQL("INSERT INTO kanji_stories(character, story, timestamp) VALUES(?, ?, CURRENT_TIMESTAMP)",
                         new String[]{Character.toString(character), story});
             } else {
-                db.getWritableDatabase().execSQL("UPDATE kanji_stories SET story = ? WHERE character = ?",
+                db.getWritableDatabase().execSQL("UPDATE kanji_stories SET story = ?, WHERE character = ?, timestamp = CURRENT_TIMESTAMP",
                         new String[]{story, String.valueOf(character)});
 
             }

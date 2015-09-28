@@ -93,25 +93,20 @@ public class PracticeLogSync {
         SQLiteDatabase sqlite = db.getReadableDatabase();
         try {
             jw.name("prev-sync-timestamp").value(lastSyncServerTimestamp);
-            Cursor c = sqlite.rawQuery("SELECT id, install_id, character, charset, timestamp, score " +
+
+            queryToJsonArray("practice_logs", sqlite,
+                    "SELECT id, install_id, character, charset, timestamp, score " +
                             "FROM practice_log WHERE timestamp > ? AND install_id = ?",
-                    new String[]{lastSyncDeviceTimestamp, iid});
-            try {
-                // stream over all rows since that time
-                jw.name("practice_logs");
-                jw.beginArray();
-                while (c.moveToNext()) {
-                    jw.beginObject();
-                    for (int i = 0; i < c.getColumnCount(); i++) {
-                        jw.name(c.getColumnName(i));
-                        jw.value(c.getString(i));
-                    }
-                    jw.endObject();
-                }
-            } finally {
-                c.close();
-            }
-            jw.endArray();
+                    new String[]{lastSyncDeviceTimestamp, iid}, jw);
+
+            queryToJsonArray("charset_goals", sqlite,
+                    "SELECT charset, timestamp, goal_start, goal FROM charset_goals WHERE timestamp > ?",
+                    new String[]{lastSyncDeviceTimestamp}, jw);
+
+            queryToJsonArray("kanji_stories", sqlite,
+                    "SELECT character, story, timestamp FROM kanji_stories WHERE timestamp > ?",
+                    new String[]{lastSyncDeviceTimestamp}, jw);
+
             jw.endObject();
             jw.close();
 
@@ -139,7 +134,11 @@ public class PracticeLogSync {
             Log.i("nakama-sync", "Saw JSON response object sync values: " + syncTimestampName + " = " + syncTimestampValue);
 
             SharedPreferences.Editor e = prefs.edit();
-            e.putString(DEVICE_SYNC_PREFS_KEY, DataHelper.selectString(sqlite, "SELECT MAX(timestamp) FROM practice_log"));
+            e.putString(DEVICE_SYNC_PREFS_KEY, DataHelper.selectString(sqlite,
+                    "SELECT MAX(timestamp) FROM " +
+                                "(SELECT MAX(timestamp) as timestamp FROM practice_log UNION " +
+                                 "SELECT MAX(timestamp) as timestamp FROM charset_goals UNION " +
+                                 "SELECT MAX(timestamp) as timestamp FROM kanji_stories)"));
             e.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
             e.apply();
             Log.i("nakama-sync", "Recording device-sync timestamp as " + prefs.getString(DEVICE_SYNC_PREFS_KEY, "MISSED!"));
@@ -174,15 +173,15 @@ public class PracticeLogSync {
                 while (jr.hasNext()) {
                     values.put(jr.nextName(), jr.nextString());
                 }
+                Log.i("nakama", "Inserting kanji_story from record: " + Util.join(values, "=>", ", "));
 
                 try {
-                    DataHelper.selectRecord(sqlite, "UPDATE OR IGNORE kanji_stories SET story=? WHERE character = ? AND  creation_time < ?) VALUES(?, ?, ?)",
-                            (Object[])(new String[]{ values.get("story"), values.get("character"), values.get("creation_time")}));
+                    DataHelper.selectRecord(sqlite, "UPDATE OR IGNORE kanji_stories SET story=? WHERE character = ? AND  timestamp < ?",
+                            (Object[])(new String[]{ values.get("story"), values.get("character"), values.get("device_timestamp")}));
 
-                    DataHelper.selectRecord(sqlite, "INSERT OR IGNORE INTO kanji_stories(character, story, creation_time) VALUES(?, ?, ?)",
-                            new String[]{values.get("character"), values.get("story"), values.get("creation_time") });
+                    DataHelper.selectRecord(sqlite, "INSERT OR IGNORE INTO kanji_stories(character, story, timestamp) VALUES(?, ?, ?)",
+                            new String[]{values.get("character"), values.get("story"), values.get("device_timestamp") });
 
-                    Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
                 } catch (SQLiteConstraintException t) {
                     Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
                 }
@@ -198,13 +197,14 @@ public class PracticeLogSync {
                 while (jr.hasNext()) {
                     values.put(jr.nextName(), jr.nextString());
                 }
+                Log.i("nakama", "Inserting charset goal from record: " + Util.join(values, "=>", ", "));
 
                 try {
-                    DataHelper.selectRecord(sqlite, "UPDATE OR IGNORE charset_goals SET goal=?, goal_start=? WHERE charset = ? AND timestamp < ?) VALUES(?, ?, ?, ?)",
-                        (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
+                    DataHelper.selectRecord(sqlite, "UPDATE OR IGNORE charset_goals SET goal=?, goal_start=? WHERE charset = ? AND timestamp < ?",
+                        (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("device_timestamp")}));
 
                     DataHelper.selectRecord(sqlite, "INSERT OR IGNORE INTO charset_goals(goal, goal_start, charset, timestamp) VALUES(?, ?, ?, ?)",
-                        (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
+                        (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("device_timestamp")}));
 
                     Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
                 } catch (SQLiteConstraintException t) {
@@ -226,5 +226,25 @@ public class PracticeLogSync {
             db.close();
             sqlite.close();
         }
+    }
+
+    private void queryToJsonArray(String name, SQLiteDatabase sqlite, String sql, String[] args, JsonWriter jw) throws IOException {
+        Cursor c = sqlite.rawQuery(sql, args);
+        try {
+            // stream over all rows since that time
+            jw.name(name);
+            jw.beginArray();
+            while (c.moveToNext()) {
+                jw.beginObject();
+                for (int i = 0; i < c.getColumnCount(); i++) {
+                    jw.name(c.getColumnName(i));
+                    jw.value(c.getString(i));
+                }
+                jw.endObject();
+            }
+        } finally {
+            c.close();
+        }
+        jw.endArray();
     }
 }

@@ -74,7 +74,7 @@ public class CharacterProgressDataHelper {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
             Map<String, String> rec = DataHelper.selectRecord(db.getReadableDatabase(),
-                    "SELECT goal_start, goal FROM charset_goals WHERE charset = ?", charset);
+                    "SELECT goal_start, goal FROM charset_goals WHERE charset = ? ORDER BY timestamp LIMIT 1", charset);
             if(rec == null) { return null; }
             return Pair.create(parseCalendarString(rec.get("goal_start")), parseCalendarString(rec.get("goal")));
         } finally {

@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 12;
+	private static final int DB_VERSION = 14;
 
 	public WriteJapaneseOpenHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -15,26 +15,18 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase dbase) {
-        createProgressTable(dbase);
         createStoryTables(dbase);
         createCharset(dbase);
         createPracticeLog(dbase);
+        addTimestampToStories(dbase);
 	}
 
-    private void createProgressTable(SQLiteDatabase dbase){
-        Log.d("nakama-db", "Creating character progress table.");
-        dbase.execSQL("CREATE TABLE character_progress ( " +
-                "charset TEXT NOT NULL PRIMARY KEY, " +
-                "progress TEXT NOT NULL" +
-                ")");
-
-    }
     private void createStoryTables(SQLiteDatabase dbase){
         Log.d("nakama-db", "Creating story table.");
         dbase.execSQL("CREATE TABLE kanji_stories ( " +
                 "character char NOT NULL PRIMARY KEY, " +
                 "story TEXT NOT NULL" +
-                ")");
+         ")");
     }
 
     private void createCharset(SQLiteDatabase sqlite){
@@ -59,13 +51,13 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                 "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 "score TEXT NOT NULL" +
         ")");
-
     }
 
     private void addTimestampToStories(SQLiteDatabase sqlite){
         Log.d("nakama-db", "Adding timestamp to stories table");
-        sqlite.execSQL("ALTER TABLE kanji_stories ADD COLUMN creation_time TIMESTAMP");
-        sqlite.execSQL("UPDATE kanji_stories SET creation_time = CURRENT_TIMESTAMP");
+        sqlite.execSQL("ALTER TABLE kanji_stories ADD COLUMN timestamp DATETIME");
+        sqlite.execSQL("UPDATE kanji_stories SET timestamp = CURRENT_TIMESTAMP");
+        // unfortunately, cannot add column with default CURRENT_TIMESTAMP due to sqlite limitation
     }
 
 
@@ -81,7 +73,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             createPracticeLog(dbase);
         }
 
-        if(oldVersion <= 12){
+        if(oldVersion <= 14){
             addTimestampToStories(dbase);
         }
 	}
