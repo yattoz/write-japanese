@@ -229,6 +229,7 @@ public class PracticeLogSync {
     }
 
     private void queryToJsonArray(String name, SQLiteDatabase sqlite, String sql, String[] args, JsonWriter jw) throws IOException {
+        Log.i("nakama-sync", sql + ": " + Util.join(", ", args));
         Cursor c = sqlite.rawQuery(sql, args);
         try {
             // stream over all rows since that time
