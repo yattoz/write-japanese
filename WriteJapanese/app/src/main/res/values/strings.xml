@@ -60,5 +60,6 @@
     <string name="edit_story_hint">Write a small story here, to help you remember this character</string>
     <string name="radicals_label">Radicals</string>
     <string name="shared_stories_label">Shared Stories</string>
+    <string name="menu_network_string_message">Force Network Sync</string>
 
 </resources>

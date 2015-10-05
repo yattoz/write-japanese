@@ -35,7 +35,7 @@ public class PracticeLogSync {
 
     final private static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
     final private static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
-    final private static String SYNC_URL = "http://192.168.1.99:8080/write-japanese/progress-sync";
+    final private static String SYNC_URL = "https://dmeeuwis.com/write-japanese/progress-sync";
 
     final Activity activity;
 

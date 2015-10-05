@@ -152,11 +152,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
 
     final private int REQUEST_CODE_PICK_ACCOUNT = 0x983443;
-    public void findAccount() {
+    public void findAccount(boolean force) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String auth = pref.getString(AUTHCODE_SHARED_PREF_KEY, null);
 
-        if(auth != null){
+        if(auth != null && !force){
             Log.i("nakama-sync", "Found existing authcode, already registered for server sync");
         } else {
             Log.i("nakama-sync", "No existing authcode, launch process to resiter server sync");
@@ -231,7 +231,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
         Log.i("nakama-auth", "Starting find account process");
-        findAccount();
+        findAccount(false);
 
         lockChecker = new LockChecker(this,
                 new Runnable() {
@@ -874,7 +874,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:ResetStorySharing");
             menu.add("DEBUG:Notify");
             menu.add("DEBUG:ClearAllNotify");
-            menu.add("DEBUG:Sync");
+            menu.add("DEBUG:Register");
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
         }
@@ -944,6 +944,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
+        } else if (item.getItemId() == R.id.menu_network_sync) {
+            new Thread(){
+                @Override
+                public void run() {
+                    try {
+                        new PracticeLogSync(KanjiMasterActivity.this).sync();
+                    } catch(IOException e){
+                        Log.e("nakama", "Caught sync exception", e);
+                    }
+                }
+            }.start();
         } else if (item.getItemId() == R.id.menu_set_goals) {
             String charset = currentCharacterSet.pathPrefix;
             Intent intent = new Intent(this, CharsetInfoActivity.class);
@@ -979,17 +990,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 new PracticeLogSync(KanjiMasterActivity.this).clearSync();
             } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
                 new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
-            } else if (item.getTitle().equals("DEBUG:Sync")) {
-                new Thread(){
-                    @Override
-                    public void run() {
-                        try {
-                            new PracticeLogSync(KanjiMasterActivity.this).sync();
-                        } catch(IOException e){
-                            Log.e("nakama", "Caught sync exception", e);
-                        }
-                    }
-                }.start();
+            } else if(item.getTitle().equals("DEBUG:Register")){
+                findAccount(true);
             }
         }
 

@@ -28,7 +28,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
     // service id
     final static String SCOPE = "audience:server:client_id:120575778353-iv0lut9pspdt19qluq5n14g9tq2k17ch.apps.googleusercontent.com";
 
-    final static String SEND_URL = "http://192.168.1.99:8080/write-japanese/network-sync-register";
+    final static String SEND_URL = "https://dmeeuwis.com/write-japanese/network-sync-register";
     public final int AUTH_REQUEST_ACTIVITY_CODE = 0x7832;
 
     public interface RunWithAuthcode {
