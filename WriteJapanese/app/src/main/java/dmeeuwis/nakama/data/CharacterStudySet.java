@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
@@ -290,13 +291,16 @@ public abstract class CharacterStudySet implements Iterable<Character> {
             this.studyGoal = goals.second;
         }
         Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.pathPrefix);
+        Map<Character, Integer> freshSheet = new LinkedHashMap<>();
         Log.i("nakama", "Loading progress as: " + existing);
         for(Character c: this.availableCharactersSet()){
-            if(!existing.containsKey(c)){
-                existing.put(c, null);
+            if(existing.containsKey(c)){
+                freshSheet.put(c, existing.get(c));
+            } else {
+                freshSheet.put(c, null);
             }
         }
-		tracker = new ProgressTracker(existing);
+		tracker = new ProgressTracker(freshSheet);
 	}
 
     public Map<Character, ProgressTracker.Progress> getRecordSheet(){

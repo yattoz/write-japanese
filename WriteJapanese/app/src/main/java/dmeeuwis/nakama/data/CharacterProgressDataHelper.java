@@ -67,7 +67,6 @@ public class CharacterProgressDataHelper {
         } finally {
             db.close();
         }
-
     }
 
     public Pair<GregorianCalendar, GregorianCalendar> getExistingGoals(String charset){
