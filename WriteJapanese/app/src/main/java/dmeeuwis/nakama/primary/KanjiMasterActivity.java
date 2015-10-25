@@ -6,10 +6,12 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.SyncRequest;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -101,6 +103,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public static final String CHAR_SET_CHAR = "currCharSetChar";
     public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
 
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 60L * 12;
+    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
+
     protected DictionarySet dictionarySet;
     protected LockChecker lockChecker;
 
@@ -150,7 +156,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-
     final private int REQUEST_CODE_PICK_ACCOUNT = 0x983443;
     public void findAccount(boolean force) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -164,8 +169,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             AccountManager accountManager = AccountManager.get(this);
             Account[] accounts = accountManager.getAccountsByType("com.google");
             if (accounts.length == 1) {
-                Log.i("nakama-auth", "Found only 1 com.google account: " + accounts[0].name);
-                accountFound(accounts[0].name);
+                Account a = accounts[0];
+                Log.i("nakama-auth", "Found only 1 com.google account: " + a.name);
+
+                accountFound(a);
             } else if (accounts.length > 1) {
                 Log.i("nakama-auth", "Found multiple google accounts: prompting user");
                 String[] accountTypes = new String[]{"com.google"};
@@ -187,7 +194,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             if (resultCode == RESULT_OK) {
                 String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 Log.i("nakama-auth", "Account selected was: " + mEmail);
-                accountFound(mEmail);
+
+                AccountManager accountManager = AccountManager.get(this);
+                Account[] accounts = accountManager.getAccountsByType("com.google");
+                for(Account a: accounts){
+                    if(a.name.equals(mEmail)){
+                        accountFound(a);
+                    }
+                }
+
             } else if (resultCode == RESULT_CANCELED) {
                 // The account picker dialog closed without selecting an account.
                 // Notify users that they must pick an account to proceed.
@@ -212,9 +227,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         ed.apply();
     }
 
-    public void accountFound(String accountName){
-        Log.i("nakama-auth", "Found account as: " + accountName);
-        GetAccountTokenAsync getter = new GetAccountTokenAsync(this, accountName,
+    public void accountFound(Account account){
+        Log.i("nakama-auth", "Found account as: " + account.name);
+        ContentResolver.addPeriodicSync(
+                account,
+                "dmeeuwis.com",
+                Bundle.EMPTY,
+                SYNC_INTERVAL);
+        GetAccountTokenAsync getter = new GetAccountTokenAsync(this, account.name,
             new GetAccountTokenAsync.RunWithAuthcode(){
                 @Override public void exec(String authcode) {
                     recordAuthToken(authcode);
@@ -402,7 +422,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         teachMeButton = (FloatingActionButton) findViewById(R.id.teachButton);
         teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
-        teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_learning));
+        teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_question_mark));
         teachMeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -490,7 +510,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             incorrectCard.setTranslationY(-1 * ANIMATE_OUT_HEIGHT);
         }
 
-        UUID iid = Iid.get(this.getApplication());
+        UUID iid = Iid.get(this.getApplicationContext());
         hiraganaCharacterSet = CharacterSets.hiragana(lockChecker, iid);
         katakanaCharacterSet = CharacterSets.katakana(lockChecker, iid);
         joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), lockChecker, iid);
@@ -877,6 +897,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:Register");
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
+            menu.add("DEBUG:SyncNow");
         }
         return true;
     }
@@ -992,6 +1013,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
             } else if(item.getTitle().equals("DEBUG:Register")){
                 findAccount(true);
+            } else if(item.getTitle().equals("DEBUG:SyncNow")){
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                ContentResolver.requestSync(null, "dmeeuwis.com", bundle);
             }
         }
 

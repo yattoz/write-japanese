@@ -1,6 +1,7 @@
 package dmeeuwis.nakama.primary;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -15,7 +16,7 @@ public class Iid {
      * Returns an install id, creating it and putting it into SharedPreferences if necessary.
      * Not thread-safe, call from ui thread.
      */
-    public static UUID get(Application app){
+    public static UUID get(Context app){
         if(cachedIid != null){
             return cachedIid;
         }

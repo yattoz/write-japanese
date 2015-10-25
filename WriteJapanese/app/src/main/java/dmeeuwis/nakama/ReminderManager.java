@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
@@ -43,9 +44,13 @@ public class ReminderManager extends BroadcastReceiver {
         Calendar calendar = GregorianCalendar.getInstance();
         Log.i("nakama", "Current time is: " + df.format(calendar.getTime()));
 
-        calendar.add(Calendar.HOUR, 24);
-        calendar.set(Calendar.HOUR_OF_DAY, 6);
-        calendar.set(Calendar.MINUTE, 00);
+        if(BuildConfig.DEBUG){
+            calendar.add(Calendar.MINUTE, 1);
+        } else {
+            calendar.add(Calendar.HOUR, 24);
+            calendar.set(Calendar.HOUR_OF_DAY, 6);
+            calendar.set(Calendar.MINUTE, 00);
+        }
 
         Log.i("nakama", "Setting study reminder for " + df.format(calendar.getTime()));
 

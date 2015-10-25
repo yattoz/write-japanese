@@ -28,7 +28,7 @@ public class CharsetInfoActivity extends ActionBarActivity implements CharacterS
 
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
         String charsetName = getIntent().getExtras().getString("charset");
-        charset = CharacterSets.fromName(charsetName, this.dictionarySet.kanjiFinder(), new LockChecker(this, null), Iid.get(this.getApplication()));
+        charset = CharacterSets.fromName(charsetName, this.dictionarySet.kanjiFinder(), new LockChecker(this, null), Iid.get(this.getApplicationContext()));
         charset.load(this.getApplicationContext());
 
         frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_fragment);

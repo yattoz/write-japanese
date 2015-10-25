@@ -100,7 +100,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
                     }
                 });
 
-        charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc, Iid.get(this.getApplication()));
+        charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc, Iid.get(this.getApplicationContext()));
         charSet.load(this.getApplicationContext());
         scores = charSet.getRecordSheet();
         characterList = charSet.charactersAsString();

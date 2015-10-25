@@ -1,6 +1,7 @@
 package dmeeuwis.nakama.data;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
@@ -37,15 +38,15 @@ public class PracticeLogSync {
     final private static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
     final private static String SYNC_URL = "https://dmeeuwis.com/write-japanese/progress-sync";
 
-    final Activity activity;
+    final Context context;
 
-    public PracticeLogSync(Activity activity) {
-        this.activity = activity;
+    public PracticeLogSync(Context c) {
+        this.context = c;
     }
 
 
     public void debugPrintLog(){
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.activity.getApplicationContext());
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase sqlite = db.getReadableDatabase();
 
         List<Map<String, String>> all = DataHelper.selectRecords(sqlite, "SELECT * FROM practice_log");
@@ -56,7 +57,7 @@ public class PracticeLogSync {
     }
 
     public void clearSync(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor e = prefs.edit();
         e.putString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
         e.putString(DEVICE_SYNC_PREFS_KEY, "0");
@@ -65,14 +66,14 @@ public class PracticeLogSync {
 
     public void sync() throws IOException {
         URL syncUrl;
-        String iid = Iid.get(activity.getApplication()).toString();
+        String iid = Iid.get(context).toString();
         try {
             syncUrl = new URL(SYNC_URL);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String lastSyncServerTimestamp = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
         String lastSyncDeviceTimestamp = prefs.getString(DEVICE_SYNC_PREFS_KEY, "0");
         Log.i("nakama-sync", "Doing sync with last-server-sync: " + lastSyncServerTimestamp + "; last device sync: " + lastSyncDeviceTimestamp);
@@ -89,7 +90,7 @@ public class PracticeLogSync {
         jw.beginObject();
         jw.name("install_id").value(iid);
 
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.activity.getApplicationContext());
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase sqlite = db.getReadableDatabase();
         try {
             jw.name("prev-sync-timestamp").value(lastSyncServerTimestamp);
