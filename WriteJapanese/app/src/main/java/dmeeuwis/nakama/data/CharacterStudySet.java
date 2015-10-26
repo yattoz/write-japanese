@@ -293,7 +293,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.pathPrefix);
         Map<Character, Integer> freshSheet = new LinkedHashMap<>();
         Log.i("nakama", "Loading progress as: " + existing);
-        for(Character c: this.availableCharactersSet()){
+        for(Character c: this.allCharactersSet){
             if(existing.containsKey(c)){
                 freshSheet.put(c, existing.get(c));
             } else {
