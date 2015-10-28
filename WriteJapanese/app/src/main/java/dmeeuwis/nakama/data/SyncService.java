@@ -3,6 +3,7 @@ package dmeeuwis.nakama.data;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 /**
  * Define a Service that returns an IBinder for the
@@ -20,6 +21,7 @@ public class SyncService extends Service {
      */
     @Override
     public void onCreate() {
+        Log.i("nakama-sync", "SyncService: onCreate!");
         /*
          * Create the sync adapter as a singleton.
          * Set the sync adapter as syncable
@@ -44,6 +46,7 @@ public class SyncService extends Service {
          * in the base class code when the SyncAdapter
          * constructors call super()
          */
+        Log.i("nakama-sync", "SyncService: onBind!");
         return sSyncAdapter.getSyncAdapterBinder();
     }
 }

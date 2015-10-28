@@ -17,6 +17,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
         this.context = context;
+        Log.i("nakama-sync", "SyncAdapter constructor 1!");
     }
 
     /**
@@ -27,11 +28,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public SyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
         super(context, autoInitialize, allowParallelSyncs);
         this.context = context;
+        Log.i("nakama-sync", "SyncAdapter constructor 2!");
     }
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.i("nakama", "onPerformSync!");
+        Log.i("nakama-sync", "onPerformSync!");
         try {
             PracticeLogSync sync = new PracticeLogSync(context);
             sync.sync();

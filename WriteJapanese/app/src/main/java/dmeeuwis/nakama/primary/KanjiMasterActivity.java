@@ -9,8 +9,10 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.PeriodicSync;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.SyncInfo;
 import android.content.SyncRequest;
 import android.content.res.AssetManager;
 import android.graphics.Color;
@@ -98,6 +100,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
 
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
+
+    public final boolean DEBUG_SYNC = false;
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
@@ -227,13 +231,38 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         ed.apply();
     }
 
+    public void scheduleSyncs(Account account){
+        final String authority = "dmeeuwis.com";
+        ContentResolver.setIsSyncable(account, authority, 1);
+        ContentResolver.setSyncAutomatically(account, authority, true);
+        if(BuildConfig.DEBUG && DEBUG_SYNC){
+            Log.i("nakama-sync", "Scheduling 60 second DEBUG sync for account " + account.name + "!");
+            ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, 60);
+        } else {
+            Log.i("nakama-sync", "Scheduling bi-daily sync for account " + account.name + "!");
+            ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, SYNC_INTERVAL);
+        }
+
+        {
+            List<SyncInfo> syncs = ContentResolver.getCurrentSyncs();
+            Log.i("nakama-sync", "Found " + syncs.size() + " syncs!");
+            for (SyncInfo s : syncs) {
+                Log.i("nakama-sync", "Looking at SyncInfo: " + s);
+            }
+        }
+
+        {
+            List<PeriodicSync> psyncs = ContentResolver.getPeriodicSyncs(account, "dmeeuwis.com");
+            Log.i("nakama-sync", "Found " + psyncs.size() + " syncs!");
+            for (PeriodicSync s : psyncs) {
+                Log.i("nakama-sync", "Looking at SyncInfo: " + s);
+            }
+        }
+    }
+
     public void accountFound(Account account){
         Log.i("nakama-auth", "Found account as: " + account.name);
-        ContentResolver.addPeriodicSync(
-                account,
-                "dmeeuwis.com",
-                Bundle.EMPTY,
-                SYNC_INTERVAL);
+        scheduleSyncs(account);
         GetAccountTokenAsync getter = new GetAccountTokenAsync(this, account.name,
             new GetAccountTokenAsync.RunWithAuthcode(){
                 @Override public void exec(String authcode) {

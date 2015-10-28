@@ -26,6 +26,7 @@ import dmeeuwis.nakama.primary.KanjiMasterActivity;
 public class ReminderManager extends BroadcastReceiver {
 
     private static final String INTENT_CHARSET = "charset";
+    private static final boolean DEBUG_REMINDERS = false;
 
     private static Intent makeIntent(Context c, CharacterStudySet charset){
         Intent intent = new Intent(c, ReminderManager.class);
@@ -42,7 +43,7 @@ public class ReminderManager extends BroadcastReceiver {
         Calendar calendar = GregorianCalendar.getInstance();
         Log.i("nakama", "Current time is: " + df.format(calendar.getTime()));
 
-        if(BuildConfig.DEBUG){
+        if(BuildConfig.DEBUG && DEBUG_REMINDERS){
             calendar.add(Calendar.MINUTE, 1);
         } else {
             calendar.add(Calendar.HOUR, 24);
