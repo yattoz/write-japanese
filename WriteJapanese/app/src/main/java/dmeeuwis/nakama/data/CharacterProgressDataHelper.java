@@ -119,6 +119,11 @@ public class CharacterProgressDataHelper {
     private static GregorianCalendar parseCalendarString(String in){
         if(in == null) { return null; }
         String[] parts = in.split("-");
-        return new GregorianCalendar(Integer.valueOf(parts[0]), Integer.valueOf(parts[1])-1, Integer.valueOf(parts[2]));
+        try {
+            return new GregorianCalendar(Integer.valueOf(parts[0]), Integer.valueOf(parts[1]) - 1, Integer.valueOf(parts[2]));
+        } catch(NumberFormatException e){
+            Log.d("nakama", "ERROR: caught parse error on parseCalendarString, input: " + in, e);
+            return null;
+        }
     }
 }

@@ -36,7 +36,7 @@ public class CharacterSets  {
 	
 	
 	public static CharacterStudySet hiragana(LockChecker lockChecker, UUID iid){
-    	return new CharacterStudySet("Hiragana", HIRAGANA_DESC, "hiragana", CharacterStudySet.LockLevel.UNLOCKED, Kana.commonHiragana(), "", lockChecker, iid){
+    	return new CharacterStudySet("Hiragana", "Hiragana", HIRAGANA_DESC, "hiragana", CharacterStudySet.LockLevel.UNLOCKED, Kana.commonHiragana(), "", lockChecker, iid){
 			@Override public String label(){
    		 		return "hiragana";
 	   		}
@@ -49,7 +49,7 @@ public class CharacterSets  {
 
 	public static CharacterStudySet katakana(LockChecker lockChecker, UUID iid){
 		return 
-		 new CharacterStudySet("Katakana", KATAKANA_DESC, "katakana", CharacterStudySet.LockLevel.LOCKED, Kana.commonKatakana(), "アイネホキタロマザピド", lockChecker, iid){
+		 new CharacterStudySet("Katakana", "Katakana", KATAKANA_DESC, "katakana", CharacterStudySet.LockLevel.LOCKED, Kana.commonKatakana(), "アイネホキタロマザピド", lockChecker, iid){
 				@Override public String label(){
 					return "katakana";
 				}
@@ -60,18 +60,18 @@ public class CharacterSets  {
 			};
 	}
 
-	public static CharacterStudySet joyouG1(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 1", G1_DESCRIPTION, "j1", Kanji.JOUYOU_G1, "", kf, CharacterStudySet.LockLevel.UNLOCKED, lc, iid); };
-	public static CharacterStudySet joyouG2(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 2", G2_DESCRIPTION, "j2", Kanji.JOUYOU_G2, "内友行光図店星食記親", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
-	public static CharacterStudySet joyouG3(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 3", G3_DESCRIPTION, "j3", Kanji.JOUYOU_G3, "申両世事泳指暗湯昭様", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
-	public static CharacterStudySet joyouG4(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 4", G4_DESCRIPTION, "j4", Kanji.JOUYOU_G4, "令徒貨例害覚停副議給", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
-	public static CharacterStudySet joyouG5(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 5", G5_DESCRIPTION, "j5", Kanji.JOUYOU_G5, "犯寄舎財税統像境飼謝", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
-	public static CharacterStudySet joyouG6(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 6", G6_DESCRIPTION, "j6", Kanji.JOUYOU_G6, "至捨推針割疑層模訳欲", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
+	public static CharacterStudySet joyouG1(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 1", "Kanji J1", G1_DESCRIPTION, "j1", Kanji.JOUYOU_G1, "", kf, CharacterStudySet.LockLevel.UNLOCKED, lc, iid); };
+	public static CharacterStudySet joyouG2(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 2", "Kanji J2", G2_DESCRIPTION, "j2", Kanji.JOUYOU_G2, "内友行光図店星食記親", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
+	public static CharacterStudySet joyouG3(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 3", "Kanji J3", G3_DESCRIPTION, "j3", Kanji.JOUYOU_G3, "申両世事泳指暗湯昭様", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
+	public static CharacterStudySet joyouG4(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 4", "Kanji J4", G4_DESCRIPTION, "j4", Kanji.JOUYOU_G4, "令徒貨例害覚停副議給", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
+	public static CharacterStudySet joyouG5(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 5", "Kanji J5", G5_DESCRIPTION, "j5", Kanji.JOUYOU_G5, "犯寄舎財税統像境飼謝", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
+	public static CharacterStudySet joyouG6(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 6", "Kanji J6", G6_DESCRIPTION, "j6", Kanji.JOUYOU_G6, "至捨推針割疑層模訳欲", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
 
 	private static class KanjiCharacterStudySet extends CharacterStudySet {
 		private final KanjiFinder kanjiFinder;
 		
-		public KanjiCharacterStudySet(String name, String desc, String path, String data, String freeData, KanjiFinder kanjiFinder, LockLevel locked, LockChecker lockChecker, UUID iid) {
-			super(name, desc, path, locked, data, freeData, lockChecker, iid);
+		public KanjiCharacterStudySet(String name, String shortName, String desc, String path, String data, String freeData, KanjiFinder kanjiFinder, LockLevel locked, LockChecker lockChecker, UUID iid) {
+			super(name, shortName, desc, path, locked, data, freeData, lockChecker, iid);
 			this.kanjiFinder = kanjiFinder;
 		}
 		

@@ -28,18 +28,16 @@ public class ReminderManager extends BroadcastReceiver {
     private static final String INTENT_CHARSET = "charset";
 
     private static Intent makeIntent(Context c, CharacterStudySet charset){
-        int id = charset.name.hashCode();
         Intent intent = new Intent(c, ReminderManager.class);
         intent.putExtra("charset", charset.pathPrefix);
         return intent;
     }
 
     private static int makePendingId(CharacterStudySet charset) {
-        return charset.name.hashCode();
+        return charset.pathPrefix.hashCode();
     }
 
     public static void scheduleRemindersFor(Context c, CharacterStudySet charset) {
-
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Calendar calendar = GregorianCalendar.getInstance();
         Log.i("nakama", "Current time is: " + df.format(calendar.getTime()));
@@ -49,17 +47,16 @@ public class ReminderManager extends BroadcastReceiver {
         } else {
             calendar.add(Calendar.HOUR, 24);
             calendar.set(Calendar.HOUR_OF_DAY, 6);
-            calendar.set(Calendar.MINUTE, 00);
+            calendar.set(Calendar.MINUTE, 0);
         }
 
-        Log.i("nakama", "Setting study reminder for " + df.format(calendar.getTime()));
-
+        Log.i("nakama", "Setting study reminder for charset " + charset + ": " + df.format(calendar.getTime()));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(c, makePendingId(charset),
                     makeIntent(c, charset), PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        Log.i("nakama", "ReminderManager: scheduled a notification!");
+        Log.i("nakama", "ReminderManager: scheduled a notification for " + calendar.getTimeInMillis() + "!");
     }
 
     public static void clearAllReminders(Activity c){
@@ -80,9 +77,11 @@ public class ReminderManager extends BroadcastReceiver {
 
     public static void clearReminders(Context c, CharacterStudySet charset){
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
-        int id = charset.name.hashCode();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, makeIntent(c, charset), PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.cancel(pendingIntent);
+        {
+            int id = charset.pathPrefix.hashCode();
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, makeIntent(c, charset), PendingIntent.FLAG_UPDATE_CURRENT);
+            alarmManager.cancel(pendingIntent);
+        }
         Log.i("nakama", "ReminderManager: cleared notification for " + charset.pathPrefix);
     }
 
@@ -90,16 +89,21 @@ public class ReminderManager extends BroadcastReceiver {
         Log.i("nakama", "ReminderManager.onReceive: wakeup!");
         String charset = intent.getStringExtra(INTENT_CHARSET);
 
-        //TODO: Is this evil?
-        UUID iid = Iid.get(((Activity)context).getApplication());
+        UUID iid = Iid.get(context.getApplicationContext());
+        Log.i("nakama-remind", "Found iid in reminder notification task as: " + iid);
         CharacterStudySet set = CharacterSets.fromName(charset, null, null, iid);
         set.load(context);
         CharacterStudySet.GoalProgress gp = set.getGoalProgress();
         int charCount = gp.neededPerDay;
 
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        int id = set.pathPrefix.hashCode();
+
+        // clear any existing notification that user didn't click
+        notificationManager.cancel(id);
+
+        // add new notification
         Notification n = getNotification(context, "Study Reminder", "Try for " + charCount + " " + set.name + " characters today!");
-        int id = (int) System.currentTimeMillis();
         notificationManager.notify(id, n);
 
         // schedule tomorrow's reminder
@@ -114,6 +118,7 @@ public class ReminderManager extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentTitle(title);
         builder.setContentText(message);
+        builder.setAutoCancel(true);
         builder.setSmallIcon(R.drawable.ic_launcher);
         Intent intent = new Intent(context, KanjiMasterActivity.class);
         PendingIntent pi = PendingIntent.getActivity(context, PendingIntent.FLAG_ONE_SHOT, intent, 0);
