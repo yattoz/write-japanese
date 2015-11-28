@@ -1,7 +1,5 @@
 package dmeeuwis.nakama.primary;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -9,18 +7,17 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.PeriodicSync;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.SyncInfo;
-import android.content.SyncRequest;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
@@ -48,9 +45,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.Scopes;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -58,6 +52,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
@@ -76,9 +71,9 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.data.GetAccountTokenAsync;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
+import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.DrawingComparator;
@@ -96,12 +91,14 @@ import dmeeuwis.nakama.views.SetInfoDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
-public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener, OnGoalPickListener {
+public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
+            LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener, OnGoalPickListener,
+        ActivityCompat.OnRequestPermissionsResultCallback {
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
 
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
-    public final boolean DEBUG_SYNC = false;
+    public static final boolean DEBUG_SYNC = false;
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
@@ -160,58 +157,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    final private int REQUEST_CODE_PICK_ACCOUNT = 0x983443;
-    public void findAccount(boolean force) {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String auth = pref.getString(AUTHCODE_SHARED_PREF_KEY, null);
-
-        if(auth != null && !force){
-            Log.i("nakama-sync", "Found existing authcode, already registered for server sync");
-        } else {
-            Log.i("nakama-sync", "No existing authcode, launch process to resiter server sync");
-
-            AccountManager accountManager = AccountManager.get(this);
-            Account[] accounts = accountManager.getAccountsByType("com.google");
-            if (accounts.length == 1) {
-                Account a = accounts[0];
-                Log.i("nakama-auth", "Found only 1 com.google account: " + a.name);
-
-                accountFound(a);
-            } else if (accounts.length > 1) {
-                Log.i("nakama-auth", "Found multiple google accounts: prompting user");
-                String[] accountTypes = new String[]{"com.google"};
-                Intent intent = AccountManager.newChooseAccountIntent(null, null,
-                        accountTypes, false, null, null, null, null);
-                startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
-                // show account picker
-            }
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("nakama", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
 
-        if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
-            Log.i("nakama-auth", "Got activity result for request account pick!");
-            // Receiving a result from the AccountPicker
-            if (resultCode == RESULT_OK) {
-                String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                Log.i("nakama-auth", "Account selected was: " + mEmail);
-
-                AccountManager accountManager = AccountManager.get(this);
-                Account[] accounts = accountManager.getAccountsByType("com.google");
-                for(Account a: accounts){
-                    if(a.name.equals(mEmail)){
-                        accountFound(a);
-                    }
-                }
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The account picker dialog closed without selecting an account.
-                // Notify users that they must pick an account to proceed.
-                Toast.makeText(this, "You must choose a Google account to enable network sync", Toast.LENGTH_SHORT).show();
-            }
+        if(requestCode == SyncRegistration.REQUEST_CODE_PICK_ACCOUNT) {
+            SyncRegistration.onAccountSelection(this, requestCode, resultCode, data);
             return;
         }
 
@@ -223,53 +174,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    protected void recordAuthToken(String authcode){
-        Log.i("nakama-auth", "Recording authcode to shared prefs: " + authcode);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        Editor ed = prefs.edit();
-        ed.putString(AUTHCODE_SHARED_PREF_KEY, authcode);
-        ed.apply();
-    }
-
-    public void scheduleSyncs(Account account){
-        final String authority = "dmeeuwis.com";
-        ContentResolver.setIsSyncable(account, authority, 1);
-        ContentResolver.setSyncAutomatically(account, authority, true);
-        if(BuildConfig.DEBUG && DEBUG_SYNC){
-            Log.i("nakama-sync", "Scheduling 60 second DEBUG sync for account " + account.name + "!");
-            ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, 60);
-        } else {
-            Log.i("nakama-sync", "Scheduling bi-daily sync for account " + account.name + "!");
-            ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, SYNC_INTERVAL);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        Log.i("nakama-sync", "onRequestPermissionResult returned! Permissions: " + Util.join(", ", permissions) + "; " + Util.join(", ", grantResults));
+        if(requestCode == SyncRegistration.MY_PERMISSIONS_REQUEST_ACCOUNT_MANAGER){
+            SyncRegistration.continueRegisterAfterPermission(this, grantResults[0]);
         }
-
-        {
-            List<SyncInfo> syncs = ContentResolver.getCurrentSyncs();
-            Log.i("nakama-sync", "Found " + syncs.size() + " syncs!");
-            for (SyncInfo s : syncs) {
-                Log.i("nakama-sync", "Looking at SyncInfo: " + s);
-            }
-        }
-
-        {
-            List<PeriodicSync> psyncs = ContentResolver.getPeriodicSyncs(account, "dmeeuwis.com");
-            Log.i("nakama-sync", "Found " + psyncs.size() + " syncs!");
-            for (PeriodicSync s : psyncs) {
-                Log.i("nakama-sync", "Looking at SyncInfo: " + s);
-            }
-        }
-    }
-
-    public void accountFound(Account account){
-        Log.i("nakama-auth", "Found account as: " + account.name);
-        scheduleSyncs(account);
-        GetAccountTokenAsync getter = new GetAccountTokenAsync(this, account.name,
-            new GetAccountTokenAsync.RunWithAuthcode(){
-                @Override public void exec(String authcode) {
-                    recordAuthToken(authcode);
-                }
-            });
-        getter.execute();
     }
 
     @Override
@@ -279,8 +189,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
-        Log.i("nakama-auth", "Starting find account process");
-        findAccount(false);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            Log.i("nakama-auth", "Starting find account process");
+            SyncRegistration.registerAccount(null, this, false);
+        }
 
         lockChecker = new LockChecker(this,
                 new Runnable() {
@@ -999,9 +911,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 @Override
                 public void run() {
                     try {
-                        new PracticeLogSync(KanjiMasterActivity.this).sync();
-                    } catch(IOException e){
-                        Log.e("nakama", "Caught sync exception", e);
+                        if(SyncRegistration.checkIsRegistered(KanjiMasterActivity.this)){
+                                new PracticeLogSync(KanjiMasterActivity.this).sync();
+                        } else {
+                           SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, KanjiMasterActivity.this, false);
+                        }
+                    } catch (IOException e) {
+                        Log.e("nakama-sync", "Error on menu-option network sync: " + e.getMessage(), e);
+                        Toast.makeText(KanjiMasterActivity.this, "Error while attempting network sync. Please retry later.", Toast.LENGTH_LONG).show();
                     }
                 }
             }.start();
@@ -1041,7 +958,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
                 new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
             } else if(item.getTitle().equals("DEBUG:Register")){
-                findAccount(true);
+                SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, this, true);
             } else if(item.getTitle().equals("DEBUG:SyncNow")){
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
