@@ -37,21 +37,6 @@
             android:padding="16dp"
             />
 
-        <Space
-            android:layout_width="1dp"
-            android:layout_height="10dp"
-            />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/LightGrey"/>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            />
-
         <TextView
             android:id="@+id/charset_progress_text"
             android:layout_width="wrap_content"

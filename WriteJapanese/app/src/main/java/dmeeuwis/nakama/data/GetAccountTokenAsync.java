@@ -80,14 +80,10 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
                 out.close();
             }
 
-            try {
-                Log.i("nakama", "Registering authcode, saw response: " + urlConnection.getResponseCode());
-                if (urlConnection.getResponseCode() != 200) {
-                    // didn't register, don't record on device
-                    return null;
-                }
-            } catch (Throwable t) {
-                Log.e("nakama", "Error registering for data sync", t);
+            Log.i("nakama", "Registering authcode, saw response: " + urlConnection.getResponseCode());
+            if (urlConnection.getResponseCode() != 200) {
+                // didn't register, don't record on device
+                return null;
             }
 
             return token;

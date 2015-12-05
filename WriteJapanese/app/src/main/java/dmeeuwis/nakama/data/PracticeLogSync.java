@@ -64,6 +64,11 @@ public class PracticeLogSync {
         e.apply();
     }
 
+
+    public void debugClearRegister(){
+
+    }
+
     public void sync() throws IOException {
         URL syncUrl;
         String iid = Iid.get(context).toString();
@@ -93,7 +98,7 @@ public class PracticeLogSync {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase sqlite = db.getReadableDatabase();
         try {
-            jw.name("prev-sync-timestamp").value(lastSyncServerTimestamp);
+            jw.name("prev_sync_timestamp").value(lastSyncServerTimestamp);
 
             queryToJsonArray("practice_logs", sqlite,
                     "SELECT id, install_id, character, charset, timestamp, score " +
@@ -174,8 +179,8 @@ public class PracticeLogSync {
                 while (jr.hasNext()) {
                     values.put(jr.nextName(), jr.nextString());
                 }
+/*
                 Log.i("nakama", "Inserting kanji_story from record: " + Util.join(values, "=>", ", "));
-
                 try {
                     DataHelper.selectRecord(sqlite, "UPDATE OR IGNORE kanji_stories SET story=? WHERE character = ? AND  timestamp < ?",
                             (Object[])(new String[]{ values.get("story"), values.get("character"), values.get("device_timestamp")}));
@@ -186,6 +191,7 @@ public class PracticeLogSync {
                 } catch (SQLiteConstraintException t) {
                     Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
                 }
+*/
                 jr.endObject();
             }
             jr.endArray();

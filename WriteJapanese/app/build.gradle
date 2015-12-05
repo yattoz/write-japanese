@@ -5,7 +5,7 @@ android {
         production {
             keyAlias 'writekanji'
             keyPassword '***REMOVED***'
-            storeFile file('/Users/dmeeuwis/Projects/nakama/keystore/keystore')
+            storeFile file('/home/dmeeuwis/nakama/keystore/keystore')
             storePassword '***REMOVED***'
         }
     }

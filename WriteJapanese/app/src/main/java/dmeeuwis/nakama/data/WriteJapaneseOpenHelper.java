@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 14;
+	private static final int DB_VERSION = 16;
 
 	public WriteJapaneseOpenHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -73,7 +73,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             createPracticeLog(dbase);
         }
 
-        if(oldVersion <= 14){
+        if(oldVersion <= 13){
             addTimestampToStories(dbase);
         }
 	}

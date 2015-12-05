@@ -71,6 +71,7 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.data.GetAccountTokenAsync;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
@@ -189,10 +190,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
 
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            Log.i("nakama-auth", "Starting find account process");
-            SyncRegistration.registerAccount(null, this, false);
-        }
+        SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.PROMPTED, this, false);
 
         lockChecker = new LockChecker(this,
                 new Runnable() {
@@ -836,6 +834,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:Notify");
             menu.add("DEBUG:ClearAllNotify");
             menu.add("DEBUG:Register");
+            menu.add("DEBUG:ClearAuthcode");
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
             menu.add("DEBUG:SyncNow");
@@ -907,21 +906,21 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
         } else if (item.getItemId() == R.id.menu_network_sync) {
-            new Thread(){
-                @Override
-                public void run() {
-                    try {
-                        if(SyncRegistration.checkIsRegistered(KanjiMasterActivity.this)){
-                                new PracticeLogSync(KanjiMasterActivity.this).sync();
-                        } else {
-                           SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, KanjiMasterActivity.this, false);
+            if(!SyncRegistration.checkIsRegistered(KanjiMasterActivity.this)) {
+                SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, KanjiMasterActivity.this, true);
+            } else {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            new PracticeLogSync(KanjiMasterActivity.this).sync();
+                        } catch (IOException e) {
+                            Log.e("nakama-sync", "Error on menu-option network sync: " + e.getMessage(), e);
+                            Toast.makeText(KanjiMasterActivity.this, "Error while attempting network sync. Please retry later.", Toast.LENGTH_LONG).show();
                         }
-                    } catch (IOException e) {
-                        Log.e("nakama-sync", "Error on menu-option network sync: " + e.getMessage(), e);
-                        Toast.makeText(KanjiMasterActivity.this, "Error while attempting network sync. Please retry later.", Toast.LENGTH_LONG).show();
                     }
-                }
-            }.start();
+                }.start();
+            }
         } else if (item.getItemId() == R.id.menu_set_goals) {
             String charset = currentCharacterSet.pathPrefix;
             Intent intent = new Intent(this, CharsetInfoActivity.class);
@@ -955,6 +954,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 ReminderManager.clearAllReminders(this);
             } else if (item.getTitle().equals("DEBUG:ClearSync")) {
                 new PracticeLogSync(KanjiMasterActivity.this).clearSync();
+            } else if (item.getTitle().equals("DEBUG:ClearAuthcode")) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                Editor e = prefs.edit();
+                e.remove(AUTHCODE_SHARED_PREF_KEY);
+                e.apply();
             } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
                 new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
             } else if(item.getTitle().equals("DEBUG:Register")){

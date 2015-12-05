@@ -28,10 +28,11 @@ import dmeeuwis.nakama.primary.KanjiMasterActivity;
 public class SyncRegistration {
     public static final int REQUEST_CODE_PICK_ACCOUNT = 0x8473;
     public static final int MY_PERMISSIONS_REQUEST_ACCOUNT_MANAGER = 123;
+    public static final String HAVE_ASKED_ABOUT_SYNC_KEY = "ASKED_SYNC";
 
     public enum RegisterRequest {
         REQUESTED("In order to sync your study progress between multiple devices, access to the Account Manager will now be requested. This will share your progress between all devices authenticated with your Google account."),
-        PROMPTED("Do you want to enable network sync? This will let your progress be shared between all of your current and future Android devices. Access to the Account Manager will be requested, so your progress can be shared between all devices authenticated with your Google account.");
+        PROMPTED("Do you want to sync your progress among all your Android devices? Access to the Account Manager will be requested, so your progress can be shared between all devices authenticated with your Google account.");
 
         final String message;
         RegisterRequest(String message) {
@@ -58,14 +59,16 @@ public class SyncRegistration {
                 findAccount(activity);
 
             } else {
-                int permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCOUNT_MANAGER);
+                int permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.GET_ACCOUNTS);
                 if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                     Log.i("nakama-sync", "Found permission already granted for ACCOUNT_MANAGER");
                     findAccount(activity);
                 } else {
-                    Log.i("nakama-sync", "Requesting permission ACCOUNT_MANAGER");
+                    boolean haveAsked = pref.getBoolean(HAVE_ASKED_ABOUT_SYNC_KEY, false);
+                    boolean haveRefusedPermission = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.GET_ACCOUNTS);
 
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCOUNT_MANAGER)) {
+                    if (force || (!haveAsked && !haveRefusedPermission)){
+                        // shouldShowRequestPermissionRationale returns false on first run!
                         Log.i("nakama-sync", "shouldShowRequest returns true, prompting before requesting permission");
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -74,23 +77,23 @@ public class SyncRegistration {
                         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(activity.getApplicationContext(), "Network sync cancelled. You may enable it at any time from the settings menu.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(activity.getApplicationContext(), "Inter-device sync is not enabled. You may enable it at any time from the menu.", Toast.LENGTH_LONG).show();
                             }
                         });
                         builder.setPositiveButton("Enable", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ActivityCompat.requestPermissions(activity,
-                                        new String[]{Manifest.permission.ACCOUNT_MANAGER},
+                                        new String[]{Manifest.permission.GET_ACCOUNTS},
                                         MY_PERMISSIONS_REQUEST_ACCOUNT_MANAGER);
                             }
                         });
-
+                        builder.create().show();
+                        SharedPreferences.Editor e = pref.edit();
+                        e.putBoolean(HAVE_ASKED_ABOUT_SYNC_KEY, true);
+                        e.apply();
                     } else {
-                        Log.i("nakama-sync", "shouldShowRequest returns false, directly requesting permission ACCOUNT_MANAGER");
-                        ActivityCompat.requestPermissions(activity,
-                                new String[]{Manifest.permission.ACCOUNT_MANAGER},
-                                MY_PERMISSIONS_REQUEST_ACCOUNT_MANAGER);
+                        Log.i("nakama", "Skipping automatted registration attempt, user has not opted in.");
                     }
                 }
             }
@@ -98,10 +101,10 @@ public class SyncRegistration {
     }
 
     public static void continueRegisterAfterPermission(Activity activity, int resultCode) {
-        if(resultCode == Activity.RESULT_OK) {
+        if(resultCode == PackageManager.PERMISSION_GRANTED){
             findAccount(activity);
         } else {
-            Toast.makeText(activity, "Could not continue network sync due to denied permissions.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Could not continue network sync: due to denied permissions.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -190,7 +193,7 @@ public class SyncRegistration {
 
         {
             List<PeriodicSync> psyncs = ContentResolver.getPeriodicSyncs(account, "dmeeuwis.com");
-            Log.i("nakama-sync", "Found " + psyncs.size() + " syncs!");
+            Log.i("nakama-sync", "After scheduling, found " + psyncs.size() + " syncs!");
             for (PeriodicSync s : psyncs) {
                 Log.i("nakama-sync", "Looking at SyncInfo: " + s);
             }
