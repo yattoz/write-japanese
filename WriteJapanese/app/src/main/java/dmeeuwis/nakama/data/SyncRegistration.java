@@ -11,12 +11,8 @@ import android.content.Intent;
 import android.content.PeriodicSync;
 import android.content.SharedPreferences;
 import android.content.SyncInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -54,110 +50,70 @@ public class SyncRegistration {
             Log.i("nakama-sync", "Found existing authcode, already registered for server sync");
         } else {
             Log.i("nakama-sync", "No existing authcode, launch process to register server sync");
+            boolean haveAsked = pref.getBoolean(HAVE_ASKED_ABOUT_SYNC_KEY, false);
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                findAccount(activity);
+            if (force || !haveAsked) {
+                // shouldShowRequestPermissionRationale returns false on first run!
+                Log.i("nakama-sync", "shouldShowRequest returns true, prompting before requesting permission");
 
-            } else {
-                int permissionCheck = ContextCompat.checkSelfPermission(activity, Manifest.permission.GET_ACCOUNTS);
-                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("nakama-sync", "Found permission already granted for ACCOUNT_MANAGER");
-                    findAccount(activity);
-                } else {
-                    boolean haveAsked = pref.getBoolean(HAVE_ASKED_ABOUT_SYNC_KEY, false);
-                    boolean haveRefusedPermission = ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.GET_ACCOUNTS);
-
-                    if (force || (!haveAsked && !haveRefusedPermission)){
-                        // shouldShowRequestPermissionRationale returns false on first run!
-                        Log.i("nakama-sync", "shouldShowRequest returns true, prompting before requesting permission");
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                        builder.setMessage(request.message);
-                        builder.setTitle("Enable Device Sync?");
-                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                builder.setMessage(request.message);
+                builder.setTitle("Enable Device Sync?");
+                builder.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Toast.makeText(activity.getApplicationContext(), "Inter-device sync is not enabled. You may enable it at any time from the menu.", Toast.LENGTH_LONG).show();
                             }
                         });
-                        builder.setPositiveButton("Enable", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("Enable",
+                        new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ActivityCompat.requestPermissions(activity,
-                                        new String[]{Manifest.permission.GET_ACCOUNTS},
-                                        MY_PERMISSIONS_REQUEST_ACCOUNT_MANAGER);
+                                Log.i("nakama-register", "Broadcasting AccountManager intent");
+                                activity.startActivityForResult(
+                                        AccountManager.newChooseAccountIntent(
+                                                null, null, new String[]{"com.google"}, false, null, null, null, null),
+                                        REQUEST_CODE_PICK_ACCOUNT);
+                                return;
                             }
-                        });
-                        builder.create().show();
-                        SharedPreferences.Editor e = pref.edit();
-                        e.putBoolean(HAVE_ASKED_ABOUT_SYNC_KEY, true);
-                        e.apply();
-                    } else {
-                        Log.i("nakama", "Skipping automatted registration attempt, user has not opted in.");
-                    }
-                }
+                        }
+                );
+                builder.create().show();
+                SharedPreferences.Editor e = pref.edit();
+                e.putBoolean(HAVE_ASKED_ABOUT_SYNC_KEY, true);
+                e.apply();
+            } else {
+                Log.i("nakama", "Skipping automatted registration attempt, user has not opted in.");
             }
-        }
-    }
-
-    public static void continueRegisterAfterPermission(Activity activity, int resultCode) {
-        if(resultCode == PackageManager.PERMISSION_GRANTED){
-            findAccount(activity);
-        } else {
-            Toast.makeText(activity, "Could not continue network sync: due to denied permissions.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private static void findAccount(Activity activity){
-        AccountManager accountManager = AccountManager.get(activity);
-        Account[] accounts = accountManager.getAccountsByType("com.google");
-        if (accounts.length == 0) {
-            Toast.makeText(activity, "Could not find any Google accounts to sync with.", Toast.LENGTH_LONG).show();
-        } else if (accounts.length == 1) {
-            Account a = accounts[0];
-            Log.i("nakama-auth", "Found only 1 com.google account: " + a.name);
-
-            accountFound(activity, a);
-        } else if (accounts.length > 1) {
-            Log.i("nakama-auth", "Found multiple google accounts: prompting user");
-            String[] accountTypes = new String[]{"com.google"};
-            Intent intent = AccountManager.newChooseAccountIntent(null, null,
-                    accountTypes, false, null, null, null, null);
-            activity.startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
-            // show account picker
         }
     }
 
     static public void onAccountSelection(Activity activity, int requestCode, int resultCode, Intent data){
         Log.i("nakama-auth", "Got activity result for request account pick!");
+
         // Receiving a result from the AccountPicker
         if (resultCode == Activity.RESULT_OK) {
             String mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             Log.i("nakama-auth", "Account selected was: " + mEmail);
 
-            AccountManager accountManager = AccountManager.get(activity);
-            Account[] accounts = accountManager.getAccountsByType("com.google");
-            for(Account a: accounts){
-                if(a.name.equals(mEmail)){
-                    SyncRegistration.accountFound(activity, a);
-                }
-            }
+            accountFound(activity, mEmail);
 
         } else if (resultCode == Activity.RESULT_CANCELED) {
             // The account picker dialog closed without selecting an account.
             // Notify users that they must pick an account to proceed.
-            Toast.makeText(activity, "You must choose a Google account to enable network sync. Device sync can be enabled at any time from the settings menu.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "No Google account exists, or selection was cancelled. Device sync can be enabled at any time from the settings menu.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    static private void accountFound(final Activity activity, final Account account){
-        Log.i("nakama-auth", "Found account as: " + account.name);
+    static private void accountFound(final Activity activity, final String accountName){
+        Log.i("nakama-auth", "Found account as: " + accountName);
 
-        GetAccountTokenAsync getter = new GetAccountTokenAsync(activity, account.name,
+        GetAccountTokenAsync getter = new GetAccountTokenAsync(activity, accountName,
             new GetAccountTokenAsync.RunWithAuthcode(){
                 @Override public void exec(String authcode) {
                     recordAuthToken(authcode, activity);
-                    scheduleSyncs(account);
+                    scheduleSyncs(activity, accountName);
                 }
             });
         getter.execute();
@@ -171,11 +127,18 @@ public class SyncRegistration {
         ed.apply();
     }
 
-    static private void scheduleSyncs(Account account){
+    public static final boolean DEBUG_SYNC = false;
+
+    static private void scheduleSyncs(Activity activity, String accountName){
         final String authority = "dmeeuwis.com";
+
+        Account account = new Account(accountName, "com.google");
+        //AccountManager accountManager = AccountManager.get(activity.getApplicationContext());
+        //accountManager.addAccountExplicitly(account, null, new Bundle());
+
         ContentResolver.setIsSyncable(account, authority, 1);
         ContentResolver.setSyncAutomatically(account, authority, true);
-        if(BuildConfig.DEBUG && KanjiMasterActivity.DEBUG_SYNC){
+        if(BuildConfig.DEBUG && DEBUG_SYNC){
             Log.i("nakama-sync", "Scheduling 60 second DEBUG sync for account " + account.name + "!");
             ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, 60);
         } else {

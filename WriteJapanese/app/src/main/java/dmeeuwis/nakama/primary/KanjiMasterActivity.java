@@ -1,5 +1,6 @@
 package dmeeuwis.nakama.primary;
 
+import android.accounts.AccountManager;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -99,8 +100,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
-    public static final boolean DEBUG_SYNC = false;
-
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
     public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
@@ -172,14 +171,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             super.onActivityResult(requestCode, resultCode, data);
         } else {
             Log.d("nakama", "AbstractMasterActivity: onActivityResult handled by IABUtil.");
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
-        Log.i("nakama-sync", "onRequestPermissionResult returned! Permissions: " + Util.join(", ", permissions) + "; " + Util.join(", ", grantResults));
-        if(requestCode == SyncRegistration.MY_PERMISSIONS_REQUEST_ACCOUNT_MANAGER){
-            SyncRegistration.continueRegisterAfterPermission(this, grantResults[0]);
         }
     }
 
