@@ -145,7 +145,7 @@ public class SyncRegistration {
             Log.i("nakama-sync", "Scheduling bi-daily sync for account " + account.name + "!");
             ContentResolver.addPeriodicSync(account, authority, Bundle.EMPTY, KanjiMasterActivity.SYNC_INTERVAL);
         }
-
+/*      // DEBUGGING, requires additional permissions
         {
             List<SyncInfo> syncs = ContentResolver.getCurrentSyncs();
             Log.i("nakama-sync", "Found " + syncs.size() + " syncs!");
@@ -161,5 +161,6 @@ public class SyncRegistration {
                 Log.i("nakama-sync", "Looking at SyncInfo: " + s);
             }
         }
+*/
     }
 }
