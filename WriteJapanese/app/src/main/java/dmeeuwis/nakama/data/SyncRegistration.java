@@ -102,7 +102,7 @@ public class SyncRegistration {
         } else if (resultCode == Activity.RESULT_CANCELED) {
             // The account picker dialog closed without selecting an account.
             // Notify users that they must pick an account to proceed.
-            Toast.makeText(activity, "No Google account exists, or selection was cancelled. Device sync can be enabled at any time from the settings menu.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "No Google account exists, or selection was cancelled. Device sync can be enabled at any time from the settings menu.", Toast.LENGTH_LONG).show();
         }
     }
 
