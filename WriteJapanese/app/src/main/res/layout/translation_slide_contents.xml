@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:gravity="center_vertical"
               android:orientation="horizontal">
 
@@ -13,7 +14,11 @@
         <dmeeuwis.nakama.views.AdvancedFuriganaTextView
             android:id="@+id/kanji"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            app:furiganaTextSize="14sp"
+            app:mainTextSize="42sp"
+
+            />
     </HorizontalScrollView>
 
     <TextView
