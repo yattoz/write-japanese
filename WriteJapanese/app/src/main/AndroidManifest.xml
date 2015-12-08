@@ -28,7 +28,7 @@
         <activity
             android:name="dmeeuwis.nakama.primary.KanjiMasterActivity"
             android:label="@string/app_name"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,7 +43,7 @@
         <activity
             android:name="dmeeuwis.nakama.primary.CharsetInfoActivity"
             android:label="Study Goals"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -52,17 +52,17 @@
         <activity
             android:name="dmeeuwis.nakama.teaching.TeachingActivity"
             android:label="@string/app_name"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
         </activity>
         <activity
             android:name="dmeeuwis.nakama.ProgressActivity"
             android:label="@string/title_activity_progress"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
         </activity>
         <activity
             android:name="dmeeuwis.nakama.CreditsActivity"
             android:label="@string/title_activity_credits"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
         </activity>
 
         <uses-library
