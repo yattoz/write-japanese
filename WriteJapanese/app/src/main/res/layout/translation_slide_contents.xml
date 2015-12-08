@@ -4,6 +4,7 @@
               android:layout_height="wrap_content"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:gravity="center_vertical"
+              android:padding="5dp"
               android:orientation="horizontal">
 
     <HorizontalScrollView
@@ -16,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:furiganaTextSize="14sp"
-            app:mainTextSize="42sp"
+            app:mainTextSize="36sp"
 
             />
     </HorizontalScrollView>
