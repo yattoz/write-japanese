@@ -31,12 +31,9 @@
         android:id="@+id/menu_reset_progress"
         android:title="@string/reset_progress_menu_label"/>
     <item
-        android:id="@+id/menu_about_set"
-        android:title="@string/about_this_set"/>
+        android:id="@+id/menu_network_sync"
+        android:title="@string/menu_network_string_message"/>
     <item
         android:id="@+id/menu_info"
         android:title="@string/credits_menu_label"/>
-    <item
-        android:id="@+id/menu_network_sync"
-        android:title="@string/menu_network_string_message"/>
 </menu>

@@ -871,8 +871,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             startActivity(creditsIntent);
         } else if (item.getItemId() == R.id.menu_reset_progress) {
             queryProgressReset();
-        } else if (item.getItemId() == R.id.menu_about_set) {
-            SetInfoDialog.show(this, currentCharacterSet.name, currentCharacterSet.description);
         } else if (item.getItemId() == R.id.menu_shuffle) {
             item.setChecked(!item.isChecked());
 
