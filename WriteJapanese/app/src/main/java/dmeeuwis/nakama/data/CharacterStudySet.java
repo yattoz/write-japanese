@@ -85,6 +85,9 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         }
     }
 
+	public int length(){
+		return this.allCharactersSet.size();
+	}
 
 	public String toString(){
 		return String.format("%s (%d)", this.name, this.allCharactersSet.size());

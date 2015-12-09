@@ -2,6 +2,8 @@ package dmeeuwis.nakama.primary;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +18,17 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 
 public class LockableArrayAdapter extends ArrayAdapter<CharacterStudySet> {
     private List<CharacterStudySet> data;
+    private final double screenWidthInches;
 
     public LockableArrayAdapter(Context context, List<CharacterStudySet> objects) {
         super(context, R.layout.locked_list_item_layout, R.id.text, objects);
         this.data = objects;
+
+        DisplayMetrics dm = new DisplayMetrics();
+        ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
+        double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
+        this.screenWidthInches = Math.sqrt(x + y);
     }
 
     @Override
@@ -45,7 +54,13 @@ public class LockableArrayAdapter extends ArrayAdapter<CharacterStudySet> {
         lockIcon.getDrawable().setAlpha(255);
         boolean lockIconVisible = d.locked();
         lockIcon.setVisibility(lockIconVisible ? View.VISIBLE : View.INVISIBLE);
-        ((TextView) row.findViewById(R.id.text)).setText(d.toString());
+        String text;
+        if(screenWidthInches > 5.0d) {
+            text = d.name + " (" + d.length() + ")";
+        } else {
+            text = d.shortName + " (" + d.length() + ")";
+        }
+        ((TextView) row.findViewById(R.id.text)).setText(text);
         return row;
     }
 }
