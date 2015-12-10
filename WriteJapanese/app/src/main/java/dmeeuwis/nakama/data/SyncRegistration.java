@@ -23,12 +23,11 @@ import dmeeuwis.nakama.primary.KanjiMasterActivity;
 
 public class SyncRegistration {
     public static final int REQUEST_CODE_PICK_ACCOUNT = 0x8473;
-    public static final int MY_PERMISSIONS_REQUEST_ACCOUNT_MANAGER = 123;
     public static final String HAVE_ASKED_ABOUT_SYNC_KEY = "ASKED_SYNC";
 
     public enum RegisterRequest {
-        REQUESTED("In order to sync your study progress between multiple devices, access to the Account Manager will now be requested. This will share your progress between all devices authenticated with your Google account."),
-        PROMPTED("Do you want to sync your progress among all your Android devices? Access to the Account Manager will be requested, so your progress can be shared between all devices authenticated with your Google account.");
+        REQUESTED("Do you want to enable progress sync among all Android devices authenticated with your Google account?"),
+        PROMPTED( "Do you want to enable progress sync among all Android devices authenticated with your Google account?");
 
         final String message;
         RegisterRequest(String message) {
@@ -50,7 +49,8 @@ public class SyncRegistration {
             Log.i("nakama-sync", "Found existing authcode, already registered for server sync");
         } else {
             Log.i("nakama-sync", "No existing authcode, launch process to register server sync");
-            boolean haveAsked = pref.getBoolean(HAVE_ASKED_ABOUT_SYNC_KEY, false);
+            boolean haveAsked = pref.getBoolean(
+                    HAVE_ASKED_ABOUT_SYNC_KEY, false);
 
             if (force || !haveAsked) {
                 // shouldShowRequestPermissionRationale returns false on first run!
