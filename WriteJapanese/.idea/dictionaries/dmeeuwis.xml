@@ -1,15 +1,3 @@
 <component name="ProjectDictionaryState">
-  <dictionary name="dmeeuwis">
-    <words>
-      <w>furigana</w>
-      <w>hiragana</w>
-      <w>joyou</w>
-      <w>kana</w>
-      <w>kanji</w>
-      <w>katakana</w>
-      <w>nakama</w>
-      <w>querier</w>
-      <w>recycler</w>
-    </words>
-  </dictionary>
+  <dictionary name="dmeeuwis" />
 </component>
