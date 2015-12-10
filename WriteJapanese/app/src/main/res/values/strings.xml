@@ -47,7 +47,6 @@
     <string name="set_goals_menu_label">Set Goal</string>
     <string name="shuffle_order_menu_label">Shuffle Order</string>
     <string name="share_kanji_stories">Share Stories</string>
-    <string name="about_this_set">About this Set</string>
     <string name="reset_progress_menu_label">Reset Progress</string>
     <string name="credits_menu_label">Credits</string>
     <string name="title_activity_spen_draw">SpenDrawActivity</string>
@@ -60,5 +59,6 @@
     <string name="edit_story_hint">Write a small story here, to help you remember this character</string>
     <string name="radicals_label">Radicals</string>
     <string name="shared_stories_label">Shared Stories</string>
+    <string name="menu_network_string_message">Perform Network Sync</string>
 
 </resources>

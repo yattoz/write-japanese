@@ -35,7 +35,7 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
     @Override
     protected List<String> doInBackground(Character... params) {
         try {
-            URL url = new URL("http://dmeeuwis.com/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + iid);
+            URL url = new URL("https://dmeeuwis.com/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + iid);
             Log.i("nakama", "Network: Starting network request for: " + url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {

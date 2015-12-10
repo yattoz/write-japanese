@@ -4,6 +4,9 @@
 
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.INTERNET" />
+<!--    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>-->
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <!-- <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" /> -->
     <application
@@ -12,10 +15,20 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <provider
+            android:name="dmeeuwis.nakama.data.StubContentProvider"
+            android:exported="false"
+            android:multiprocess="true"
+            android:syncable="true"
+            android:authorities="dmeeuwis.com"
+            android:label="WriteJapanese">
+        </provider>
+
         <activity
             android:name="dmeeuwis.nakama.primary.KanjiMasterActivity"
             android:label="@string/app_name"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,11 +36,14 @@
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="dmeeuwis.nakama.ReminderManager" />
+        <receiver android:name="dmeeuwis.nakama.ReminderManager"
+                  android:icon="@drawable/ic_launcher"
+
+            />
         <activity
             android:name="dmeeuwis.nakama.primary.CharsetInfoActivity"
             android:label="Study Goals"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -36,17 +52,17 @@
         <activity
             android:name="dmeeuwis.nakama.teaching.TeachingActivity"
             android:label="@string/app_name"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
         </activity>
         <activity
             android:name="dmeeuwis.nakama.ProgressActivity"
             android:label="@string/title_activity_progress"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
         </activity>
         <activity
             android:name="dmeeuwis.nakama.CreditsActivity"
             android:label="@string/title_activity_credits"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTask" >
         </activity>
 
         <uses-library
@@ -71,6 +87,19 @@
         <meta-data
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
             android:value="598.0dip" />
+
+
+        <service
+            android:name="dmeeuwis.nakama.data.SyncService"
+            android:exported="true"
+            android:process=":sync"
+            >
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                       android:resource="@xml/syncadapter" />
+        </service>
 
         <activity
             android:name="dmeeuwis.nakama.TestDrawActivity"

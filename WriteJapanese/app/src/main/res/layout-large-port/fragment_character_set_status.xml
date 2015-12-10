@@ -6,19 +6,13 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:orientation="horizontal"
-    android:padding="8dp"
     tools:context="dmeeuwis.nakama.primary.CharacterSetStatusFragment">
 
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="256dp"
         android:gravity="center"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        >
 
         <TextView
             android:id="@+id/charset_label"
@@ -26,57 +20,38 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="26sp"
+            android:padding="8dp"
+            android:layout_alignParentTop="true"
             />
 
         <TextView
             android:id="@+id/charset_desc"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="16sp"
+            android:padding="8dp"
+            android:layout_below="@id/charset_label"
+            android:layout_alignParentBottom="true"
             />
-    </LinearLayout>
+    </RelativeLayout>
 
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="@color/LightGrey"/>
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
 
     <TextView
         android:id="@+id/charset_progress_text"
+        android:padding="8dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="@color/LightGrey"/>
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
 
     <LinearLayout
         android:id="@+id/goal_absent_space"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:gravity="center"
+        android:padding="8dp"
         android:orientation="vertical">
 
         <Button
@@ -93,6 +68,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:gravity="center"
+        android:padding="8dp"
         android:orientation="vertical">
 
         <TextView
@@ -113,11 +89,6 @@
             android:text="Clear Goal"
             />
     </LinearLayout>
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
 
 </LinearLayout>
 

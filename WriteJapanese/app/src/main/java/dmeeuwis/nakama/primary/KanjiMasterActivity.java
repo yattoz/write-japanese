@@ -1,9 +1,11 @@
 package dmeeuwis.nakama.primary;
 
+import android.accounts.AccountManager;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,8 +15,10 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
@@ -47,7 +51,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 
+import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
@@ -66,7 +72,10 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.data.GetAccountTokenAsync;
+import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
+import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.DrawingComparator;
@@ -84,13 +93,20 @@ import dmeeuwis.nakama.views.SetInfoDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
-public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener, OnGoalPickListener {
+public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
+            LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener, OnGoalPickListener,
+        ActivityCompat.OnRequestPermissionsResultCallback {
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
 
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
+    public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
+
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 60L * 12;
+    public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
     protected DictionarySet dictionarySet;
     protected LockChecker lockChecker;
@@ -142,11 +158,30 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("nakama", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
+
+        if(requestCode == SyncRegistration.REQUEST_CODE_PICK_ACCOUNT) {
+            SyncRegistration.onAccountSelection(this, requestCode, resultCode, data);
+            return;
+        }
+
+        //TODO: set a requestCode for the lockChecker
+        if (!lockChecker.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        } else {
+            Log.d("nakama", "AbstractMasterActivity: onActivityResult handled by IABUtil.");
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i("nakama", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
+
+        SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.PROMPTED, this, false);
 
         lockChecker = new LockChecker(this,
                 new Runnable() {
@@ -317,7 +352,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         teachMeButton = (FloatingActionButton) findViewById(R.id.teachButton);
         teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
-        teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_learning));
+        teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_question_mark));
         teachMeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -405,14 +440,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             incorrectCard.setTranslationY(-1 * ANIMATE_OUT_HEIGHT);
         }
 
-        hiraganaCharacterSet = CharacterSets.hiragana(lockChecker);
-        katakanaCharacterSet = CharacterSets.katakana(lockChecker);
-        joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), lockChecker);
-        joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), lockChecker);
+        UUID iid = Iid.get(this.getApplicationContext());
+        hiraganaCharacterSet = CharacterSets.hiragana(lockChecker, iid);
+        katakanaCharacterSet = CharacterSets.katakana(lockChecker, iid);
+        joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), lockChecker, iid);
+        joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), lockChecker, iid);
 
         this.characterSets.put("hiragana", hiraganaCharacterSet);
         this.characterSets.put("katakana", katakanaCharacterSet);
@@ -765,18 +801,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         super.onDestroy();
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("nakama", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
-
-        if (!lockChecker.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        } else {
-            Log.d("nakama", "AbstractMasterActivity: onActivityResult handled by IABUtil.");
-        }
-    }
-
     public LockChecker getLockChecker() {
         return this.lockChecker;
     }
@@ -800,6 +824,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:ResetStorySharing");
             menu.add("DEBUG:Notify");
             menu.add("DEBUG:ClearAllNotify");
+            menu.add("DEBUG:Register");
+            menu.add("DEBUG:ClearAuthcode");
+            menu.add("DEBUG:ClearSync");
+            menu.add("DEBUG:PrintPracticeLog");
+            menu.add("DEBUG:SyncNow");
         }
         return true;
     }
@@ -842,8 +871,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             startActivity(creditsIntent);
         } else if (item.getItemId() == R.id.menu_reset_progress) {
             queryProgressReset();
-        } else if (item.getItemId() == R.id.menu_about_set) {
-            SetInfoDialog.show(this, currentCharacterSet.name, currentCharacterSet.description);
         } else if (item.getItemId() == R.id.menu_shuffle) {
             item.setChecked(!item.isChecked());
 
@@ -867,6 +894,22 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
+        } else if (item.getItemId() == R.id.menu_network_sync) {
+            if(!SyncRegistration.checkIsRegistered(KanjiMasterActivity.this)) {
+                SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, KanjiMasterActivity.this, true);
+            } else {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            new PracticeLogSync(KanjiMasterActivity.this).sync();
+                        } catch (IOException e) {
+                            Log.e("nakama-sync", "Error on menu-option network sync: " + e.getMessage(), e);
+                            Toast.makeText(KanjiMasterActivity.this, "Error while attempting network sync. Please retry later.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }.start();
+            }
         } else if (item.getItemId() == R.id.menu_set_goals) {
             String charset = currentCharacterSet.pathPrefix;
             Intent intent = new Intent(this, CharsetInfoActivity.class);
@@ -897,7 +940,24 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             } else if (item.getTitle().equals("DEBUG:Notify")) {
                 ReminderManager.scheduleRemindersFor(this.getApplicationContext(), currentCharacterSet);
             } else if (item.getTitle().equals("DEBUG:ClearAllNotify")) {
-                ReminderManager.clearAllReminders(this.getApplicationContext());
+                ReminderManager.clearAllReminders(this);
+            } else if (item.getTitle().equals("DEBUG:ClearSync")) {
+                new PracticeLogSync(KanjiMasterActivity.this).clearSync();
+            } else if (item.getTitle().equals("DEBUG:ClearAuthcode")) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                Editor e = prefs.edit();
+                e.remove(AUTHCODE_SHARED_PREF_KEY);
+                e.apply();
+            } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
+                new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
+            } else if(item.getTitle().equals("DEBUG:Register")){
+                SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, this, true);
+            } else if(item.getTitle().equals("DEBUG:SyncNow")){
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                ContentResolver.requestSync(null, "dmeeuwis.com", bundle);
             }
         }
 

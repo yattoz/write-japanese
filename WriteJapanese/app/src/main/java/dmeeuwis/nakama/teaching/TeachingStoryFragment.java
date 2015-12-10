@@ -108,7 +108,7 @@ public class TeachingStoryFragment extends Fragment {
         this.character = parent.getCharacter().charAt(0);
         this.kanji = parent.getKanji();
 
-        this.iid = Iid.get(parent.getApplication());
+        this.iid = Iid.get(parent.getApplicationContext());
         //Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
 
         StoryDataHelper db = new StoryDataHelper(parent);
@@ -148,6 +148,7 @@ public class TeachingStoryFragment extends Fragment {
 
             @Override public void add(final String s) {
                 Log.d("nakama", "Adding story as view: " + s);
+
                 TextView tv = new TextView(getActivity());
                 tv.setText(s);
                 tv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
@@ -156,6 +157,10 @@ public class TeachingStoryFragment extends Fragment {
                 iv.setImageDrawable(r.getDrawable(R.drawable.ic_story_for_white_bg));
                 iv.setClickable(true);
                 iv.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+
+                // hide icon if 'story' is a network error message
+                iv.setVisibility(!s.startsWith("Network error") ? View.VISIBLE : View.GONE);
+
                 int imageWidth = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, r.getDisplayMetrics());
                 iv.setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -1,16 +1,19 @@
 package dmeeuwis.nakama.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+
 import dmeeuwis.KanjiElement;
 import dmeeuwis.KanjiElement.Furigana;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.R;
 
 public class AdvancedFuriganaTextView extends View {
 
@@ -28,40 +31,40 @@ public class AdvancedFuriganaTextView extends View {
 	
 	public AdvancedFuriganaTextView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init();
+		init(attrs);
 		
-		String mainTextSize = attrs.getAttributeValue(null, "mainTextSize");
-		String furiganaTextSize = attrs.getAttributeValue(null, "furiganaTextSize");
-		this.mainPaint.setTextSize(mainTextSize == null ? 14 : Integer.parseInt(mainTextSize));
-		this.furiganaPaint.setTextSize(furiganaTextSize == null ? 10 : Integer.parseInt(furiganaTextSize));
 	}
 
 	public AdvancedFuriganaTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init();
-		
-		String mainTextSize = attrs.getAttributeValue(null, "mainTextSize");
-		String furiganaTextSize = attrs.getAttributeValue(null, "furiganaTextSize");
-		
-		this.mainPaint.setTextSize(mainTextSize == null ? 55 : Integer.parseInt(mainTextSize));
-		this.furiganaPaint.setTextSize(furiganaTextSize == null ? 24 : Integer.parseInt(furiganaTextSize));
+		init(attrs);
 	}
 
 	public AdvancedFuriganaTextView(Context context) {
 		super(context);
-		init();
+		init(null);
 	}
 
-	private void init(){
+	private void init(AttributeSet attrs){
     	this.mainPaint = new Paint();
 		this.mainPaint.setColor(Color.BLACK);
-		this.mainPaint.setTextSize(56);
+        this.mainPaint.setTextSize(56);
 		this.mainPaint.setAntiAlias(true);
 
     	this.furiganaPaint = new Paint();
 		this.furiganaPaint.setColor(0xFF878787);
 		this.furiganaPaint.setTextSize(16);
 		this.furiganaPaint.setAntiAlias(true);
+
+        if(attrs != null){
+            TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.AdvancedFuriganaTextView);
+            int mainTextSize = typedArray.getDimensionPixelSize(R.styleable.AdvancedFuriganaTextView_mainTextSize, 56);
+            int furiTextSize = typedArray.getDimensionPixelSize(R.styleable.AdvancedFuriganaTextView_furiganaTextSize, 16);
+            typedArray.recycle();
+
+            this.mainPaint.setTextSize(mainTextSize);
+            this.furiganaPaint.setTextSize(furiTextSize);
+        }
 	}
 
 	public void setTranslation(Translation t, KanjiFinder finder){
@@ -111,7 +114,7 @@ public class AdvancedFuriganaTextView extends View {
 		calculateTextBounds();
 		this.invalidate();
 	}
-	
+
 	public void setPadding(int padding){
 		this.padding = padding;
 		this.invalidate();
