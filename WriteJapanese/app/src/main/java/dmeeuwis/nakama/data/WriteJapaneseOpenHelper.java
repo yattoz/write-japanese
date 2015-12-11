@@ -5,6 +5,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
 	private static final int DB_VERSION = 16;
@@ -26,7 +30,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         dbase.execSQL("CREATE TABLE kanji_stories ( " +
                 "character char NOT NULL PRIMARY KEY, " +
                 "story TEXT NOT NULL" +
-         ")");
+                ")");
     }
 
     private void createCharset(SQLiteDatabase sqlite){
@@ -53,6 +57,35 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         ")");
     }
 
+    private void migratePracticeTrackerToPracticeLogs(SQLiteDatabase sqlite){
+        List<Map<String, String>> rows = DataHelper.selectRecords(sqlite, "SELECT * FROM character_progress");
+        for(Map<String, String> r: rows){
+            String charset = r.get("charset");
+            String record = r.get("charset");
+            for(String line: record.split("\n")){
+                try {
+                    String[] parts = line.split("=");
+                    String character =parts[0];
+                    Integer value = Integer.parseInt(parts[1]);
+
+                    if(value < 0){
+                        for (; value != 0; value++) {
+                            sqlite.rawQuery("INSERT INTO practice_log(id, install_id, character, charset, score",
+                                    new String[] {UUID.randomUUID().toString(), character, charset, "-100" });
+                        }
+                    } else if (value > 0){
+                        for (; value != 0; value--) {
+                            sqlite.rawQuery("INSERT INTO practice_log(id, install_id, character, charset, score",
+                                            new String[] {UUID.randomUUID().toString(), character, charset, "100" });
+                        }
+                    }
+                } catch(Throwable t){
+                    Log.e("nakama", "Error parsing record line: " + line, t);
+                }
+            }
+        }
+    }
+
     private void addTimestampToStories(SQLiteDatabase sqlite){
         Log.d("nakama-db", "Adding timestamp to stories table");
         sqlite.execSQL("ALTER TABLE kanji_stories ADD COLUMN timestamp DATETIME");
@@ -71,6 +104,11 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         if(oldVersion <= 11){
             createPracticeLog(dbase);
+            try {
+                migratePracticeTrackerToPracticeLogs(dbase);
+            } catch(Throwable t){
+                Log.e("nakama", "Error during progress migration", t);
+            }
         }
 
         if(oldVersion <= 13){
