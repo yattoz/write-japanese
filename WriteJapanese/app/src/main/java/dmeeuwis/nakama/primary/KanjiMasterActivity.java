@@ -17,6 +17,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
@@ -903,6 +905,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                     public void run() {
                         try {
                             new PracticeLogSync(KanjiMasterActivity.this).sync();
+                            Handler handler = new Handler(Looper.getMainLooper());
+                            handler.post(new Runnable() {
+                                @Override public void run() {
+                                    Toast.makeText(KanjiMasterActivity.this, "Sync completed!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         } catch (IOException e) {
                             Log.e("nakama-sync", "Error on menu-option network sync: " + e.getMessage(), e);
                             Toast.makeText(KanjiMasterActivity.this, "Error while attempting network sync. Please retry later.", Toast.LENGTH_LONG).show();
