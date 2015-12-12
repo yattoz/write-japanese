@@ -9,13 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import dmeeuwis.nakama.primary.Iid;
+
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
 	private static final int DB_VERSION = 16;
 
+    private final String iid;
+
 	public WriteJapaneseOpenHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
-	}
+        this.iid = Iid.get(context).toString();
+    }
 
 	@Override
 	public void onCreate(SQLiteDatabase dbase) {
@@ -61,23 +66,23 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         List<Map<String, String>> rows = DataHelper.selectRecords(sqlite, "SELECT * FROM character_progress");
         for(Map<String, String> r: rows){
             String charset = r.get("charset");
-            String record = r.get("charset");
+            String record = r.get("progress");
             for(String line: record.split("\n")){
                 try {
                     String[] parts = line.split("=");
                     String character =parts[0];
+                    if("!".equals(parts[1])) {
+                        continue;
+                    }
                     Integer value = Integer.parseInt(parts[1]);
 
-                    if(value < 0){
-                        for (; value != 0; value++) {
-                            sqlite.rawQuery("INSERT INTO practice_log(id, install_id, character, charset, score",
-                                    new String[] {UUID.randomUUID().toString(), character, charset, "-100" });
-                        }
-                    } else if (value > 0){
-                        for (; value != 0; value--) {
-                            sqlite.rawQuery("INSERT INTO practice_log(id, install_id, character, charset, score",
-                                            new String[] {UUID.randomUUID().toString(), character, charset, "100" });
-                        }
+                    if(value == -2){
+                        sqlite.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "-200"});
+                    } else if (value == -1){
+                        sqlite.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "-200"});
+                        sqlite.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "100"});
+                    } else if (value >= 1){
+                        sqlite.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "100"});
                     }
                 } catch(Throwable t){
                     Log.e("nakama", "Error parsing record line: " + line, t);
