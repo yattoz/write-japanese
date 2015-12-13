@@ -248,8 +248,8 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
         if(previousScrollState == ViewPager.SCROLL_STATE_IDLE && state == ViewPager.SCROLL_STATE_SETTLING) {
             storyFragment.clear();
-            infoFragment.clear();
             drawFragment.clear();
+            if(infoFragment != null) infoFragment.clear();
         } else if(previousScrollState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE){
             if(position == 0) {
                 drawFragment.startAnimation(300);
