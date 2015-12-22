@@ -2,9 +2,11 @@ package dmeeuwis.nakama.teaching;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -38,6 +40,7 @@ import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
 import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
+import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.TallGridView;
 
 /**
@@ -79,6 +82,35 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
     public TeachingCombinedStoryInfoFragment() {
         // Required empty public constructor
+    }
+
+
+    public void checkForStoryAccess() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        String value = prefs.getString(TeachingStoryFragment.STORY_SHARING_KEY, null);
+        if("true".equals(value)) {
+            this.loadRemoteStories(this.character);
+        } else if("false".equals(value)){
+            // do nothing
+        } else {
+            ShareStoriesDialog.show(getActivity(), new Runnable() {
+                @Override
+                public void run() {
+                    SharedPreferences.Editor e = prefs.edit();
+                    e.putString(TeachingStoryFragment.STORY_SHARING_KEY, "true");
+                    e.apply();
+                    loadRemoteStories(TeachingCombinedStoryInfoFragment.this.character);
+                }
+            }, new Runnable() {
+
+                @Override
+                public void run() {
+                    SharedPreferences.Editor e = prefs.edit();
+                    e.putString(TeachingStoryFragment.STORY_SHARING_KEY, "false");
+                    e.apply();
+                }
+            });
+        }
     }
 
     @Override
@@ -135,13 +167,13 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
                 this.radicalAdapter.clear();
                 this.loadFileTask = new LoadRadicalsFile(this.getActivity(), this.character, this.radicalAdapter, this.radicalsCard);
                 this.loadFileTask.execute();
-
-                this.loadRemoteStories(this.character);
             }
 
         } catch (IOException e) {
             Log.e("nakama", "Error finding kanji support for: " + this.character);
         }
+
+        checkForStoryAccess();
 
         super.onResume();
     }
