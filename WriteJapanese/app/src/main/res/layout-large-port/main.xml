@@ -13,6 +13,7 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:clickable="true"
         >
 
         <fragment
@@ -45,6 +46,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
             android:elevation="300dp"
+            android:clickable="true"
             >
 
             <ImageView
@@ -136,6 +138,7 @@
                 android:layout_height="0dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:padding="4dp">
 
                 <TextView
@@ -162,6 +165,7 @@
                 android:layout_height="0dp"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:padding="4dp">
 
                 <TextView
@@ -189,6 +193,7 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:orientation="vertical"
+                android:clickable="true"
                 android:padding="4dp">
 
                 <TextView
@@ -244,6 +249,7 @@
                 android:layout_height="0dp"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:orientation="vertical">
 
                 <dmeeuwis.nakama.views.AnimatedCurveView
@@ -267,6 +273,7 @@
                 android:layout_height="0dp"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
+                android:clickable="true"
                 >
 
                 <dmeeuwis.nakama.views.AnimatedCurveView

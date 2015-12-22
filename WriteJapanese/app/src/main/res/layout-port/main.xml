@@ -29,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center_horizontal"
                 android:layout_margin="5dp"
+                android:clickable="true"
                 card_view:cardCornerRadius="5dp">
 
                 <LinearLayout
@@ -124,6 +125,7 @@
                         android:layout_height="fill_parent"
                         android:layout_margin="3dp"
                         android:layout_weight="1"
+                        android:clickable="true"
                         card_view:contentPadding="0dp">
 
                         <dmeeuwis.nakama.views.AnimatedCurveView
@@ -148,6 +150,7 @@
                         android:layout_height="fill_parent"
                         android:layout_margin="3dp"
                         android:layout_weight="1"
+                        android:clickable="true"
                         card_view:contentPadding="0dp">
 
                         <LinearLayout
@@ -219,6 +222,7 @@
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_margin="3dp"
+                        android:clickable="true"
                         android:layout_weight="1">
 
                         <dmeeuwis.nakama.views.AnimatedCurveView
@@ -243,6 +247,7 @@
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_margin="3dp"
+                        android:clickable="true"
                         android:layout_weight="1">
 
 

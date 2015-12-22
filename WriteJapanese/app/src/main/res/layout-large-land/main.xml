@@ -14,6 +14,7 @@
         android:layout_marginBottom="40dp"
         android:layout_marginTop="40dp"
         android:elevation="500dp"
+        android:clickable="true"
         >
 
         <fragment
@@ -42,6 +43,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
             android:elevation="300dp"
+            android:clickable="true"
             >
 
             <ImageView
@@ -131,6 +133,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 >
 
                 <TextView
@@ -159,6 +162,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 >
 
                 <TextView
@@ -186,6 +190,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 >
 
                 <TextView
