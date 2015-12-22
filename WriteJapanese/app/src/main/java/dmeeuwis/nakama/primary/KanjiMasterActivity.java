@@ -533,12 +533,20 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     private void slideIn(View ... views){
         for(View v: views) {
-            v.animate().translationYBy(ANIMATE_OUT_HEIGHT);
+            if("slideDown".equals(v.getTag())){
+                v.animate().translationYBy(-1 * ANIMATE_OUT_HEIGHT);
+            } else {
+                v.animate().translationYBy(ANIMATE_OUT_HEIGHT);
+            }
         }
     }
     private void slideOut(View ... views){
         for(View v: views) {
-            v.animate().translationYBy(-1 * ANIMATE_OUT_HEIGHT);
+            if("slideDown".equals(v.getTag())){
+                v.animate().translationYBy(ANIMATE_OUT_HEIGHT);
+            } else {
+                v.animate().translationYBy(-1 * ANIMATE_OUT_HEIGHT);
+            }
         }
     }
 
