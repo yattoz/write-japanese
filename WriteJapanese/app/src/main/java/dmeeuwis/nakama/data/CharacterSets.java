@@ -13,8 +13,8 @@ public class CharacterSets  {
 
     private static final String HIRAGANA_DESC = "Hiragana is the most basic and essential script in Japan. It is the primary phonetic alphabet.\n" +
             "Japanese schoolchildren learn their hiragana by Grade 1, at around 5 years of age.";
-    private static final String KATAKANA_DESC = "The second Japanese phonetic alphabet, Katakana is usually used for foreign words imported into Japanese, or for emphasis. " +
-                                        "Japanese schoolchildren learn their katakana by Grade 1, at around 5 years of age.";
+    private static final String KATAKANA_DESC = "The second Japanese phonetic alphabet, Katakana is used for foreign words imported into Japanese, or emphasis. " +
+                                        "Schoolchildren learn katakana by Grade 1, at around 5 years of age.";
     private static final String G1_DESCRIPTION = "The first level of 'regular use kanji' (常用漢字). Learned by Japanese schoolchildren in their first year of school, at around 5 years of age.";
     private static final String G2_DESCRIPTION = "The second level of 'regular use kanji' (常用漢字). Learned by Japanese schoolchildren in their second year of school, at around 6 years of age.";
     private static final String G3_DESCRIPTION = "The third level of 'regular use kanji' (常用漢字). Learned by Japanese schoolchildren in their third year of school, at around 7 years of age.";
