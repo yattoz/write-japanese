@@ -81,7 +81,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         updateGoals();
     }
 
-    private void updateProgress() {
+    public void updateProgress() {
         CharacterStudySet.SetProgress sp = charSet.getProgress();
         progressText.setText(
                 String.format("%5d Known\n%5d Reviewing\n%5d Unknown",

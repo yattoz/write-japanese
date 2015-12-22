@@ -678,6 +678,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
         storyButtonUpdate();
         this.loadDrawDetails();
+
+
+        if(this.charSetFrag != null){
+            this.charSetFrag.updateProgress();
+        }
     }
 
     private void storyButtonUpdate() {
