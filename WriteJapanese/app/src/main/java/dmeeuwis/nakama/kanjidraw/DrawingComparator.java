@@ -28,6 +28,8 @@ public class DrawingComparator {
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 	static private final int PERCENTAGE_DISTANCE_DIFF_LIMIT = 100;
 
+	private static final boolean DEBUG = BuildConfig.DEBUG && false;
+
     static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
     static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
 
@@ -436,10 +438,10 @@ public class DrawingComparator {
 			switch (f) {
 			case START_DIRECTION_DIFFERENCE:
 				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke starts pointing " + cStartDirection + ", but should point " + bStartDirection + "."
-                + (BuildConfig.DEBUG ? String.format(" [points %.2f, but should be %.2f]", cStartRadians, bStartRadians) : ""));
+                + (DEBUG ? String.format(" [points %.2f, but should be %.2f]", cStartRadians, bStartRadians) : ""));
 			case END_DIRECTION_DIFFERENCE:
 				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke ends pointing " + cEndDirection + ", but should point " + bEndDirection + "."
-                        + (BuildConfig.DEBUG ? String.format(" [points %.2f, but should be %.2f]", cEndRadians, bEndRadians) : ""));
+                        + (DEBUG ? String.format(" [points %.2f, but should be %.2f]", cEndRadians, bEndRadians) : ""));
 			case START_POINT_DIFFERENCE:
 				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke's starting point is off.");
 			case END_POINT_DIFFERENCE:
@@ -447,10 +449,10 @@ public class DrawingComparator {
 			case DISTANCE_TRAVELLED:
 				if(cDistanceTravelled < bDistanceTravelled) {
 					return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is too short." +
-                            (BuildConfig.DEBUG ? " (base: " + bDistanceTravelled + ", challenge: " + cDistanceTravelled + ")" : ""));
+                            (DEBUG ? " (base: " + bDistanceTravelled + ", challenge: " + cDistanceTravelled + ")" : ""));
 				} else {
 					return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is too long." +
-                        (BuildConfig.DEBUG ? " (base: " + bDistanceTravelled + ", challenge: " + cDistanceTravelled + ")" : ""));
+                        (DEBUG ? " (base: " + bDistanceTravelled + ", challenge: " + cDistanceTravelled + ")" : ""));
 				}
 //			case TOO_FEW_SHARP_CURVES:
 //			case TOO_MANY_SHARP_CURVES:

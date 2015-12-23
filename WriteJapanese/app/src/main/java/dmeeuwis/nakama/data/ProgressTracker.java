@@ -1,5 +1,7 @@
 package dmeeuwis.nakama.data;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,7 +62,7 @@ public class ProgressTracker {
 		List<Integer> scoresList = Arrays.asList(scores);
 		List<Character> matching = new ArrayList<>();
         for(Map.Entry<Character, Integer> c: this.recordSheet.entrySet()){
-        	Integer knownScore = c.getValue() == null ? 0 : c.getValue();
+        	Integer knownScore = c.getValue();
         	if(scoresList.contains(knownScore) && allowedChars.contains(c.getKey())){
 				matching.add(c.getKey());
 			}
@@ -80,10 +82,9 @@ public class ProgressTracker {
 	}
 
 	private Character firstCharacterMatching(Integer score, Set<Character> allowedChars){
-		if(score == null) score = 0;
         for(Map.Entry<Character, Integer> c: this.recordSheet.entrySet()){
-        	Integer knownScore = c.getValue() == null ? 0 : c.getValue();
-        	if(score.equals(knownScore) && allowedChars.contains(c.getKey())){
+        	Integer knownScore = c.getValue();
+        	if(score == knownScore || (score != null && score.equals(knownScore) && allowedChars.contains(c.getKey()))){
 				return c.getKey();
 			}
 		}
@@ -92,17 +93,20 @@ public class ProgressTracker {
 
 	public Character randomMistakenNext(Set<Character> allowedChars){
 		List<Character> matching = charactersMatchingScore(allowedChars, -2);
+		Log.i("nakama-progression", "Characters in mistaken: " + Util.join(", ", matching));
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 
 	
 	public Character randomReviewingNext(Set<Character> allowedChars){
 		List<Character> matching = charactersMatchingScore(allowedChars, -1, 0);
+		Log.i("nakama-progression", "Characters in review: " + Util.join(", ", matching));
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 	
 	public Character randomCorrectNext(Set<Character> allowedChars){
 		List<Character> matching = charactersMatchingScore(allowedChars, 1);
+		Log.i("nakama-progression", "Characters in correct: " + Util.join(", ", matching));
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 	

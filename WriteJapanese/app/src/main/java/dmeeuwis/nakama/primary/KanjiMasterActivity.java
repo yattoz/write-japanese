@@ -650,14 +650,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     public void loadNextCharacter(boolean increment) {
-        Log.i("nakama", "loadNextCharacter(" + increment + ")");
-
         // push before-next character onto back-stack
         Character priorCharacter = currentCharacterSet.currentCharacter();
 
         if (priorCharacter == null && !increment) {
-            loadNextCharacter(true);
-            return;
+            increment = true;
         }
 
         // TODO: improve this... show a page, give congratulations...?
@@ -665,7 +662,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             if (currentCharacterSet.locked() && lockChecker.getPurchaseStatus() == LockLevel.LOCKED) {
                 raisePurchaseDialog(PurchaseDialog.DialogMessage.END_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
             } else {
-                Toast.makeText(this, "You have completed all the kana in this set!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "You have completed all the characters in this set!", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -678,7 +675,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
         storyButtonUpdate();
         this.loadDrawDetails();
-
 
         if(this.charSetFrag != null){
             this.charSetFrag.updateProgress();
@@ -1005,7 +1001,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 ed.remove(currentCharacterSet.pathPrefix);
                 ed.apply();
                 currentCharacterSet.progressReset(KanjiMasterActivity.this);
-                loadNextCharacter(false);
+                loadNextCharacter(true);
 
                 dialog.dismiss();
             }
