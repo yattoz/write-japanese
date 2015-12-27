@@ -15,8 +15,8 @@ android {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 49
-        versionName "3.0"
+        versionCode 51
+        versionName "3.1"
     }
     buildTypes {
         release {
