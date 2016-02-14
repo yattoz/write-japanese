@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
@@ -29,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -48,11 +50,22 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import dmeeuwis.Kanji;
@@ -152,10 +165,68 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     protected CharacterSetStatusFragment charSetFrag;
 
-    private static class KanjiMasterUncaughtHandler implements Thread.UncaughtExceptionHandler {
+    private class KanjiMasterUncaughtHandler implements Thread.UncaughtExceptionHandler {
         @Override
-        public void uncaughtException(Thread thread, Throwable ex) {
+        public void uncaughtException(final Thread thread, final Throwable ex) {
             Log.e("nakama", "Uncaught exception from thread " + thread, ex);
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+            try {
+                Writer netWriter = new StringWriter();
+                JsonWriter jw = new JsonWriter(netWriter);
+
+                jw.beginObject();
+                jw.name("threadName");
+                jw.value(thread.getName());
+                jw.name("threadId");
+                jw.value(String.valueOf(thread.getId()));
+                jw.name("exception");
+                jw.value(ex.toString());
+                jw.name("iid");
+                jw.value(Iid.get(KanjiMasterActivity.this.getApplicationContext()).toString());
+                jw.name("version");
+                jw.value(String.valueOf(BuildConfig.VERSION_CODE));
+                jw.name("device");
+                jw.value(Build.MANUFACTURER + ": " + Build.MODEL);
+
+                jw.name("stack");
+                jw.beginArray();
+                for(StackTraceElement e: ex.getStackTrace()){
+                    jw.value(e.toString());
+                }
+                jw.endArray();
+                jw.endObject();
+                jw.close();
+
+                String json = netWriter.toString();
+                Log.i("nakama", "Will try to send error report: " + json);
+
+                URL url = new URL("http://192.168.1.99/write-japanese/bug-report");
+                HttpURLConnection report = (HttpURLConnection) url.openConnection();
+                try {
+                    report.setRequestMethod("POST");
+                    report.setDoOutput(true);
+                    report.setReadTimeout(5000);
+                    report.setConnectTimeout(5000);
+                    report.setRequestProperty("Content-Type", "application/json");
+                    OutputStream out = report.getOutputStream();
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                        writer.write(json);
+                        writer.close();
+                    } finally {
+                        out.close();
+                    }
+                    int responseCode = report.getResponseCode();
+                    Log.i("nakama", "Response code from writing error to network: " + responseCode);
+                } finally {
+                    report.disconnect();
+                }
+
+            } catch (Throwable e) {
+                Log.e("nakama", "Error trying to report error", e);
+            }
         }
     }
 
@@ -840,6 +911,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
             menu.add("DEBUG:SyncNow");
+            menu.add("DEBUG:ThrowException");
         }
         return true;
     }
@@ -975,6 +1047,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
                 bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
                 ContentResolver.requestSync(null, "dmeeuwis.com", bundle);
+            } else if(item.getTitle().equals("DEBUG:ThrowException")){
+                throw new RuntimeException("Practicing error catching!");
             }
         }
 
