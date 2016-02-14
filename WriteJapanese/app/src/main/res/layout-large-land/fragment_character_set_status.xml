@@ -63,14 +63,14 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set a goal to measure your progress against, and activate daily study reminders."
+            android:text="@string/completion_goal_set_description"
             />
 
         <Button
             android:id="@+id/charset_progress_set_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Set Completion Goal"
+            android:text="@string/set_completion_goal"
             />
 
     </LinearLayout>
@@ -99,7 +99,7 @@
             android:id="@+id/charset_progress_clear_goal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clear Goal"
+            android:text="@string/clear_completion_goal"
             />
     </LinearLayout>
 

@@ -60,5 +60,8 @@
     <string name="radicals_label">Radicals</string>
     <string name="shared_stories_label">Shared Stories</string>
     <string name="menu_network_string_message">Perform Network Sync</string>
+    <string name="set_completion_goal">Set Goal</string>
+    <string name="clear_completion_goal">Clear Goal</string>
+    <string name="completion_goal_set_description">Set a goal to measure your progress against, and activate daily study reminders.</string>
 
 </resources>
