@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import dmeeuwis.util.Util;
@@ -122,12 +123,25 @@ public class ProgressTracker {
         return shuffleNext(allowedChars);
 	}
 
+	private Character randomFromSet(Set<Character> set){
+		int randomTarget = new Random().nextInt(set.size());
+		int i = 0;
+		for(Character o: set) {
+    		if (i == randomTarget) {
+				return o;
+			}
+    		i = i + 1;
+		}
+		return set.toArray(new Character[0])[0];
+	}
+
     public Character randomNext(Set<Character> allowedChars){
         List<Character> matching = charactersMatchingScore(allowedChars, -2, -1, 0, 1);
         if(matching.size() > 0){
             return matching.get((int)(Math.random() * matching.size()));
         }
-        throw new RuntimeException("Error: could not find a character to progress to.");
+
+		return randomFromSet(allowedChars);
     }
 
 	public Character shuffleNext(Set<Character> allowedChars){
@@ -141,7 +155,7 @@ public class ProgressTracker {
 			return matching.get((int)(Math.random() * matching.size()));
 		}
 
-		throw new RuntimeException("Error: could not find a character to progress to.");
+		return randomFromSet(allowedChars);
 	}
 	
 	public boolean passedAllCharacters(Set<Character> allowedChars){
