@@ -307,4 +307,8 @@ public abstract class CharacterStudySet implements Iterable<Character> {
     public Map<Character, ProgressTracker.Progress> getRecordSheet(){
         return this.tracker.getAllScores();
     }
+
+	public void debugMarkAllPassed(){
+		this.tracker.debugMarkAllSuccess();
+	}
 }

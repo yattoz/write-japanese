@@ -183,6 +183,12 @@ public class ProgressTracker {
 		recordSheet.put(c, Math.max(-2, score - 2));
 	}
 
+	public void debugMarkAllSuccess(){
+		for(Character c: this.recordSheet.keySet()){
+			this.recordSheet.put(c, 2);
+		}
+	}
+
 	public Map<Character, Progress> getAllScores(){
 		Map<Character, Progress> all = new HashMap<>(recordSheet.size());
 		for(Map.Entry<Character, Integer> entry: recordSheet.entrySet()){

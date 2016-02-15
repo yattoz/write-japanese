@@ -912,6 +912,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:PrintPracticeLog");
             menu.add("DEBUG:SyncNow");
             menu.add("DEBUG:ThrowException");
+            menu.add("DEBUG:MarkAllPassed");
         }
         return true;
     }
@@ -1049,6 +1050,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 ContentResolver.requestSync(null, "dmeeuwis.com", bundle);
             } else if(item.getTitle().equals("DEBUG:ThrowException")){
                 throw new RuntimeException("Practicing error catching!");
+            } else if(item.getTitle().equals("DEBUG:MarkAllPassed")){
+                this.currentCharacterSet.debugMarkAllPassed();
             }
         }
 
