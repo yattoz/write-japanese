@@ -202,7 +202,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 String json = netWriter.toString();
                 Log.i("nakama", "Will try to send error report: " + json);
 
-                URL url = new URL("http://192.168.1.99/write-japanese/bug-report");
+                URL url = new URL("https://dmeeuwis.com/write-japanese/bug-report");
                 HttpURLConnection report = (HttpURLConnection) url.openConnection();
                 try {
                     report.setRequestMethod("POST");
