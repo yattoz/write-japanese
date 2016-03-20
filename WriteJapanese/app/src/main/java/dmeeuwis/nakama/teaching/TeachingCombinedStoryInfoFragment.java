@@ -42,6 +42,8 @@ import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
 import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.TallGridView;
+import dmeeuwis.util.Util;
+import uk.co.deanwild.flowtextview.FlowTextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,6 +74,8 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     View radicalsCard, examplesCard;
 
     List<String> networkStories = new ArrayList<>();
+
+    private float engTextSize;
 
     public static TeachingCombinedStoryInfoFragment newInstance(String charsetPath) {
         TeachingCombinedStoryInfoFragment fragment = new TeachingCombinedStoryInfoFragment();
@@ -116,6 +120,9 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Resources r = getResources();
+        engTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
     }
 
     @Override
@@ -150,7 +157,8 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
                     AdvancedFuriganaTextView af = (AdvancedFuriganaTextView) newTranslation.findViewById(R.id.kanji);
                     af.setTranslation(t, dictionarySet.kanjiFinder());
-                    TextView eng = (TextView) newTranslation.findViewById(R.id.english);
+                    FlowTextView eng = (FlowTextView) newTranslation.findViewById(R.id.english);
+                    eng.setTextSize(engTextSize);
                     eng.setText(t.toEnglishString());
                     combinedExamplesLayout.addView(newTranslation);
 

@@ -1,6 +1,7 @@
 package dmeeuwis.nakama.teaching;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -25,6 +26,7 @@ import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask.AddTranslation;
 import dmeeuwis.util.Util;
+import uk.co.deanwild.flowtextview.FlowTextView;
 
 public class TeachingInfoFragment extends Fragment {
 
@@ -33,6 +35,8 @@ public class TeachingInfoFragment extends Fragment {
 	LinearLayout examplesLayout;
 	List<Translation> usedInTranslations;
 	TextView kanjiLabel;
+    float engTextSize;
+
 
 	private KanjiTranslationListAsyncTask searchTask;
 
@@ -49,6 +53,9 @@ public class TeachingInfoFragment extends Fragment {
         this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
         this.kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);
 
+        Resources r = getActivity().getResources();
+        this.engTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
+
         this.usedInTranslations = new LinkedList<>();
         this.examplesLayout = (LinearLayout)view.findViewById(R.id.exampleSpace);
 
@@ -58,7 +65,8 @@ public class TeachingInfoFragment extends Fragment {
                 View newTranslation = View.inflate(parent, R.layout.translation_slide, null);
                 AdvancedFuriganaTextView af = (AdvancedFuriganaTextView) newTranslation.findViewById(R.id.kanji);
                 af.setTranslation(t, dictSet.kanjiFinder());
-                TextView eng = (TextView) newTranslation.findViewById(R.id.english);
+                FlowTextView eng = (FlowTextView) newTranslation.findViewById(R.id.english);
+                eng.setTextSize(engTextSize);
                 eng.setText(t.toEnglishString());
                 examplesLayout.addView(newTranslation);
             }

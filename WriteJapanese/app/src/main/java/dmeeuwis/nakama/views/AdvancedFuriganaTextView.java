@@ -104,6 +104,7 @@ public class AdvancedFuriganaTextView extends View {
         }
         
         characterPadding = (float)((textWidth / this.parts.length) * 0.05);
+		textWidth += characterPadding * this.parts.length + 2 * characterPadding;
 		
         this.invalidate();
 	}

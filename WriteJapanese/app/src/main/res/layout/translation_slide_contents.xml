@@ -1,34 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:gravity="center_vertical"
-              android:padding="5dp"
-              android:orientation="horizontal">
+<uk.co.deanwild.flowtextview.FlowTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/english"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_margin="5dp">
 
-    <HorizontalScrollView
-        android:layout_width="0dp"
+    <dmeeuwis.nakama.views.AdvancedFuriganaTextView
+        android:id="@+id/kanji"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="4">
-
-        <dmeeuwis.nakama.views.AdvancedFuriganaTextView
-            android:id="@+id/kanji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:furiganaTextSize="14sp"
-            app:mainTextSize="36sp"
-
-            />
-    </HorizontalScrollView>
-
-    <TextView
-        android:id="@+id/english"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="6"
-        android:paddingLeft="3sp"
-        android:paddingRight="1sp"
-        android:textColor="#878787"
-        android:textSize="16sp"/>
-</LinearLayout>
+        android:layout_weight="1"
+        app:furiganaTextSize="14sp"
+        app:mainTextSize="36sp" />
+</uk.co.deanwild.flowtextview.FlowTextView>
