@@ -149,26 +149,27 @@ public class DrawingComparator {
 				}
 			}
 			c.add("Your " + Util.adjectify(knownInt.firstPathIndex, known.strokeCount()) + " and " + Util.adjectify(knownInt.secondPathIndex, known.strokeCount()) + " strokes should meet.",
-					Criticism.PaintColourInstructions.SKIP);
+					Criticism.SKIP,
+                    Criticism.SKIP);
 		}
 
 		if(overallFailures.contains(OverallFailure.MISSING_STROKES)){
 			int missingStrokes = this.known.strokeCount() - this.drawn.strokeCount();
-			if(missingStrokes == 1){
-				c.add("You are missing a stroke.", Criticism.PaintColourInstructions.
-			} else {
-				c.add("You are missing " + Util.nounify(missingStrokes) + " strokes.");
-			}
+            String message = missingStrokes == 1 ?
+                    "You are missing a stroke." :
+                    "You are missing " + Util.nounify(missingStrokes) + " strokes.";
+			c.add(message, Criticism.SKIP,
+                    new Criticism.LastColours(Criticism.CORRECT_COLOUR, missingStrokes, this.drawn.strokeCount()));
+
 		} else if(overallFailures.contains(OverallFailure.EXTRA_STROKES)) {
 			int extraStrokes = this.drawn.strokeCount() - this.known.strokeCount();
-			if(extraStrokes == 1){
-				c.add("You drew an extra stroke.");
-			} else {
-				c.add("You drew " + Util.nounify(extraStrokes) + " extra strokes." +
-                        (BuildConfig.DEBUG ? "[ drawn=" + this.drawn.strokeCount() + "; known=" + this.known.strokeCount() + "; extra=" + extraStrokes + "]" : ""));
-			}
+            String message = extraStrokes == 1 ?
+                    "You drew an extra stroke." :
+                    "You drew " + Util.nounify(extraStrokes) + " extra strokes.";
+			c.add(message,
+                    new Criticism.LastColours(Criticism.INCORRECT_COLOUR, extraStrokes, drawn.strokeCount()),
+                    Criticism.SKIP);
 		}
-		
 		
 		// find best set of strokes
 		List<StrokeResult> bestStrokes = findBestPairings(scoreMatrix);
@@ -177,14 +178,18 @@ public class DrawingComparator {
 				if(!s.knownStrokeIndex.equals(s.drawnStrokeIndex)) {
 					for(StrokeResult subS: bestStrokes){
 						if(s.drawnStrokeIndex.equals(subS.knownStrokeIndex) && subS.score == 0){
-							c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.");
+							c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.",
+                                    new Criticism.WrongOrderColours(s.knownStrokeIndex, s.drawnStrokeIndex),
+                                    new Criticism.RightOrderColours(s.knownStrokeIndex, s.drawnStrokeIndex));
 							break best;
 						}
 					}
 				}
 			} else {
 				if(!(s.knownStrokeIndex == null || s.drawnStrokeIndex == null)){
-					c.add(criticismMatrix[s.knownStrokeIndex][s.drawnStrokeIndex].message);
+					c.add(criticismMatrix[s.knownStrokeIndex][s.drawnStrokeIndex].message,
+                            new Criticism.WrongStrokeColour(s.drawnStrokeIndex),
+                            new Criticism.RightStrokeColour(s.knownStrokeIndex));
 				}
 			}
 		}
@@ -197,7 +202,7 @@ public class DrawingComparator {
 				DrawingComparator pc = new DrawingComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder);
 				if(pc.compare(Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
-					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".");
+					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;
 				}
 			} else if(!c.pass && Kana.isKatakana(target)){
@@ -205,7 +210,7 @@ public class DrawingComparator {
 				DrawingComparator pc = new DrawingComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), this.drawn, assetFinder);
 				if(pc.compare(Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
-					specific.add("You drew the hiragana " + hiraganaVersion + " instead of the katakana " + target + ".");
+					specific.add("You drew the hiragana " + hiraganaVersion + " instead of the katakana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;
 				}
 			}
