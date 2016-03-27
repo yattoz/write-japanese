@@ -211,6 +211,12 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        if(searchTask != null){
+            searchTask.cancel(true);
+        }
+        if(networkStoriesAsyncTask != null){
+            networkStoriesAsyncTask.cancel(true);
+        }
         super.onDetach();
         mListener = null;
     }

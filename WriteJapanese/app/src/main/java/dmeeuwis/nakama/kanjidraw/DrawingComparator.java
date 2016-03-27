@@ -148,13 +148,14 @@ public class DrawingComparator {
 					if(BuildConfig.DEBUG) Log.d("nakama", "Saw distance between intersects " + drawnInt + " and known int " + knownInt.intersectPoint + " as " + distance);
 				}
 			}
-			c.add("Your " + Util.adjectify(knownInt.firstPathIndex, known.strokeCount()) + " and " + Util.adjectify(knownInt.secondPathIndex, known.strokeCount()) + " strokes should meet.");
+			c.add("Your " + Util.adjectify(knownInt.firstPathIndex, known.strokeCount()) + " and " + Util.adjectify(knownInt.secondPathIndex, known.strokeCount()) + " strokes should meet.",
+					Criticism.PaintColourInstructions.SKIP);
 		}
 
 		if(overallFailures.contains(OverallFailure.MISSING_STROKES)){
 			int missingStrokes = this.known.strokeCount() - this.drawn.strokeCount();
 			if(missingStrokes == 1){
-				c.add("You are missing a stroke.");
+				c.add("You are missing a stroke.", Criticism.PaintColourInstructions.
 			} else {
 				c.add("You are missing " + Util.nounify(missingStrokes) + " strokes.");
 			}

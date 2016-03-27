@@ -39,11 +39,6 @@ public class CurveDrawing implements Drawing {
 	}
 
     @Override
-    public Iterator<ParameterizedEquation> parameterizedEquations(float scale) {
-        return this.strokes.iterator();
-    }
-
-    @Override
 	public Iterator<Stroke> iterator() {
 		throw new RuntimeException("Not supported.");
 	}

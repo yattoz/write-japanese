@@ -169,6 +169,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         @Override
         public void uncaughtException(final Thread thread, final Throwable ex) {
             Log.e("nakama", "Uncaught exception from thread " + thread, ex);
+            if(BuildConfig.DEBUG){
+                return;
+            }
+
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
 

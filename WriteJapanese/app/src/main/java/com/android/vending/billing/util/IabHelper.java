@@ -403,6 +403,10 @@ public class IabHelper {
                                            Integer.valueOf(0), Integer.valueOf(0),
                                            Integer.valueOf(0));
         }
+        catch (NullPointerException e) {
+            throw new RuntimeException("Annotating NullPointerException: sku=" + sku + " itemType=" + itemType +
+                " requestCode=" + requestCode + " mService=" + mService + " mContext=" + mContext, e);
+        }
         catch (SendIntentException e) {
             logError("SendIntentException while launching purchase flow for sku " + sku);
             e.printStackTrace();

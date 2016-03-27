@@ -141,11 +141,6 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	}
 
     @Override
-    public Iterator<ParameterizedEquation> parameterizedEquations(float scale) {
-        return this.toParameterizedEquations(scale).iterator();
-    }
-
-    @Override
 	public List<ParameterizedEquation> toParameterizedEquations(float scale){
 		List<ParameterizedEquation> ret = new ArrayList<>(this.strokeCount());
 		for(Stroke stroke: strokes)
