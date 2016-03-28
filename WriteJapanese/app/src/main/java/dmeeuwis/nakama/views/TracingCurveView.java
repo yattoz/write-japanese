@@ -1,5 +1,6 @@
 package dmeeuwis.nakama.views;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -7,13 +8,11 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AnimatedCurveView.DrawTime;
@@ -107,7 +106,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 	
 	public void setCurveDrawing(CurveDrawing curveDrawing){
 		this.curveDrawing = curveDrawing;
-		this.animatedCurve.setDrawing(curveDrawing, DrawTime.ANIMATED);
+		this.animatedCurve.setDrawing(curveDrawing, DrawTime.ANIMATED, Criticism.SKIP_LIST);
 		this.currentTracingTargetStrokeCount = curveDrawing.strokeCount();
 	}
 	

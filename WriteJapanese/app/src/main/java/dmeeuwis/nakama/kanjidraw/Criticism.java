@@ -1,14 +1,17 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Criticism {
-    public static final int CORRECT_COLOUR = Color.GREEN;
-    public static final int INCORRECT_COLOUR = Color.RED;
+    public static final int CORRECT_COLOUR = 0xFF0EA10E;
+    public static final int INCORRECT_COLOUR = 0xFF8B000B;
+
+    public final static PaintColourInstructions SKIP = new NoColours();
+    public final static ArrayList<PaintColourInstructions> SKIP_LIST = new ArrayList<>();
+
 
 	public final List<String> critiques;
 	public final List<PaintColourInstructions> knownPaintInstructions, drawnPaintInstructions;
@@ -32,11 +35,9 @@ public class Criticism {
         void colour(int stroke, float t, Paint p, int defaultColor);
     }
 
-    public final static PaintColourInstructions SKIP = new NoColours();
-
     public static class NoColours implements PaintColourInstructions {
         public void colour(int stroke, float t, Paint p, int defaultColor){
-            // do nothing
+            p.setColor(defaultColor);
         }
     }
 

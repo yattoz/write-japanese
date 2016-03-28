@@ -1,10 +1,8 @@
 package dmeeuwis.nakama.teaching;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +18,7 @@ import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
 import dmeeuwis.nakama.views.AnimatedCurveView;
@@ -77,7 +76,7 @@ public class TeachingInfoFragment extends Fragment {
 
         CurveDrawing animCurveDrawing = new CurveDrawing(currentCharacterSvg);
         kanjiLabel.setText(Character.toString(kanji.kanji));
-        this.kanim.setDrawing(animCurveDrawing, AnimatedCurveView.DrawTime.ANIMATED);
+        this.kanim.setDrawing(animCurveDrawing, AnimatedCurveView.DrawTime.ANIMATED, Criticism.SKIP_LIST);
 
         addTextViewsToLayout((LinearLayout)view.findViewById(R.id.meanings), kanji.meanings);
 

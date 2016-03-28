@@ -158,8 +158,9 @@ public class DrawingComparator {
             String message = missingStrokes == 1 ?
                     "You are missing a stroke." :
                     "You are missing " + Util.nounify(missingStrokes) + " strokes.";
-			c.add(message, Criticism.SKIP,
-                    new Criticism.LastColours(Criticism.CORRECT_COLOUR, missingStrokes, this.drawn.strokeCount()));
+			c.add(message,
+                    new Criticism.LastColours(Criticism.CORRECT_COLOUR, missingStrokes, this.known.strokeCount()),
+					Criticism.SKIP);
 
 		} else if(overallFailures.contains(OverallFailure.EXTRA_STROKES)) {
 			int extraStrokes = this.drawn.strokeCount() - this.known.strokeCount();
@@ -167,8 +168,8 @@ public class DrawingComparator {
                     "You drew an extra stroke." :
                     "You drew " + Util.nounify(extraStrokes) + " extra strokes.";
 			c.add(message,
-                    new Criticism.LastColours(Criticism.INCORRECT_COLOUR, extraStrokes, drawn.strokeCount()),
-                    Criticism.SKIP);
+                    Criticism.SKIP,
+					new Criticism.LastColours(Criticism.INCORRECT_COLOUR, extraStrokes, drawn.strokeCount()));
 		}
 		
 		// find best set of strokes
@@ -179,8 +180,8 @@ public class DrawingComparator {
 					for(StrokeResult subS: bestStrokes){
 						if(s.drawnStrokeIndex.equals(subS.knownStrokeIndex) && subS.score == 0){
 							c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.",
-                                    new Criticism.WrongOrderColours(s.knownStrokeIndex, s.drawnStrokeIndex),
-                                    new Criticism.RightOrderColours(s.knownStrokeIndex, s.drawnStrokeIndex));
+                                    new Criticism.RightOrderColours(s.knownStrokeIndex, s.drawnStrokeIndex),
+									new Criticism.WrongOrderColours(s.knownStrokeIndex, s.drawnStrokeIndex));
 							break best;
 						}
 					}
@@ -188,8 +189,8 @@ public class DrawingComparator {
 			} else {
 				if(!(s.knownStrokeIndex == null || s.drawnStrokeIndex == null)){
 					c.add(criticismMatrix[s.knownStrokeIndex][s.drawnStrokeIndex].message,
-                            new Criticism.WrongStrokeColour(s.drawnStrokeIndex),
-                            new Criticism.RightStrokeColour(s.knownStrokeIndex));
+                            new Criticism.RightStrokeColour(s.knownStrokeIndex),
+							new Criticism.WrongStrokeColour(s.drawnStrokeIndex));
 				}
 			}
 		}

@@ -1,6 +1,5 @@
 package dmeeuwis.nakama.primary;
 
-import android.accounts.AccountManager;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -50,8 +49,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
-import org.json.JSONObject;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,13 +59,10 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
@@ -87,7 +81,6 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.data.GetAccountTokenAsync;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
@@ -104,7 +97,6 @@ import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.KanjiVocabRecyclerAdapter;
 import dmeeuwis.nakama.views.PurchaseDialog;
-import dmeeuwis.nakama.views.SetInfoDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
@@ -367,8 +359,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 currentCharacterSet.markCurrent(critique.pass, KanjiMasterActivity.this);
 
                 if (critique.pass) {
-                    correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC);
-                    correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC);
+                    correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
+                    correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
 
                     setUiState(State.CORRECT_ANSWER);
 
@@ -389,8 +381,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
                 } else {
                     Log.d("nakama", "Setting up data for incorrect results critique.");
-                    correctAnimation.setDrawing(known, AnimatedCurveView.DrawTime.ANIMATED);
-                    playbackAnimation.setDrawing(challenger, AnimatedCurveView.DrawTime.ANIMATED);
+                    correctAnimation.setDrawing(known, AnimatedCurveView.DrawTime.ANIMATED, critique.knownPaintInstructions);
+                    playbackAnimation.setDrawing(challenger, AnimatedCurveView.DrawTime.ANIMATED, critique.drawnPaintInstructions);
 
                     criticismArrayAdapter.clear();
                     for (String c : critique.critiques) {

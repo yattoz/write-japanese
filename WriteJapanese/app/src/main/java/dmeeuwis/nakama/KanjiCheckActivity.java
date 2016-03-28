@@ -10,9 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.LinkedList;
+
 import dmeeuwis.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.AssetFinder;
+import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 
@@ -61,8 +64,8 @@ public class KanjiCheckActivity extends ActionBarActivity {
 
                 if(cv != null) {
                     KanjiViewHolder kh = (KanjiViewHolder) holder;
-                    kh.curve.setDrawing(cv, AnimatedCurveView.DrawTime.STATIC);
-                    kh.points.setDrawing(cv.toDrawing(), AnimatedCurveView.DrawTime.STATIC);
+                    kh.curve.setDrawing(cv, AnimatedCurveView.DrawTime.STATIC, Criticism.SKIP_LIST);
+                    kh.points.setDrawing(cv.toDrawing(), AnimatedCurveView.DrawTime.STATIC, Criticism.SKIP_LIST);
                     kh.info.setText("Get sharp points");
                 }
             }

@@ -1,7 +1,5 @@
 package dmeeuwis.nakama.teaching;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -9,10 +7,7 @@ import java.util.UUID;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -29,26 +24,21 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import dmeeuwis.Kanji;
-import dmeeuwis.KanjiRadicalFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.LoadRadicalsFile;
 import dmeeuwis.nakama.data.RadicalAdapter;
 import dmeeuwis.nakama.data.StoryDataHelper;
-import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.primary.Iid;
-import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.views.AnimatedCurveView;
-import dmeeuwis.nakama.views.KanjiWithMeaningView;
 import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
 import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
-import dmeeuwis.util.Util;
 
 public class TeachingStoryFragment extends Fragment {
     public static final String STORY_SHARING_KEY = "storySharing";
@@ -125,10 +115,10 @@ public class TeachingStoryFragment extends Fragment {
         CurveDrawing currentCharacterCurve = new CurveDrawing(parent.getCurrentCharacterSvg());
         this.storyEditor.setText(s, TextView.BufferType.EDITABLE);
         this.kanjiLabel.setText(Character.toString(this.character), TextView.BufferType.EDITABLE);
-        this.kanim.setDrawing(currentCharacterCurve, AnimatedCurveView.DrawTime.ANIMATED);
+        this.kanim.setDrawing(currentCharacterCurve, AnimatedCurveView.DrawTime.ANIMATED, Criticism.SKIP_LIST);
         this.kanjiLabel.setText(Character.toString(this.character), TextView.BufferType.EDITABLE);
 
-        this.kanim.setDrawing(currentCharacterCurve, AnimatedCurveView.DrawTime.ANIMATED);
+        this.kanim.setDrawing(currentCharacterCurve, AnimatedCurveView.DrawTime.ANIMATED, Criticism.SKIP_LIST);
 
         radicalAdapter = new RadicalAdapter(parent, android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
         gridView.setAdapter(radicalAdapter);

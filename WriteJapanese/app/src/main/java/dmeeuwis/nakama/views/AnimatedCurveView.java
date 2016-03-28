@@ -23,12 +23,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.ParameterizedEquation;
 import dmeeuwis.nakama.views.MeasureUtil.ScaleAndOffsets;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
 
 public class AnimatedCurveView extends View implements Animatable {
+    private List<Criticism.PaintColourInstructions> knownPaintInstructions;
+
     public static enum DrawTime { ANIMATED, STATIC }
     public static enum DrawStatus { DRAWING, FINISHED }
     public static enum PlayStatus { PLAYING, STOPPED }
@@ -154,8 +157,10 @@ public class AnimatedCurveView extends View implements Animatable {
     /**
      * Clears current strokes, and registers a new set from point lists.
      */
-    public void setDrawing(final Drawing drawing, final DrawTime drawTimeParam){
+    public void setDrawing(final Drawing drawing, final DrawTime drawTimeParam, List<Criticism.PaintColourInstructions> knownPaintInstructions){
         if(drawing == null){ throw new IllegalArgumentException("Cannot accept null Drawing"); }
+
+        this.knownPaintInstructions = knownPaintInstructions;
         clear();
 
         if(drawTimeParam == DrawTime.STATIC){
@@ -320,8 +325,12 @@ public class AnimatedCurveView extends View implements Animatable {
         }
 
 		// draw the paths
-		for(Path eachPath: pathsToDraw){
-	    	canvas.drawPath(eachPath, paint);
+		for(int i = 0; i < pathsToDraw.size(); i++){
+            Path p = pathsToDraw.get(i);
+            for(Criticism.PaintColourInstructions colour: knownPaintInstructions){
+                colour.colour(i, 0, paint, Color.BLACK);
+            }
+	    	canvas.drawPath(p, paint);
 		}
 	}
 }
