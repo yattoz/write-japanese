@@ -77,7 +77,43 @@ public class DrawingComparator {
             this.message = message;
             this.cost = cost;
         }
+	}
 
+	public int[] missingInts(int max, List<Integer> present){
+		List<Integer> missing = new ArrayList<>(max);
+		for(int i = 0; i < max; i++){
+			if(!present.contains(i)){
+				missing.add(i);
+			}
+		}
+
+		if(missing.size() > 0){
+			return Util.toIntArray(missing);
+		}
+		return null;
+	}
+
+	public int[] findMissingStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
+		int missing = knownCount - drawnCount;
+		if(missing <= 0){
+			// only try to colour if we're sure we can identify the missing strokes
+			return null;
+		}
+
+		// strokeresult will be the size of drawnCount, not knownCount
+		List<Integer> drewWell = new ArrayList<>(drawnCount);
+		for(StrokeResult r: best){
+			if(r.score >= 100){
+				drewWell.add(r.drawnStrokeIndex);
+			}
+		}
+
+		// only colour missing strokes if every stoke you drew, you drew well
+		if(drewWell.size() == drawnCount){
+			return missingInts(knownCount, drewWell);
+		} else {
+			return null;
+		}
 	}
 	
 	
@@ -149,29 +185,10 @@ public class DrawingComparator {
 				}
 			}
 			c.add("Your " + Util.adjectify(knownInt.firstPathIndex, known.strokeCount()) + " and " + Util.adjectify(knownInt.secondPathIndex, known.strokeCount()) + " strokes should meet.",
-					Criticism.SKIP,
-                    Criticism.SKIP);
+					Criticism.correctColours(knownInt.firstPathIndex, knownInt.secondPathIndex),
+					Criticism.incorrectColours(knownInt.firstPathIndex, knownInt.secondPathIndex));
 		}
 
-		if(overallFailures.contains(OverallFailure.MISSING_STROKES)){
-			int missingStrokes = this.known.strokeCount() - this.drawn.strokeCount();
-            String message = missingStrokes == 1 ?
-                    "You are missing a stroke." :
-                    "You are missing " + Util.nounify(missingStrokes) + " strokes.";
-			c.add(message,
-                    new Criticism.LastColours(Criticism.CORRECT_COLOUR, missingStrokes, this.known.strokeCount()),
-					Criticism.SKIP);
-
-		} else if(overallFailures.contains(OverallFailure.EXTRA_STROKES)) {
-			int extraStrokes = this.drawn.strokeCount() - this.known.strokeCount();
-            String message = extraStrokes == 1 ?
-                    "You drew an extra stroke." :
-                    "You drew " + Util.nounify(extraStrokes) + " extra strokes.";
-			c.add(message,
-                    Criticism.SKIP,
-					new Criticism.LastColours(Criticism.INCORRECT_COLOUR, extraStrokes, drawn.strokeCount()));
-		}
-		
 		// find best set of strokes
 		List<StrokeResult> bestStrokes = findBestPairings(scoreMatrix);
 		best: for(StrokeResult s: bestStrokes){
@@ -194,7 +211,34 @@ public class DrawingComparator {
 				}
 			}
 		}
-		
+
+		if(overallFailures.contains(OverallFailure.MISSING_STROKES)){
+			int missingStrokes = this.known.strokeCount() - this.drawn.strokeCount();
+			String message = missingStrokes == 1 ?
+					"You are missing a stroke." :
+					"You are missing " + Util.nounify(missingStrokes) + " strokes.";
+
+			Criticism.PaintColourInstructions colours;
+			int[] missedStrokes = findMissingStrokes(known.strokeCount(), drawn.strokeCount(), bestStrokes);
+			if(missedStrokes == null){
+				colours = Criticism.SKIP;
+			} else {
+				colours = Criticism.incorrectColours(missedStrokes);
+			}
+			c.add(message,
+					colours,
+					Criticism.SKIP);
+
+		} else if(overallFailures.contains(OverallFailure.EXTRA_STROKES)) {
+			int extraStrokes = this.drawn.strokeCount() - this.known.strokeCount();
+			String message = extraStrokes == 1 ?
+					"You drew an extra stroke." :
+					"You drew " + Util.nounify(extraStrokes) + " extra strokes.";
+			c.add(message,
+					Criticism.SKIP,
+					new Criticism.LastColours(Criticism.INCORRECT_COLOUR, extraStrokes, drawn.strokeCount()));
+		}
+
 
 		// special case for hiragana and katakana: find if the user drew katakana version instead of hiragana, and vice-versa
 		if(allowRecursion == Recursion.ALLOW){

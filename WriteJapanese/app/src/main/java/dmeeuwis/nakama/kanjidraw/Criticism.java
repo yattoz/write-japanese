@@ -102,6 +102,38 @@ public class Criticism {
         }
     }
 
+    public static PaintColourInstructions incorrectColours(int...strokes){
+        return new ColourStrokes(INCORRECT_COLOUR, strokes);
+    }
+
+    public static PaintColourInstructions correctColours(int...strokes){
+        return new ColourStrokes(CORRECT_COLOUR, strokes);
+    }
+
+    private static class ColourStrokes implements PaintColourInstructions {
+        private int[] strokes;
+        private int colour;
+
+        public ColourStrokes(int colour, int ... stroke){
+            this.colour = colour;
+            this.strokes = stroke;
+        }
+
+        public void colour(int stroke, float t, Paint p, int defaultColor){
+            boolean contains = false;
+            for(int s: strokes) {
+                if (stroke == s) {
+                    contains = true;
+                }
+            }
+
+            if(contains){
+                p.setColor(colour);
+            } else {
+                p.setColor(defaultColor);
+            }
+        }
+    }
 
     public static class LastColours implements PaintColourInstructions {
         private int colour, lastN, strokeCount;
