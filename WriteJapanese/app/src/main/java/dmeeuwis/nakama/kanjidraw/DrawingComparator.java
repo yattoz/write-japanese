@@ -3,6 +3,7 @@ package dmeeuwis.nakama.kanjidraw;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -93,6 +94,30 @@ public class DrawingComparator {
 		return null;
 	}
 
+    public int[] findExtraStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
+        int extra = drawnCount - knownCount;
+        if(extra <= 0){
+            // only try to colour if we're sure we can identify the extra strokes
+            return null;
+        }
+
+        // refactor this to streams when possible
+        List<Integer> drewWell = new ArrayList<>(knownCount);
+        for(StrokeResult r: best){
+            if(r.score == 0){
+                drewWell.add(r.drawnStrokeIndex);
+            }
+        }
+
+        // only colour extra strokes if every stoke you drew, you drew well
+        if(drewWell.size() == knownCount){
+            return missingInts(drawnCount, drewWell);
+        } else {
+            return null;
+        }
+    }
+
+
 	public int[] findMissingStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
 		int missing = knownCount - drawnCount;
 		if(missing <= 0){
@@ -100,11 +125,11 @@ public class DrawingComparator {
 			return null;
 		}
 
-		// strokeresult will be the size of drawnCount, not knownCount
+        // refactor this to streams when possible
 		List<Integer> drewWell = new ArrayList<>(drawnCount);
 		for(StrokeResult r: best){
-			if(r.score >= 100){
-				drewWell.add(r.drawnStrokeIndex);
+			if(r.score == 0){
+				drewWell.add(r.knownStrokeIndex);
 			}
 		}
 
@@ -153,7 +178,7 @@ public class DrawingComparator {
 		// calculate score and criticism matrix
 		for(int known_i = 0; known_i < known.strokeCount(); known_i++){
 			for(int drawn_i = 0; drawn_i < drawn.strokeCount(); drawn_i++){
-                if(drawn_i == known_i){ continue; }         // calculated in previous block
+                if(correctDiagonal && drawn_i == known_i){ continue; }         // calculated in previous block
 
 				StrokeCriticism result = compareStroke(known_i, drawn_i);
 				if(BuildConfig.DEBUG) Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
@@ -190,8 +215,10 @@ public class DrawingComparator {
 		}
 
 		// find best set of strokes
-		List<StrokeResult> bestStrokes = findBestPairings(scoreMatrix);
+		List<StrokeResult> bestStrokes = findGoodPairings(scoreMatrix);
 		best: for(StrokeResult s: bestStrokes){
+            Log.d("nakama", "Best chosen: " + s);
+
 			if(s.score == 0){ 
 				if(!s.knownStrokeIndex.equals(s.drawnStrokeIndex)) {
 					for(StrokeResult subS: bestStrokes){
@@ -223,20 +250,25 @@ public class DrawingComparator {
 			if(missedStrokes == null){
 				colours = Criticism.SKIP;
 			} else {
-				colours = Criticism.incorrectColours(missedStrokes);
+				colours = Criticism.correctColours(missedStrokes);
 			}
-			c.add(message,
-					colours,
-					Criticism.SKIP);
+			c.add(message, colours, Criticism.SKIP);
 
 		} else if(overallFailures.contains(OverallFailure.EXTRA_STROKES)) {
 			int extraStrokes = this.drawn.strokeCount() - this.known.strokeCount();
 			String message = extraStrokes == 1 ?
 					"You drew an extra stroke." :
 					"You drew " + Util.nounify(extraStrokes) + " extra strokes.";
-			c.add(message,
-					Criticism.SKIP,
-					new Criticism.LastColours(Criticism.INCORRECT_COLOUR, extraStrokes, drawn.strokeCount()));
+
+            Criticism.PaintColourInstructions colours;
+            int[] nonKnownStrokes = findExtraStrokes(known.strokeCount(), drawn.strokeCount(), bestStrokes);
+            if(nonKnownStrokes == null){
+                colours = Criticism.SKIP;
+            } else {
+                colours = Criticism.incorrectColours(nonKnownStrokes);
+            }
+
+			c.add(message, Criticism.SKIP, colours);
 		}
 
 
@@ -277,13 +309,64 @@ public class DrawingComparator {
 			this.drawnStrokeIndex = drawn;
 			this.score = score;
 		}
+
+        public String toString(){
+            return String.format(Locale.ENGLISH, "Known %d matched drawn %d with score %d",
+                    knownStrokeIndex, drawnStrokeIndex, score);
+        }
 	}
-	
-	
-	static List<StrokeResult> findBestPairings(int[][] matrix){
+
+
+    /**
+     * Returns a list of StrokeResults. Size of the list is equal to the number of drawn
+     * strokes, not the number of known strokes.
+     */
+    static List<StrokeResult> findGoodPairings(int[][] matrix) {
+        Set<Integer> finishedRows = new TreeSet<>();
+        Set<Integer> finishedCols = new TreeSet<>();
+        List<StrokeResult> pairs = new ArrayList<>(matrix[0].length);
+
+        // first go down the diagonal and accept any 0s
+        for (int i = 0; i < matrix.length && i < matrix[i].length; i++) {
+            if (matrix[i][i] == 0) {
+                finishedRows.add(i);
+                finishedCols.add(i);
+
+                pairs.add(new StrokeResult(i, i, 0));
+            }
+        }
+        // now go row by row, column by column and assign the first match
+        for (int i = 0; i < matrix.length; i++) {
+            int selected = -1;
+            if (finishedRows.contains(i)) {
+                continue;
+            }
+
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (0 == matrix[i][j]) {
+                    if (finishedCols.contains(j)) {
+                        continue;
+                    }
+                    selected = j;
+                }
+            }
+
+            if (selected != -1) {
+                finishedRows.add(i);
+                finishedCols.add(selected);
+                pairs.add(new StrokeResult(i, selected, matrix[i][selected]));
+            }
+        }
+        return pairs;
+    }
+
+
+
+
+    static List<StrokeResult> findBestPairings(int[][] matrix){
 		Set<Integer> finishedRows = new TreeSet<>();
 		Set<Integer> finishedCols = new TreeSet<>();
-		List<StrokeResult> pairs = new ArrayList<>(Math.max(matrix.length, matrix[0].length));
+		List<StrokeResult> pairs = new ArrayList<>(matrix[0].length);
 		
 		// first go down the diagonal and accept any 0s
 		for(int i = 0; i < matrix.length && i < matrix[i].length; i++){
