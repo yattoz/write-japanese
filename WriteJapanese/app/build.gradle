@@ -5,7 +5,7 @@ android {
         production {
             keyAlias 'writekanji'
             keyPassword '***REMOVED***'
-            storeFile file('/Users/dmeeuwis/Projects/nakama/keystore/keystore')
+            storeFile file('/home/dmeeuwis/nakama/keystore/keystore')
             storePassword '***REMOVED***'
         }
     }
@@ -15,8 +15,8 @@ android {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 56
-        versionName "3.1"
+        versionCode 59
+        versionName "3.2"
     }
     buildTypes {
         release {
