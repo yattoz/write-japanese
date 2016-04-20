@@ -231,7 +231,7 @@ public class DrawingComparator {
 								s.drawnStrokeIndex.equals(subS.knownStrokeIndex) &&
 								subS.score == 0 &&
 								!rearrangedDrawnStrokes.contains(s.drawnStrokeIndex) &&
-								!rearrangedDrawnStrokes.contains(subS.knownStrokeIndex);
+								!rearrangedDrawnStrokes.contains(subS.drawnStrokeIndex);
 
 							if (addWrongOrderCriticism) {
 								misorderedStrokes.add(s);
@@ -250,24 +250,25 @@ public class DrawingComparator {
 			}
 
 			if(misorderedStrokes.size() > 2){
-				int[] misorderedRight = new int[misorderedStrokes.size()];
+				/*int[] misorderedRight = new int[misorderedStrokes.size()];
 				int[] misorderedWrong = new int[misorderedStrokes.size()];
 				for(int i = 0; i < misorderedStrokes.size(); i++){
 					misorderedRight[i] = misorderedStrokes.get(i).knownStrokeIndex;
 					misorderedWrong[i] = misorderedStrokes.get(i).drawnStrokeIndex;
 				}
+				*/
 
 				String message = misorderedStrokes.size() == known.strokeCount() ?
 						"Your strokes seem correct, but are drawn in the wrong order." :
 						"Several strokes are drawn correctly, but in the wrong order.";
 				c.add(message,
-						Criticism.correctColours(misorderedRight),
-						Criticism.incorrectColours(misorderedWrong));
+						Criticism.SKIP,
+						Criticism.SKIP);
 			} else {
 				for(StrokeResult s: misorderedStrokes){
 					c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.",
-							new Criticism.RightOrderColours(s.knownStrokeIndex, s.drawnStrokeIndex),
-							new Criticism.WrongOrderColours(s.knownStrokeIndex, s.drawnStrokeIndex));
+							Criticism.correctColours(s.knownStrokeIndex, s.drawnStrokeIndex),
+							Criticism.incorrectColours(s.knownStrokeIndex, s.drawnStrokeIndex));
 				}
 			}
 		}
