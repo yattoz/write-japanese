@@ -250,14 +250,6 @@ public class DrawingComparator {
 			}
 
 			if(misorderedStrokes.size() > 2){
-				/*int[] misorderedRight = new int[misorderedStrokes.size()];
-				int[] misorderedWrong = new int[misorderedStrokes.size()];
-				for(int i = 0; i < misorderedStrokes.size(); i++){
-					misorderedRight[i] = misorderedStrokes.get(i).knownStrokeIndex;
-					misorderedWrong[i] = misorderedStrokes.get(i).drawnStrokeIndex;
-				}
-				*/
-
 				String message = misorderedStrokes.size() == known.strokeCount() ?
 						"Your strokes seem correct, but are drawn in the wrong order." :
 						"Several strokes are drawn correctly, but in the wrong order.";
