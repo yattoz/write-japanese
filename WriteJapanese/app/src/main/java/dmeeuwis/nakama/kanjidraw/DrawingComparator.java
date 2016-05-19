@@ -41,6 +41,9 @@ public class DrawingComparator {
 	final int drawingAreaMaxDim;
 	final AssetFinder assetFinder;
 
+	final boolean[][] drawnAboveMatrix;
+	final boolean[][] knownAboveMatrix;
+
 	public DrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder){
 		this.target = target; 
 		this.assetFinder = assetFinder;
@@ -53,7 +56,13 @@ public class DrawingComparator {
 
 		Rect nBounds = this.known.findBoundingBox();
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
-		
+
+		this.drawnAboveMatrix = calculateAboveMatrix(this.drawn);
+		this.knownAboveMatrix = calculateAboveMatrix(this.known);
+		Log.i("nakama", "Drawn above matrix\n" + printMatrix(this.drawnAboveMatrix));
+		Log.i("nakama", "Known above matrix\n" + printMatrix(this.knownAboveMatrix));
+
+
 		this.FAIL_POINT_START_DISTANCE = (float)(drawingAreaMaxDim * 0.40);
 		this.FAIL_POINT_END_DISTANCE = (float)(drawingAreaMaxDim * 0.40);
 		this.CIRCLE_DETECTION_DISTANCE = (float)(drawingAreaMaxDim * 0.10);
@@ -179,8 +188,6 @@ public class DrawingComparator {
 		// calculate score and criticism matrix
 		for(int known_i = 0; known_i < known.strokeCount(); known_i++){
 			for(int drawn_i = 0; drawn_i < drawn.strokeCount(); drawn_i++){
-                if(correctDiagonal && drawn_i == known_i){ continue; }         // calculated in previous block
-
 				StrokeCriticism result = compareStroke(known_i, drawn_i);
 				if(BuildConfig.DEBUG) Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
 				criticismMatrix[known_i][drawn_i] = result;
@@ -325,7 +332,45 @@ public class DrawingComparator {
 		// ToDo:
 		// intersection point distance errors
 	}
-	
+
+	private boolean[][] calculateAboveMatrix(PointDrawing d){
+		boolean[][] matrix = new boolean[d.strokeCount()][d.strokeCount()];
+		for(int i = 0; i < d.strokeCount(); i++){
+			for(int j = 0; j < d.strokeCount(); j++){
+				if(i >= j){
+					matrix[i][j] = false;
+				} else {
+					matrix[i][j] = isAbove(d.get(i), d.get(j));
+				}
+			}
+		}
+		return matrix;
+	}
+
+	static private boolean isAbove(Stroke s1, Stroke s2) {
+		return lowestPoint(s1) < highestPoint(s2);
+	}
+
+	static private int highestPoint(Stroke s){
+		int highest = Integer.MAX_VALUE;
+		for(Point p: s.points){
+			if(p.y < highest){
+				highest = p.y;
+			}
+		}
+		return highest;
+	}
+
+	static private int lowestPoint(Stroke s){
+		int lowest = 0;
+		for(Point p: s.points){
+			if(p.y > lowest){
+				lowest = p.y;
+			}
+		}
+		return lowest;
+	}
+
 	private static class StrokeResult {
 		public final Integer knownStrokeIndex;
 		public final Integer drawnStrokeIndex;
@@ -655,6 +700,21 @@ public class DrawingComparator {
 				sb.append(Integer.toString(matrix[i][j]));
 				if(j != matrix[i].length - 1){
 					sb.append(" ");
+				}
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	public static String printMatrix(boolean[][] matrix){
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n");
+		for(int i = 0; i < matrix.length; i++){
+			for(int j = 0; j < matrix[i].length; j++){
+				sb.append(Boolean.toString(matrix[i][j]));
+				if(j != matrix[i].length - 1){
+					sb.append("\t");
 				}
 			}
 			sb.append("\n");
