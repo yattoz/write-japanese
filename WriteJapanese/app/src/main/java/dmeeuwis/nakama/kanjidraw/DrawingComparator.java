@@ -333,7 +333,7 @@ public class DrawingComparator {
 		// intersection point distance errors
 	}
 
-	private boolean[][] calculateAboveMatrix(PointDrawing d){
+	static boolean[][] calculateAboveMatrix(PointDrawing d){
 		boolean[][] matrix = new boolean[d.strokeCount()][d.strokeCount()];
 		for(int i = 0; i < d.strokeCount(); i++){
 			for(int j = 0; j < d.strokeCount(); j++){
@@ -348,7 +348,16 @@ public class DrawingComparator {
 	}
 
 	static private boolean isAbove(Stroke s1, Stroke s2) {
-		return lowestPoint(s1) < highestPoint(s2);
+		int extra = (int)(
+						Math.max( s1.findBoundingBox().height(),
+				  			  s2.findBoundingBox().height()
+						) * 0.2);
+		System.out.println("s1 height calcuated as " + s1.findBoundingBox().height());
+		System.out.println("s2 height calcuated as " + s2.findBoundingBox().height());
+		System.out.println("isAbove extra calcuated as " + extra);
+		System.out.println("isAbove lowest(s1) is " + lowestPoint(s1));
+		System.out.println("isAbove highest(s2) is " + lowestPoint(s2));
+		return lowestPoint(s1) + extra < highestPoint(s2);
 	}
 
 	static private int highestPoint(Stroke s){
