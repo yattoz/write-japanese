@@ -45,14 +45,27 @@ public class DrawingComparatorTest {
 
     @Test
     public void testJustMisOneMatch(){
-        // should fail because the y's are really really close, test the 'extra' gap
-        Stroke s1 = fromPoints(1, 30, 30, 35);
-        Stroke s2 = fromPoints(1, 29, 30, 34);
+        // should not mark as above because the y's are really really close, test the 'extra' gap
+        Stroke s1 = fromPoints(1, 29, 30, 34);
+        Stroke s2 = fromPoints(1, 30, 30, 35);
 
         PointDrawing p = new PointDrawing(Arrays.asList(s1, s2));
         boolean[][] above = DrawingComparator.calculateAboveMatrix(p);
 
         assertArrayEquals(new boolean[]{ false, false }, above[0]);
+        assertArrayEquals(new boolean[]{ false, false }, above[1]);
+    }
+
+    @Test
+    public void testOneMatch(){
+        // should not mark as above because the y's are really really close, test the 'extra' gap
+        Stroke s1 = fromPoints(1, 29, 30, 34);
+        Stroke s2 = fromPoints(1, 38, 30, 44);
+
+        PointDrawing p = new PointDrawing(Arrays.asList(s1, s2));
+        boolean[][] above = DrawingComparator.calculateAboveMatrix(p);
+
+        assertArrayEquals(new boolean[]{ false, true }, above[0]);
         assertArrayEquals(new boolean[]{ false, false }, above[1]);
     }
 

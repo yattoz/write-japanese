@@ -348,12 +348,9 @@ public class DrawingComparator {
 	}
 
 	static private boolean isAbove(Stroke s1, Stroke s2) {
-		int extra = (int)(
-						Math.max( s1.findBoundingBox().height(),
-				  			  s2.findBoundingBox().height()
-						) * 0.2);
-		System.out.println("s1 height calcuated as " + s1.findBoundingBox().height());
-		System.out.println("s2 height calcuated as " + s2.findBoundingBox().height());
+		int extra = (int)(Math.max( s1.maxY(), s2.maxY() ) * 0.2);
+		System.out.println("s1 maxY calcuated as " + s1.maxY());
+		System.out.println("s2 maxY calcuated as " + s2.maxY());
 		System.out.println("isAbove extra calcuated as " + extra);
 		System.out.println("isAbove lowest(s1) is " + lowestPoint(s1));
 		System.out.println("isAbove highest(s2) is " + lowestPoint(s2));
