@@ -21,7 +21,7 @@ import dmeeuwis.util.Util;
 
 public class DrawingComparator {
 	
-	public enum StrokeCompareFailure { DISTANCE_TRAVELLED, START_POINT_DIFFERENCE, END_POINT_DIFFERENCE, START_DIRECTION_DIFFERENCE, END_DIRECTION_DIFFERENCE, BACKWARDS, TOO_MANY_SHARP_CURVES, TOO_FEW_SHARP_CURVES }
+	public enum StrokeCompareFailure { ABOVE_FAILURE, NOT_ABOVE_FAILURE, DISTANCE_TRAVELLED, START_POINT_DIFFERENCE, END_POINT_DIFFERENCE, START_DIRECTION_DIFFERENCE, END_DIRECTION_DIFFERENCE, BACKWARDS, TOO_MANY_SHARP_CURVES, TOO_FEW_SHARP_CURVES }
 	public enum OverallFailure { EXTRA_STROKES, MISSING_STROKES, MISSING_INTERSECTION, WRONG_STROKE_ORDER }
 
 	private final float FAIL_POINT_START_DISTANCE;
@@ -188,14 +188,16 @@ public class DrawingComparator {
 		// calculate score and criticism matrix
 		for(int known_i = 0; known_i < known.strokeCount(); known_i++){
 			for(int drawn_i = 0; drawn_i < drawn.strokeCount(); drawn_i++){
+				if(known_i == drawn_i) {
+					continue; // calculated in above diagonal block
+				}
 				StrokeCriticism result = compareStroke(known_i, drawn_i);
 				if(BuildConfig.DEBUG) Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
 				criticismMatrix[known_i][drawn_i] = result;
 				scoreMatrix[known_i][drawn_i] = result.cost;
 			}
 		}
-		
-	
+
 		if(BuildConfig.DEBUG) Log.d("nakama", "Score Matrix\n======================" + printMatrix(scoreMatrix) + "====================");
 	
 		if(BuildConfig.DEBUG) Log.d("nakama", "Scanning for known intersects.");
@@ -500,8 +502,6 @@ public class DrawingComparator {
 		if(BuildConfig.DEBUG) Log.d("nakama", "Comparing base stroke " + baseIndex + " to challenger stroke " + challengerIndex);
 		List<StrokeCompareFailure> failures = new LinkedList<StrokeCompareFailure>();
 
-
-
 		Stroke bpath = this.known.get(baseIndex);
 		Stroke cpath = this.drawn.get(challengerIndex);
 		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base: %6d Drawn: %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
@@ -640,7 +640,6 @@ public class DrawingComparator {
 		}
 		if(BuildConfig.DEBUG) Log.d("nakama", "========================== end of " + baseIndex + " vs " + challengerIndex);
 
-		
 		if(failures.size() == 0) {
 			return new StrokeCriticism(null, 0);
 			
@@ -671,6 +670,7 @@ public class DrawingComparator {
 //				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke has " + drawnCurvePoints.size() + " sharp curve" + (drawnCurvePoints.size() == 1 ? "" : "s") + ", but should have " + baseCurvePoints.size() + ".");
 			case BACKWARDS:
 				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is backwards.");
+
 			default: 
 				throw new RuntimeException("Error: unhandled StrokeCompareFailure");
 			}
