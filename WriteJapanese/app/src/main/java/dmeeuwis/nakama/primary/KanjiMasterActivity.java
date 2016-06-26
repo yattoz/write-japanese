@@ -793,16 +793,18 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 "which can also mean");
     }
 
-    private void saveCurrentUsingCharacterSet() {
-        if (this.currentCharacterSet.currentCharacter() == null) {
+    private void saveCurrentCharacterSet() {
+        if (currentCharacterSet == null || currentCharacterSet.currentCharacter() == null) {
             return;         // TODO: fix this. Should never be null, how is it happening?
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Editor ed = prefs.edit();
-        Log.i("nakama", "KanjiMasterActivity: saveCurrentUsingCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
+        Log.i("nakama", "KanjiMasterActivity: saveCurrentCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET, this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET_CHAR, Character.toString(this.currentCharacterSet.currentCharacter()));
         ed.apply();
+
+        currentCharacterSet.save(this.getApplicationContext());
     }
 
     private void loadCurrentCharacterSet() {
@@ -864,8 +866,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         Editor ed = prefs.edit();
         ed.putBoolean("shuffleEnabled", currentCharacterSet.isShuffling());
         ed.apply();
-        currentCharacterSet.save(this.getApplicationContext());
-        saveCurrentUsingCharacterSet();
+        saveCurrentCharacterSet();
         if (pd != null) {
             pd.dismiss();
         }
@@ -1092,8 +1093,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        saveCurrentUsingCharacterSet();
-        currentCharacterSet.save(this.getApplicationContext());
+        saveCurrentCharacterSet();
 
         if (!(itemPosition == 0 || itemPosition == 2)) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
