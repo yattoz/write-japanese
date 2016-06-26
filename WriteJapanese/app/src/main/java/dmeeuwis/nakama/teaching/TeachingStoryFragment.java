@@ -138,6 +138,10 @@ public class TeachingStoryFragment extends Fragment {
 
             @Override public void add(final String s) {
                 Log.d("nakama", "Adding story as view: " + s);
+                if(getView() == null){
+                    Log.d("nakama", "on async return getView is null! Aborting story additions.");
+                    return;
+                }
 
                 TextView tv = new TextView(getActivity());
                 tv.setText(s);
