@@ -131,10 +131,15 @@ public class TeachingStoryFragment extends Fragment {
         super.onResume();
     }
 
+    NetworkStoriesAsyncTask loadStoriesAsync;
     public void loadRemoteStories(){
+        if(loadStoriesAsync != null){
+            Log.d("nakama", "Not re-requesting stories, already loaded.");
+            return;
+        }
         final Resources r = this.getResources();
         final int paddingPx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, this.getResources().getDisplayMetrics());
-        NetworkStoriesAsyncTask loadRemoteStories = new NetworkStoriesAsyncTask(this.character, this.iid, new NetworkStoriesAsyncTask.AddString() {
+        loadStoriesAsync = new NetworkStoriesAsyncTask(this.character, this.iid, new NetworkStoriesAsyncTask.AddString() {
 
             @Override public void add(final String s) {
                 Log.d("nakama", "Adding story as view: " + s);
@@ -183,7 +188,7 @@ public class TeachingStoryFragment extends Fragment {
                 Log.d("nakama", "Added story as view: " + s);
             }
         });
-        loadRemoteStories.execute();
+        loadStoriesAsync.execute();
     }
 
     public void clear(){
