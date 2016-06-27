@@ -13,7 +13,7 @@ import dmeeuwis.nakama.primary.Iid;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 16;
+	private static final int DB_VERSION = 17;
 
     private final String iid;
 
@@ -28,6 +28,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         createCharset(dbase);
         createPracticeLog(dbase);
         addTimestampToStories(dbase);
+        addDrawingToPracticeLog(dbase);
 	}
 
     private void createStoryTables(SQLiteDatabase dbase){
@@ -60,6 +61,11 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                 "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 "score TEXT NOT NULL" +
         ")");
+    }
+
+    private void addDrawingToPracticeLog(SQLiteDatabase sqlite){
+        Log.d("nakama-db", "Creating practice log table.");
+        sqlite.execSQL("ALTER TABLE practice_log ADD COLUMN drawing TEXT");
     }
 
     private void migratePracticeTrackerToPracticeLogs(SQLiteDatabase sqlite){
@@ -118,6 +124,10 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         if(oldVersion <= 13){
             addTimestampToStories(dbase);
+        }
+
+        if(oldVersion <= 16){
+            addDrawingToPracticeLog(dbase);
         }
 	}
 }

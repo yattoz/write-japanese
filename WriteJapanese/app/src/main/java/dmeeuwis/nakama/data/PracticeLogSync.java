@@ -101,7 +101,7 @@ public class PracticeLogSync {
             jw.name("prev_sync_timestamp").value(lastSyncServerTimestamp);
 
             queryToJsonArray("practice_logs", sqlite,
-                    "SELECT id, install_id, character, charset, timestamp, score " +
+                    "SELECT id, install_id, character, charset, timestamp, score, drawing " +
                             "FROM practice_log WHERE timestamp > ? AND install_id = ?",
                     new String[]{lastSyncDeviceTimestamp, iid}, jw);
 

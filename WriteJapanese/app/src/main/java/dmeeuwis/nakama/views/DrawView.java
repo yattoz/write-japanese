@@ -38,6 +38,8 @@ public class DrawView extends View implements OnTouchListener {
 	static final private float MIN_DRAW_POINT_DISTANCE_DP = 2.5f;
 	static final private float PAINT_THICKNESS_DP = 4;
 
+	private final int screenWidth, screenHeight;
+
 	private float PAINT_THICKNESS_PX;
 	private float MIN_DRAW_POINT_DISTANCE_PX;
 
@@ -116,8 +118,8 @@ public class DrawView extends View implements OnTouchListener {
 
         WindowManager wm = (WindowManager)context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE); // the results will be higher than using the activity context object or the getWindowManager() shortcut
         wm.getDefaultDisplay().getMetrics(displayMetrics);
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
 
         Log.i("nakama", String.format("DrawView: setting up grid. Screen res: %dx%d gridLeft: %d, gridRight: %d", screenWidth, screenHeight, gridPaddingLeft, gridPaddingTop));
         this.grid = new GridBackgroundDrawer(this.gridPaddingTop, this.gridPaddingLeft);
@@ -154,7 +156,7 @@ public class DrawView extends View implements OnTouchListener {
 	}
 
 	public PointDrawing getDrawing(){
-		return PointDrawing.fromDetailedPoints(this.linesToDraw, this.getContext());
+		return PointDrawing.fromDetailedPoints(screenWidth, screenHeight, this.linesToDraw, this.getContext());
 	}
 	
 	/**

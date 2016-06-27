@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.kanjidraw.Drawing;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.util.Util;
 
 /**
@@ -169,7 +171,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		return (availableCharactersSet()).iterator();
 	}
 
-	public void markCurrent(boolean pass, Context context){
+	public void markCurrent(PointDrawing d, boolean pass, Context context){
 		Character c = currentCharacter();
 		try {
 			if(pass){
@@ -178,7 +180,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 				this.tracker.markFailure(c);
 			}
             CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
-            cdb.recordPractice(pathPrefix, currentCharacter().toString(), pass ? 100 : -100);
+            cdb.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
 		} catch(Throwable t){
 			Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
 			throw new RuntimeException(t);
