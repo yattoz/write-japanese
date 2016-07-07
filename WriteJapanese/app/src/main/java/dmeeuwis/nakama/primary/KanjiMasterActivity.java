@@ -185,6 +185,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 jw.value(String.valueOf(BuildConfig.VERSION_CODE));
                 jw.name("device");
                 jw.value(Build.MANUFACTURER + ": " + Build.MODEL);
+                jw.name("os-version");
+                jw.value(Build.VERSION.RELEASE);
 
                 jw.name("stack");
                 jw.beginArray();
