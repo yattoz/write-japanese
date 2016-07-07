@@ -31,10 +31,12 @@ import java.util.UUID;
 import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.LoadRadicalsFile;
 import dmeeuwis.nakama.data.RadicalAdapter;
 import dmeeuwis.nakama.data.StoryDataHelper;
+import dmeeuwis.nakama.primary.CharacterSetStatusFragment;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
@@ -45,14 +47,6 @@ import dmeeuwis.nakama.views.TallGridView;
 import dmeeuwis.util.Util;
 import uk.co.deanwild.flowtextview.FlowTextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link TeachingCombinedStoryInfoFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link TeachingCombinedStoryInfoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class TeachingCombinedStoryInfoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -302,20 +296,5 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
                     new NetworkStorySaveAsyncTask(this.character, story, iid);
             saveRemove.execute();
         }
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
     }
 }

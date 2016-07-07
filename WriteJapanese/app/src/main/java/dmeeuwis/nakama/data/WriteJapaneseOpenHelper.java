@@ -2,6 +2,7 @@ package dmeeuwis.nakama.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -65,7 +66,11 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
     private void addDrawingToPracticeLog(SQLiteDatabase sqlite){
         Log.d("nakama-db", "Creating practice log table.");
-        sqlite.execSQL("ALTER TABLE practice_log ADD COLUMN drawing TEXT");
+        try {
+            sqlite.execSQL("ALTER TABLE practice_log ADD COLUMN drawing TEXT");
+        } catch(SQLiteException e){
+            Log.e("nakama-db", "Caught exception adding drawing column", e);
+        }
     }
 
     private void migratePracticeTrackerToPracticeLogs(SQLiteDatabase sqlite){

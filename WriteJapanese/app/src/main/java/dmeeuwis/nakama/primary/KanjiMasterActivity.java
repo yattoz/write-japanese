@@ -72,6 +72,7 @@ import dmeeuwis.nakama.DrawViewTestActivity;
 import dmeeuwis.nakama.KanjiCheckActivity;
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
+import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.ProgressActivity;
 import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.SpenDrawActivity;
@@ -101,7 +102,7 @@ import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
-            LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener, OnGoalPickListener,
+            LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
 
