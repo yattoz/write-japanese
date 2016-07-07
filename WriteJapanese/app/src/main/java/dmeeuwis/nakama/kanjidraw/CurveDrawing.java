@@ -11,8 +11,8 @@ import android.util.Log;
 
 public class CurveDrawing implements Drawing {
 
-	private final int KANJI_FIXED_WIDTH = 110;
-	private final int KANJI_FIXED_HEIGH = 110;
+	private final int KANJI_FIXED_WIDTH = 109;
+	private final int KANJI_FIXED_HEIGH = 109;
 
 	public final List<ParameterizedEquation> strokes;
 	public final PointDrawing pointPointDrawing;
