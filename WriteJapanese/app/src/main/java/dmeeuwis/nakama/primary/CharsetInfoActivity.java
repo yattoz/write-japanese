@@ -2,6 +2,7 @@ package dmeeuwis.nakama.primary;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -15,12 +16,18 @@ import dmeeuwis.nakama.data.DictionarySet;
 public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPickListener {
 
     CharacterStudySet charset;
-    CharacterSetStatusFragment frag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charset_info);
+
+        if (savedInstanceState == null) {
+            CharacterSetStatusFragment frag = new CharacterSetStatusFragment();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.charset_holder, frag);
+            ft.commit();
+        }
 
         ActionBar actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -34,13 +41,14 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
         charset = CharacterSets.fromName(charsetName, dictionarySet.kanjiFinder(), new LockChecker(this, null), Iid.get(this.getApplicationContext()));
         charset.load(this.getApplicationContext());
 
-        frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_fragment);
+        CharacterSetStatusFragment frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_holder);
         frag.setCharset(charset);
 
         super.onResume();
     }
 
     public void setGoal(int year, int month, int day){
+        CharacterSetStatusFragment frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_holder);
         frag.setGoal(year, month, day);
     }
 

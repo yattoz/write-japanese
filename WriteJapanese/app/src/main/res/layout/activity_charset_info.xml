@@ -2,13 +2,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:id="@+id/charset_holder"
                 tools:context="dmeeuwis.nakama.primary.CharsetInfoActivity">
-
-    <fragment
-        android:id="@+id/charset_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
-    />
 
 </RelativeLayout>

@@ -67,6 +67,7 @@ public class TeachingInfoFragment extends Fragment {
                 FlowTextView eng = (FlowTextView) newTranslation.findViewById(R.id.english);
                 eng.setTextSize(engTextSize);
                 eng.setText(t.toEnglishString());
+
                 examplesLayout.addView(newTranslation);
             }
         };
