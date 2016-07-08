@@ -2,9 +2,11 @@ package dmeeuwis.nakama.primary;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.View;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.LockChecker;
@@ -23,6 +25,13 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charset_info);
 
+        if (savedInstanceState == null) {
+            frag = new CharacterSetStatusFragment();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.charset_holder, frag);
+            ft.commit();
+        }
+
         ActionBar actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -35,7 +44,6 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
         charset = CharacterSets.fromName(charsetName, dictionarySet.kanjiFinder(), new LockChecker(this, null), Iid.get(this.getApplicationContext()));
         charset.load(this.getApplicationContext());
 
-        frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_fragment);
         frag.setCharset(charset);
 
         super.onResume();
