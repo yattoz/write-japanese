@@ -9,11 +9,12 @@ import android.util.Log;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
 
-public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPickListener {
+public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPickListener, OnFragmentInteractionListener {
 
     CharacterStudySet charset;
 
@@ -56,5 +57,10 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
     public void onPause() {
         charset.save(this.getApplicationContext());
         super.onPause();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.i("nakama", "onFragmentInteration: " + uri.toString());
     }
 }

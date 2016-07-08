@@ -28,10 +28,11 @@ import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.Constants;
+import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.util.Util;
 
-public class TeachingActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener, TeachingCombinedStoryInfoFragment.OnFragmentInteractionListener {
+public class TeachingActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
 	ActionBar actionBar;
 	
 	private String character;
