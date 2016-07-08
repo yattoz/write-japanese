@@ -78,10 +78,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
     public void startAnimation(int delay) {
         Log.i("nakama", "TeachingDrawFragment lifecycle: startAnimation");
         if (tracingView != null) {
-            Log.e("nakama", "TeachingDrawFragment lifecycle: startAnimation success.");
             tracingView.startAnimation(delay);
-        } else {
-            Log.e("nakama", "TeachingDrawFragment lifecycle error: skipping tracing view start animation due to null view");
         }
     }
 

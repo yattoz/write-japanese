@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import dmeeuwis.Translation;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.util.Util;
 
 public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, Void> {
 	static final private int MAX_TRANSLATIONS = 20;
@@ -17,7 +16,7 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 	final private char kanji;
 	
 	public interface AddTranslation {
-		public void add(Translation t);
+		void add(Translation t);
 	}
 	
 	public KanjiTranslationListAsyncTask(AddTranslation adder, DictionarySet dictSet, char kanji){

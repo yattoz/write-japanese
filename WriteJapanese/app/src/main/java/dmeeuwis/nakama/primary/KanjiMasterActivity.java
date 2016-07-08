@@ -72,6 +72,7 @@ import dmeeuwis.nakama.DrawViewTestActivity;
 import dmeeuwis.nakama.KanjiCheckActivity;
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
+import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.ProgressActivity;
 import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.SpenDrawActivity;
@@ -101,7 +102,7 @@ import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
-            LockCheckerHolder, CharacterSetStatusFragment.OnFragmentInteractionListener, OnGoalPickListener,
+            LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
     public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
 
@@ -185,6 +186,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 jw.value(String.valueOf(BuildConfig.VERSION_CODE));
                 jw.name("device");
                 jw.value(Build.MANUFACTURER + ": " + Build.MODEL);
+                jw.name("os-version");
+                jw.value(Build.VERSION.RELEASE);
 
                 jw.name("stack");
                 jw.beginArray();
@@ -793,16 +796,18 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 "which can also mean");
     }
 
-    private void saveCurrentUsingCharacterSet() {
-        if (this.currentCharacterSet.currentCharacter() == null) {
+    private void saveCurrentCharacterSet() {
+        if (currentCharacterSet == null || currentCharacterSet.currentCharacter() == null) {
             return;         // TODO: fix this. Should never be null, how is it happening?
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Editor ed = prefs.edit();
-        Log.i("nakama", "KanjiMasterActivity: saveCurrentUsingCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
+        Log.i("nakama", "KanjiMasterActivity: saveCurrentCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET, this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET_CHAR, Character.toString(this.currentCharacterSet.currentCharacter()));
         ed.apply();
+
+        currentCharacterSet.save(this.getApplicationContext());
     }
 
     private void loadCurrentCharacterSet() {
@@ -864,8 +869,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         Editor ed = prefs.edit();
         ed.putBoolean("shuffleEnabled", currentCharacterSet.isShuffling());
         ed.apply();
-        currentCharacterSet.save(this.getApplicationContext());
-        saveCurrentUsingCharacterSet();
+        saveCurrentCharacterSet();
         if (pd != null) {
             pd.dismiss();
         }
@@ -1092,8 +1096,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        saveCurrentUsingCharacterSet();
-        currentCharacterSet.save(this.getApplicationContext());
+        saveCurrentCharacterSet();
 
         if (!(itemPosition == 0 || itemPosition == 2)) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
