@@ -13,7 +13,7 @@ import dmeeuwis.nakama.primary.Iid;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 16;
+	private static final int DB_VERSION = 17;
 
     private final String iid;
 
