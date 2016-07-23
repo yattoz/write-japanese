@@ -3,6 +3,9 @@ package dmeeuwis.nakama.kanjidraw;
 import android.graphics.Point;
 import android.graphics.Rect;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,6 +13,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.JsonWriter;
 import android.util.TypedValue;
 
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
@@ -20,15 +24,16 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
     private final static double DIRECTION_LIMIT = Math.PI / 8;
 
 	private final List<Stroke> strokes;
+	private final int scaleX, scaleY;
 
-	public static PointDrawing fromPrefilteredPoints(List<List<Point>> points){
+	public static PointDrawing fromPrefilteredPoints(int scaleX, int scaleY, List<List<Point>> points){
 		List<Stroke> strokes = new ArrayList<>(points.size());
 		for(List<Point> p: points)
 			strokes.add(new Stroke(p));
-		return new PointDrawing(strokes);
+		return new PointDrawing(scaleX, scaleY, strokes);
 	}
 
-    public static PointDrawing fromDetailedPoints(List<List<Point>> points, Context context){
+    public static PointDrawing fromDetailedPoints(int scaleX, int scaleY, List<List<Point>> points, Context context){
         Resources r = context.getResources();
         float MIN_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_POINT_DISTANCE_DP, r.getDisplayMetrics());
         float MIN_POINT_DISTANCE_FOR_DIRECTION_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_POINT_DISTANCE_FOR_DIRECTION_DP, r.getDisplayMetrics());
@@ -60,11 +65,13 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
             }
             gradeLines.add(new Stroke(gradeLine));
         }
-        return new PointDrawing(gradeLines);
+        return new PointDrawing(scaleX, scaleY, gradeLines);
     }
 
-	public PointDrawing(List<Stroke> pointStrokes){
+	public PointDrawing(int scaleX, int scaleY, List<Stroke> pointStrokes){
 		this.strokes = Collections.unmodifiableList(pointStrokes);
+		this.scaleX = scaleX;
+		this.scaleY = scaleY;
 	}
 
     @Override
@@ -101,7 +108,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 			Stroke newStroke = stroke.bufferEnds(amount);
 			newList.add(newStroke);
 		}
-		return new PointDrawing(newList);
+		return new PointDrawing(scaleX, scaleY, newList);
 	}
 
 	public PointDrawing cutOffEdges(){
@@ -114,7 +121,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 			}
 			newCopy.add(newStroke);
 		}
-		return PointDrawing.fromPrefilteredPoints(newCopy);
+		return PointDrawing.fromPrefilteredPoints(scaleX, scaleY, newCopy);
 	}
 
 	public PointDrawing scaleToBox(Rect box){
@@ -132,7 +139,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 			scaled.add(sl);
 		}
 		
-		return PointDrawing.fromPrefilteredPoints(scaled);
+		return PointDrawing.fromPrefilteredPoints(scaleX, scaleY, scaled);
 	}
 
 	@Override
@@ -147,4 +154,34 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 			ret.add(stroke.toParameterizedEquation(scale, 0));
 		return ret;
 	}
+
+	public String serialize() {
+        try {
+            Writer sw = new StringWriter();
+            JsonWriter jw = new JsonWriter(sw);
+            jw.beginObject();
+            jw.name("scaleX");
+            jw.value(scaleX);
+            jw.name("scaleY");
+            jw.value(scaleY);
+            jw.name("drawing");
+            jw.beginArray();
+            for (Stroke s : strokes) {
+                jw.beginArray();
+                for (Point p : s.points) {
+                    jw.beginArray();
+                    jw.value(p.x);
+                    jw.value(p.y);
+                    jw.endArray();
+                }
+                jw.endArray();
+            }
+            jw.endArray();
+            jw.endObject();
+            jw.close();
+            return sw.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

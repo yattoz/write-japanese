@@ -11,6 +11,9 @@ import android.util.Log;
 
 public class CurveDrawing implements Drawing {
 
+	private final int KANJI_FIXED_WIDTH = 109;
+	private final int KANJI_FIXED_HEIGH = 109;
+
 	public final List<ParameterizedEquation> strokes;
 	public final PointDrawing pointPointDrawing;
 	private final SvgHelper svg = new SvgHelper();
@@ -49,7 +52,7 @@ public class CurveDrawing implements Drawing {
 			Stroke s = new Stroke(eqn.toPoints());
 			asStrokes.add(s);
 		}
-		return new PointDrawing(asStrokes);
+		return new PointDrawing(KANJI_FIXED_WIDTH, KANJI_FIXED_HEIGH, asStrokes);
 	}
 
     @Override

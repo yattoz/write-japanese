@@ -359,7 +359,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                         new AssetFinder(KanjiMasterActivity.this.getAssets()));
                 final Criticism critique = comparator.compare();
 
-                currentCharacterSet.markCurrent(critique.pass, KanjiMasterActivity.this);
+                currentCharacterSet.markCurrent(challenger, critique.pass, KanjiMasterActivity.this);
 
                 if (critique.pass) {
                     correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
