@@ -73,7 +73,16 @@ public class Stroke implements Iterable<Point> {
 		
 		return dir;
 	}
-	
+
+    public int maxY(){
+        int y = 0;
+        for(Point p: points){
+           if(p.y > y){
+               y = p.y;
+           }
+        }
+        return y;
+    }
 	
 	public double endDirection(){
 		final int s = points.size();
