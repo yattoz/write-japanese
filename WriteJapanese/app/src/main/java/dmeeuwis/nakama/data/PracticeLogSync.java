@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.util.Util;
 
@@ -94,6 +95,7 @@ public class PracticeLogSync {
 
         jw.beginObject();
         jw.name("install_id").value(iid);
+        jw.name("level").value(LockChecker.getPurchaseStatus(prefs).toString());
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase sqlite = db.getReadableDatabase();
