@@ -147,7 +147,12 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
             KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation(){
                 public void add(Translation t){
-                    View newTranslation = View.inflate(getActivity(), R.layout.translation_slide_contents, null);
+                    Activity parent = getActivity();
+                    if(parent == null){
+                        return;
+                    }
+
+                    View newTranslation = View.inflate(parent, R.layout.translation_slide_contents, null);
 
                     AdvancedFuriganaTextView af = (AdvancedFuriganaTextView) newTranslation.findViewById(R.id.kanji);
                     af.setTranslation(t, dictionarySet.kanjiFinder());
