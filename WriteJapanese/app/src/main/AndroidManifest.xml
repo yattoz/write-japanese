@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dmeeuwis.kanjimaster" >
+          package="dmeeuwis.kanjimaster">
 
-    <uses-permission android:name="com.android.vending.BILLING" />
-    <uses-permission android:name="android.permission.INTERNET" />
-<!--    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>-->
+    <uses-permission android:name="com.android.vending.BILLING"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--
+        <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    -->
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <!-- <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" /> -->
@@ -14,108 +16,109 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-
+        android:theme="@style/AppTheme">
         <provider
             android:name="dmeeuwis.nakama.data.StubContentProvider"
-            android:exported="false"
-            android:multiprocess="true"
-            android:syncable="true"
             android:authorities="dmeeuwis.com"
-            android:label="WriteJapanese">
+            android:exported="false"
+            android:label="WriteJapanese"
+            android:multiprocess="true"
+            android:syncable="true">
         </provider>
 
         <activity
             android:name="dmeeuwis.nakama.primary.KanjiMasterActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
             </intent-filter>
         </activity>
-        <receiver android:name="dmeeuwis.nakama.ReminderManager"
-                  android:icon="@drawable/ic_launcher"
 
-            />
+        <receiver
+            android:name="dmeeuwis.nakama.ReminderManager"
+            android:icon="@drawable/ic_launcher"/>
+
         <activity
             android:name="dmeeuwis.nakama.primary.CharsetInfoActivity"
             android:label="Study Goals"
-            android:launchMode="singleTask" >
-
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="dmeeuwis.nakama.primary.KanjiMasterActivity" />
+                android:value="dmeeuwis.nakama.primary.KanjiMasterActivity"/>
         </activity>
         <activity
             android:name="dmeeuwis.nakama.teaching.TeachingActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
         </activity>
         <activity
             android:name="dmeeuwis.nakama.ProgressActivity"
             android:label="@string/title_activity_progress"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
         </activity>
         <activity
             android:name="dmeeuwis.nakama.CreditsActivity"
             android:label="@string/title_activity_credits"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
         </activity>
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"
-            android:required="false" />
+            android:required="false"/>
 
         <meta-data
             android:name="com.sec.android.support.multiwindow"
-            android:value="true" />
+            android:value="true"/>
         <meta-data
             android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable"
-            android:value="true" />
+            android:value="true"/>
         <meta-data
             android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W"
-            android:value="632.0dip" />
+            android:value="632.0dip"/>
         <meta-data
             android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H"
-            android:value="598.0dip" />
+            android:value="598.0dip"/>
         <meta-data
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W"
-            android:value="632.0dip" />
+            android:value="632.0dip"/>
         <meta-data
             android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
-            android:value="598.0dip" />
-
+            android:value="598.0dip"/>
 
         <service
             android:name="dmeeuwis.nakama.data.SyncService"
             android:exported="true"
-            android:process=":sync"
-            >
+            android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
-            <meta-data android:name="android.content.SyncAdapter"
-                       android:resource="@xml/syncadapter" />
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter"/>
         </service>
 
         <activity
             android:name="dmeeuwis.nakama.TestDrawActivity"
-            android:label="@string/title_activity_test_draw" >
+            android:label="@string/title_activity_test_draw">
         </activity>
         <activity
             android:name="dmeeuwis.nakama.KanjiCheckActivity"
-            android:label="@string/title_activity_kanji_check" >
+            android:label="@string/title_activity_kanji_check">
         </activity>
         <activity
             android:name="dmeeuwis.nakama.SpenDrawActivity"
-            android:label="@string/title_activity_spen_draw" >
+            android:label="@string/title_activity_spen_draw">
         </activity>
         <activity
             android:name="dmeeuwis.nakama.DrawViewTestActivity"
-            android:label="@string/title_activity_draw_view_test" >
+            android:label="@string/title_activity_draw_view_test">
+        </activity>
+        <activity android:name="dmeeuwis.nakama.ReleaseNotesActivity">
         </activity>
     </application>
 

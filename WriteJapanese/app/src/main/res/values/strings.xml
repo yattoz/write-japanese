@@ -52,7 +52,7 @@
     <string name="title_activity_spen_draw">SpenDrawActivity</string>
     <string name="title_activity_draw_view_test">DrawViewTestActivity</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_charset_info">CharsetInfoActivity</string>
     <string name="daily_notifications_string">Daily Reminders</string>
@@ -63,5 +63,6 @@
     <string name="set_completion_goal">Set Goal</string>
     <string name="clear_completion_goal">Clear Goal</string>
     <string name="completion_goal_set_description">Set a goal to measure your progress against, and activate daily study reminders.</string>
+    <string name="release_notes_menu">Release Notes</string>
 
 </resources>

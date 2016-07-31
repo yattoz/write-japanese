@@ -74,6 +74,7 @@ import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.ProgressActivity;
+import dmeeuwis.nakama.ReleaseNotesActivity;
 import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.SpenDrawActivity;
 import dmeeuwis.nakama.TestDrawActivity;
@@ -1007,6 +1008,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             params.putString("charset", charset);
             intent.putExtras(params);
             startActivity(intent);
+
+        } else if (item.getItemId() == R.id.menu_release_notes) {
+            startActivity(new Intent(this, ReleaseNotesActivity.class));
         }
 
         if (BuildConfig.DEBUG) {
