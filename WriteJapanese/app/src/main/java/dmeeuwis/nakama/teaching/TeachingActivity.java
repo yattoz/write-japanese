@@ -74,6 +74,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
         actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
         // small layout
         pager = (MyViewPager)findViewById(R.id.teachingViewPager);
