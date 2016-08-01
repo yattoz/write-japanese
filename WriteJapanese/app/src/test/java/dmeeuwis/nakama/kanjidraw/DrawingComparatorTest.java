@@ -24,7 +24,7 @@ public class DrawingComparatorTest {
         Stroke s1 = fromPoints(1, 3, 3, 3);
         Stroke s2 = fromPoints(1, 3, 3, 3);
 
-        PointDrawing p = new PointDrawing(Arrays.asList(s1, s2));
+        PointDrawing p = new PointDrawing(5, 5, Arrays.asList(s1, s2));
         boolean[][] above = DrawingComparator.calculateAboveMatrix(p);
 
         assertArrayEquals(new boolean[]{ false, false }, above[0]);
@@ -36,7 +36,7 @@ public class DrawingComparatorTest {
         Stroke s1 = fromPoints(1, 30, 30, 35);
         Stroke s2 = fromPoints(1, 53, 30, 59);
 
-        PointDrawing p = new PointDrawing(Arrays.asList(s1, s2));
+        PointDrawing p = new PointDrawing(70, 70, Arrays.asList(s1, s2));
         boolean[][] above = DrawingComparator.calculateAboveMatrix(p);
 
         assertArrayEquals(new boolean[]{ false, true  }, above[0]);
@@ -49,7 +49,7 @@ public class DrawingComparatorTest {
         Stroke s1 = fromPoints(1, 29, 30, 34);
         Stroke s2 = fromPoints(1, 30, 30, 35);
 
-        PointDrawing p = new PointDrawing(Arrays.asList(s1, s2));
+        PointDrawing p = new PointDrawing(60, 60, Arrays.asList(s1, s2));
         boolean[][] above = DrawingComparator.calculateAboveMatrix(p);
 
         assertArrayEquals(new boolean[]{ false, false }, above[0]);
@@ -62,7 +62,7 @@ public class DrawingComparatorTest {
         Stroke s1 = fromPoints(1, 29, 30, 34);
         Stroke s2 = fromPoints(1, 38, 30, 44);
 
-        PointDrawing p = new PointDrawing(Arrays.asList(s1, s2));
+        PointDrawing p = new PointDrawing(60, 60, Arrays.asList(s1, s2));
         boolean[][] above = DrawingComparator.calculateAboveMatrix(p);
 
         assertArrayEquals(new boolean[]{ false, true }, above[0]);
