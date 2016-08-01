@@ -8,9 +8,11 @@ import java.util.List;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.appcompat.BuildConfig;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -102,7 +104,7 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 					try {
 						Log.d("nakama", "LockChecker: runPurchase");
 						iab.launchPurchaseFlow(parentActivity, LICENSE_SKU, REQUEST_CODE, LockChecker.this);
-					} catch(IllegalStateException e){
+					} catch(IabHelper.IabAsyncInProgressException|IllegalStateException e){
 						Toast.makeText(parentActivity, "Error contacting Google Play for unlock.", Toast.LENGTH_LONG).show();
 						Log.e("nakama", "LockChecker: Error in launchPurchaseFlow", e);
 					}
@@ -198,33 +200,40 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	}	
 
 	private enum Action { UNLOCK, CONSUME }
-	private void checkForPurchase(final Action action){
+	private void checkForPurchase(final Action action) {
 		Log.d("nakama", "LockChecker: checkForPurchase: about to query async inventory");
-		iab.queryInventoryAsync(new QueryInventoryFinishedListener() {
-			@Override public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-				Log.d("nakama", "LockChecker: got checkForPurchase asnyc inventory query result: success=" + result.isFailure() + " : " + result.getMessage());
-				if(inv == null){
-					Log.i("nakama", "LockChecker: No Inventory listing found!");
-					return;
-				}
-				
-				Purchase license = inv.getPurchase(LICENSE_SKU);
-				
-				if(license != null){
-					if(action == Action.UNLOCK){
-						Log.i("nakama", "LockChecker: checkForPurchase found existing purchase! Will Unlock.");
-						coreUnlock();
-						tryToRefreshUI();
-					}
-					if(action == Action.CONSUME){
-						Log.i("nakama", "LockChecker: checkForPurchase found existing purchase! Will CONSUME.");
-						iab.consumeAsync(license, LockChecker.this);
-					}
-				} else {
-					Log.i("nakama", "LockChecker: Check for previous purchase failed! Application is still locked!! No remote license found.");
-				}
+		try {
+			iab.queryInventoryAsync(new QueryInventoryFinishedListener() {
+                @Override public void onQueryInventoryFinished(IabResult result, Inventory inv) throws IabHelper.IabAsyncInProgressException {
+                    Log.d("nakama", "LockChecker: got checkForPurchase asnyc inventory query result: success=" + result.isFailure() + " : " + result.getMessage());
+                    if(inv == null){
+                        Log.i("nakama", "LockChecker: No Inventory listing found!");
+                        return;
+                    }
+
+                    Purchase license = inv.getPurchase(LICENSE_SKU);
+
+                    if(license != null){
+                        if(action == Action.UNLOCK){
+                            Log.i("nakama", "LockChecker: checkForPurchase found existing purchase! Will Unlock.");
+                            coreUnlock();
+                            tryToRefreshUI();
+                        }
+                        if(action == Action.CONSUME){
+                            Log.i("nakama", "LockChecker: checkForPurchase found existing purchase! Will CONSUME.");
+                            iab.consumeAsync(license, LockChecker.this);
+                        }
+                    } else {
+                        Log.i("nakama", "LockChecker: Check for previous purchase failed! Application is still locked!! No remote license found.");
+                    }
+                }
+            });
+		} catch (IabHelper.IabAsyncInProgressException e) {
+			if(BuildConfig.DEBUG) {
+				Toast.makeText(parentActivity, "Error contacting Google Play for unlock.", Toast.LENGTH_LONG).show();
 			}
-		});
+			Log.e("nakama", "LockChecker: Error in checkForPurchase", e);
+		}
 	}
 	
 	private SharedPreferences getSharedPrefs(){
