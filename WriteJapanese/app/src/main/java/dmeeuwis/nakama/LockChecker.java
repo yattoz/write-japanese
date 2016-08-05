@@ -140,7 +140,7 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 			this.queuedCommands.add(new Runnable(){
 				@Override public void run() {
 					Log.d("nakama", "LockChecker: startConsume runnable");
-					// checkForPurchase(Action.CONSUME);
+					checkForPurchase(Action.CONSUME);
 				}
 			});
 		}
@@ -151,7 +151,9 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	public void onConsumeFinished(Purchase purchase, IabResult result) {
 		if(result.isFailure()){
 			Log.e("nakama", "Failed to consume purchase: " + result.getMessage());
+			Toast.makeText(parentActivity, "Failed to consume! " + result.getMessage(), Toast.LENGTH_SHORT).show();
 		} else if(result.isSuccess()){
+			Toast.makeText(parentActivity, "Succeeded in consuming!", Toast.LENGTH_SHORT).show();
 			Log.i("nakama", "Succeeded in consuming purchase! " + result.getMessage());
 			
 		}
