@@ -14,7 +14,7 @@ import dmeeuwis.nakama.primary.Iid;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 17;
+	private static final int DB_VERSION = 18;
 
     private final String iid;
 
@@ -65,7 +65,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
     }
 
     private void addDrawingToPracticeLog(SQLiteDatabase sqlite){
-        Log.d("nakama-db", "Creating practice log table.");
+        Log.d("nakama-db", "Adding drawing to practice log table.");
         try {
             sqlite.execSQL("ALTER TABLE practice_log ADD COLUMN drawing TEXT");
         } catch(SQLiteException e){
@@ -131,7 +131,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             addTimestampToStories(dbase);
         }
 
-        if(oldVersion <= 16){
+        if(oldVersion <= 18){
             addDrawingToPracticeLog(dbase);
         }
 	}
