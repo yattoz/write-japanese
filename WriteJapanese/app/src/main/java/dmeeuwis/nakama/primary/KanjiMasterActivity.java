@@ -1027,7 +1027,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 startActivity(new Intent(this, DrawViewTestActivity.class));
             } else if (item.getTitle().equals("DEBUG:SpenTest")) {
                 startActivity(new Intent(this, SpenDrawActivity.class));
-            } else if (item.getTitle().equals("DEBUG:LockUnlock")) {
+            } else if (item.getTitle().equals("DEBUG:Unlock")) {
                 getLockChecker().coreUnlock();
             } else if (item.getTitle().equals("DEBUG:IabConsume")) {
                 lockChecker.startConsume();
