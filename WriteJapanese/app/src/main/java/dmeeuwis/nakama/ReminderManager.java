@@ -120,7 +120,7 @@ public class ReminderManager extends BroadcastReceiver {
         builder.setContentTitle(title);
         builder.setContentText(message);
         builder.setAutoCancel(true);
-        builder.setSmallIcon(R.drawable.ic_language_black_24dp);
+        builder.setSmallIcon(R.drawable.ic_language_white);
         Intent intent = new Intent(context, KanjiMasterActivity.class);
         PendingIntent pi = PendingIntent.getActivity(context, PendingIntent.FLAG_ONE_SHOT, intent, 0);
         builder.setContentIntent(pi);
