@@ -51,7 +51,7 @@ public class ReminderManager extends BroadcastReceiver {
             calendar.set(Calendar.MINUTE, 0);
         }
 
-        Log.i("nakama", "Setting study reminder for charset " + charset + ": " + df.format(calendar.getTime()));
+        Log.i("nakama", "Setting study reminder for charset " + charset + ": " + df.format(calendar.getTime()) + " " + makePendingId(charset));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(c, makePendingId(charset),
                     makeIntent(c, charset), PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -73,17 +73,16 @@ public class ReminderManager extends BroadcastReceiver {
     public static boolean reminderExists(Context c, CharacterStudySet charset){
         PendingIntent pendingIntent = PendingIntent.getBroadcast(c, makePendingId(charset),
                 makeIntent(c, charset), PendingIntent.FLAG_NO_CREATE);
+        Log.i("nakama-remind", "Checking reminder for charset + " + charset + ": " + makePendingId(charset) + " "  + (pendingIntent != null));
         return pendingIntent != null;
     }
 
     public static void clearReminders(Context c, CharacterStudySet charset){
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
-        {
-            int id = charset.pathPrefix.hashCode();
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, makeIntent(c, charset), PendingIntent.FLAG_UPDATE_CURRENT);
-            alarmManager.cancel(pendingIntent);
-        }
-        Log.i("nakama", "ReminderManager: cleared notification for " + charset.pathPrefix);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, makePendingId(charset), makeIntent(c, charset), PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
+        pendingIntent.cancel();
+       Log.i("nakama", "ReminderManager: cleared notification for " + charset.pathPrefix + " " + makePendingId(charset));
     }
 
     public void onReceive(Context context, Intent intent) {
