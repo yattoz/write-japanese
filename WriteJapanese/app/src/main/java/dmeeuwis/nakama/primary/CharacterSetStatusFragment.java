@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
@@ -50,6 +61,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
     private TextView progressText, progressGoalsText, charLabel, descLabel;
     private View goalPresentArea, goalAbsentArea;
     private CheckBox notifications;
+    private PieChart progressPieChart;
 
     /**
      * @param charset Name of the CharacterStudySet.
@@ -79,6 +91,18 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         progressText.setText(
                 String.format("%5d Known\n%5d Reviewing\n%5d Unknown",
                        sp.passed, sp.reviewing + sp.failing, sp.unknown));
+
+        if(progressPieChart != null){
+            List<PieEntry> values = new ArrayList<>();
+
+            values.add(new PieEntry(sp.passed, "Passed"));
+            values.add(new PieEntry(sp.reviewing + sp.failing, "Reviewing"));
+            values.add(new PieEntry(sp.unknown, "Untested"));
+
+            PieDataSet pieData = new PieDataSet(values, "Study Progress");
+            pieData.setColors(new int[] { Color.GREEN, Color.BLUE, Color.GRAY });
+            progressPieChart.setData(new PieData(pieData));
+        }
     }
 
     private void updateGoals() {
@@ -179,6 +203,27 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         });
 
         notifications = (CheckBox) view.findViewById(R.id.goal_notifications_enabled);
+
+        progressPieChart = (PieChart)view.findViewById(R.id.charset_progress_chart);
+        if(progressPieChart != null){
+            progressPieChart.setDescription("");
+
+            progressPieChart.setDrawHoleEnabled(true);
+            progressPieChart.setHoleRadius(50f);
+            progressPieChart.setCenterText("Study Progress");
+
+            progressPieChart.setTransparentCircleColor(Color.WHITE);
+            progressPieChart.setTransparentCircleAlpha(110);
+
+            progressPieChart.setRotationEnabled(false);
+
+            progressPieChart.setMaxAngle(180);
+            progressPieChart.setRotationAngle(180);
+
+            progressPieChart.setCenterTextOffset(0, -20);
+            progressPieChart.animateY(800, Easing.EasingOption.EaseInOutQuad);
+            progressPieChart.setHighlightPerTapEnabled(false);
+        }
 
         return view;
     }

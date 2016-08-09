@@ -37,6 +37,19 @@
             android:padding="16dp"
             />
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="175sp"
+            >
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/charset_progress_chart"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="350sp"
+                />
+        </FrameLayout>
+
         <TextView
             android:id="@+id/charset_progress_text"
             android:layout_width="wrap_content"
