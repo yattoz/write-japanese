@@ -90,6 +90,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
     }
 
     public void updateProgress() {
+        Log.i("nakama", "Updating progress UI");
         CharacterStudySet.SetProgress sp = charSet.getProgress();
         progressText.setText(Html.fromHtml(
                 String.format("<div style='text-align: center; width: 100%%;'>" +
@@ -137,6 +138,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
             //pieData.setValueTypeface(mTfLight);
 
             progressPieChart.setData(new PieData(pieData));
+            progressPieChart.invalidate();
         }
     }
 
