@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -25,9 +26,11 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -88,19 +91,51 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
     public void updateProgress() {
         CharacterStudySet.SetProgress sp = charSet.getProgress();
-        progressText.setText(
-                String.format("%5d Known\n%5d Reviewing\n%5d Unknown",
-                       sp.passed, sp.reviewing + sp.failing, sp.unknown));
+        progressText.setText(Html.fromHtml(
+                String.format("<div style='text-align: center; width: 100%%;'>" +
+                              "<span style='color: #2ecc71;'>%5d Passed</span> " +
+                              "<span style='color: #f1c40f;'>%5d Reviewing</span> " +
+                              "<span style='color: gray;'>%5d Unknown</span>" +
+                              "</div>",
+                       sp.passed, sp.reviewing + sp.failing, sp.unknown)));
 
         if(progressPieChart != null){
             List<PieEntry> values = new ArrayList<>();
+            int[] colours = new int[3];
+            int colour_i = 0;
+            float total = sp.failing + sp.passed + sp.reviewing + sp.unknown;
 
-            values.add(new PieEntry(sp.passed, "Passed"));
-            values.add(new PieEntry(sp.reviewing + sp.failing, "Reviewing"));
-            values.add(new PieEntry(sp.unknown, "Untested"));
+            if(sp.passed > 0) {
+                values.add(new PieEntry(100 * sp.passed / total, "Passed"));
+                colours[colour_i] = ColorTemplate.rgb("#2ecc71");
+                colour_i += 1;
+            }
+
+            if(sp.reviewing + sp.failing > 0) {
+                values.add(new PieEntry(100 * (sp.reviewing + sp.failing) / total,  "Reviewing"));
+                colours[colour_i] = ColorTemplate.rgb("#f1c40f");
+                colour_i += 1;
+            }
+
+            if(sp.unknown > 0){
+                values.add(new PieEntry(100 * sp.unknown / total, "Untested"));
+                colours[colour_i] = Color.GRAY;
+                colour_i += 1;
+            }
 
             PieDataSet pieData = new PieDataSet(values, "Study Progress");
-            pieData.setColors(new int[] { Color.GREEN, Color.BLUE, Color.GRAY });
+            int[] usedColours = new int[colour_i];
+            for(int i = 0; i < colour_i; i++){
+                usedColours[i] = colours[i];
+            }
+            pieData.setColors(usedColours);
+            pieData.setSliceSpace(3f);
+
+            pieData.setValueFormatter(new PercentFormatter(new DecimalFormat("###")));
+            pieData.setValueTextSize(11f);
+            pieData.setValueTextColor(Color.WHITE);
+            //pieData.setValueTypeface(mTfLight);
+
             progressPieChart.setData(new PieData(pieData));
         }
     }
@@ -210,8 +245,10 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
             progressPieChart.setDrawHoleEnabled(true);
             progressPieChart.setHoleRadius(50f);
+            progressPieChart.setHoleColor(Color.TRANSPARENT);
             progressPieChart.setCenterText("Study Progress");
 
+            // color and alpha for inner lining of pie (not inside hole)
             progressPieChart.setTransparentCircleColor(Color.WHITE);
             progressPieChart.setTransparentCircleAlpha(110);
 
@@ -219,6 +256,12 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
             progressPieChart.setMaxAngle(180);
             progressPieChart.setRotationAngle(180);
+            progressPieChart.setCenterTextOffset(0, -20);
+
+            // entry label styling
+            progressPieChart.setEntryLabelColor(Color.WHITE);
+            //progressPieChart.setEntryLabelTypeface(mTfRegular);
+            progressPieChart.setEntryLabelTextSize(12f);
 
             progressPieChart.setCenterTextOffset(0, -20);
             progressPieChart.animateY(800, Easing.EasingOption.EaseInOutQuad);

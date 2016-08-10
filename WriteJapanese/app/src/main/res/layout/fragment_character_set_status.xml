@@ -13,13 +13,6 @@
         android:orientation="vertical"
         >
 
-        <!--
-            <dmeeuwis.nakama.views.CircleLabel
-                android:id="@+id/circleLabel"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                />
-        -->
         <TextView
             android:id="@+id/charset_label"
             android:layout_width="match_parent"
@@ -39,7 +32,8 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="175sp"
+            android:layout_height="195sp"
+            android:paddingTop="20dp"
             >
 
             <com.github.mikephil.charting.charts.PieChart
@@ -52,7 +46,7 @@
 
         <TextView
             android:id="@+id/charset_progress_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:padding="16dp"
             android:layout_height="wrap_content"/>
 
