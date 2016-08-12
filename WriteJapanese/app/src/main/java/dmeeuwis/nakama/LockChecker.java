@@ -38,14 +38,12 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	private IabHelper iab = null;
 	private boolean iabHelperSetupFinished = false;
 	final private ActionBarActivity parentActivity;
-	final private Runnable refreshUICommand;
-	
+
 	List<Runnable> queuedCommands;
 	
-	public LockChecker(ActionBarActivity parentActivity, Runnable refreshUICommand){
+	public LockChecker(ActionBarActivity parentActivity){
 		Log.i("nakama", "New LockChecker: about to start iab setup.");
 		this.parentActivity = parentActivity;
-		this.refreshUICommand = refreshUICommand;
 		this.queuedCommands = new ArrayList<Runnable>();
 		
 		Log.i("nakama", "LockChecker: about to run iabStartSetup");
@@ -263,7 +261,7 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 
 	private void tryToRefreshUI(){
 		try {
-			refreshUICommand.run();
+			parentActivity.recreate();
 		} catch(Throwable t){
 			Log.e("nakama", "LockChecker: Exception when refreshing UI", t);
 		}

@@ -256,18 +256,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.PROMPTED, this, false);
 
-        lockChecker = new LockChecker(this,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i("nakama", "PurchaseDialog: onDismissRunnable from raisePurchaseDialog.");
-                        if (lockChecker.getPurchaseStatus() == LockLevel.UNLOCKED) {
-                            Log.i("nakama", "PurchaseDialog: onDismissRunnable from raisePurchaseDialog: saw unlocked result, updating menu.");
-                            getSupportActionBar().setSelectedNavigationItem(2);
-                            supportInvalidateOptionsMenu();
-                        }
-                    }
-                });
+        lockChecker = new LockChecker(this);
 
         setContentView(R.layout.main);
 
