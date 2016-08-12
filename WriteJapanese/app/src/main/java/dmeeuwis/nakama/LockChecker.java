@@ -16,6 +16,7 @@ import android.support.v7.appcompat.BuildConfig;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.vending.billing.util.FixedIabHelper;
 import com.android.vending.billing.util.IabHelper;
 import com.android.vending.billing.util.IabHelper.OnConsumeFinishedListener;
 import com.android.vending.billing.util.IabHelper.OnIabPurchaseFinishedListener;
@@ -35,22 +36,20 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	
 	private static final String PREFS_KEY = "unlockKey";
 	
-	private IabHelper iab = null;
+	private FixedIabHelper iab = null;
 	private boolean iabHelperSetupFinished = false;
 	final private ActionBarActivity parentActivity;
-	final private Runnable refreshUICommand;
-	
+
 	List<Runnable> queuedCommands;
 	
-	public LockChecker(ActionBarActivity parentActivity, Runnable refreshUICommand){
+	public LockChecker(ActionBarActivity parentActivity){
 		Log.i("nakama", "New LockChecker: about to start iab setup.");
 		this.parentActivity = parentActivity;
-		this.refreshUICommand = refreshUICommand;
 		this.queuedCommands = new ArrayList<Runnable>();
 		
 		Log.i("nakama", "LockChecker: about to run iabStartSetup");
 		try {
-			this.iab = new IabHelper(parentActivity, GOOGLE_PLAY_PUBLIC_KEY);
+			this.iab = new FixedIabHelper(parentActivity, GOOGLE_PLAY_PUBLIC_KEY);
 			iab.enableDebugLogging(true);
 			iab.startSetup(this);
 		} catch(Throwable t){
@@ -105,7 +104,7 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 						Log.d("nakama", "LockChecker: runPurchase");
 						iab.launchPurchaseFlow(parentActivity, LICENSE_SKU, REQUEST_CODE, LockChecker.this);
 					} catch(IabHelper.IabAsyncInProgressException|IllegalStateException e){
-						Toast.makeText(parentActivity, "Error contacting Google Play for unlock.", Toast.LENGTH_LONG).show();
+						Toast.makeText(parentActivity, "Error contacting Google Play for unlock. Please try again later.", Toast.LENGTH_LONG).show();
 						Log.e("nakama", "LockChecker: Error in launchPurchaseFlow", e);
 					}
 				}
@@ -149,22 +148,39 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	
 	@Override
 	public void onConsumeFinished(Purchase purchase, IabResult result) {
+		Log.i("nakama", "onConsumeFinished " + purchase + " " + result);
 		if(result.isFailure()){
 			Log.e("nakama", "Failed to consume purchase: " + result.getMessage());
 			Toast.makeText(parentActivity, "Failed to consume! " + result.getMessage(), Toast.LENGTH_SHORT).show();
 		} else if(result.isSuccess()){
 			Toast.makeText(parentActivity, "Succeeded in consuming!", Toast.LENGTH_SHORT).show();
 			Log.i("nakama", "Succeeded in consuming purchase! " + result.getMessage());
-			
+			coreLock();
+			parentActivity.recreate();
 		}
 	}
 	
 	// === utility flow =====
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d("nakama", "LockChecker: handleActivityResult");
+		Log.d("nakama", "LockChecker: handleActivityResult " + requestCode + " " + resultCode + " " + data);
+
+		// hack iab listener so that if orientation changed during payment, current LockChecker's
+		// iabPurchaseListener still works
+		iab.forcePurchaseListener(requestCode, this);
+
 		return iab.handleActivityResult(requestCode, resultCode, data);
     }
-    
+
+
+	public void coreLock(){
+		Log.d("nakama", "LockChecker: coreLock");
+
+		SharedPreferences prefs = getSharedPrefs();
+		Editor ed = prefs.edit();
+		ed.remove(PREFS_KEY);
+		ed.apply();
+	}
+
 	
 	public void coreUnlock(){
 		Log.d("nakama", "LockChecker: coreUnlock");
@@ -204,6 +220,13 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	private enum Action { UNLOCK, CONSUME }
 	private void checkForPurchase(final Action action) {
 		Log.d("nakama", "LockChecker: checkForPurchase: about to query async inventory");
+
+		// in normal application, action should always be UNLOCK. Only for debug builds where consume
+		// is an option might it be CONSUME.
+		if(action == Action.UNLOCK && getPurchaseStatus() == LockLevel.UNLOCKED){
+			Log.i("nakama", "LockChecker: skipping checkForPurchase, found registration key.");
+			return;
+		}
 		try {
 			iab.queryInventoryAsync(new QueryInventoryFinishedListener() {
                 @Override public void onQueryInventoryFinished(IabResult result, Inventory inv) throws IabHelper.IabAsyncInProgressException {
@@ -214,11 +237,13 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
                     }
 
                     Purchase license = inv.getPurchase(LICENSE_SKU);
+					Log.i("nakama", "LockChecker: checkForPurchase found license " + license);
 
                     if(license != null){
                         if(action == Action.UNLOCK){
                             Log.i("nakama", "LockChecker: checkForPurchase found existing purchase! Will Unlock.");
                             coreUnlock();
+							Log.i("nakama", "LockChecker: unlocked! Will restart!");
                             tryToRefreshUI();
                         }
                         if(action == Action.CONSUME){
@@ -263,17 +288,34 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 
 	private void tryToRefreshUI(){
 		try {
-			refreshUICommand.run();
+			parentActivity.recreate();
 		} catch(Throwable t){
 			Log.e("nakama", "LockChecker: Exception when refreshing UI", t);
 		}
 	}
 
-    public void dispose(){
+    public void dispose() {
         try {
             this.iab.dispose();
-        } catch(Throwable t){
-            Log.e("nakama", "Caught error shutting down iab helper", t);
-        }
+        } catch(IabHelper.IabAsyncInProgressException t){
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				Log.e("nakama", "Ignoring interrupted exception on dispose delay");
+			}
+			try {
+				this.iab.dispose();
+			} catch(IabHelper.IabAsyncInProgressException t2){
+				try {
+					Thread.sleep(1500);
+					this.iab.dispose();
+				} catch (Throwable e) {
+					Log.e("nakama", "Caught error shutting down iab helper");
+				}
+
+			}
+		} catch(Throwable t){
+			Log.e("nakama", "Caught error shutting down iab helper", t);
+		}
     }
 }

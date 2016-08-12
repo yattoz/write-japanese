@@ -90,15 +90,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 
         DictionarySet dictSet = DictionarySet.get(this.getApplicationContext());
         if(lc != null){ lc.dispose(); }
-        lc = new LockChecker(this,
-                new Runnable(){
-                    @Override public void run() {
-                        Log.i("nakama", "ProgressActivity: notifyDataSetChanged");
-                        gridAdapter = new CharacterGridAdapter(ProgressActivity.this, characterList, charSet.availableCharactersSet());
-                        characterGrid.setAdapter(gridAdapter);
-                        characterGrid.invalidateViews();
-                    }
-                });
+        lc = new LockChecker(this);
 
         charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc, Iid.get(this.getApplicationContext()));
         charSet.load(this.getApplicationContext());

@@ -256,18 +256,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.PROMPTED, this, false);
 
-        lockChecker = new LockChecker(this,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i("nakama", "PurchaseDialog: onDismissRunnable from raisePurchaseDialog.");
-                        if (lockChecker.getPurchaseStatus() == LockLevel.UNLOCKED) {
-                            Log.i("nakama", "PurchaseDialog: onDismissRunnable from raisePurchaseDialog: saw unlocked result, updating menu.");
-                            getSupportActionBar().setSelectedNavigationItem(2);
-                            supportInvalidateOptionsMenu();
-                        }
-                    }
-                });
+        lockChecker = new LockChecker(this);
 
         setContentView(R.layout.main);
 
@@ -902,7 +891,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:DrawViewComparison");
             menu.add("DEBUG:SpenTest");
             menu.add("DEBUG:KanjiCheck");
-            menu.add("DEBUG:LockUnlock");
+            menu.add("DEBUG:Lock");
+            menu.add("DEBUG:Unlock");
             menu.add("DEBUG:IabConsume");
             menu.add("DEBUG:ResetStorySharing");
             menu.add("DEBUG:Notify");
@@ -1029,6 +1019,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 startActivity(new Intent(this, SpenDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:Unlock")) {
                 getLockChecker().coreUnlock();
+                recreate();
+            } else if (item.getTitle().equals("DEBUG:Lock")) {
+                getLockChecker().coreLock();
+                recreate();
             } else if (item.getTitle().equals("DEBUG:IabConsume")) {
                 lockChecker.startConsume();
             } else if (item.getTitle().equals("DEBUG:ResetStorySharing")) {
