@@ -40,7 +40,7 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
     public void onResume() {
         DictionarySet dictionarySet = DictionarySet.get(this.getApplicationContext());
         String charsetName = getIntent().getExtras().getString("charset");
-        charset = CharacterSets.fromName(charsetName, dictionarySet.kanjiFinder(), new LockChecker(this, null), Iid.get(this.getApplicationContext()));
+        charset = CharacterSets.fromName(charsetName, dictionarySet.kanjiFinder(), new LockChecker(this), Iid.get(this.getApplicationContext()));
         charset.load(this.getApplicationContext());
 
         CharacterSetStatusFragment frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_holder);
