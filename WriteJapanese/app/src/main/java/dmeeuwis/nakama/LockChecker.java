@@ -8,7 +8,6 @@ import java.util.List;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.v7.app.ActionBarActivity;
@@ -27,6 +26,7 @@ import com.android.vending.billing.util.Inventory;
 import com.android.vending.billing.util.Purchase;
 
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
 public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFinishedListener, OnConsumeFinishedListener {
 
@@ -103,9 +103,9 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 					try {
 						Log.d("nakama", "LockChecker: runPurchase");
 						iab.launchPurchaseFlow(parentActivity, LICENSE_SKU, REQUEST_CODE, LockChecker.this);
-					} catch(IabHelper.IabAsyncInProgressException|IllegalStateException e){
+					} catch(Throwable e){
 						Toast.makeText(parentActivity, "Error contacting Google Play for unlock. Please try again later.", Toast.LENGTH_LONG).show();
-						Log.e("nakama", "LockChecker: Error in launchPurchaseFlow", e);
+						UncaughtExceptionLogger.backgroundLogError("LockChecker: Error in launchPurchaseFlow", e, parentActivity.getApplicationContext());
 					}
 				}
 			});
@@ -116,17 +116,23 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 	@Override public void onIabPurchaseFinished(IabResult result, Purchase info) {
 		Log.d("nakama", "LockChecker: onIabPurchaseFinished");
 		
-		if (result.getResponse() == IabHelper.IABHELPER_USER_CANCELLED) {
+		if (result.getResponse() == IabHelper.IABHELPER_USER_CANCELLED){
+			return;
+		}
+
+		if (result.getMessage().equals("Null data in IAB result")) {
+			Log.e("nakama", "Hiding known error from launching new activity while existing IAB purchase flow is active.");
 			return;
 		}
 		
 		if(result.isSuccess() && info != null && info.getPurchaseState() == 0){
-			Log.d("nakama", "LockChecker: onIabPurcaseFinished isSuccess!");
+			Log.d("nakama", "LockChecker: onIabPurchaseFinished isSuccess!");
 			Toast.makeText(parentActivity, "Thank you, your purchase completed! You have full access to all features of Write Japanese. Good luck in your studies!", Toast.LENGTH_LONG).show();
 			coreUnlock();
 			tryToRefreshUI();
 		} else {
-			Log.d("nakama", "LockChecker: onIabPurcaseFinished NOT isSuccess! Purchase info: " + info + "; getPurchaseState: " + (info == null ? "" : info.getPurchaseState()));
+			UncaughtExceptionLogger.backgroundLogError("LockChecker.onIabPurchaseFinished NOT isSuccess! Purchase info: " + info + "; getPurchaseState: " + ( info == null ? "" : info.getPurchaseState()),
+					new RuntimeException(), parentActivity.getApplicationContext());
 			Toast.makeText(parentActivity, "Unfortunately, there was an error while processing the unlock: " + result.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
@@ -227,6 +233,7 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 			Log.i("nakama", "LockChecker: skipping checkForPurchase, found registration key.");
 			return;
 		}
+
 		try {
 			iab.queryInventoryAsync(new QueryInventoryFinishedListener() {
                 @Override public void onQueryInventoryFinished(IabResult result, Inventory inv) throws IabHelper.IabAsyncInProgressException {

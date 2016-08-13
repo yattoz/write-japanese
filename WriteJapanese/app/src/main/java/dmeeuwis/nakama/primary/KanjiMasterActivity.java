@@ -86,6 +86,7 @@ import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.DrawingComparator;
@@ -162,71 +163,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     private class KanjiMasterUncaughtHandler implements Thread.UncaughtExceptionHandler {
         @Override
         public void uncaughtException(final Thread thread, final Throwable ex) {
-            Log.e("nakama", "Uncaught exception from thread " + thread, ex);
-            if(BuildConfig.DEBUG){
-                return;
-            }
-
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
-
-            try {
-                Writer netWriter = new StringWriter();
-                JsonWriter jw = new JsonWriter(netWriter);
-
-                jw.beginObject();
-                jw.name("threadName");
-                jw.value(thread.getName());
-                jw.name("threadId");
-                jw.value(String.valueOf(thread.getId()));
-                jw.name("exception");
-                jw.value(ex.toString());
-                jw.name("iid");
-                jw.value(Iid.get(KanjiMasterActivity.this.getApplicationContext()).toString());
-                jw.name("version");
-                jw.value(String.valueOf(BuildConfig.VERSION_CODE));
-                jw.name("device");
-                jw.value(Build.MANUFACTURER + ": " + Build.MODEL);
-                jw.name("os-version");
-                jw.value(Build.VERSION.RELEASE);
-
-                jw.name("stack");
-                jw.beginArray();
-                for(StackTraceElement e: ex.getStackTrace()){
-                    jw.value(e.toString());
-                }
-                jw.endArray();
-                jw.endObject();
-                jw.close();
-
-                String json = netWriter.toString();
-                Log.i("nakama", "Will try to send error report: " + json);
-
-                URL url = new URL("https://dmeeuwis.com/write-japanese/bug-report");
-                HttpURLConnection report = (HttpURLConnection) url.openConnection();
-                try {
-                    report.setRequestMethod("POST");
-                    report.setDoOutput(true);
-                    report.setReadTimeout(5000);
-                    report.setConnectTimeout(5000);
-                    report.setRequestProperty("Content-Type", "application/json");
-                    OutputStream out = report.getOutputStream();
-                    try {
-                        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-                        writer.write(json);
-                        writer.close();
-                    } finally {
-                        out.close();
-                    }
-                    int responseCode = report.getResponseCode();
-                    Log.i("nakama", "Response code from writing error to network: " + responseCode);
-                } finally {
-                    report.disconnect();
-                }
-
-            } catch (Throwable e) {
-                Log.e("nakama", "Error trying to report error", e);
-            }
+            UncaughtExceptionLogger.logError(thread, "Uncaught top level error: ", ex, KanjiMasterActivity.this.getApplicationContext());
         }
     }
 
@@ -903,6 +842,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:PrintPracticeLog");
             menu.add("DEBUG:SyncNow");
             menu.add("DEBUG:ThrowException");
+            menu.add("DEBUG:LogBackgroundException");
             menu.add("DEBUG:MarkAllPassed");
         }
         return true;
@@ -1053,6 +993,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 ContentResolver.requestSync(null, "dmeeuwis.com", bundle);
             } else if(item.getTitle().equals("DEBUG:ThrowException")){
                 throw new RuntimeException("Practicing error catching!");
+            } else if(item.getTitle().equals("DEBUG:LogBackgroundException")){
+                UncaughtExceptionLogger.backgroundLogError("Practicing background error catching!",
+                        new RuntimeException("BOOM!"), getApplicationContext());
             } else if(item.getTitle().equals("DEBUG:MarkAllPassed")){
                 this.currentCharacterSet.debugMarkAllPassed();
             }
