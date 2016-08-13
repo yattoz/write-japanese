@@ -120,7 +120,7 @@ public class LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFin
 			return;
 		}
 
-		if (result.getMessage().equals("Null data in IAB result")) {
+		if (result.getMessage().startsWith("Null data in IAB result")) {
 			Log.e("nakama", "Hiding known error from launching new activity while existing IAB purchase flow is active.");
 			return;
 		}
