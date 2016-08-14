@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.primary.Iid;
 
 public class CreditsActivity extends ActionBarActivity {
 
@@ -33,7 +35,12 @@ public class CreditsActivity extends ActionBarActivity {
 		TextView thanks = (TextView)findViewById(R.id.text_space);
 		thanks.setClickable(true);
 		thanks.setMovementMethod(LinkMovementMethod.getInstance());
-		thanks.setText(Html.fromHtml(EDICT_THANKS + DIAGRAMS_THANKS));
+		thanks.setText(Html.fromHtml(
+				EDICT_THANKS +
+				DIAGRAMS_THANKS +
+				String.format("<div>Version: %s %d, code: %s</div>",
+						BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
+						Iid.get(getApplicationContext()).toString())));
 	}
 	
 	@Override
