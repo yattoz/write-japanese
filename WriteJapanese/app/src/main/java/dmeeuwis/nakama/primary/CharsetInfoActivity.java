@@ -15,6 +15,9 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
 
+/**
+ * On small devices, holds the CharacterSetStatusFragment all by itself.
+ */
 public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPickListener, OnFragmentInteractionListener {
 
     CharacterStudySet charset;

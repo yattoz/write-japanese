@@ -41,6 +41,9 @@ import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.data.CharacterStudySet;
 
+/**
+ * Shows information and overall user progress on a particular character set.
+ */
 public class CharacterSetStatusFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, OnGoalPickListener {
 
     private enum CharsetColor {

@@ -5,32 +5,12 @@
              android:layout_height="fill_parent"
              android:background="#e5e5e5">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/charsetInfoCard"
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="40dp"
-        android:layout_marginTop="40dp"
-        android:elevation="500dp"
-        android:clickable="true"
-        >
-
-        <fragment
-            android:id="@+id/charSetInfoFragment"
-            class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-    </android.support.v7.widget.CardView>
-
     <dmeeuwis.nakama.views.DrawView
         android:id="@+id/drawPad"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        app:gridPaddingTop="100dp"
-        app:gridPaddingLeft="240dp"/>
+        app:gridPaddingLeft="240dp"
+        app:gridPaddingTop="100dp"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -43,8 +23,8 @@
             android:layout_height="100dp"
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
-            android:elevation="300dp"
             android:clickable="true"
+            android:elevation="300dp"
             >
 
             <ImageView
@@ -52,8 +32,8 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:contentDescription="@string/reviewing_content_description"
-                android:visibility="gone"
                 android:src="@drawable/review_bug"
+                android:visibility="gone"
                 />
 
             <ImageView
@@ -91,9 +71,9 @@
         android:layout_width="92dp"
         android:layout_height="92dp"
         android:layout_gravity="bottom|start"
+        android:layout_marginBottom="104dp"
         android:layout_marginLeft="280dp"
         android:layout_marginStart="120dp"
-        android:layout_marginBottom="104dp"
         android:elevation="@dimen/elevation_high"
         />
 
@@ -121,7 +101,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
->
+        >
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -228,89 +208,111 @@
     </FrameLayout>
 
 
-        <LinearLayout
-            android:id="@+id/correctCard"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
+    <LinearLayout
+        android:id="@+id/correctCard"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
-            <!-- Left side: known and drawn characters -->
+        <!-- Left side: known and drawn characters -->
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:background="@drawable/bg_card"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical">
+                    android:background="#FF1BA20D"
+                    android:padding="6dp"
+                    android:text="Correct"
+                    android:textColor="#FFFFFF"/>
 
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#FF1BA20D"
-                        android:padding="6dp"
-                        android:text="Correct"
-                        android:textColor="#FFFFFF"/>
-
-                    <dmeeuwis.nakama.views.AnimatedCurveView
-                        android:id="@+id/correctKnownView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#FF1BA20D"
-                        android:padding="6dp"
-                        android:text="Drawn"
-                        android:textColor="#FFFFFF"/>
-
-                    <dmeeuwis.nakama.views.AnimatedCurveView
-                        android:id="@+id/correctDrawnView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_card"/>
-                </LinearLayout>
+                <dmeeuwis.nakama.views.AnimatedCurveView
+                    android:id="@+id/correctKnownView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"/>
             </LinearLayout>
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1">
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/correctExamples"
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FF1BA20D"
+                    android:padding="6dp"
+                    android:text="Drawn"
+                    android:textColor="#FFFFFF"/>
+
+                <dmeeuwis.nakama.views.AnimatedCurveView
+                    android:id="@+id/correctDrawnView"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:divider="@android:color/transparent"
-                    android:dividerHeight="10.0sp"/>
-
-                <dmeeuwis.nakama.views.FloatingActionButton
-                    android:id="@id/correctNextButton"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:layout_gravity="bottom|end"
-                    android:elevation="@dimen/elevation_low"/>
-            </FrameLayout>
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_card"/>
+            </LinearLayout>
         </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/correctExamples"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="10.0sp"/>
+
+            <dmeeuwis.nakama.views.FloatingActionButton
+                android:id="@id/correctNextButton"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="bottom|end"
+                android:elevation="@dimen/elevation_low"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        >
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/charsetInfoCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:elevation="500dp"
+            >
+
+            <fragment
+                android:id="@+id/charSetInfoFragment"
+                class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </android.support.v7.widget.CardView>
+    </ScrollView>
 
     <View
         android:id="@+id/maskView"
