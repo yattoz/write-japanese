@@ -45,7 +45,7 @@
         <FrameLayout
             android:id="@+id/vertical_chart_cutter"
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="130dp"
             android:layout_alignParentTop="true"
             >
 
@@ -53,7 +53,7 @@
                 android:id="@+id/charset_progress_chart"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="280dp"
                 />
         </FrameLayout>
 
@@ -67,12 +67,11 @@
             android:layout_height="wrap_content"/>
     </RelativeLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/goal_absent_space"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
         android:padding="8dp"
         android:orientation="vertical">
 
@@ -80,9 +79,10 @@
             android:id="@+id/charset_progress_set_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/set_completion_goal"
             />
-    </LinearLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/goal_present_space"
