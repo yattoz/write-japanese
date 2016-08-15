@@ -96,6 +96,27 @@
 
     </FrameLayout>
 
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="180dp"
+        android:layout_gravity="center_horizontal|bottom"
+        >
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/charsetInfoCard"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:tag="slideDown">
+
+            <fragment
+                android:id="@+id/charSetInfoFragment"
+                class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </android.support.v7.widget.CardView>
+    </HorizontalScrollView>
+
     <!-- Incorrect view screen -->
     <FrameLayout
         android:id="@+id/incorrectCard"
@@ -196,6 +217,7 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:layout_gravity="bottom|start"
+            android:tag="slideDown"
             android:elevation="@dimen/elevation_low"/>
 
         <dmeeuwis.nakama.views.FloatingActionButton
@@ -203,16 +225,17 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:layout_gravity="bottom|end"
+            android:tag="slideDown"
             android:elevation="@dimen/elevation_low"/>
     </FrameLayout>
 
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:id="@+id/correctCard"
         android:baselineAligned="false">
 
         <LinearLayout
-            android:id="@+id/correctCard"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:baselineAligned="false"
@@ -294,27 +317,6 @@
             android:elevation="@dimen/elevation_low"/>
 
     </FrameLayout>
-
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="180dp"
-        android:layout_gravity="center_horizontal|bottom"
-        >
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/charsetInfoCard"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:tag="slideDown">
-
-            <fragment
-                android:id="@+id/charSetInfoFragment"
-                class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </android.support.v7.widget.CardView>
-    </HorizontalScrollView>
 
     <View
         android:id="@+id/maskView"
