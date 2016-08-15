@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.JsonWriter;
 import android.util.Log;
 
@@ -129,9 +130,10 @@ public class PracticeLogSync {
             }
 
             // stream over all rows in from POST response
+            Log.i("nakama", "Received response to JSON sync: " + urlConnection.getResponseMessage() + urlConnection.getResponseMessage());
             InputStream inStream = urlConnection.getInputStream();
             String jsonResponse = Util.slurp(inStream);
-            Log.i("nakama-sync", "Saw progress-sync response JSON: " + jsonResponse);
+            largeLog("nakama-sync", "Saw progress-sync response JSON: " + jsonResponse);
 
             Reader rin = new InputStreamReader(new ByteArrayInputStream(jsonResponse.getBytes("UTF-8")));
             JsonReader jr = new JsonReader(rin);
@@ -151,13 +153,18 @@ public class PracticeLogSync {
             e.apply();
             Log.i("nakama-sync", "Recording device-sync timestamp as " + prefs.getString(DEVICE_SYNC_PREFS_KEY, "MISSED!"));
 
-            jr.nextName();      // "practice_logs" key
+            String n = jr.nextName();      // "practice_logs" key
+            Log.i("nakama-sync", "Expecting practice_logs... saw " + n);
             jr.beginArray();
             while (jr.hasNext()) {
                 Map<String, String> values = new HashMap<>();
                 jr.beginObject();
                 while (jr.hasNext()) {
-                    values.put(jr.nextName(), jr.nextString());
+                    values.put(jr.nextName(), nextStringOrNull(jr));
+                }
+
+                if(values.get("drawing") == null){
+                    values.put("drawing", "");
                 }
 
                 try {
@@ -179,7 +186,7 @@ public class PracticeLogSync {
                 Map<String, String> values = new HashMap<>();
                 jr.beginObject();
                 while (jr.hasNext()) {
-                    values.put(jr.nextName(), jr.nextString());
+                    values.put(jr.nextName(), nextStringOrNull(jr));
                 }
 /*
                 Log.i("nakama", "Inserting kanji_story from record: " + Util.join(values, "=>", ", "));
@@ -204,7 +211,7 @@ public class PracticeLogSync {
                 Map<String, String> values = new HashMap<>();
                 jr.beginObject();
                 while (jr.hasNext()) {
-                    values.put(jr.nextName(), jr.nextString());
+                    values.put(jr.nextName(), nextStringOrNull(jr));
                 }
                 Log.i("nakama", "Inserting charset goal from record: " + Util.join(values, "=>", ", "));
 
@@ -237,6 +244,15 @@ public class PracticeLogSync {
         }
     }
 
+    public static void largeLog(String tag, String content) {
+        if (content.length() > 4000) {
+            Log.d(tag, content.substring(0, 4000));
+            largeLog(tag, content.substring(4000));
+        } else {
+            Log.d(tag, content);
+        }
+}
+
     private void queryToJsonArray(String name, SQLiteDatabase sqlite, String sql, String[] args, JsonWriter jw) throws IOException {
         Log.i("nakama-sync", sql + ": " + Util.join(", ", args));
         Cursor c = sqlite.rawQuery(sql, args);
@@ -256,5 +272,14 @@ public class PracticeLogSync {
             c.close();
         }
         jw.endArray();
+    }
+
+    private static String nextStringOrNull(JsonReader jr) throws IOException {
+        JsonToken peek = jr.peek();
+        if(peek == JsonToken.NULL) {
+            jr.nextNull();
+            return null;
+        }
+        return jr.nextString();
     }
 }
