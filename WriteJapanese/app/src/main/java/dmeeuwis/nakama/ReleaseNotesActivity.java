@@ -5,6 +5,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebView;
 
 import dmeeuwis.kanjimaster.R;
@@ -22,6 +24,12 @@ public class ReleaseNotesActivity extends AppCompatActivity {
 
         WebView v = (WebView) findViewById(R.id.release_notes_webview);
         v.loadUrl("file:///android_asset/release-notes.html");
+
+        v.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return (event.getAction() == MotionEvent.ACTION_MOVE);
+            }
+        });
     }
 
     @Override
