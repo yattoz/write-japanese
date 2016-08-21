@@ -995,7 +995,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 throw new RuntimeException("Practicing error catching!");
             } else if(item.getTitle().equals("DEBUG:LogBackgroundException")){
                 UncaughtExceptionLogger.backgroundLogError("Practicing background error catching!",
-                        new RuntimeException("BOOM!"), getApplicationContext());
+                        new RuntimeException("BOOM!", new RuntimeException("CRASH!", new RuntimeException("THUNK!"))), getApplicationContext());
             } else if(item.getTitle().equals("DEBUG:MarkAllPassed")){
                 this.currentCharacterSet.debugMarkAllPassed();
             }

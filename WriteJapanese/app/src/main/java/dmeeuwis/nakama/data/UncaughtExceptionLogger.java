@@ -7,6 +7,7 @@ import android.util.JsonWriter;
 import android.util.Log;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
@@ -29,16 +30,24 @@ public class UncaughtExceptionLogger {
         });
     }
 
-    public static void logError(Thread thread, String message, Throwable ex, Context applicationContext){
-        Log.e("nakama", "Logging error in background: " + "message", ex);
-        if (BuildConfig.DEBUG) {
-            Log.e("nakama", "Swallowing error due to DEBUG build");
-            return;
+    private static void appendStackTrace(Throwable ex, JsonWriter jw) throws IOException {
+        jw.value(ex.getMessage());
+        for(StackTraceElement e: ex.getStackTrace()){
+            jw.value(e.toString());
         }
 
+        if(ex.getCause() != null){
+            jw.value("--------> caused by:");
+            appendStackTrace(ex.getCause(), jw);
+        }
+    }
+
+    public static void logError(Thread thread, String message, Throwable ex, Context applicationContext){
+        Log.e("nakama", "Logging error in background: " + "message", ex);
         try {
             Writer netWriter = new StringWriter();
             JsonWriter jw = new JsonWriter(netWriter);
+            jw.setIndent("    ");
 
             jw.beginObject();
             jw.name("threadName");
@@ -58,9 +67,7 @@ public class UncaughtExceptionLogger {
 
             jw.name("stack");
             jw.beginArray();
-            for(StackTraceElement e: ex.getStackTrace()){
-                jw.value(e.toString());
-            }
+            appendStackTrace(ex, jw);
             jw.endArray();
             jw.endObject();
             jw.close();
@@ -68,13 +75,18 @@ public class UncaughtExceptionLogger {
             String json = netWriter.toString();
             Log.i("nakama", "Will try to send error report: " + json);
 
+            if (BuildConfig.DEBUG) {
+                Log.e("nakama", "Swallowing error due to DEBUG build");
+                return;
+            }
+
             URL url = new URL("https://dmeeuwis.com/write-japanese/bug-report");
             HttpURLConnection report = (HttpURLConnection) url.openConnection();
             try {
                 report.setRequestMethod("POST");
                 report.setDoOutput(true);
-                report.setReadTimeout(5000);
-                report.setConnectTimeout(5000);
+                report.setReadTimeout(10_000);
+                report.setConnectTimeout(10_000);
                 report.setRequestProperty("Content-Type", "application/json");
                 OutputStream out = report.getOutputStream();
                 try {
