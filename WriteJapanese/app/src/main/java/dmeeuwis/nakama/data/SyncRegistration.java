@@ -1,6 +1,5 @@
 package dmeeuwis.nakama.data;
 
-import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -8,21 +7,17 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.PeriodicSync;
 import android.content.SharedPreferences;
-import android.content.SyncInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.List;
-
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 
 public class SyncRegistration {
-    public static final int REQUEST_CODE_PICK_ACCOUNT = 0x8473;
+    public static final int REQUEST_CODE_PICK_ACCOUNT = 255;
     public static final String HAVE_ASKED_ABOUT_SYNC_KEY = "ASKED_SYNC";
 
     public enum RegisterRequest {
