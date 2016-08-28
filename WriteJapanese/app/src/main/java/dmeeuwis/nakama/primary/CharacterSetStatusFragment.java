@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +16,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -94,7 +91,18 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
     public void updateProgress() {
         Log.i("nakama", "Updating progress UI");
+
         CharacterStudySet.SetProgress sp = charSet.getProgress();
+        if(sp == null){
+            Log.d("nakama", "CharacterSetStatusFragment.updateProgress: progress not yet set, returning.");
+            return;
+        }
+
+        if(progressText == null){
+            Log.d("nakama", "CharacterSetStatusFragment.updateProgress: UI not instantiated, returning.");
+            return;
+        }
+
         progressText.setText(Html.fromHtml(
                 String.format("<div style='text-align: center; width: 100%%;'>" +
                               "<span style='color: #2ecc71;'>%5d Passed</span> " +
@@ -193,6 +201,10 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
     public void setCharset(CharacterStudySet charSet) {
         this.charSet = charSet;
 
+        if(charLabel == null){
+            return;
+        }
+
         charLabel.setText(charSet.name);
         descLabel.setText(charSet.description);
 
@@ -271,6 +283,10 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
             progressPieChart.setCenterTextOffset(0, -20);
             progressPieChart.animateY(800, Easing.EasingOption.EaseInOutQuad);
             progressPieChart.setHighlightPerTapEnabled(false);
+        }
+
+        if(this.charSet != null){
+            this.setCharset(this.charSet);
         }
 
         return view;
