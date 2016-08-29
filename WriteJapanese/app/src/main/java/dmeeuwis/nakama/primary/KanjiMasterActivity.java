@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -29,7 +28,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.JsonWriter;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -49,15 +47,8 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -132,6 +123,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected boolean queuedNextCharLoad = false;   // when switching to teaching activity, queue a next char load for onResume
     protected PurchaseDialog pd;
     private int currentCharacterClueIndex = 0;
+
+    private int animateSlide = 2000;    // replace by max screen width/height onResume
 
     // ui references
     protected DrawView drawPad;
@@ -430,15 +423,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        ANIMATE_OUT_HEIGHT = dm.heightPixels;
+        animateSlide = Math.max(dm.heightPixels, dm.widthPixels);
 
         correctCard = findViewById(R.id.correctCard);
         incorrectCard = findViewById(R.id.incorrectCard);
         charsetCard = (CardView) findViewById(R.id.charsetInfoCard);
         instructionCard = (CardView) findViewById(R.id.instructionCard);
         if(correctCard != null){
-            correctCard.setTranslationY(-1 * ANIMATE_OUT_HEIGHT);
-            incorrectCard.setTranslationY(-1 * ANIMATE_OUT_HEIGHT);
+            correctCard.setTranslationY(-1 * animateSlide);
+            incorrectCard.setTranslationY(-1 * animateSlide);
         }
 
         UUID iid = Iid.get(this.getApplicationContext());
@@ -527,24 +520,23 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    int ANIMATE_OUT_HEIGHT = 1500;
     private State currentState = State.DRAWING;
 
     private void slideIn(View ... views){
         for(View v: views) {
             if("slideDown".equals(v.getTag())){
-                v.animate().translationYBy(-1 * ANIMATE_OUT_HEIGHT);
+                v.animate().translationYBy(-1 * animateSlide);
             } else {
-                v.animate().translationYBy(ANIMATE_OUT_HEIGHT);
+                v.animate().translationYBy(animateSlide);
             }
         }
     }
     private void slideOut(View ... views){
         for(View v: views) {
             if("slideDown".equals(v.getTag())){
-                v.animate().translationYBy(ANIMATE_OUT_HEIGHT);
+                v.animate().translationYBy(animateSlide);
             } else {
-                v.animate().translationYBy(-1 * ANIMATE_OUT_HEIGHT);
+                v.animate().translationYBy(-1 * animateSlide);
             }
         }
     }
@@ -570,7 +562,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             Log.d("nakama", "In CORRECT_ANSWER state change; starting flip");
             animateActionBar(getResources().getColor(R.color.actionbar_correct));
 
-            correctCard.animate().translationY(ANIMATE_OUT_HEIGHT);
+            correctCard.animate().translationY(animateSlide);
 
             slideIn(correctCard);
             slideOut(instructionCard, charsetCard, reviewBug);
