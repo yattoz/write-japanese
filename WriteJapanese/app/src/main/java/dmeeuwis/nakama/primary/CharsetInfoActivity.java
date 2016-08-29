@@ -1,12 +1,14 @@
 package dmeeuwis.nakama.primary;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.View;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.LockChecker;
@@ -19,6 +21,7 @@ import dmeeuwis.nakama.data.DictionarySet;
  * On small devices, holds the CharacterSetStatusFragment all by itself.
  */
 public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPickListener, OnFragmentInteractionListener {
+    private final String CHARSET_SAVED_INSTANCE = "charset";
 
     CharacterStudySet charset;
 
@@ -36,13 +39,25 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
 
         ActionBar actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
     }
 
     @Override
     public void onResume() {
         DictionarySet dictionarySet = DictionarySet.get(this.getApplicationContext());
-        String charsetName = getIntent().getExtras().getString("charset");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        String charsetName;
+        Intent i = getIntent();
+        String intentCharset = i == null ? null : i.getStringExtra("charset");
+        if(intentCharset == null) {
+            charsetName = prefs.getString(CHARSET_SAVED_INSTANCE, null);
+        } else {
+            charsetName = i.getStringExtra(CHARSET_SAVED_INSTANCE);
+            SharedPreferences.Editor e = prefs.edit();
+            e.putString(CHARSET_SAVED_INSTANCE, charsetName);
+            e.apply();
+        }
+
         charset = CharacterSets.fromName(charsetName, dictionarySet.kanjiFinder(), new LockChecker(this), Iid.get(this.getApplicationContext()));
         charset.load(this.getApplicationContext());
 
