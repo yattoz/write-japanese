@@ -46,6 +46,8 @@ public class TeachingInfoFragment extends Fragment {
         final TeachingActivity parent = (TeachingActivity)getActivity();
 
         Kanji kanji = parent.getKanji();
+        char character = kanji == null ? parent.getCharacter().charAt(0) : kanji.kanji;
+
         String[] currentCharacterSvg = parent.getCurrentCharacterSvg();
         final DictionarySet dictSet = parent.dictSet;
 
@@ -72,14 +74,21 @@ public class TeachingInfoFragment extends Fragment {
             }
         };
 
-        this.searchTask = new KanjiTranslationListAsyncTask(adder, dictSet, kanji.kanji);
+        this.searchTask = new KanjiTranslationListAsyncTask(adder, dictSet, character);
         this.searchTask.execute();
 
         CurveDrawing animCurveDrawing = new CurveDrawing(currentCharacterSvg);
-        kanjiLabel.setText(Character.toString(kanji.kanji));
+        kanjiLabel.setText(Character.toString(character));
         this.kanim.setDrawing(animCurveDrawing, AnimatedCurveView.DrawTime.ANIMATED, Criticism.SKIP_LIST);
 
-        addTextViewsToLayout((LinearLayout)view.findViewById(R.id.meanings), kanji.meanings);
+        LinearLayout meanings = (LinearLayout) view.findViewById(R.id.meanings);
+        if(kanji != null) {
+            meanings.setVisibility(View.VISIBLE);
+            addTextViewsToLayout(meanings, kanji.meanings);
+        } else {
+            // no meaning for kana
+            meanings.setVisibility(View.GONE);
+        }
 
         startAnimation();
         //Log.i("nakama", "TeachingInfoFragment lifecycle: at end of onResume, kanim is " + this.kanim + "; kanjiLabel is " + this.kanjiLabel);

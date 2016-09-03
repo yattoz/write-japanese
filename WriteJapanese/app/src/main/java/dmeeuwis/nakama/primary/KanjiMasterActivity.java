@@ -1042,28 +1042,28 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         if (itemPosition == 0) {
             this.currentCharacterSet = hiraganaCharacterSet;
-            this.correctVocabList.setVisibility(View.GONE);
+            //this.correctVocabList.setVisibility(View.GONE);
         } else if (itemPosition == 1) {
             this.currentCharacterSet = katakanaCharacterSet;
-            this.correctVocabList.setVisibility(View.GONE);
+            //this.correctVocabList.setVisibility(View.GONE);
         } else if (itemPosition == 2) {
             this.currentCharacterSet = joyouG1;
-            this.correctVocabList.setVisibility(View.VISIBLE);
+            //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 3) {
             this.currentCharacterSet = joyouG2;
-            this.correctVocabList.setVisibility(View.VISIBLE);
+            //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 4) {
             this.currentCharacterSet = joyouG3;
-            this.correctVocabList.setVisibility(View.VISIBLE);
+            //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 5) {
             this.currentCharacterSet = joyouG4;
-            this.correctVocabList.setVisibility(View.VISIBLE);
+            //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 6) {
             this.currentCharacterSet = joyouG5;
-            this.correctVocabList.setVisibility(View.VISIBLE);
+            //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 7) {
             this.currentCharacterSet = joyouG6;
-            this.correctVocabList.setVisibility(View.VISIBLE);
+            //this.correctVocabList.setVisibility(View.VISIBLE);
 //		} else if(itemPosition == 8){
 //			Toast.makeText(this, "Showing SS", Toast.LENGTH_SHORT);
 //			this.currentCharacterSet = this.joyouSS;

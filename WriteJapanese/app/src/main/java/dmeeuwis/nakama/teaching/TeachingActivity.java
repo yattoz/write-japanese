@@ -41,7 +41,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	String callingClass;
 
-    MyFragmentPagerAdapter kanjiAdapter, kanaAdapter;
+    MyFragmentPagerAdapter kanjiAdapter;
     MyFragmentPagerAdapter adapter;
 
     TeachingCombinedStoryInfoFragment combinedFragment;
@@ -85,10 +85,8 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
             kanjiAdapter = new MyFragmentPagerAdapter(fm,
                     new String[] { "Draw", "Story", "Usage" });
 
-            kanaAdapter = new MyFragmentPagerAdapter(fm,
-                    new String[] { "Draw", "Story" });
-
-            this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
+            //this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
+            this.adapter = kanjiAdapter;
 
 
             tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
@@ -161,17 +159,16 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
             throw new RuntimeException(e);
         }
 
+        adapter = kanjiAdapter;
         if(Kana.isKanji(kanjiIn)){
             try {
                 Kanji k = dictSet.kanjiFinder().find(kanjiIn);
                 actionBar.setTitle("Studying " + k.meanings[0]);
-                adapter = kanjiAdapter;
             } catch(IOException e){
                 throw new RuntimeException(e);
             }
         } else {
             actionBar.setTitle("Studying " + Kana.kana2Romaji(String.valueOf(kanjiIn)));
-            adapter = kanaAdapter;
         }
 
         if(pager != null) {

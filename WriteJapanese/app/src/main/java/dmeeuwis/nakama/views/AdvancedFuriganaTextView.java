@@ -72,7 +72,12 @@ public class AdvancedFuriganaTextView extends View {
 		if(finder == null) throw new NullPointerException("Null KanjiFinder passed in.");
 		
         KanjiElement kanji = t.getFirstKanjiElement();
-        this.parts = kanji.getFuriganaBreakdown(t.toReadingString(), finder);
+		if(kanji != null){
+			this.parts = kanji.getFuriganaBreakdown(t.toReadingString(), finder);
+		} else {
+			// kana-only word
+			this.parts = new Furigana[] { new Furigana(t.toKanjiString(), "")};
+		}
         this.kanjiWidths = new int[this.parts.length];
         this.furiWidths = new int[this.parts.length];
 
