@@ -2,6 +2,7 @@ package dmeeuwis.nakama.teaching;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -96,13 +97,19 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         }
         Log.i("nakama", "TeachingDrawFragment onComplete; teachingLevel becomes " + teachingLevel);
 
-        tracingView.clear();
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tracingView.clear();
 
-        if (teachingLevel >= 2) {
-            tracingView.stopAnimation();
-        } else {
-            tracingView.startAnimation(500);
-        }
+                if (teachingLevel >= 2) {
+                    tracingView.stopAnimation();
+                } else {
+                    tracingView.startAnimation(500);
+                }
+            }
+        }, 500);
     }
 
     void changeCardMessage(final String newMessage) {
