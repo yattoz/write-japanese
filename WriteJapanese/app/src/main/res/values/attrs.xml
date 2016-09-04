@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="gridPaddingLeft" format="dimension" />
     <attr name="gridPaddingTop" format="dimension" />
+    <attr name="gridPaddingRight" format="dimension" />
+    <attr name="gridPaddingBottom" format="dimension" />
+    <attr name="gridPaddingLeft" format="dimension" />
 
     <declare-styleable name="DrawView">
         <attr name="gridPaddingLeft"/>
@@ -10,13 +12,17 @@
     </declare-styleable>
 
     <declare-styleable name="TracingCurveView">
-        <attr name="gridPaddingLeft"/>
         <attr name="gridPaddingTop"/>
+        <attr name="gridPaddingRight"/>
+        <attr name="gridPaddingBottom"/>
+        <attr name="gridPaddingLeft"/>
     </declare-styleable>
 
     <declare-styleable name="AnimatedCurveView">
-        <attr name="gridPaddingLeft"/>
         <attr name="gridPaddingTop"/>
+        <attr name="gridPaddingRight"/>
+        <attr name="gridPaddingBottom"/>
+        <attr name="gridPaddingLeft"/>
     </declare-styleable>
 
     <declare-styleable name="AdvancedFuriganaTextView">

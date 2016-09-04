@@ -1,20 +1,20 @@
 package dmeeuwis.nakama.views;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import java.util.List;
+
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.kanjidraw.Criticism;
-import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.views.AnimatedCurveView.DrawTime;
 import dmeeuwis.nakama.views.DrawView.OnStrokeListener;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
@@ -28,7 +28,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 	CurveDrawing curveDrawing;
 	
 	Integer currentTracingTargetStrokeCount = null;
-    Integer gridPaddingLeft = 0, gridPaddingTop = 0;
+    Integer gridPaddingLeft = 0, gridPaddingRight = 0, gridPaddingTop = 0, gridPaddingBottom = 0;
 	
 	OnTraceCompleteListener onTraceListener;
 	OnStrokeListener onStrokeListener;
@@ -36,15 +36,19 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 	public TracingCurveView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyle, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TracingCurveView, defStyle, 0);
         this.gridPaddingTop = a.getDimensionPixelSize(R.styleable.TracingCurveView_gridPaddingTop, 0);
         this.gridPaddingLeft = a.getDimensionPixelSize(R.styleable.TracingCurveView_gridPaddingLeft, 0);
+		this.gridPaddingBottom = a.getDimensionPixelSize(R.styleable.TracingCurveView_gridPaddingBottom, 0);
+		this.gridPaddingRight = a.getDimensionPixelSize(R.styleable.TracingCurveView_gridPaddingRight, 0);
         a.recycle();
+
+		Log.d("nakama-scale", "TracingCurveView: paddings " + this.gridPaddingTop + ", " + this.gridPaddingRight + ", " + this.gridPaddingBottom + ", " + this.gridPaddingLeft);
 
         this.animatedCurve = new AnimatedCurveView(context);
         this.animatedCurve.setCurveColor(Color.LTGRAY);
         this.animatedCurve.setAutoIncrement(false);
-        this.animatedCurve.setCurvePaddingPixels(gridPaddingTop, gridPaddingLeft);
+        this.animatedCurve.setCurvePaddingPixels(gridPaddingTop, gridPaddingRight, gridPaddingBottom, gridPaddingLeft);
         this.animatedCurve.setBackgroundColor(DrawView.BACKGROUND_COLOR);
 
         this.kanjiPad = new DrawView(context);
@@ -96,8 +100,8 @@ public class TracingCurveView extends FrameLayout implements Animatable {
 		this(context, null, 0);
 	}
 
-	public static interface OnTraceCompleteListener {
-		public void onComplete(PointDrawing pointDrawing);
+	public interface OnTraceCompleteListener {
+		void onComplete(PointDrawing pointDrawing);
 	}
 	
 	public void setOnTraceCompleteListener(OnTraceCompleteListener listener){

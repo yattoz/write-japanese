@@ -32,9 +32,9 @@ import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
 public class AnimatedCurveView extends View implements Animatable {
     private List<Criticism.PaintColourInstructions> knownPaintInstructions;
 
-    public static enum DrawTime { ANIMATED, STATIC }
-    public static enum DrawStatus { DRAWING, FINISHED }
-    public static enum PlayStatus { PLAYING, STOPPED }
+    public enum DrawTime { ANIMATED, STATIC }
+    public enum DrawStatus { DRAWING, FINISHED }
+    public enum PlayStatus { PLAYING, STOPPED }
 
     static final private float FRAMES_PER_STROKE = 30;
 	static final private float T_INCREMENTS = 1 / FRAMES_PER_STROKE;
@@ -51,7 +51,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	int allowedStrokes = 1;
 	float time = -1;
 	boolean autoIncrement = true;
-    int paddingTop = 0, paddingLeft = 0;
+    int paddingTop = 0, paddingRight = 0, paddingBottom = 0, paddingLeft = 0;
 
 	Drawing drawing = null;
 	RectF unscaledBoundingBox = null;
@@ -77,6 +77,8 @@ public class AnimatedCurveView extends View implements Animatable {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AnimatedCurveView, defStyle, 0);
         this.paddingLeft = a.getDimensionPixelSize(R.styleable.AnimatedCurveView_gridPaddingLeft, 0);
         this.paddingTop = a.getDimensionPixelSize(R.styleable.AnimatedCurveView_gridPaddingTop, 0);
+        this.paddingRight = a.getDimensionPixelSize(R.styleable.AnimatedCurveView_gridPaddingRight, 0);
+        this.paddingBottom = a.getDimensionPixelSize(R.styleable.AnimatedCurveView_gridPaddingBottom, 0);
         a.recycle();
 
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
@@ -124,10 +126,13 @@ public class AnimatedCurveView extends View implements Animatable {
         invalidate();
 	}
 
-    public void setCurvePaddingPixels(int paddingTop, int paddingLeft){
+    public void setCurvePaddingPixels(int paddingTop, int paddingRight, int paddingBottom, int paddingLeft){
         this.paddingTop = paddingTop;
         this.paddingLeft = paddingLeft;
+        this.paddingBottom = paddingBottom;
+        this.paddingRight = paddingRight;
         this.invalidate();
+        Log.d("nakama-scale", "AnimatedCurveView setCurvePaddingPixels: " + this.paddingTop + ", " + this.paddingRight + ", " + this.paddingBottom + ", " + this.paddingRight);
     }
 
 	/**
@@ -299,7 +304,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	    WidthAndHeight wh = MeasureUtil.fillMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        if(wh.width != getWidth() || wh.height != getHeight())
+        //if(wh.width != getWidth() || wh.height != getHeight())
             this.scaleAndOffsets.initialized = false;
 
 	    setMeasuredDimension(wh.width, wh.height);
@@ -310,7 +315,8 @@ public class AnimatedCurveView extends View implements Animatable {
 	protected void onDraw(Canvas canvas){
         // TODO: move this block out of onDraw. Maybe onMeasure? Figure out inits so this can't happen here
 		if(!this.scaleAndOffsets.initialized){
-            scaleAndOffsets.calculate(unscaledBoundingBox, getWidth() - this.paddingLeft, getHeight() - this.paddingTop);
+            Log.d("nakama-scale", "AnimatedCurveView measuring: paddings: " + this.paddingTop + ", " + this.paddingRight + ", " + this.paddingBottom + ", " + this.paddingRight);
+            scaleAndOffsets.calculate(unscaledBoundingBox, getWidth() - this.paddingLeft - this.paddingRight, getHeight() - this.paddingTop - this.paddingBottom);
 
             //Log.i("nakama", "AnimatedCurveView: rescaled, resetting animateTimer. threadDrawStatus: " + threadDrawStatus);
             clear();

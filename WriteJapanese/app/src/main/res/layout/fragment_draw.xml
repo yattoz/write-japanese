@@ -9,7 +9,7 @@
         android:id="@+id/tracingPad"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        nakama:gridPaddingTop="-36sp"
+        nakama:gridPaddingBottom="74sp"
         />
 
     <android.support.v7.widget.CardView
