@@ -19,6 +19,11 @@
         android:layout_gravity="bottom|center"
         android:layout_margin="10dp">
 
+        <View
+            android:id="@+id/messageCard_colour"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"/>
+
         <TextView
             android:id="@+id/tipMessage"
             android:layout_width="match_parent"
@@ -26,7 +31,9 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:minHeight="64sp"
+            android:paddingTop="2dp"
             android:textSize="18sp" />
+
     </android.support.v7.widget.CardView>
 
 </FrameLayout>

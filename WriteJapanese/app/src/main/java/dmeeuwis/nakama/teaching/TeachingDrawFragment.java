@@ -49,6 +49,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
     Animation fadeOut;
 
     CardView messageCard;
+    View messageCardColour;
     TextView message;
     TracingCurveView tracingView;
 
@@ -90,10 +91,10 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 
         if (c.pass) {
             teachingLevel = Math.max(0, Math.min(goodAdvice.length - 1, teachingLevel + 1));
-            changeCardMessage(goodAdvice[teachingLevel]);
+            changeCardMessage(goodAdvice[teachingLevel], getResources().getColor(R.color.DarkGreen));
         } else {
             teachingLevel = Math.max(0, Math.min(teachingLevel - 1, goodAdvice.length - 1));
-            changeCardMessage(badAdvice[0]);
+            changeCardMessage(badAdvice[0], getResources().getColor(R.color.DarkRed));
         }
         Log.i("nakama", "TeachingDrawFragment onComplete; teachingLevel becomes " + teachingLevel);
 
@@ -112,7 +113,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         }, 500);
     }
 
-    void changeCardMessage(final String newMessage) {
+    void changeCardMessage(final String newMessage, final int color) {
         fadeOut.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -127,6 +128,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
                 try {
                     fadeOut.setAnimationListener(null);
                     message.setText(newMessage);
+                    messageCardColour.setBackgroundColor(color);
                     messageCard.startAnimation(fadeIn);
                 } catch (NullPointerException e) {
                     Log.i("nakama", "TeachingDrawFragment.changeCardMessage: A view element was nulled before end of animation", e);
@@ -137,7 +139,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         try {
             messageCard.startAnimation(this.fadeOut);
         } catch (NullPointerException e) {
-            Log.i("nakama", "TeachingDrawFragment.changeCardMessage: A view element was nulled while changing card message.");
+            Log.i("nakama", "TeachingDrawFragment.changeCardMessage: A view element was nulled while changing card essage.");
         }
     }
 
@@ -176,6 +178,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
         message.setText(initialAdvice);
 
         messageCard = (CardView) getView().findViewById(R.id.messageCard);
+        messageCardColour = getView().findViewById(R.id.messageCard_colour);
         startAnimation(300);
 
         super.onResume();
