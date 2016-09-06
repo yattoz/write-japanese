@@ -1119,7 +1119,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     public void onFragmentInteraction(Uri uri) {
-        Log.i("nakama", "KanjiMasterActivity: onFragmeentInteraction called, " + uri);
+        Log.i("nakama", "KanjiMasterActivity: onFragmentInteraction called, " + uri);
     }
 
     @Override
