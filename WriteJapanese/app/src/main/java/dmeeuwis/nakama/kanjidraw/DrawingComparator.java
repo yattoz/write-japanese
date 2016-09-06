@@ -226,7 +226,7 @@ public class DrawingComparator {
 		}
 
 		// find best set of strokes
-		List<StrokeResult> bestStrokes = findGoodPairings(scoreMatrix);
+		List<StrokeResult> bestStrokes = findBestPairings(scoreMatrix);
 		{
 			Set<Integer> rearrangedDrawnStrokes = new HashSet<>(bestStrokes.size());
 			List<StrokeResult> misorderedStrokes = new ArrayList<>(bestStrokes.size());
