@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
@@ -208,7 +209,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         charLabel.setText(charSet.name);
         descLabel.setText(charSet.description);
 
-        CharsetColor color = CharsetColor.valueOf(charSet.pathPrefix.toUpperCase());
+        CharsetColor color = CharsetColor.valueOf(charSet.pathPrefix.toUpperCase(Locale.ENGLISH));
         charLabel.setBackgroundColor(getResources().getColor(color.color));
         descLabel.setBackgroundColor(getResources().getColor(color.color));
         charLabel.setTextColor(Color.WHITE);
