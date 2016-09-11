@@ -60,8 +60,8 @@ public class DrawingComparator {
 
 		this.drawnAboveMatrix = calculateAboveMatrix(this.drawn);
 		this.knownAboveMatrix = calculateAboveMatrix(this.known);
-		Log.i("nakama", "Drawn above matrix\n" + printMatrix(this.drawnAboveMatrix));
-		Log.i("nakama", "Known above matrix\n" + printMatrix(this.knownAboveMatrix));
+		Log.i("nakama", "Drawn above matrix\n" + Util.printMatrix(this.drawnAboveMatrix));
+		Log.i("nakama", "Known above matrix\n" + Util.printMatrix(this.knownAboveMatrix));
 
 
 		this.FAIL_POINT_START_DISTANCE = (float)(drawingAreaMaxDim * 0.40);
@@ -91,21 +91,7 @@ public class DrawingComparator {
         }
 	}
 
-	public int[] missingInts(int max, List<Integer> present){
-		List<Integer> missing = new ArrayList<>(max);
-		for(int i = 0; i < max; i++){
-			if(!present.contains(i)){
-				missing.add(i);
-			}
-		}
-
-		if(missing.size() > 0){
-			return Util.toIntArray(missing);
-		}
-		return null;
-	}
-
-    public int[] findExtraStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
+	public int[] findExtraStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
         int extra = drawnCount - knownCount;
         if(extra <= 0){
             // only try to colour if we're sure we can identify the extra strokes
@@ -122,7 +108,7 @@ public class DrawingComparator {
 
         // only colour extra strokes if every stoke you drew, you drew well
         if(drewWell.size() == knownCount){
-            return missingInts(drawnCount, drewWell);
+            return Util.missingInts(drawnCount, drewWell);
         } else {
             return null;
         }
@@ -146,7 +132,7 @@ public class DrawingComparator {
 
 		// only colour missing strokes if every stoke you drew, you drew well
 		if(drewWell.size() == drawnCount){
-			return missingInts(knownCount, drewWell);
+			return Util.missingInts(knownCount, drewWell);
 		} else {
 			return null;
 		}
@@ -199,7 +185,7 @@ public class DrawingComparator {
 			}
 		}
 
-		if(BuildConfig.DEBUG) Log.d("nakama", "Score Matrix (y-axis=known, x-axis=drawn)\n======================" + printMatrix(scoreMatrix) + "====================");
+		if(BuildConfig.DEBUG) Log.d("nakama", "Score Matrix (y-axis=known, x-axis=drawn)\n======================" + Util.printMatrix(scoreMatrix) + "====================");
 	
 		if(BuildConfig.DEBUG) Log.d("nakama", "Scanning for known intersects.");
 		List<Intersection> knownIntersects = this.known.findIntersections();
@@ -232,7 +218,7 @@ public class DrawingComparator {
 			List<StrokeResult> misorderedStrokes = new ArrayList<>(bestStrokes.size());
 
 			for (StrokeResult s : bestStrokes) {
-				Log.d("nakama", "Best chosen: " + s);
+				Log.d("nakama", "Best chosen: " + s + ": " + criticismMatrix[s.knownStrokeIndex][s.drawnStrokeIndex].message);
 
 				if (s.score == 0) {
 					if (!s.knownStrokeIndex.equals(s.drawnStrokeIndex)) {
@@ -585,8 +571,8 @@ public class DrawingComparator {
 			if(BuildConfig.DEBUG) Log.d("nakama", "SPECIAL CASE: CIRCLE detected, ignoring stroke directions.");
 			return new StrokeCriticism(null, 0);
 		}
-				
-		
+
+
 		{
 			double startDistance = PathCalculator.distance(bstart, cstart);
 			if(startDistance > FAIL_POINT_START_DISTANCE){
@@ -664,6 +650,16 @@ public class DrawingComparator {
 		if(BuildConfig.DEBUG) Log.d("nakama", "========================== end of " + baseIndex + " vs " + challengerIndex);
 
 		if(failures.size() == 0) {
+
+			// only do above/below comparisons for good strokes?
+			for(int di = 0; di < drawnAboveMatrix[baseIndex].length; di++){
+				if(drawnAboveMatrix[di][challengerIndex] && !knownAboveMatrix[di][challengerIndex]){
+					return new StrokeCriticism("Your " + Util.adjectify(baseIndex, drawnAboveMatrix.length) + " stroke should be below your " + Util.adjectify(challengerIndex, drawnAboveMatrix.length));
+				} else if(knownAboveMatrix[di][challengerIndex] && !drawnAboveMatrix[di][challengerIndex]){
+					return new StrokeCriticism("Your " + Util.adjectify(baseIndex, drawnAboveMatrix.length) + " stroke should be above your " + Util.adjectify(di, drawnAboveMatrix.length));
+				}
+			}
+
 			return new StrokeCriticism(null, 0);
 			
 		} else if(failures.size() == 1) {
@@ -694,7 +690,7 @@ public class DrawingComparator {
 			case BACKWARDS:
 				return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is backwards.");
 
-			default: 
+			default:
 				throw new RuntimeException("Error: unhandled StrokeCompareFailure");
 			}
 			
@@ -719,35 +715,5 @@ public class DrawingComparator {
 		}  else {
 			return new StrokeCriticism("Your " + Util.adjectify(challengerIndex, drawn.strokeCount()) + " stroke is not correct.", failures.size());
 		}
-	}
-
-	public static String printMatrix(int[][] matrix){
-		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
-		for(int i = 0; i < matrix.length; i++){
-			for(int j = 0; j < matrix[i].length; j++){
-				sb.append(Integer.toString(matrix[i][j]));
-				if(j != matrix[i].length - 1){
-					sb.append(" ");
-				}
-			}
-			sb.append("\n");
-		}
-		return sb.toString();
-	}
-
-	public static String printMatrix(boolean[][] matrix){
-		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
-		for(int i = 0; i < matrix.length; i++){
-			for(int j = 0; j < matrix[i].length; j++){
-				sb.append(Boolean.toString(matrix[i][j]));
-				if(j != matrix[i].length - 1){
-					sb.append("\t");
-				}
-			}
-			sb.append("\n");
-		}
-		return sb.toString();
 	}
 }

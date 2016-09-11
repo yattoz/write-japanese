@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.BuildConfig;
+import dmeeuwis.util.Util;
 
 import static org.junit.Assert.*;
 
@@ -90,7 +91,7 @@ public class DrawingComparatorTest {
         {
             int[][] test = new int[][]{ {3, 3}, {4, 4}};
             System.out.println("Testing find best pairing!");
-            System.out.println(DrawingComparator.printMatrix(test));
+            System.out.println(Util.printMatrix(test));
             List<DrawingComparator.StrokeResult> r = DrawingComparator.findBestPairings(test);
             assertEquals("Assigns best pairings", new DrawingComparator.StrokeResult(0, 0, 3), r.get(0));
             assertEquals("Assigns best pairings", new DrawingComparator.StrokeResult(1, 1, 4), r.get(1));
@@ -98,4 +99,3 @@ public class DrawingComparatorTest {
 
     }
 }
-
