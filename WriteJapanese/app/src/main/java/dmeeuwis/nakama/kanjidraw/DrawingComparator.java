@@ -329,20 +329,20 @@ public class DrawingComparator {
 				if(i >= j){
 					matrix[i][j] = false;
 				} else {
-					matrix[i][j] = isAbove(d.get(i), d.get(j));
+					matrix[i][j] = isAbove(d.get(i), d.get(j), d);
 				}
 			}
 		}
 		return matrix;
 	}
 
-	static private boolean isAbove(Stroke s1, Stroke s2) {
-		int extra = (int)(Math.max( s1.maxY(), s2.maxY() ) * 0.2);
-		System.out.println("s1 maxY calcuated as " + s1.maxY());
-		System.out.println("s2 maxY calcuated as " + s2.maxY());
-		System.out.println("isAbove extra calcuated as " + extra);
-		System.out.println("isAbove lowest(s1) is " + lowestPoint(s1));
-		System.out.println("isAbove highest(s2) is " + lowestPoint(s2));
+	static private boolean isAbove(Stroke s1, Stroke s2, PointDrawing d) {
+		int extra = (int)(d.findBoundingBox().height() * 0.2);
+		Log.d("nakama-calc", "s1 maxY calculated as " + s1.maxY());
+		Log.d("nakama-calc", "s2 maxY calculated as " + s2.maxY());
+		Log.d("nakama-calc", "isAbove extra calculated as " + extra);
+		Log.d("nakama-calc", "isAbove lowest(s1) is " + lowestPoint(s1));
+		Log.d("nakama-calc", "isAbove highest(s2) is " + lowestPoint(s2));
 		return lowestPoint(s1) + extra < highestPoint(s2);
 	}
 
@@ -654,9 +654,9 @@ public class DrawingComparator {
 			// only do above/below comparisons for good strokes?
 			for(int di = 0; di < drawnAboveMatrix[baseIndex].length; di++){
 				if(drawnAboveMatrix[di][challengerIndex] && !knownAboveMatrix[di][challengerIndex]){
-					return new StrokeCriticism("Your " + Util.adjectify(baseIndex, drawnAboveMatrix.length) + " stroke should be below your " + Util.adjectify(challengerIndex, drawnAboveMatrix.length));
+					return new StrokeCriticism("Your " + Util.adjectify(baseIndex, drawnAboveMatrix.length) + " stroke should be completely below your " + Util.adjectify(challengerIndex, drawnAboveMatrix.length));
 				} else if(knownAboveMatrix[di][challengerIndex] && !drawnAboveMatrix[di][challengerIndex]){
-					return new StrokeCriticism("Your " + Util.adjectify(baseIndex, drawnAboveMatrix.length) + " stroke should be above your " + Util.adjectify(di, drawnAboveMatrix.length));
+					return new StrokeCriticism("Your " + Util.adjectify(di, drawnAboveMatrix.length) + " stroke should be completely above your " + Util.adjectify(baseIndex, drawnAboveMatrix.length));
 				}
 			}
 
