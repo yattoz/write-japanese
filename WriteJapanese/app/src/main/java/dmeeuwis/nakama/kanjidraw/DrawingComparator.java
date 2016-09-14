@@ -58,7 +58,11 @@ public class DrawingComparator {
 		Rect nBounds = this.known.findBoundingBox();
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
 
+        Log.d("nakama-calc", "========================================");
+        Log.d("nakama-calc", "Calculating drawn nbove matrix");
 		this.drawnAboveMatrix = calculateAboveMatrix(this.drawn);
+        Log.d("nakama-calc", "========================================");
+        Log.d("nakama-calc", "Calculating known nbove matrix");
 		this.knownAboveMatrix = calculateAboveMatrix(this.known);
 		Log.i("nakama", "Drawn above matrix\n" + Util.printMatrix(this.drawnAboveMatrix));
 		Log.i("nakama", "Known above matrix\n" + Util.printMatrix(this.knownAboveMatrix));
@@ -329,6 +333,8 @@ public class DrawingComparator {
 				if(i >= j){
 					matrix[i][j] = false;
 				} else {
+                    Log.d("nakama-calc", "---------------------------------------------------");
+                    Log.d("nakama-calc", "About to calculate stroke " + i + " x " + j + " for aboveness");
 					matrix[i][j] = isAbove(d.get(i), d.get(j), d);
 				}
 			}
@@ -337,13 +343,12 @@ public class DrawingComparator {
 	}
 
 	static private boolean isAbove(Stroke s1, Stroke s2, PointDrawing d) {
-		int extra = (int)(d.findBoundingBox().height() * 0.2);
-		Log.d("nakama-calc", "s1 maxY calculated as " + s1.maxY());
-		Log.d("nakama-calc", "s2 maxY calculated as " + s2.maxY());
+		int extra = (int)(d.findBoundingBox().height() * 0.5);
 		Log.d("nakama-calc", "isAbove extra calculated as " + extra);
 		Log.d("nakama-calc", "isAbove lowest(s1) is " + lowestPoint(s1));
 		Log.d("nakama-calc", "isAbove highest(s2) is " + lowestPoint(s2));
-		return lowestPoint(s1) + extra < highestPoint(s2);
+        Log.d("nakama-calc", "isAbove " + lowestPoint(s1) + " - " + extra + " < " + highestPoint(s2) + " => " + (lowestPoint(s1) < highestPoint(s2)));
+		return lowestPoint(s1)  < highestPoint(s2);
 	}
 
 	static private int highestPoint(Stroke s){
@@ -653,10 +658,10 @@ public class DrawingComparator {
 
 			// only do above/below comparisons for good strokes?
 			for(int di = 0; di < drawnAboveMatrix[baseIndex].length; di++){
-				if(drawnAboveMatrix[di][challengerIndex] && !knownAboveMatrix[di][challengerIndex]){
-					return new StrokeCriticism("Your " + Util.adjectify(baseIndex, drawnAboveMatrix.length) + " stroke should be completely below your " + Util.adjectify(challengerIndex, drawnAboveMatrix.length));
-				} else if(knownAboveMatrix[di][challengerIndex] && !drawnAboveMatrix[di][challengerIndex]){
-					return new StrokeCriticism("Your " + Util.adjectify(di, drawnAboveMatrix.length) + " stroke should be completely above your " + Util.adjectify(baseIndex, drawnAboveMatrix.length));
+				if(drawnAboveMatrix[di][challengerIndex] && di < knownAboveMatrix.length && !knownAboveMatrix[di][challengerIndex]){
+					return new StrokeCriticism("Your " + Util.adjectify(di, drawnAboveMatrix.length) + " stroke should be completely below your " + Util.adjectify(challengerIndex, drawnAboveMatrix.length));
+				//} else if(di < knownAboveMatrix.length && knownAboveMatrix[di][challengerIndex] && !drawnAboveMatrix[di][challengerIndex]){
+				//	return new StrokeCriticism("Your " + Util.adjectify(di, drawnAboveMatrix.length) + " stroke should be completely above your " + Util.adjectify(challengerIndex, drawnAboveMatrix.length));
 				}
 			}
 
