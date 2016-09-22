@@ -31,6 +31,7 @@ import dmeeuwis.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.LoadRadicalsFile;
 import dmeeuwis.nakama.data.RadicalAdapter;
+import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
@@ -62,8 +63,7 @@ public class TeachingStoryFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser){
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-            String value = prefs.getString(STORY_SHARING_KEY, null);
+            String value = Settings.getStorySharing(this.getActivity().getApplicationContext());
             if("true".equals(value)) {
                 loadRemoteStories();
             } else if("false".equals(value)){
@@ -72,18 +72,14 @@ public class TeachingStoryFragment extends Fragment {
                 ShareStoriesDialog.show(getActivity(), new Runnable() {
                     @Override
                     public void run() {
-                        SharedPreferences.Editor e = prefs.edit();
-                        e.putString(STORY_SHARING_KEY, "true");
-                        e.apply();
+                        Settings.setStorySharing("true", getActivity().getApplicationContext());
                         loadRemoteStories();
                     }
                 }, new Runnable(){
 
                     @Override
                     public void run() {
-                        SharedPreferences.Editor e = prefs.edit();
-                        e.putString(STORY_SHARING_KEY, "false");
-                        e.apply();
+                        Settings.setStorySharing("false", getActivity().getApplicationContext());
                     }
                 });
             }
