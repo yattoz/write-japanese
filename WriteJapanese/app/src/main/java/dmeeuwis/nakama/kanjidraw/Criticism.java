@@ -43,6 +43,7 @@ public class Criticism {
         for(PaintColourInstructions p: c.drawnPaintInstructions){
             drawnPaintInstructions.add(p);
         }
+        this.pass = false;
     }
 
     public interface PaintColourInstructions {

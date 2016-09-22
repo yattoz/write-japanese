@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
@@ -92,6 +93,7 @@ import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.KanjiVocabRecyclerAdapter;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
+import dmeeuwis.nakama.views.StrictnessDialog;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
@@ -938,6 +940,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         } else if (item.getItemId() == R.id.menu_release_notes) {
             startActivity(new Intent(this, ReleaseNotesActivity.class));
+        } else if (item.getItemId() == R.id.menu_strictness) {
+            // show criticism selection fragment
+            showStrictnessDialog();
         }
 
         if (BuildConfig.DEBUG) {
@@ -994,6 +999,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         return true;
+    }
+
+    private void showStrictnessDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        StrictnessDialog strictnessDialog = new StrictnessDialog();
+        strictnessDialog.show(fm, "fragment_strictness");
     }
 
     public void updateStorySharingPreferences(boolean sharing) {
@@ -1119,7 +1130,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     public void onFragmentInteraction(Uri uri) {
-        Log.i("nakama", "KanjiMasterActivity: onFragmeentInteraction called, " + uri);
+        Log.i("nakama", "KanjiMasterActivity: onFragmentInteraction called, " + uri);
     }
 
     @Override

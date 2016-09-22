@@ -19,6 +19,11 @@
         android:title="@string/set_goals_menu_label"
         yourapp:showAsAction="always"
         />
+
+    <item
+        android:id="@+id/menu_strictness"
+        android:title="@string/menu_strictness"/>
+
     <item
         android:id="@+id/menu_shuffle"
         android:checkable="true"

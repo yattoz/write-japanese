@@ -3,6 +3,7 @@
 
     <string name="app_name">Write Japanese</string>
     <string name="menu_settings">Settings</string>
+    <string name="menu_strictness">Grading Strictness</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_credits">Credits</string>
     <string name="teach_me_button">Teach me</string>

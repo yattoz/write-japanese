@@ -1,25 +1,32 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 18;
+	private static final int DB_VERSION = 19;
 
     private final String iid;
+    private final Context context;
 
 	public WriteJapaneseOpenHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
+        this.context = context;
         this.iid = Iid.get(context).toString();
     }
 
@@ -109,6 +116,26 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         // unfortunately, cannot add column with default CURRENT_TIMESTAMP due to sqlite limitation
     }
 
+    private void addSettingsLog(SQLiteDatabase sqlite){
+        Log.d("nakama-db", "Adding settings log table");
+        sqlite.execSQL("CREATE TABLE settings_log ( " +
+                "id TEXT NOT NULL PRIMARY KEY, " +
+                "install_id TEXT NOT NULL, " +
+                "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                "setting TEXT NOT NULL, " +
+                "value TEXT NOT NULL)");
+
+        // translate from old sharedprefs based story sharing option to new settings_log based
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String value = prefs.getString(TeachingStoryFragment.STORY_SHARING_KEY, null);
+        if(value != null){
+            Log.d("nakama", "Importing existing SharedPreference story_sharing into db as " + value);
+            sqlite.execSQL("INSERT INTO settings_log (id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
+                    new Object[] { UUID.randomUUID().toString(), Iid.get(context), "story_sharing", value });
+        }
+
+    }
+
 
 	@Override
 	public void onUpgrade(SQLiteDatabase dbase, int oldVersion, int newVersion) {
@@ -133,6 +160,10 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         if(oldVersion <= 18){
             addDrawingToPracticeLog(dbase);
+        }
+
+        if(oldVersion < 19){
+            addSettingsLog(dbase);
         }
 	}
 }
