@@ -21,10 +21,6 @@
         />
 
     <item
-        android:id="@+id/menu_strictness"
-        android:title="@string/menu_strictness"/>
-
-    <item
         android:id="@+id/menu_shuffle"
         android:checkable="true"
         android:title="@string/shuffle_order_menu_label"/>
@@ -32,6 +28,11 @@
         android:id="@+id/menu_share_stories"
         android:checkable="true"
         android:title="@string/share_kanji_stories"/>
+
+    <item
+        android:id="@+id/menu_strictness"
+        android:title="@string/menu_strictness"/>
+
     <item
         android:id="@+id/menu_reset_progress"
         android:title="@string/reset_progress_menu_label"/>
