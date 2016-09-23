@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.Settings;
@@ -32,6 +33,22 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
         LayoutInflater inflater = d.getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.fragment_strictness_dialog, frameView);
         radioGroup = (RadioGroup)dialogLayout.findViewById(R.id.strictness_radio_group);
+
+        TextView casualDesc = (TextView)dialogLayout.findViewById(R.id.strictness_relaxed_description);
+        casualDesc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radioGroup.check(R.id.strictness_casual_button);
+            }
+        });
+
+        TextView strictDesc = (TextView)dialogLayout.findViewById(R.id.strictness_strict_description);
+        strictDesc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                radioGroup.check(R.id.strictness_strict_button);
+            }
+        });
 
         Settings.Strictness selected = Settings.getStrictness(getActivity().getApplicationContext());
         if(selected == Settings.Strictness.CASUAL){

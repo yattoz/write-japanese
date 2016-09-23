@@ -15,9 +15,10 @@ import android.widget.TextView;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.AssetFinder;
+import dmeeuwis.nakama.kanjidraw.Comparator;
+import dmeeuwis.nakama.kanjidraw.ComparisonFactory;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
-import dmeeuwis.nakama.kanjidraw.DrawingComparator;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.views.TracingCurveView;
 import dmeeuwis.nakama.views.TracingCurveView.OnTraceCompleteListener;
@@ -86,7 +87,8 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 
     @Override
     public void onComplete(PointDrawing pointDrawing) {
-        DrawingComparator comp = new DrawingComparator(character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(parent.getAssets()));
+        Comparator comp = ComparisonFactory.getUsersComparator(getActivity().getApplicationContext(),
+                character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(parent.getAssets()));
         Criticism c = comp.compare();
 
         if (c.pass) {

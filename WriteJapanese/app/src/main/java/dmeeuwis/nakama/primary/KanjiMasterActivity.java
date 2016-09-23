@@ -79,9 +79,10 @@ import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
+import dmeeuwis.nakama.kanjidraw.Comparator;
+import dmeeuwis.nakama.kanjidraw.ComparisonFactory;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
-import dmeeuwis.nakama.kanjidraw.DrawingComparator;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.teaching.TeachingStoryFragment;
@@ -279,7 +280,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 final PointDrawing challenger = drawPad.getDrawing();
                 final CurveDrawing known = new CurveDrawing(currentCharacterSvg);
 
-                DrawingComparator comparator = new DrawingComparator(currentCharacterSet.currentCharacter(), known, challenger,
+                Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(), currentCharacterSet.currentCharacter(), known, challenger,
                         new AssetFinder(KanjiMasterActivity.this.getAssets()));
                 final Criticism critique = comparator.compare();
 
