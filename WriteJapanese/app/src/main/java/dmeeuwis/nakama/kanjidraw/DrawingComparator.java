@@ -59,10 +59,10 @@ public class DrawingComparator {
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
 
         Log.d("nakama-calc", "========================================");
-        Log.d("nakama-calc", "Calculating drawn nbove matrix");
+        Log.d("nakama-calc", "Calculating drawn above matrix");
 		this.drawnAboveMatrix = calculateAboveMatrix(this.drawn);
         Log.d("nakama-calc", "========================================");
-        Log.d("nakama-calc", "Calculating known nbove matrix");
+        Log.d("nakama-calc", "Calculating known above matrix");
 		this.knownAboveMatrix = calculateAboveMatrix(this.known);
 		Log.i("nakama", "Drawn above matrix\n" + Util.printMatrix(this.drawnAboveMatrix));
 		Log.i("nakama", "Known above matrix\n" + Util.printMatrix(this.knownAboveMatrix));

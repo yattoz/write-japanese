@@ -2,7 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="wrap_content"
-              android:layout_height="wrap_content">
+              android:layout_height="wrap_content"
+              android:padding="20dp"
+
+    >
 
 
     <RadioGroup
@@ -11,12 +14,14 @@
         android:layout_height="wrap_content">
 
         <RadioButton
+            android:id="@+id/strictness_casual_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Casual Mode"
+            android:text="Casual"
             />
 
         <TextView
+            android:id="@+id/strictness_relaxed_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
@@ -26,12 +31,14 @@
 
 
         <RadioButton
+            android:id="@+id/strictness_strict_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Strict Mode"
+            android:text="Strict"
             />
 
         <TextView
+            android:id="@+id/strictness_strict_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
@@ -40,26 +47,4 @@
             />
 
     </RadioGroup>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="end"
-        >
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel"
-            />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            />
-
-    </LinearLayout>
-
 </LinearLayout>

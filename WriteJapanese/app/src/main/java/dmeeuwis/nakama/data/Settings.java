@@ -12,12 +12,14 @@ import dmeeuwis.nakama.primary.Iid;
 public class Settings {
     public static Map<String, String> settingsCache = new ConcurrentHashMap<>();
 
-    public static String getStrictness(Context appContext){
-        return getSetting("strictness", "casual", appContext);
+    public enum Strictness { CASUAL, STRICT }
+
+    public static Strictness getStrictness(Context appContext){
+        return Strictness.valueOf(getSetting("strictness", Strictness.CASUAL.toString(), appContext));
     }
 
-    public static void setStrictness(String value, Context appContext){
-        setSetting("strictness", value, appContext);
+    public static void setStrictness(Strictness s, Context appContext){
+        setSetting("strictness", s.toString(), appContext);
     }
 
     public static String getStorySharing(Context appContext){
