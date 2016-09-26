@@ -34,25 +34,41 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
         View dialogLayout = inflater.inflate(R.layout.fragment_strictness_dialog, frameView);
         radioGroup = (RadioGroup)dialogLayout.findViewById(R.id.strictness_radio_group);
 
-        TextView casualDesc = (TextView)dialogLayout.findViewById(R.id.strictness_relaxed_description);
-        casualDesc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                radioGroup.check(R.id.strictness_casual_button);
-            }
-        });
+        {
+            TextView casualDesc = (TextView) dialogLayout.findViewById(R.id.strictness_casual_description);
+            casualDesc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    radioGroup.check(R.id.strictness_casual_button);
+                }
+            });
+        }
 
-        TextView strictDesc = (TextView)dialogLayout.findViewById(R.id.strictness_strict_description);
-        strictDesc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                radioGroup.check(R.id.strictness_strict_button);
-            }
-        });
+        {
+            TextView casualOrderedDesc = (TextView) dialogLayout.findViewById(R.id.strictness_casual_ordered_description);
+            casualOrderedDesc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    radioGroup.check(R.id.strictness_casual_ordered_button);
+                }
+            });
+        }
+
+        {
+            TextView strictDesc = (TextView) dialogLayout.findViewById(R.id.strictness_strict_description);
+            strictDesc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    radioGroup.check(R.id.strictness_strict_button);
+                }
+            });
+        }
 
         Settings.Strictness selected = Settings.getStrictness(getActivity().getApplicationContext());
-        if(selected == Settings.Strictness.CASUAL){
+        if(selected == Settings.Strictness.CASUAL) {
             radioGroup.check(R.id.strictness_casual_button);
+        } else if(selected == Settings.Strictness.CASUAL_ORDERED){
+            radioGroup.check(R.id.strictness_casual_ordered_button);
         } else {
             radioGroup.check(R.id.strictness_strict_button);
         }
@@ -64,6 +80,8 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
     public void onClick(DialogInterface dialogInterface, int i) {
         if(radioGroup.getCheckedRadioButtonId() == R.id.strictness_casual_button){
             Settings.setStrictness(Settings.Strictness.CASUAL, getActivity().getApplicationContext());
+        } else  if(radioGroup.getCheckedRadioButtonId() == R.id.strictness_casual_ordered_button){
+            Settings.setStrictness(Settings.Strictness.CASUAL_ORDERED, getActivity().getApplicationContext());
         } else {
             Settings.setStrictness(Settings.Strictness.STRICT, getActivity().getApplicationContext());
         }

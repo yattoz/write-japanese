@@ -18,10 +18,12 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.util.Util;
 
-public class SimpleDrawingComparator implements Comparator {
+class SimpleDrawingComparator implements Comparator {
 
-	public enum StrokeCompareFailure { START_POINT_DIFFERENCE, END_POINT_DIFFERENCE, BACKWARDS }
-	public enum OverallFailure { EXTRA_STROKES, MISSING_STROKES, WRONG_STROKE_ORDER }
+	enum StrokeOrder { DISCOUNT, COUNT }
+
+	enum StrokeCompareFailure { START_POINT_DIFFERENCE, END_POINT_DIFFERENCE, BACKWARDS }
+	enum OverallFailure { EXTRA_STROKES, MISSING_STROKES, WRONG_STROKE_ORDER }
 
 	private final float FAIL_POINT_START_DISTANCE;
 	private final float FAIL_POINT_END_DISTANCE;
@@ -38,8 +40,9 @@ public class SimpleDrawingComparator implements Comparator {
 	final PointDrawing drawn;
 	final int drawingAreaMaxDim;
 	final AssetFinder assetFinder;
+	final StrokeOrder strokeOrder;
 
-	SimpleDrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder){
+	SimpleDrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder, StrokeOrder order){
 		this.target = target; 
 		this.assetFinder = assetFinder;
 
@@ -52,6 +55,7 @@ public class SimpleDrawingComparator implements Comparator {
 		Rect nBounds = this.known.findBoundingBox();
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
 
+		strokeOrder = order;
 
 		this.FAIL_POINT_START_DISTANCE = (float)(drawingAreaMaxDim * 0.40);
 		this.FAIL_POINT_END_DISTANCE = (float)(drawingAreaMaxDim * 0.40);
@@ -201,12 +205,14 @@ public class SimpleDrawingComparator implements Comparator {
 			}
 
 			if (misorderedStrokes.size() > 2) {
-				String message = misorderedStrokes.size() == known.strokeCount() ?
-						"Your strokes seem correct, but are drawn in the wrong order." :
-						"Several strokes are drawn correctly, but in the wrong order.";
-				c.add(message,
-						Criticism.SKIP,
-						Criticism.SKIP);
+				if(strokeOrder != StrokeOrder.DISCOUNT) {
+					String message = misorderedStrokes.size() == known.strokeCount() ?
+							"Your strokes seem correct, but are drawn in the wrong order." :
+							"Several strokes are drawn correctly, but in the wrong order.";
+					c.add(message,
+							Criticism.SKIP,
+							Criticism.SKIP);
+				}
 			} else {
 				for (StrokeResult s : misorderedStrokes) {
 					c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.",
@@ -252,17 +258,17 @@ public class SimpleDrawingComparator implements Comparator {
 
 		// special case for hiragana and katakana: find if the user drew katakana version instead of hiragana, and vice-versa
 		if (allowRecursion == Recursion.ALLOW) {
-			if (!c.pass && Kana.isHiragana(target)) {
+			if (!c.pass && Kana.isHiragana(target) && target != 'も') {
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
-				SimpleDrawingComparator pc = new SimpleDrawingComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder);
+				SimpleDrawingComparator pc = new SimpleDrawingComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder, strokeOrder);
 				if (pc.compare(Recursion.DISALLOW).pass) {
 					Criticism specific = new Criticism();
 					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;
 				}
-			} else if (!c.pass && Kana.isKatakana(target)) {
+			} else if (!c.pass && Kana.isKatakana(target) && target != 'モ') {
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
-				SimpleDrawingComparator pc = new SimpleDrawingComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), this.drawn, assetFinder);
+				SimpleDrawingComparator pc = new SimpleDrawingComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), this.drawn, assetFinder, strokeOrder);
 				if (pc.compare(Recursion.DISALLOW).pass) {
 					Criticism specific = new Criticism();
 					specific.add("You drew the hiragana " + hiraganaVersion + " instead of the katakana " + target + ".", Criticism.SKIP, Criticism.SKIP);

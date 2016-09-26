@@ -21,12 +21,28 @@
             />
 
         <TextView
-            android:id="@+id/strictness_relaxed_description"
+            android:id="@+id/strictness_casual_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginStart="40dp"
-            android:text="Grades on getting the right number of strokes, and the basic start and end positions. It will let you get away with some things. Recommended for people looking to remember the basic strokes of the kanji."
+            android:text="Grades on getting the right number of strokes, and the basic start and end positions."
+            />
+
+        <RadioButton
+            android:id="@+id/strictness_casual_ordered_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Casual with Stroke Ordering"
+            />
+
+        <TextView
+            android:id="@+id/strictness_casual_ordered_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            android:text="Like Casual Mode, but you must also draw your strokes in the correct order."
             />
 
 
@@ -43,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginStart="40dp"
-            android:text="In addition to the grading on Casual Mode, you must also draw the correct start and end directions, intersections between strokes, and position of strokes relative to each other. The tolerances on starting and ending positions are also higher than in Casual Mode. Use this mode to ensure you are drawing very correct characters!"
+            android:text="In addition to the grading on ordered Casual Mode, you must also draw the correct start and end directions, intersections between strokes, and position of strokes relative to each other."
             />
 
     </RadioGroup>

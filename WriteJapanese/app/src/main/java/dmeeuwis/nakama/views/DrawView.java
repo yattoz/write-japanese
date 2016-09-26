@@ -26,7 +26,6 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.kanjidraw.PathCalculator;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
-import dmeeuwis.util.Util;
 
 /**
  * A drawing pad for characters, supporting undo.
@@ -232,7 +231,7 @@ public class DrawView extends View implements OnTouchListener {
 
 		if(actionCode == MotionEvent.ACTION_DOWN){
 			Point p = new Point(x, y);
-            Log.i("nakama", "ACTION_DOWN: adding point " + p);
+            //Log.i("nakama", "ACTION_DOWN: adding point " + p);
 			currentDrawLine.add(p);
 
 		} else if(actionCode == MotionEvent.ACTION_MOVE && currentDrawLine.size() > 0){
@@ -243,7 +242,7 @@ public class DrawView extends View implements OnTouchListener {
 
 			// throw away single dots
 			if(currentDrawLine.size() >= 2){
-                Log.i("nakama", "ACTION_UP: currentDrawLine(" + currentDrawLine.size() + " is: " + Util.join(", ", currentDrawLine));
+                //Log.i("nakama", "ACTION_UP: currentDrawLine(" + currentDrawLine.size() + " is: " + Util.join(", ", currentDrawLine));
                 linesToDraw.add(currentDrawLine);
 
                 if (this.onStrokeListener != null) {

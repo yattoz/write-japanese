@@ -285,7 +285,7 @@ public class DrawingComparator implements Comparator {
 
 		// special case for hiragana and katakana: find if the user drew katakana version instead of hiragana, and vice-versa
 		if(allowRecursion == Recursion.ALLOW){
-			if(!c.pass && Kana.isHiragana(target)){
+			if(!c.pass && Kana.isHiragana(target) && target != 'も'){
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
 				DrawingComparator pc = new DrawingComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder);
 				if(pc.compare(Recursion.DISALLOW).pass){
@@ -293,7 +293,7 @@ public class DrawingComparator implements Comparator {
 					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;
 				}
-			} else if(!c.pass && Kana.isKatakana(target)){
+			} else if(!c.pass && Kana.isKatakana(target) && target != 'モ'){
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
 				DrawingComparator pc = new DrawingComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), this.drawn, assetFinder);
 				if(pc.compare(Recursion.DISALLOW).pass){

@@ -12,7 +12,7 @@ import dmeeuwis.nakama.primary.Iid;
 public class Settings {
     public static Map<String, String> settingsCache = new ConcurrentHashMap<>();
 
-    public enum Strictness { CASUAL, STRICT }
+    public enum Strictness { CASUAL, CASUAL_ORDERED, STRICT }
 
     public static Strictness getStrictness(Context appContext){
         return Strictness.valueOf(getSetting("strictness", Strictness.CASUAL.toString(), appContext));
