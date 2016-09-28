@@ -83,18 +83,18 @@ public class DrawingComparatorTest {
     @Test
     public void testFindBestPairings(){
         {
-            List<DrawingComparator.StrokeResult> r = DrawingComparator.findBestPairings(new int[][]{ {1, 1}, {1, 1}});
-            assertEquals("Always assigns pairings", new DrawingComparator.StrokeResult(0, 0, 1), r.get(0));
-            assertEquals("Always assigns pairings", new DrawingComparator.StrokeResult(1, 1, 1), r.get(1));
+            List<StrokeResult> r = DrawingComparator.findBestPairings(new int[][]{ {1, 1}, {1, 1}});
+            assertEquals("Always assigns pairings", new StrokeResult(0, 0, 1), r.get(0));
+            assertEquals("Always assigns pairings", new StrokeResult(1, 1, 1), r.get(1));
         }
 
         {
             int[][] test = new int[][]{ {3, 3}, {4, 4}};
             System.out.println("Testing find best pairing!");
             System.out.println(Util.printMatrix(test));
-            List<DrawingComparator.StrokeResult> r = DrawingComparator.findBestPairings(test);
-            assertEquals("Assigns best pairings", new DrawingComparator.StrokeResult(0, 0, 3), r.get(0));
-            assertEquals("Assigns best pairings", new DrawingComparator.StrokeResult(1, 1, 4), r.get(1));
+            List<StrokeResult> r = DrawingComparator.findBestPairings(test);
+            assertEquals("Assigns best pairings", new StrokeResult(0, 0, 3), r.get(0));
+            assertEquals("Assigns best pairings", new StrokeResult(1, 1, 4), r.get(1));
         }
 
     }

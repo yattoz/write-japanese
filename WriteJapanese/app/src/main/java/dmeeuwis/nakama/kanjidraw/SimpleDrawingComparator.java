@@ -204,21 +204,21 @@ class SimpleDrawingComparator implements Comparator {
 				}
 			}
 
-			if (misorderedStrokes.size() > 2) {
-				if(strokeOrder != StrokeOrder.DISCOUNT) {
-					String message = misorderedStrokes.size() == known.strokeCount() ?
-							"Your strokes seem correct, but are drawn in the wrong order." :
-							"Several strokes are drawn correctly, but in the wrong order.";
-					c.add(message,
-							Criticism.SKIP,
-							Criticism.SKIP);
-				}
-			} else {
-				for (StrokeResult s : misorderedStrokes) {
-					c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.",
-							Criticism.correctColours(s.knownStrokeIndex, s.drawnStrokeIndex),
-							Criticism.incorrectColours(s.knownStrokeIndex, s.drawnStrokeIndex));
-				}
+			if(strokeOrder != StrokeOrder.DISCOUNT) {
+                if (misorderedStrokes.size() > 2) {
+                    String message = misorderedStrokes.size() == known.strokeCount() ?
+                            "Your strokes seem correct, but are drawn in the wrong order." :
+                            "Several strokes are drawn correctly, but in the wrong order.";
+                    c.add(message,
+                            Criticism.SKIP,
+                            Criticism.SKIP);
+                } else {
+                    for (StrokeResult s : misorderedStrokes) {
+                        c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.",
+                                Criticism.correctColours(s.knownStrokeIndex, s.drawnStrokeIndex),
+                                Criticism.incorrectColours(s.knownStrokeIndex, s.drawnStrokeIndex));
+                    }
+                }
 			}
 		}
 
