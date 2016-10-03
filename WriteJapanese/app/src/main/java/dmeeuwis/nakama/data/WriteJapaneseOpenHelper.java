@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -116,8 +114,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         // unfortunately, cannot add column with default CURRENT_TIMESTAMP due to sqlite limitation
     }
 
-    private void addSettingsLog(SQLiteDatabase sqlite){
-        Log.d("nakama-db", "Adding settings log table");
+    private void addSettingsLog(SQLiteDatabase sqlite){ Log.d("nakama-db", "Adding settings log table");
         sqlite.execSQL("CREATE TABLE settings_log ( " +
                 "id TEXT NOT NULL PRIMARY KEY, " +
                 "install_id TEXT NOT NULL, " +
@@ -133,7 +130,6 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             sqlite.execSQL("INSERT INTO settings_log (id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
                     new Object[] { UUID.randomUUID().toString(), Iid.get(context), "story_sharing", value });
         }
-
     }
 
 

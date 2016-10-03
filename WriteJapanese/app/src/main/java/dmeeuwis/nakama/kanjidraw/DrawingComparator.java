@@ -49,6 +49,7 @@ public class DrawingComparator implements Comparator {
 		this.assetFinder = assetFinder;
 
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
+
 		Rect drawnBox = this.drawn.findBoundingBox();
 		
 		PointDrawing cutOffKnown = known.pointPointDrawing.cutOffEdges();
@@ -206,8 +207,6 @@ public class DrawingComparator implements Comparator {
 			List<StrokeResult> misorderedStrokes = new ArrayList<>(bestStrokes.size());
 
 			for (StrokeResult s : bestStrokes) {
-				Log.d("nakama", "Best chosen: " + s + ": " + criticismMatrix[s.knownStrokeIndex][s.drawnStrokeIndex].message);
-
 				if (s.score == 0) {
 					if (!s.knownStrokeIndex.equals(s.drawnStrokeIndex)) {
 						for (StrokeResult subS : bestStrokes) {
@@ -597,8 +596,7 @@ public class DrawingComparator implements Comparator {
 		if(failures.size() == 0) {
 
 			for(int di = 0; di < drawnAboveMatrix[challengerIndex].length; di++){
-				if(di < knownAboveMatrix.length &&
-						//(drawnAboveMatrix[challengerIndex][di] && !knownAboveMatrix[challengerIndex][di]) ||
+				if(challengerIndex < knownAboveMatrix.length && di < knownAboveMatrix[challengerIndex].length &&
 						(!drawnAboveMatrix[challengerIndex][di] && knownAboveMatrix[challengerIndex][di])){
 					return new StrokeCriticism("Your " + Util.adjectify(di, drawnAboveMatrix.length) + " stroke should be completely below your " + Util.adjectify(challengerIndex, drawnAboveMatrix.length));
 				}

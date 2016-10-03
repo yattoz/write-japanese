@@ -104,6 +104,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
+    static final boolean DEBUG_MENU = false;
+
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
     public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
@@ -820,7 +822,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.findItem(R.id.menu_set_goals).setVisible(false);
         }
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_MENU) {
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:DrawViewComparison");
             menu.add("DEBUG:SpenTest");
