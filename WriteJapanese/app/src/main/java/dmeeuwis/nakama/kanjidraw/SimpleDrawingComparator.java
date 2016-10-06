@@ -55,10 +55,16 @@ class SimpleDrawingComparator implements Comparator {
 		Rect nBounds = this.known.findBoundingBox();
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
 
-		strokeOrder = order;
+		// only characters with indeterminate stroke orders?
+		if(target == 'モ' || target == 'も' || target == 'ま'){
+			Log.i("nakama", "Overriding stroke order to DISCOUNT");
+			strokeOrder = StrokeOrder.DISCOUNT;
+		} else {
+			strokeOrder = order;
+		}
 
-		this.FAIL_POINT_START_DISTANCE = (float)(drawingAreaMaxDim * 0.40);
-		this.FAIL_POINT_END_DISTANCE = (float)(drawingAreaMaxDim * 0.40);
+		this.FAIL_POINT_START_DISTANCE = (float)(drawingAreaMaxDim * 0.50);
+		this.FAIL_POINT_END_DISTANCE = (float)(drawingAreaMaxDim * 0.50);
 		this.CIRCLE_DETECTION_DISTANCE = (float)(drawingAreaMaxDim * 0.10);
 		
 		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: drawingAreaWidth: " + drawingAreaMaxDim);
@@ -347,6 +353,18 @@ class SimpleDrawingComparator implements Comparator {
         return pairs;
     }
 
+	static List<StrokeResult> findAnyPairings(int[][] matrix){
+		List<int[]> matches = new ArrayList<>();
+		for(int i = 0; i < matrix.length; i++){
+			for(int j = 0; j < matrix.length; j++){
+				if(matrix[i][j] == 0){
+					matches.add(new int[] { i, j });
+				}
+			}
+		}
+
+		
+	}
 
 
 
