@@ -138,7 +138,7 @@ class SimpleDrawingComparator implements Comparator {
 			overallFailures.add(OverallFailure.EXTRA_STROKES);
 
 		StrokeCriticism[][] criticismMatrix = new StrokeCriticism[known.strokeCount()][drawn.strokeCount()];
-		int[][] scoreMatrix = new int[known.strokeCount()][drawn.strokeCount()];
+		double[][] scoreMatrix = new double[known.strokeCount()][drawn.strokeCount()];
 
 
 		boolean correctDiagonal = known.strokeCount() == drawn.strokeCount();
@@ -353,22 +353,19 @@ class SimpleDrawingComparator implements Comparator {
         return pairs;
     }
 
-	static List<StrokeResult> findAnyPairings(int[][] matrix){
-		List<int[]> matches = new ArrayList<>();
-		for(int i = 0; i < matrix.length; i++){
-			for(int j = 0; j < matrix.length; j++){
-				if(matrix[i][j] == 0){
-					matches.add(new int[] { i, j });
-				}
-			}
-		}
-
-		
+	static List<StrokeResult> findBestPairings(double[][] matrix){
+        HungarianAlgorithm al = new HungarianAlgorithm(matrix);
+        int[] matches = al.execute();
+        List<StrokeResult> l = new ArrayList<>(matches.length);
+        for(int i = 0; i < matrix.length; i++){
+            l.add(new StrokeResult(i, matches[i], (int)matrix[i][matches[i]]));
+        }
+        return l;
 	}
 
 
 
-    static List<StrokeResult> findBestPairings(int[][] matrix){
+    static List<StrokeResult> oldDindBestPairings(int[][] matrix){
 		Set<Integer> finishedRows = new TreeSet<>();
 		Set<Integer> finishedCols = new TreeSet<>();
 		List<StrokeResult> pairs = new ArrayList<>(matrix[0].length);

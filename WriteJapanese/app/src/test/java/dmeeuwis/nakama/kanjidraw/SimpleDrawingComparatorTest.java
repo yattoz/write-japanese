@@ -20,6 +20,7 @@ public class SimpleDrawingComparatorTest {
                 new int[]{1, 2, 0},
                 new int[]{1, 0, 1}});
 
+        // taken from drawing hiragana mo with bad stroke order
         findMatch(new int[][]{
                 new int[]{0, 1, 0},
                 new int[]{0, 0, 0},
