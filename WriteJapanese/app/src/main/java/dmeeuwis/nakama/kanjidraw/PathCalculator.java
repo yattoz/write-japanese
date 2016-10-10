@@ -1,17 +1,16 @@
 package dmeeuwis.nakama.kanjidraw;
 
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.util.Pair;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.util.Log;
-import android.util.Pair;
 
 public class PathCalculator {
 

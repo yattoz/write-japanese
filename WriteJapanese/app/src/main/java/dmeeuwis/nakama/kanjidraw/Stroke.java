@@ -1,15 +1,14 @@
 package dmeeuwis.nakama.kanjidraw;
 
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.util.Log;
-import android.util.Pair;
 
 import dmeeuwis.util.Util;
 
@@ -18,14 +17,6 @@ public class Stroke implements Iterable<Point> {
 	final protected List<Point> points;
 	
 	final Point startPoint, endPoint;
-	
-	static List<Stroke> makeList(List<List<Point>> pointLists){
-		List<Stroke> newList = new ArrayList<Stroke>(pointLists.size());
-		for(List<Point> path: pointLists){
-			newList.add(new Stroke(path));
-		}
-		return newList;
-	}
 	
 	public Stroke(List<Point> points){
 		this.points = Collections.unmodifiableList(points);
@@ -87,7 +78,7 @@ public class Stroke implements Iterable<Point> {
 	public double endDirection(){
 		final int s = points.size();
 		double angle = PathCalculator.angle(points.get(s-2), points.get(s-1));
-		Log.i("nakama", "End angle from points " + points.get(s-2) + " and " + points.get(s-1) + " found to be: " + angle);
+		//Log.i("nakama", "End angle from points " + points.get(s-2) + " and " + points.get(s-1) + " found to be: " + angle);
 		return angle;
 	}
 	

@@ -1,13 +1,11 @@
 package dmeeuwis.nakama.kanjidraw;
 
+import android.graphics.Rect;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.util.Log;
 
 public class CurveDrawing implements Drawing {
 
@@ -33,7 +31,6 @@ public class CurveDrawing implements Drawing {
         for(ParameterizedEquation eqn: this.strokes){
             box.union(eqn.findBoundingBox());
         }
-        Log.i("nakama", "For curve drawing, calculated bounding box as " + box);
         return box;
 	}
 	

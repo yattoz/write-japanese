@@ -13,7 +13,6 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -132,7 +131,7 @@ public class AnimatedCurveView extends View implements Animatable {
         this.paddingBottom = paddingBottom;
         this.paddingRight = paddingRight;
         this.invalidate();
-        Log.d("nakama-scale", "AnimatedCurveView setCurvePaddingPixels: " + this.paddingTop + ", " + this.paddingRight + ", " + this.paddingBottom + ", " + this.paddingRight);
+        //Log.d("nakama-scale", "AnimatedCurveView setCurvePaddingPixels: " + this.paddingTop + ", " + this.paddingRight + ", " + this.paddingBottom + ", " + this.paddingRight);
     }
 
 	/**
@@ -315,7 +314,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	protected void onDraw(Canvas canvas){
         // TODO: move this block out of onDraw. Maybe onMeasure? Figure out inits so this can't happen here
 		if(!this.scaleAndOffsets.initialized){
-            Log.d("nakama-scale", "AnimatedCurveView measuring: paddings: " + this.paddingTop + ", " + this.paddingRight + ", " + this.paddingBottom + ", " + this.paddingRight);
+            //Log.d("nakama-scale", "AnimatedCurveView measuring: paddings: " + this.paddingTop + ", " + this.paddingRight + ", " + this.paddingBottom + ", " + this.paddingRight);
             scaleAndOffsets.calculate(unscaledBoundingBox, getWidth() - this.paddingLeft - this.paddingRight, getHeight() - this.paddingTop - this.paddingBottom);
 
             //Log.i("nakama", "AnimatedCurveView: rescaled, resetting animateTimer. threadDrawStatus: " + threadDrawStatus);

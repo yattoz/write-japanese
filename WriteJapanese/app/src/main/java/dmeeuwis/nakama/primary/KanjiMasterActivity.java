@@ -687,7 +687,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     private void loadDrawDetails() {
-        Log.i("nakama", "loadDrawDetails()");
+        //Log.i("nakama", "loadDrawDetails()");
         Character first = this.currentCharacterSet.currentCharacter();
 
         int unicodeValue = this.currentCharacterSet.currentCharacter().charValue();
@@ -715,7 +715,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
         currentCharacterClueIndex = 0;
 
-        Log.i("nakama", "target: setText to " + clues[currentCharacterClueIndex]);
+        //Log.i("nakama", "target: setText to " + clues[currentCharacterClueIndex]);
         target.setCurrentText(clues[currentCharacterClueIndex]);
         instructionsLabel.setCurrentText(currentCharacterClueIndex == 0 ?
                 "Draw the " + currentCharacterSet.label() + " for" :
@@ -728,7 +728,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Editor ed = prefs.edit();
-        Log.i("nakama", "KanjiMasterActivity: saveCurrentCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
+        //Log.i("nakama", "KanjiMasterActivity: saveCurrentCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET, this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET_CHAR, Character.toString(this.currentCharacterSet.currentCharacter()));
         ed.apply();
@@ -852,8 +852,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             shuffleCheck.setChecked(currentCharacterSet.isShuffling());
         }
         MenuItem lockItem = menu.findItem(R.id.menu_lock);
-        Log.d("nakama", "KanjiMaster.onPrepareOptionsMenus: setting actionbar lock to: " +
-                (lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED) + " (" + lockChecker.getPurchaseStatus() + ")");
+        //Log.d("nakama", "KanjiMaster.onPrepareOptionsMenus: setting actionbar lock to: " +
+        //  (lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED) + " (" + lockChecker.getPurchaseStatus() + ")");
         lockItem.setVisible(lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED);
 
         MenuItem shareCheck = menu.findItem(R.id.menu_share_stories);
@@ -872,7 +872,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             params.putString("parent", this.getClass().getName());
             params.putString(Constants.KANJI_PATH_PARAM, this.currentCharacterSet.pathPrefix);
             params.putString("characters", this.currentCharacterSet.charactersAsString());
-            Log.d("nakama", "KanjiMaster: passing charset path " + this.currentCharacterSet.pathPrefix);
             teachIntent.putExtras(params);
             startActivity(teachIntent);
         } else if (item.getItemId() == R.id.menu_info) {
@@ -1102,7 +1101,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    Log.i("nakama", "Ignoring touch event due to flipper animation.");
+                    Log.d("nakama", "Ignoring touch event due to flipper animation.");
                     return true;
                 }
             });
@@ -1110,8 +1109,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         @Override
         public void onAnimationEnd(Animation animation) {
-            Log.i("nakama", "Flip animation finished.");
-
             maskView.setOnTouchListener(new View.OnTouchListener() {
                 @SuppressLint("ClickableViewAccessibility")
                 @Override
@@ -1133,7 +1130,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     public void onFragmentInteraction(Uri uri) {
-        Log.i("nakama", "KanjiMasterActivity: onFragmentInteraction called, " + uri);
+        Log.d("nakama", "KanjiMasterActivity: onFragmentInteraction called, " + uri);
     }
 
     @Override

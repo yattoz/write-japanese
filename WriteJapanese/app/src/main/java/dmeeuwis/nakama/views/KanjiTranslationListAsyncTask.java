@@ -1,10 +1,11 @@
 package dmeeuwis.nakama.views;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import android.os.AsyncTask;
-import android.util.Log;
 import dmeeuwis.Translation;
 import dmeeuwis.nakama.data.DictionarySet;
 
@@ -40,15 +41,18 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 			
 				List<Translation> accepted = new ArrayList<Translation>(nextBatch.size());
 				for(Translation t: nextBatch){
+					Log.d("nakama", "Found a background translation: " + t.toKanjiString());
 					Translation restricted = t.restrictToCommonKanjiElements(kanji);
 					if(restricted != null){
+						Log.d("nakama", "Accepted a background translation: " + restricted.toKanjiString());
 						accepted.add(restricted);
 					}
 				}
 				
 				publishProgress(accepted.toArray(new Translation[0]));
 			} while(nextBatch.size() <= BATCH_SIZE && nextBatch.size() > 0 && translationIndex < MAX_TRANSLATIONS && !this.isCancelled());
-				
+			Log.i("nakama", "Finished background translation work");
+
 			return null;
 			
 		} catch(Throwable e){

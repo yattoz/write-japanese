@@ -11,16 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
-import dmeeuwis.nakama.kanjidraw.Stroke;
 
 public class CharacterProgressDataHelper {
     private final Context context;
     private final UUID iid;
 
     public CharacterProgressDataHelper(Context c, UUID iid){
-        Log.i("nakama", "Opening CharacterProgressDataHelper.");
         this.context = c;
         this.iid = iid;
     }
@@ -39,7 +36,7 @@ public class CharacterProgressDataHelper {
     public void recordPractice(String charset, String character, PointDrawing d, int score){
         String serialized = d.serialize();
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
-        Log.i("nakama-record", "Recording practice: " + charset + "; " + character + "; " + score + "; drawing: " + serialized);
+        //Log.i("nakama-record", "Recording practice: " + charset + "; " + character + "; " + score + "; drawing: " + serialized);
         try {
             db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, score, drawing) VALUES(?, ?, ?, ?, ?, ?)",
                     new String[]{UUID.randomUUID().toString(), iid.toString(), character, charset, Integer.toString(score), serialized });

@@ -5,11 +5,11 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import dmeeuwis.Kana;
 import dmeeuwis.kanjimaster.BuildConfig;
@@ -63,16 +63,21 @@ class SimpleDrawingComparator implements Comparator {
 			strokeOrder = order;
 		}
 
-		this.FAIL_POINT_START_DISTANCE = (float)(drawingAreaMaxDim * 0.50);
-		this.FAIL_POINT_END_DISTANCE = (float)(drawingAreaMaxDim * 0.50);
-		this.CIRCLE_DETECTION_DISTANCE = (float)(drawingAreaMaxDim * 0.10);
-		
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: drawingAreaWidth: " + drawingAreaMaxDim);
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + this.drawn.findBoundingBox());
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: circle detection distance " + this.CIRCLE_DETECTION_DISTANCE);
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut bounds: " + cutOffKnown.findBoundingBox());
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
+		if(strokeOrder == StrokeOrder.DISCOUNT){
+			this.FAIL_POINT_START_DISTANCE = (float) (drawingAreaMaxDim * 0.50);
+			this.FAIL_POINT_END_DISTANCE = (float) (drawingAreaMaxDim * 0.50);
+		} else {
+			this.FAIL_POINT_START_DISTANCE = (float) (drawingAreaMaxDim * 0.42);
+			this.FAIL_POINT_END_DISTANCE = (float) (drawingAreaMaxDim * 0.42);
+		}
+		this.CIRCLE_DETECTION_DISTANCE = (float) (drawingAreaMaxDim * 0.10);
+
+		if(DEBUG) Log.d("nakama", "PathComparator.new: drawingAreaWidth: " + drawingAreaMaxDim);
+		if(DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + this.drawn.findBoundingBox());
+		if(DEBUG) Log.d("nakama", "PathComparator.new: circle detection distance " + this.CIRCLE_DETECTION_DISTANCE);
+		if(DEBUG) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
+		if(DEBUG) Log.d("nakama", "PathComparator.new: known cut bounds: " + cutOffKnown.findBoundingBox());
+		if(DEBUG) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
 	}
 
 	private int[] findExtraStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
@@ -155,7 +160,7 @@ class SimpleDrawingComparator implements Comparator {
 		}
 
 		if (correctDiagonal) {
-			if (BuildConfig.DEBUG) Log.d("nakama", "Correct diagonal detected! Going home early.");
+			Log.d("nakama", "Correct diagonal detected! Early CORRECT response..");
 			return new Criticism();
 		}
 
@@ -166,15 +171,14 @@ class SimpleDrawingComparator implements Comparator {
 					continue; // calculated in above diagonal block
 				}
 				StrokeCriticism result = compareStroke(known_i, drawn_i);
-				if (BuildConfig.DEBUG)
+				if (DEBUG)
 					Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
 				criticismMatrix[known_i][drawn_i] = result;
 				scoreMatrix[known_i][drawn_i] = result.cost;
 			}
 		}
 
-		if (BuildConfig.DEBUG)
-			Log.d("nakama", "Score Matrix (y-axis=known, x-axis=drawn)\n======================" + Util.printMatrix(scoreMatrix) + "====================");
+		Log.d("nakama", "Score Matrix (y-axis=known, x-axis=drawn)\n======================" + Util.printMatrix(scoreMatrix) + "====================");
 
 		// find best set of strokes
 		List<StrokeResult> bestStrokes = findBestPairings(scoreMatrix);
@@ -265,6 +269,7 @@ class SimpleDrawingComparator implements Comparator {
 		// special case for hiragana and katakana: find if the user drew katakana version instead of hiragana, and vice-versa
 		if (allowRecursion == Recursion.ALLOW) {
 			if (!c.pass && Kana.isHiragana(target) && target != 'も') {
+				Log.d("nakama", "Doing additional comparison between hiragana and katanama");
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
 				SimpleDrawingComparator pc = new SimpleDrawingComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder, strokeOrder);
 				if (pc.compare(Recursion.DISALLOW).pass) {
@@ -273,6 +278,7 @@ class SimpleDrawingComparator implements Comparator {
 					return specific;
 				}
 			} else if (!c.pass && Kana.isKatakana(target) && target != 'モ') {
+				Log.d("nakama", "Doing additional comparison between hiragana and katanama");
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
 				SimpleDrawingComparator pc = new SimpleDrawingComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), this.drawn, assetFinder, strokeOrder);
 				if (pc.compare(Recursion.DISALLOW).pass) {
@@ -284,195 +290,60 @@ class SimpleDrawingComparator implements Comparator {
 		}
 
 		return c;
-
-		// ToDo:
-		// intersection point distance errors
 	}
-
-	static private int highestPoint(Stroke s){
-		int highest = Integer.MAX_VALUE;
-		for(Point p: s.points){
-			if(p.y < highest){
-				highest = p.y;
-			}
-		}
-		return highest;
-	}
-
-	static private int lowestPoint(Stroke s){
-		int lowest = 0;
-		for(Point p: s.points){
-			if(p.y > lowest){
-				lowest = p.y;
-			}
-		}
-		return lowest;
-	}
-
-
-	/**
-     * Returns a list of StrokeResults. Size of the list is equal to the number of drawn
-     * strokes, not the number of known strokes.
-     */
-    static List<StrokeResult> findGoodPairings(int[][] matrix) {
-        Set<Integer> finishedRows = new TreeSet<>();
-        Set<Integer> finishedCols = new TreeSet<>();
-        List<StrokeResult> pairs = new ArrayList<>(matrix[0].length);
-
-        // first go down the diagonal and accept any 0s
-        for (int i = 0; i < matrix.length && i < matrix[i].length; i++) {
-            if (matrix[i][i] == 0) {
-                finishedRows.add(i);
-                finishedCols.add(i);
-
-                pairs.add(new StrokeResult(i, i, 0));
-            }
-        }
-        // now go row by row, column by column and assign the first match
-        for (int i = 0; i < matrix.length; i++) {
-            int selected = -1;
-            if (finishedRows.contains(i)) {
-                continue;
-            }
-
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (0 == matrix[i][j]) {
-                    if (finishedCols.contains(j)) {
-                        continue;
-                    }
-                    selected = j;
-                }
-            }
-
-            if (selected != -1) {
-                finishedRows.add(i);
-                finishedCols.add(selected);
-                pairs.add(new StrokeResult(i, selected, matrix[i][selected]));
-            }
-        }
-        return pairs;
-    }
 
 	static List<StrokeResult> findBestPairings(double[][] matrix){
         HungarianAlgorithm al = new HungarianAlgorithm(matrix);
         int[] matches = al.execute();
+		Log.i("nakama", "Assignment results: " + Arrays.toString(matches));
         List<StrokeResult> l = new ArrayList<>(matches.length);
         for(int i = 0; i < matrix.length; i++){
-            l.add(new StrokeResult(i, matches[i], (int)matrix[i][matches[i]]));
+			if(matches[i] < 0){
+				// add failing stroke result?
+			} else {
+				l.add(new StrokeResult(i, matches[i], (int) matrix[i][matches[i]]));
+			}
         }
         return l;
 	}
 
-
-
-    static List<StrokeResult> oldDindBestPairings(int[][] matrix){
-		Set<Integer> finishedRows = new TreeSet<>();
-		Set<Integer> finishedCols = new TreeSet<>();
-		List<StrokeResult> pairs = new ArrayList<>(matrix[0].length);
-		
-		// first go down the diagonal and accept any 0s
-		for(int i = 0; i < matrix.length && i < matrix[i].length; i++){
-			if(matrix[i][i] == 0){
-				finishedRows.add(i);
-				finishedCols.add(i);
-				
-				pairs.add(new StrokeResult(i, i, 0));
-			}
-		}
-		
-		// now go row by row, column by column and assign the first match
-		for(int i = 0; i < matrix.length; i++){
-			if(finishedRows.contains(i)){
-				continue;
-			}
-
-			int selected = -1;
-			int min = Integer.MAX_VALUE;
-			
-			for(int j = 0; j < matrix[i].length; j++){
-				if(finishedCols.contains(j)){
-					continue;
-				}
-			
-				if(min > matrix[i][j]){
-					selected = j;
-					min = matrix[i][j];
-				}
-			}
-			
-			if(selected >= 0){
-				finishedRows.add(i);
-				finishedCols.add(selected);
-				pairs.add(new StrokeResult(i,  selected, matrix[i][selected]));
-			}
-		}
-		
-		for(int i = 0; i < matrix.length; i++){
-			if(!finishedRows.contains(i)){
-				pairs.add(new StrokeResult(i, null, 1));
-			}
-		}
-		
-		return pairs;
-	}
-	
 	/**
 	 * Compares one stroke to another, generating a list of criticisms.
 	 */
 	private StrokeCriticism compareStroke(int baseIndex, int challengerIndex){
-		if(BuildConfig.DEBUG) Log.d("nakama", "\n================================================================");
-		if(BuildConfig.DEBUG) Log.d("nakama", "Comparing base stroke " + baseIndex + " to challenger stroke " + challengerIndex);
+		if(DEBUG) Log.d("nakama", "\n================================================================");
+		if(DEBUG) Log.d("nakama", "Comparing base stroke " + baseIndex + " to challenger stroke " + challengerIndex);
 		List<StrokeCompareFailure> failures = new LinkedList<StrokeCompareFailure>();
 
 		Stroke bpath = this.known.get(baseIndex);
 		Stroke cpath = this.drawn.get(challengerIndex);
-		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base: %6d Drawn: %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
+		if(DEBUG) Log.d("nakama", String.format("%30s:  Base: %6d Drawn: %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
 
-        if(BuildConfig.DEBUG) Log.d("nakama", String.format("Base points: " + Util.join(", ", bpath.points)));
-        if(BuildConfig.DEBUG) Log.d("nakama", String.format("Drawn points: " + Util.join(", ", cpath.points)));
+        if(DEBUG) Log.d("nakama", String.format("Base points: " + Util.join(", ", bpath.points)));
+        if(DEBUG) Log.d("nakama", String.format("Drawn points: " + Util.join(", ", cpath.points)));
 
 		Point bstart = bpath.startPoint;
 		Point bend = bpath.endPoint;
 		Point cstart = cpath.startPoint;
 		Point cend = cpath.endPoint;
 		
-		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base[0]: %s Drawn[0]: %s", "Start points", bstart, cstart));
-		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base[-1]: %s Drawn[-1]: %s", "End points", bend, cend));
+		if(DEBUG) Log.d("nakama", String.format("%30s:  Base[0]: %s Drawn[0]: %s", "Start points", bstart, cstart));
+		if(DEBUG) Log.d("nakama", String.format("%30s:  Base[-1]: %s Drawn[-1]: %s", "End points", bend, cend));
 		
-		/* Arc length is seeming to be not so accurate, due to all the minor fluctuation in a user's stroke throwing it off.
-		 * Lets rely more on distance traveled (distance from start point to end point ignoring curvature completely).
-
-  		int blength = bpath.arcLength();
-		int clength = cpath.arcLength();
-		float arcLengthDiff = 1 - Math.abs((float)Math.min(blength, clength) / Math.max(blength, clength));
-		boolean arcLengthDifference = arcLengthDiff > arcLengthFailPercentage(blength);
-		// arc lengths should be about equal.
-		Log.d("nakama", String.format("%30s:  %6d %6d", "Arc Length", blength, clength));
-		if(arcLengthDifference){
-			if(blength > clength)
-				criticisms.add(Criticism.distanceFail("Your " + Util.adjectify(challengerIndex) + " stroke is too short.", // [Percent diff was: " + arcLengthDiff + "; base length: " + blength + ", your length: " + clength + "]",
-					bend, cend, FAIL_ARC_LENGTH_PERCENTAGE));
-			else 
-				criticisms.add(Criticism.distanceFail("Your " + Util.adjectify(challengerIndex) + " stroke is too long.", // [Percent diff was: " + arcLengthDiff + "; base length: " + blength + ", your length: " + clength + "]",
-				bend, cend, FAIL_ARC_LENGTH_PERCENTAGE));
-		}
-		 */
-		
-
 		final double bStartRadians = bpath.startDirection();
 		final double cStartRadians = cpath.startDirection();
 
 		final double bEndRadians = bpath.endDirection();
 		final double cEndRadians = cpath.endDirection();
 
-		if(BuildConfig.DEBUG) Log.d("nakama", "Base stroke " + baseIndex + " has points: " + Util.join(", ", bpath.points));
+		if(DEBUG) Log.d("nakama", "Base stroke " + baseIndex + " has points: " + Util.join(", ", bpath.points));
 
 		{
 			double startDistance = PathCalculator.distance(bstart, cstart);
 			if(startDistance > FAIL_POINT_START_DISTANCE){
 				failures.add(StrokeCompareFailure.START_POINT_DIFFERENCE);
 			}
-			if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "Start Point Difference", startDistance, bstart, cstart, FAIL_POINT_START_DISTANCE));
+			if(DEBUG) Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "Start Point Difference", startDistance, bstart, cstart, FAIL_POINT_START_DISTANCE));
 		}
 		
 		// end points should be close to each other.
@@ -481,17 +352,8 @@ class SimpleDrawingComparator implements Comparator {
 			if(endDistance > FAIL_POINT_END_DISTANCE){
 				failures.add(StrokeCompareFailure.END_POINT_DIFFERENCE);
 			}
-			if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "End Point Difference", endDistance, bend, cend, FAIL_POINT_END_DISTANCE));
+			if(DEBUG) Log.d("nakama", String.format("%30s:  %6.2f from points known %6s, drawn %6s. Fail distance is %6.2f.", "End Point Difference", endDistance, bend, cend, FAIL_POINT_END_DISTANCE));
 		}
-
-		// TODO: curvature differences: concave vs convex lines might have same length, but be wrong.
-		// but maybe beginning and end direction deal with this pretty well?
-
-		// for the 2 direction comparisons below, first compare the numerical difference. If its big enough, also compare string
-		// version. String compare is also needed because string version is what is shown to users. If we don't compare strings,
-		// users could see 'was down, should be down'. If we don't compare numbers, users could be off by 0.00001 radians, but if
-		// they are right on the border between two direction-descriptions, still get a fail. So, both are needed.
-
 
 		// basic data points collected above; now go through basic criticisms data, and try to combine into more constructive ones.
 		// ===================================================================================================================
@@ -510,7 +372,7 @@ class SimpleDrawingComparator implements Comparator {
 				//	"base dirs: " + bStartRadians + "; " + bEndRadians + "; challenger dirs: " + cStartRadians + ", " + cEndRadians +
 				//	"; base dirs: " + bStartDirection + ", " + bEndDirection + "; challenger dirs: " + cStartDirection + ", " + cEndDirection));
 		}
-		if(BuildConfig.DEBUG) Log.d("nakama", "========================== end of " + baseIndex + " vs " + challengerIndex);
+		if(DEBUG) Log.d("nakama", "========================== end of " + baseIndex + " vs " + challengerIndex);
 
 		if(failures.size() == 0) {
 			return new StrokeCriticism(null, 0);

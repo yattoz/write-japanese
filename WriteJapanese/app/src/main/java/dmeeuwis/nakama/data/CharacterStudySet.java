@@ -7,7 +7,6 @@ import android.util.Pair;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -17,7 +16,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import dmeeuwis.nakama.LockChecker;
-import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.util.Util;
 
@@ -295,7 +293,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
         }
         Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.pathPrefix);
         Map<Character, Integer> freshSheet = new LinkedHashMap<>();
-        Log.i("nakama", "Loading progress as: " + existing);
+
         for(Character c: this.allCharactersSet){
             if(existing.containsKey(c)){
                 freshSheet.put(c, existing.get(c));
