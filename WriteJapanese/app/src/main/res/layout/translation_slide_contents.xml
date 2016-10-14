@@ -1,17 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.co.deanwild.flowtextview.FlowTextView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/english"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_margin="5dp">
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:animateLayoutChanges="true"
+    >
 
-    <dmeeuwis.nakama.views.AdvancedFuriganaTextView
-        android:id="@+id/kanji"
+    <FrameLayout
+        android:id="@+id/translation_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <uk.co.deanwild.flowtextview.FlowTextView
+            android:id="@+id/english"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="horizontal">
+
+            <dmeeuwis.nakama.views.AdvancedFuriganaTextView
+                android:id="@+id/kanji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:furiganaTextSize="14sp"
+                app:mainTextSize="36sp"/>
+
+        </uk.co.deanwild.flowtextview.FlowTextView>
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/translation_frame"
+        android:background="@color/dark_grey_text"/>
+
+    <TextView
+        android:id="@+id/kanji_character_1"
+        android:layout_alignParentLeft="true"
+        android:textSize="30dp"
+        android:layout_below="@id/translation_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/kanji_meanings_1"
+        android:paddingLeft="50dp"
+        android:layout_below="@id/translation_frame"
+        android:gravity="right"
+        android:textSize="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/kanji_other_meanings_1"
+        android:paddingLeft="50dp"
+        android:layout_below="@id/kanji_meanings_1"
+        android:gravity="right"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/kanji_commoness_1"
+        android:paddingLeft="50dp"
+        android:layout_below="@id/kanji_other_meanings_1"
+        android:gravity="right"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/kanji_yomi_1"
+        android:layout_alignParentRight="true"
+        android:layout_alignRight="@id/kanji_character_1"
+        android:layout_below="@id/kanji_commoness_1"
+        android:gravity="right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/kanji_yomi_1"
+        android:background="@color/dark_grey_text"/>
+
+    <TextView
+        android:id="@+id/kanji_character_2"
+        android:layout_alignParentLeft="true"
+        android:textSize="30dp"
+        android:layout_below="@id/kanji_yomi_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/kanji_meanings_2"
+        android:gravity="right"
+        android:textSize="24dp"
+        android:layout_below="@id/kanji_yomi_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="50dp"
+        />
+
+    <TextView
+        android:id="@+id/kanji_other_meanings_2"
+        android:paddingLeft="50dp"
+        android:layout_below="@id/kanji_meanings_2"
+        android:gravity="right"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/kanji_commoness_2"
+        android:gravity="right"
+        android:layout_below="@id/kanji_other_meanings_2"
+        android:paddingLeft="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/kanji_yomi_2"
+        android:paddingLeft="50dp"
+        android:gravity="right"
+        android:layout_below="@id/kanji_commoness_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/translation_card_expand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        app:furiganaTextSize="14sp"
-        app:mainTextSize="36sp" />
-</uk.co.deanwild.flowtextview.FlowTextView>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        style="?android:attr/borderlessButtonStyle"
+        android:text="DETAILS"/>
+
+</RelativeLayout>
