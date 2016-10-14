@@ -17,7 +17,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 19;
+	private static final int DB_VERSION = 20;
 
     private final String iid;
     private final Context context;
@@ -114,21 +114,27 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         // unfortunately, cannot add column with default CURRENT_TIMESTAMP due to sqlite limitation
     }
 
-    private void addSettingsLog(SQLiteDatabase sqlite){ Log.d("nakama-db", "Adding settings log table");
-        sqlite.execSQL("CREATE TABLE settings_log ( " +
-                "id TEXT NOT NULL PRIMARY KEY, " +
-                "install_id TEXT NOT NULL, " +
-                "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-                "setting TEXT NOT NULL, " +
-                "value TEXT NOT NULL)");
+    private void addSettingsLog(SQLiteDatabase sqlite) {
+        Log.d("nakama-db", "Adding settings log table");
 
-        // translate from old sharedprefs based story sharing option to new settings_log based
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String value = prefs.getString(TeachingStoryFragment.STORY_SHARING_KEY, null);
-        if(value != null){
-            Log.d("nakama", "Importing existing SharedPreference story_sharing into db as " + value);
-            sqlite.execSQL("INSERT INTO settings_log (id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
-                    new Object[] { UUID.randomUUID().toString(), Iid.get(context), "story_sharing", value });
+        try {
+            sqlite.execSQL("CREATE TABLE settings_log ( " +
+                    "id TEXT NOT NULL PRIMARY KEY, " +
+                    "install_id TEXT NOT NULL, " +
+                    "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                    "setting TEXT NOT NULL, " +
+                    "value TEXT NOT NULL)");
+
+            // translate from old sharedprefs based story sharing option to new settings_log based
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            String value = prefs.getString(TeachingStoryFragment.STORY_SHARING_KEY, null);
+            if (value != null) {
+                Log.d("nakama", "Importing existing SharedPreference story_sharing into db as " + value);
+                sqlite.execSQL("INSERT INTO settings_log (id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
+                        new Object[]{UUID.randomUUID().toString(), Iid.get(context), "story_sharing", value});
+            }
+        } catch (SQLiteException e) {
+            Log.e("nakama-db", "Caught exception adding settigns log column", e);
         }
     }
 
@@ -158,7 +164,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             addDrawingToPracticeLog(dbase);
         }
 
-        if(oldVersion < 19){
+        if(oldVersion <= 19){
             addSettingsLog(dbase);
         }
 	}
