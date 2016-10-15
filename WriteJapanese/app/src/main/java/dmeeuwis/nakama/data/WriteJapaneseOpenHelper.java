@@ -17,7 +17,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 20;
+	private static final int DB_VERSION = 22;
 
     private final String iid;
     private final Context context;
@@ -35,6 +35,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         createPracticeLog(dbase);
         addTimestampToStories(dbase);
         addDrawingToPracticeLog(dbase);
+        addSettingsLog(dbase);
 	}
 
     private void createStoryTables(SQLiteDatabase dbase){
@@ -134,7 +135,12 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                         new Object[]{UUID.randomUUID().toString(), Iid.get(context), "story_sharing", value});
             }
         } catch (SQLiteException e) {
-            Log.e("nakama-db", "Caught exception adding settigns log column", e);
+            if(e.getMessage().contains("already exists")) {
+                Log.i("nakama", "Saw settings log already exists errror, its OK");
+            } else {
+                UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception creating settings log table", e, context);
+            }
+
         }
     }
 
@@ -164,7 +170,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             addDrawingToPracticeLog(dbase);
         }
 
-        if(oldVersion <= 19){
+        if(oldVersion <= 22) {
             addSettingsLog(dbase);
         }
 	}
