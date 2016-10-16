@@ -289,8 +289,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 currentCharacterSet.markCurrent(challenger, critique.pass, KanjiMasterActivity.this);
 
                 if (critique.pass) {
-                    correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
-                    correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
 
                     setUiState(State.CORRECT_ANSWER);
 
@@ -299,6 +297,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                         correctVocabArrayAdapter.clear();
                     }
                     Log.i("nakama", "VOCAB: Starting vocab async task.");
+
+                    if(correctKnownView == null) {
+                        Log.i("nakama", "Setting challenger/drawing in recyclerview adapter");
+                        correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder(), known, challenger);
+                    } else {
+                        Log.i("nakama", "Setting challenger/drawing in layouts");
+                        correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
+                        correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
+                        correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
+                    }
+                    correctVocabList.setAdapter(correctVocabArrayAdapter);
 
                     KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation() {
                         public void add(Translation t) {
@@ -399,8 +408,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         correctVocabList = (RecyclerView) findViewById(R.id.correctExamples);
         correctVocabList.setLayoutManager(new LinearLayoutManager(this));
-        correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(this, this.dictionarySet.kanjiFinder());
-        correctVocabList.setAdapter(correctVocabArrayAdapter);
 
         drawPad.setOnStrokeListener(new DrawView.OnStrokeListener() {
             @Override

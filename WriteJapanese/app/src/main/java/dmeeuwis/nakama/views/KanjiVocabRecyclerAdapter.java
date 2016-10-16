@@ -21,17 +21,30 @@ import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.kanjidraw.Criticism;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
+import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import uk.co.deanwild.flowtextview.FlowTextView;
 
 import static dmeeuwis.kanjimaster.R.id.kanji;
 
-public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<KanjiVocabRecyclerAdapter.ViewHolder> {
+public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final float engTextSize;
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        private final AdvancedFuriganaTextView furigana;
-        private final FlowTextView englishText;
+    private static class ShowStrokesViewHolder extends RecyclerView.ViewHolder {
+        public final AnimatedCurveView known, drawn;
+
+        ShowStrokesViewHolder(View view) {
+            super(view);
+
+            this.known = (AnimatedCurveView) view.findViewById(R.id.adapterCorrectKnownView);
+            this.drawn = (AnimatedCurveView) view.findViewById(R.id.adapterCorrectDrawnView);
+        }
+    }
+
+    private static class TranslationViewHolder extends RecyclerView.ViewHolder {
+        private final AdvancedFuriganaTextView furigana; private final FlowTextView englishText;
         private final TextView character_1, character_1_meanings, character_1_other_meanings, character_1_yomi, character_1_commoness;
         private final TextView character_2, character_2_meanings, character_2_other_meanings, character_2_yomi, character_2_commoness;
         private final TextView character_3, character_3_meanings, character_3_other_meanings, character_3_yomi, character_3_commoness;
@@ -43,7 +56,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<KanjiVocabRe
 
         int assignedCharacters = 0;
 
-        ViewHolder(View view){
+        TranslationViewHolder(View view){
             super(view);
             this.furigana = (AdvancedFuriganaTextView)view.findViewById(kanji);
             this.englishText = (FlowTextView)view.findViewById(R.id.english);
@@ -113,8 +126,28 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<KanjiVocabRe
     private final KanjiFinder kanjiFinder;
     private final List<Translation> translations;
 
+    private final CurveDrawing knownCharacter;
+    private final PointDrawing drawnCharacter;
+
+    public KanjiVocabRecyclerAdapter(Activity context, KanjiFinder kanjiFinder, CurveDrawing knownCharacter, PointDrawing drawnCharacter) {
+        super();
+        this.drawnCharacter = drawnCharacter;
+        this.knownCharacter = knownCharacter;
+
+        this.context = context;
+        this.kanjiFinder = kanjiFinder;
+        this.translations = new ArrayList<>();
+
+        Resources r = context.getResources();
+        this.engTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
+    }
+
     public KanjiVocabRecyclerAdapter(Activity context, KanjiFinder kanjiFinder) {
         super();
+
+        this.drawnCharacter = null;
+        this.knownCharacter = null;
+
         this.context = context;
         this.kanjiFinder = kanjiFinder;
         this.translations = new ArrayList<>();
@@ -124,15 +157,21 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<KanjiVocabRe
     }
 
     @Override
-    public KanjiVocabRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = this.context.getLayoutInflater();
-        View view = inflater.inflate(R.layout.translation_slide, parent, false);
-        return new ViewHolder(view);
-    }
+    public void onBindViewHolder(RecyclerView.ViewHolder h, int p) {
+        if(knownCharacter != null && p == 0){
+            Log.i("nakama", "KanjiVocabRecyclerAdapter.onBindViewholder " + p + ": setting known/drawn view");
+            ShowStrokesViewHolder showHolder = (ShowStrokesViewHolder)h;
+            showHolder.drawn.setDrawing(drawnCharacter, AnimatedCurveView.DrawTime.STATIC, new ArrayList<Criticism.PaintColourInstructions>(0));
+            showHolder.known.setDrawing(knownCharacter, AnimatedCurveView.DrawTime.STATIC, new ArrayList<Criticism.PaintColourInstructions>(0));
+            return;
+        }
+        Log.i("nakama", "KanjiVocabRecyclerAdapter.onBindViewholder " + p + ": setting translation view");
 
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Translation t = this.translations.get(position);
+        int translationIndex = knownCharacter != null ? p - 1 : p;
+
+        TranslationViewHolder holder = (TranslationViewHolder)h;
+
+        Translation t = this.translations.get(translationIndex);
         holder.englishText.setTextSize(engTextSize);
         holder.englishText.setText(t.toEnglishString());
         holder.furigana.setTranslation(t, this.kanjiFinder);
@@ -211,7 +250,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<KanjiVocabRe
 
     @Override
     public int getItemCount() {
-        return this.translations.size();
+        return drawnCharacter == null ? this.translations.size() : this.translations.size() + 1;
     }
 
     public void add(Translation t){
@@ -222,5 +261,26 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<KanjiVocabRe
     public void clear(){
         this.translations.clear();
         this.notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(drawnCharacter != null && position == 0){
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = this.context.getLayoutInflater();
+        if(viewType == 0){
+            View view = inflater.inflate(R.layout.translation_correct_drawn_row, parent, false);
+            return new ShowStrokesViewHolder(view);
+         } else {
+            View view = inflater.inflate(R.layout.translation_slide, parent, false);
+            return new TranslationViewHolder(view);
+        }
     }
 }
