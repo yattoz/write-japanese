@@ -217,7 +217,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="5dp"
-                    android:paddingBottom="78dp"
+                    android:paddingBottom="85dp"
                     android:clipToPadding="false"
                     android:layout_weight="1" />
 

@@ -236,16 +236,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-
-
-
     <Button
         android:id="@+id/translation_card_expand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="0dp"
         android:text="▼"
-        android:minHeight="10dp"
+        android:background="@drawable/circle_background"
+        android:minHeight="12dp"
         android:minWidth="10dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" />
