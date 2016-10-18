@@ -5,10 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:paddingBottom="2dp"
     android:animateLayoutChanges="true"
     android:clickable="true"
+    android:padding="5dp"
     android:id="@+id/translation_layout"
     >
 
@@ -22,7 +21,7 @@
             android:id="@+id/english"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
+            android:clickable="false"
             android:orientation="horizontal">
 
             <dmeeuwis.nakama.views.AdvancedFuriganaTextView
@@ -34,6 +33,10 @@
                 app:mainTextSize="36sp"/>
 
         </uk.co.deanwild.flowtextview.FlowTextView>
+
+        <View android:id="@+id/englishMask"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </FrameLayout>
 
@@ -236,15 +239,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <Button
+    <TextView
         android:id="@+id/translation_card_expand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="0dp"
         android:text="▼"
         android:background="@drawable/circle_background"
         android:minHeight="12dp"
         android:minWidth="10dp"
+        android:gravity="center"
+        android:layout_margin="5dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" />
 

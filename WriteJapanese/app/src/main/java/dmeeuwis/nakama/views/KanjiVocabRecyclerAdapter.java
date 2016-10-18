@@ -18,6 +18,7 @@ import java.util.List;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
+import dmeeuwis.KanjiElement;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
@@ -116,6 +117,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
                  }
             };
             view.findViewById(R.id.translation_layout).setOnClickListener(touch);
+            view.findViewById(R.id.englishMask).setOnClickListener(touch);
             this.expandButton.setOnClickListener(touch);
             this.furigana.setOnClickListener(touch);
             this.englishText.setOnClickListener(touch);
@@ -178,15 +180,13 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
         holder.expandButton.setVisibility(View.VISIBLE);
 
-        String kanji = t.getFirstKanjiElement().kanji;
-
         holder.divisor1.setVisibility(View.GONE);
         holder.divisor2.setVisibility(View.GONE);
         holder.divisor3.setVisibility(View.GONE);
         holder.divisor4.setVisibility(View.GONE);
 
         holder.assignedCharacters = 0;
-        for(int i = 0, stringIndex = 0; i < holder.textViews.length; i++){
+        for(int i = 0, stringIndex = 0; i < holder.textViews.length; i++) {
             TextView[] tset = holder.textViews[i];
 
             tset[0].setVisibility(View.GONE);
@@ -194,6 +194,18 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             tset[2].setVisibility(View.GONE);
             tset[3].setVisibility(View.GONE);
             tset[4].setVisibility(View.GONE);
+        }
+
+        KanjiElement kanjiObj = t.getFirstKanjiElement();
+        if(kanjiObj == null){
+            holder.expandButton.setVisibility(View.GONE);
+            return;
+        }
+        String kanji = kanjiObj.kanji;
+
+        holder.assignedCharacters = 0;
+        for(int i = 0, stringIndex = 0; i < holder.textViews.length; i++){
+            TextView[] tset = holder.textViews[i];
 
             try {
                 Kanji k = null;
