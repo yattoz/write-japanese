@@ -80,6 +80,7 @@ import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 import dmeeuwis.nakama.kanjidraw.Comparator;
+import dmeeuwis.nakama.kanjidraw.ComparisonAsyncTask;
 import dmeeuwis.nakama.kanjidraw.ComparisonFactory;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
@@ -282,54 +283,58 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 final PointDrawing challenger = drawPad.getDrawing();
                 final CurveDrawing known = new CurveDrawing(currentCharacterSvg);
 
-                Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(), currentCharacterSet.currentCharacter(), known, challenger,
+                Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(),
                         new AssetFinder(KanjiMasterActivity.this.getAssets()));
-                final Criticism critique = comparator.compare();
 
-                currentCharacterSet.markCurrent(challenger, critique.pass, KanjiMasterActivity.this);
+                ComparisonAsyncTask comp = new ComparisonAsyncTask(getApplicationContext(), comparator, currentCharacterSet, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
+                    public void run(Criticism critique) {
 
-                if (critique.pass) {
+                        if (critique.pass) {
 
-                    setUiState(State.CORRECT_ANSWER);
+                            setUiState(State.CORRECT_ANSWER);
 
-                    if (vocabAsync != null) {
-                        vocabAsync.cancel(true);
-                        correctVocabArrayAdapter.clear();
-                    }
-                    Log.i("nakama", "VOCAB: Starting vocab async task.");
+                            if (vocabAsync != null) {
+                                vocabAsync.cancel(true);
+                                correctVocabArrayAdapter.clear();
+                            }
+                            Log.i("nakama", "VOCAB: Starting vocab async task.");
 
-                    if(correctKnownView == null) {
-                        Log.i("nakama", "Setting challenger/drawing in recyclerview adapter");
-                        correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder(), known, challenger);
-                    } else {
-                        Log.i("nakama", "Setting challenger/drawing in layouts");
-                        correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
-                        correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
-                        correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
-                    }
-                    correctVocabList.setAdapter(correctVocabArrayAdapter);
+                            if(correctKnownView == null) {
+                                Log.i("nakama", "Setting challenger/drawing in recyclerview adapter");
+                                correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder(), known, challenger);
+                            } else {
+                                Log.i("nakama", "Setting challenger/drawing in layouts");
+                                correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
+                                correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
+                                correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
+                            }
+                            correctVocabList.setAdapter(correctVocabArrayAdapter);
 
-                    KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation() {
-                        public void add(Translation t) {
-                            correctVocabArrayAdapter.add(t);
+                            KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation() {
+                                public void add(Translation t) {
+                                    correctVocabArrayAdapter.add(t);
+                                }
+                            };
+                            vocabAsync = new KanjiTranslationListAsyncTask(adder, dictionarySet, currentCharacterSet.currentCharacter());
+                            vocabAsync.execute();
+
+
+                        } else {
+                            Log.d("nakama", "Setting up data for incorrect results critique.");
+                            correctAnimation.setDrawing(known, AnimatedCurveView.DrawTime.ANIMATED, critique.knownPaintInstructions);
+                            playbackAnimation.setDrawing(challenger, AnimatedCurveView.DrawTime.ANIMATED, critique.drawnPaintInstructions);
+
+                            criticismArrayAdapter.clear();
+                            for (String c : critique.critiques) {
+                                criticismArrayAdapter.add(c);
+                            }
+
+                            setUiState(State.REVIEWING);
                         }
-                    };
-                    vocabAsync = new KanjiTranslationListAsyncTask(adder, dictionarySet, currentCharacterSet.currentCharacter());
-                    vocabAsync.execute();
-
-
-                } else {
-                    Log.d("nakama", "Setting up data for incorrect results critique.");
-                    correctAnimation.setDrawing(known, AnimatedCurveView.DrawTime.ANIMATED, critique.knownPaintInstructions);
-                    playbackAnimation.setDrawing(challenger, AnimatedCurveView.DrawTime.ANIMATED, critique.drawnPaintInstructions);
-
-                    criticismArrayAdapter.clear();
-                    for (String c : critique.critiques) {
-                        criticismArrayAdapter.add(c);
                     }
+                });
+                comp.execute();
 
-                    setUiState(State.REVIEWING);
-                }
             }
         });
 

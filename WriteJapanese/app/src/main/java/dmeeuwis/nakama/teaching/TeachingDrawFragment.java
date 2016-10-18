@@ -88,8 +88,8 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
     @Override
     public void onComplete(PointDrawing pointDrawing) {
         Comparator comp = ComparisonFactory.getUsersComparator(getActivity().getApplicationContext(),
-                character.charAt(0), curveDrawing, pointDrawing, new AssetFinder(parent.getAssets()));
-        Criticism c = comp.compare();
+                new AssetFinder(parent.getAssets()));
+        Criticism c = comp.compare(character.charAt(0), pointDrawing, curveDrawing);
 
         if (c.pass) {
             teachingLevel = Math.max(0, Math.min(goodAdvice.length - 1, teachingLevel + 1));

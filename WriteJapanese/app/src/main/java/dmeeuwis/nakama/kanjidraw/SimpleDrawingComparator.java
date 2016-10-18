@@ -25,9 +25,9 @@ class SimpleDrawingComparator implements Comparator {
 	enum StrokeCompareFailure { START_POINT_DIFFERENCE, END_POINT_DIFFERENCE, BACKWARDS }
 	enum OverallFailure { EXTRA_STROKES, MISSING_STROKES, WRONG_STROKE_ORDER }
 
-	private final float FAIL_POINT_START_DISTANCE;
-	private final float FAIL_POINT_END_DISTANCE;
-	private final float CIRCLE_DETECTION_DISTANCE;
+	private float FAIL_POINT_START_DISTANCE;
+	private float FAIL_POINT_END_DISTANCE;
+	private float CIRCLE_DETECTION_DISTANCE;
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 
 	private static final boolean DEBUG = BuildConfig.DEBUG && false;
@@ -35,17 +35,27 @@ class SimpleDrawingComparator implements Comparator {
     static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
     static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
 
-	final char target;
-	final PointDrawing known;
-	final PointDrawing drawn;
-	final int drawingAreaMaxDim;
+	char target;
+	PointDrawing known;
+	PointDrawing drawn;
+
+	int drawingAreaMaxDim;
+
 	final AssetFinder assetFinder;
-	final StrokeOrder strokeOrder;
+	StrokeOrder strokeOrder;
 
-	SimpleDrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder, StrokeOrder order){
-		this.target = target; 
+	SimpleDrawingComparator(AssetFinder assetFinder, StrokeOrder order) {
 		this.assetFinder = assetFinder;
+		strokeOrder = order;
+	}
 
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known){
+		return compare(target, challenger, known, Recursion.ALLOW);
+	}
+
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion){
+
+		this.target = target;
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 		Rect drawnBox = this.drawn.findBoundingBox();
 		
@@ -59,8 +69,6 @@ class SimpleDrawingComparator implements Comparator {
 		if(target == 'モ' || target == 'も' || target == 'ま'){
 			Log.i("nakama", "Overriding stroke order to DISCOUNT");
 			strokeOrder = StrokeOrder.DISCOUNT;
-		} else {
-			strokeOrder = order;
 		}
 
 		if(strokeOrder == StrokeOrder.DISCOUNT){
@@ -78,6 +86,8 @@ class SimpleDrawingComparator implements Comparator {
 		if(DEBUG) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
 		if(DEBUG) Log.d("nakama", "PathComparator.new: known cut bounds: " + cutOffKnown.findBoundingBox());
 		if(DEBUG) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
+
+		return compare(recursion);
 	}
 
 	private int[] findExtraStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
@@ -128,10 +138,6 @@ class SimpleDrawingComparator implements Comparator {
 	}
 	
 	
-	public Criticism compare(){
-		return compare(Recursion.ALLOW);
-	}
-
 	private enum Recursion { ALLOW, DISALLOW }
 	private Criticism compare(Recursion allowRecursion) {
 		Criticism c = new Criticism();
@@ -271,8 +277,8 @@ class SimpleDrawingComparator implements Comparator {
 			if (!c.pass && Kana.isHiragana(target) && target != 'も') {
 				Log.d("nakama", "Doing additional comparison between hiragana and katanama");
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
-				SimpleDrawingComparator pc = new SimpleDrawingComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder, strokeOrder);
-				if (pc.compare(Recursion.DISALLOW).pass) {
+				SimpleDrawingComparator pc = new SimpleDrawingComparator(assetFinder, strokeOrder);
+				if (pc.compare(katakanaVersion, this.drawn, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), Recursion.DISALLOW).pass) {
 					Criticism specific = new Criticism();
 					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;
@@ -280,8 +286,8 @@ class SimpleDrawingComparator implements Comparator {
 			} else if (!c.pass && Kana.isKatakana(target) && target != 'モ') {
 				Log.d("nakama", "Doing additional comparison between hiragana and katanama");
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
-				SimpleDrawingComparator pc = new SimpleDrawingComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), this.drawn, assetFinder, strokeOrder);
-				if (pc.compare(Recursion.DISALLOW).pass) {
+				SimpleDrawingComparator pc = new SimpleDrawingComparator(assetFinder, strokeOrder);
+				if (pc.compare(hiraganaVersion, this.drawn, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), Recursion.DISALLOW).pass) {
 					Criticism specific = new Criticism();
 					specific.add("You drew the hiragana " + hiraganaVersion + " instead of the katakana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;

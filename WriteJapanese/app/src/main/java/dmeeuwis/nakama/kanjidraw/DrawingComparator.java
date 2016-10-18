@@ -24,9 +24,9 @@ public class DrawingComparator implements Comparator {
 	public enum StrokeCompareFailure { ABOVE_FAILURE, NOT_ABOVE_FAILURE, DISTANCE_TRAVELLED, START_POINT_DIFFERENCE, END_POINT_DIFFERENCE, START_DIRECTION_DIFFERENCE, END_DIRECTION_DIFFERENCE, BACKWARDS, TOO_MANY_SHARP_CURVES, TOO_FEW_SHARP_CURVES }
 	public enum OverallFailure { EXTRA_STROKES, MISSING_STROKES, MISSING_INTERSECTION, WRONG_STROKE_ORDER }
 
-	private final float FAIL_POINT_START_DISTANCE;
-	private final float FAIL_POINT_END_DISTANCE;
-	private final float CIRCLE_DETECTION_DISTANCE;
+	private float FAIL_POINT_START_DISTANCE;
+	private float FAIL_POINT_END_DISTANCE;
+	private float CIRCLE_DETECTION_DISTANCE;
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 	static private final int PERCENTAGE_DISTANCE_DIFF_LIMIT = 100;
 
@@ -35,19 +35,25 @@ public class DrawingComparator implements Comparator {
     static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
     static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
 
-	final char target;
-	final PointDrawing known;
-	final PointDrawing drawn;
-	final int drawingAreaMaxDim;
 	final AssetFinder assetFinder;
 
-	final boolean[][] drawnAboveMatrix;
-	final boolean[][] knownAboveMatrix;
+	char target;
+	PointDrawing known;
+	PointDrawing drawn;
+	int drawingAreaMaxDim;
 
-	DrawingComparator(char target, CurveDrawing known, PointDrawing challenger, AssetFinder assetFinder){
-		this.target = target; 
+	boolean[][] drawnAboveMatrix;
+	boolean[][] knownAboveMatrix;
+
+	DrawingComparator(AssetFinder assetFinder) {
 		this.assetFinder = assetFinder;
+	}
 
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known){
+		return compare(target, challenger, known, Recursion.ALLOW);
+	}
+
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion){
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 
 		Rect drawnBox = this.drawn.findBoundingBox();
@@ -78,6 +84,8 @@ public class DrawingComparator implements Comparator {
 		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
 		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut bounds: " + cutOffKnown.findBoundingBox());
 		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
+
+		return compare(recursion);
 	}
 
 	private int[] findExtraStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
@@ -128,10 +136,6 @@ public class DrawingComparator implements Comparator {
 	}
 	
 	
-	public Criticism compare(){
-		return compare(Recursion.ALLOW);
-	}
-
 	private enum Recursion { ALLOW, DISALLOW }
 	private Criticism compare(Recursion allowRecursion){
 		Criticism c = new Criticism();
@@ -286,16 +290,16 @@ public class DrawingComparator implements Comparator {
 		if(allowRecursion == Recursion.ALLOW){
 			if(!c.pass && Kana.isHiragana(target) && target != 'も'){
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
-				DrawingComparator pc = new DrawingComparator(katakanaVersion, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), this.drawn, assetFinder);
-				if(pc.compare(Recursion.DISALLOW).pass){
+				DrawingComparator pc = new DrawingComparator(assetFinder);
+				if(pc.compare(katakanaVersion, this.drawn, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
 					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;
 				}
 			} else if(!c.pass && Kana.isKatakana(target) && target != 'モ'){
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
-				DrawingComparator pc = new DrawingComparator(hiraganaVersion, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), this.drawn, assetFinder);
-				if(pc.compare(Recursion.DISALLOW).pass){
+				DrawingComparator pc = new DrawingComparator(assetFinder);
+				if(pc.compare(hiraganaVersion, this.drawn, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
 					specific.add("You drew the hiragana " + hiraganaVersion + " instead of the katakana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;
