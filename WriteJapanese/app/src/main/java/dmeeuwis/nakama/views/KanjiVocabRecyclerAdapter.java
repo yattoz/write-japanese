@@ -243,10 +243,21 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
                 }
 
                 tset[0].setText(kanjiChar);
+
                 tset[1].setText(k.meanings[0]);
-                tset[2].setText("Other meanings: " +
-                        TextUtils.join(", ", Arrays.copyOfRange(k.meanings, 1, k.meanings.length)));
-                tset[3].setText(commonnessPrefix + "Frequency: " + k.freq);
+                if(k.meanings.length > 1) {
+                    tset[2].setText("Other meanings: " +
+                            TextUtils.join(", ", Arrays.copyOfRange(k.meanings, 1, k.meanings.length)));
+                } else {
+                    tset[2].setVisibility(View.GONE);
+                }
+
+                if(k.freq != null || commonnessPrefix != null) {
+                    tset[3].setText(commonnessPrefix + (k.freq == null ? "" : "Frequency: " + k.freq));
+                } else {
+                    tset[3].setVisibility(View.GONE);
+                }
+
                 tset[4].setText(
                         "Kunyomi: " + TextUtils.join(", ", k.onyomi) +
                         "\nOnyomi:  "  + TextUtils.join(", ", k.kunyomi));
