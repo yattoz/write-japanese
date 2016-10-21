@@ -301,7 +301,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
                             if(correctKnownView == null) {
                                 Log.i("nakama", "Setting challenger/drawing in recyclerview adapter");
-                                correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder(), known, challenger);
+                                correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
+                                correctVocabArrayAdapter.addKnownAndDrawnHeader(known, challenger);
                             } else {
                                 Log.i("nakama", "Setting challenger/drawing in layouts");
                                 correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());

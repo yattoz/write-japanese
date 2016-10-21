@@ -52,13 +52,15 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         private final TextView character_4, character_4_meanings, character_4_other_meanings, character_4_yomi, character_4_commoness;
 
         private final View expandButton, divisor1, divisor2, divisor3, divisor4;
+        private final float engTextSize;
 
         private final TextView[][] textViews;
 
         int assignedCharacters = 0;
 
-        TranslationViewHolder(View view){
+        TranslationViewHolder(View view, float engTextSize){
             super(view);
+            this.engTextSize = engTextSize;
             this.furigana = (AdvancedFuriganaTextView)view.findViewById(kanji);
             this.englishText = (FlowTextView)view.findViewById(R.id.english);
 
@@ -122,27 +124,112 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             this.furigana.setOnClickListener(touch);
             this.englishText.setOnClickListener(touch);
         }
+
+        public void bind(Translation t, KanjiFinder kanjiFinder){
+            englishText.setTextSize(engTextSize);
+            englishText.setText(t.toEnglishString());
+            furigana.setTranslation(t, kanjiFinder);
+
+            expandButton.setVisibility(View.VISIBLE);
+
+            divisor1.setVisibility(View.GONE);
+            divisor2.setVisibility(View.GONE);
+            divisor3.setVisibility(View.GONE);
+            divisor4.setVisibility(View.GONE);
+
+            assignedCharacters = 0;
+            for(int i = 0; i < textViews.length; i++) {
+                TextView[] tset = textViews[i];
+
+                tset[0].setVisibility(View.GONE);
+                tset[1].setVisibility(View.GONE);
+                tset[2].setVisibility(View.GONE);
+                tset[3].setVisibility(View.GONE);
+                tset[4].setVisibility(View.GONE);
+            }
+
+            KanjiElement kanjiObj = t.getFirstKanjiElement();
+            if(kanjiObj == null){
+                expandButton.setVisibility(View.GONE);
+                return;
+            }
+            String kanji = kanjiObj.kanji;
+
+            assignedCharacters = 0;
+            for(int i = 0, stringIndex = 0; i < textViews.length; i++){
+                TextView[] tset = textViews[i];
+
+                try {
+                    Kanji k = null;
+                    while(stringIndex < kanji.length()) {
+                        char c = kanji.charAt(stringIndex);
+                        if (Kana.isKanji(c)) {
+                            k = kanjiFinder.find(c);
+                            break;
+                        }
+                        stringIndex++;
+                    }
+                    if(k == null){
+                        continue;
+                    }
+                    String kanjiChar = String.valueOf(k.kanji);
+
+                    String commonnessPrefix = "";
+                    if(Kanji.JOUYOU_G1.contains(kanjiChar)){
+                        commonnessPrefix = "Joyou Level 1; ";
+
+                    } else if(Kanji.JOUYOU_G2.contains(kanjiChar)){
+                        commonnessPrefix = "Joyou Level 2; ";
+
+                    } else if(Kanji.JOUYOU_G3.contains(kanjiChar)){
+                        commonnessPrefix = "Joyou Level 3; ";
+
+                    } else if(Kanji.JOUYOU_G4.contains(kanjiChar)){
+                        commonnessPrefix = "Joyou Level 4; ";
+
+                    } else if(Kanji.JOUYOU_G5.contains(kanjiChar)){
+                        commonnessPrefix = "Joyou Level 5; ";
+
+                    } else if(Kanji.JOUYOU_G6.contains(kanjiChar)){
+                        commonnessPrefix = "Joyou Level 6; ";
+                    }
+
+                    tset[0].setText(kanjiChar);
+
+                    tset[1].setText(k.meanings[0]);
+                    if(k.meanings.length > 1) {
+                        tset[2].setText("Other meanings: " +
+                                TextUtils.join(", ", Arrays.copyOfRange(k.meanings, 1, k.meanings.length)));
+                    } else {
+                        tset[2].setVisibility(View.GONE);
+                    }
+
+                    if(k.freq != null || commonnessPrefix != null) {
+                        tset[3].setText(commonnessPrefix + (k.freq == null ? "" : "Frequency: " + k.freq));
+                    } else {
+                        tset[3].setVisibility(View.GONE);
+                    }
+
+                    tset[4].setText(
+                            "Kunyomi: " + TextUtils.join(", ", k.onyomi) +
+                                    "\nOnyomi:  "  + TextUtils.join(", ", k.kunyomi));
+                    assignedCharacters += 1;
+
+                    stringIndex++;
+
+                } catch (IOException e) {
+                    Log.e("nakama", "Error finding first kanji for " + kanji);
+                }
+            }
+        }
     }
 
     private final Activity context;
     private final KanjiFinder kanjiFinder;
     private final List<Translation> translations;
 
-    private final CurveDrawing knownCharacter;
-    private final PointDrawing drawnCharacter;
-
-    public KanjiVocabRecyclerAdapter(Activity context, KanjiFinder kanjiFinder, CurveDrawing knownCharacter, PointDrawing drawnCharacter) {
-        super();
-        this.drawnCharacter = drawnCharacter;
-        this.knownCharacter = knownCharacter;
-
-        this.context = context;
-        this.kanjiFinder = kanjiFinder;
-        this.translations = new ArrayList<>();
-
-        Resources r = context.getResources();
-        this.engTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-    }
+    private CurveDrawing knownCharacter;
+    private PointDrawing drawnCharacter;
 
     public KanjiVocabRecyclerAdapter(Activity context, KanjiFinder kanjiFinder) {
         super();
@@ -156,6 +243,11 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
         Resources r = context.getResources();
         this.engTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
+    }
+
+    public void addKnownAndDrawnHeader(CurveDrawing known, PointDrawing drawn){
+        this.knownCharacter = known;
+        this.drawnCharacter = drawn;
     }
 
     @Override
@@ -174,101 +266,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         TranslationViewHolder holder = (TranslationViewHolder)h;
 
         Translation t = this.translations.get(translationIndex);
-        holder.englishText.setTextSize(engTextSize);
-        holder.englishText.setText(t.toEnglishString());
-        holder.furigana.setTranslation(t, this.kanjiFinder);
-
-        holder.expandButton.setVisibility(View.VISIBLE);
-
-        holder.divisor1.setVisibility(View.GONE);
-        holder.divisor2.setVisibility(View.GONE);
-        holder.divisor3.setVisibility(View.GONE);
-        holder.divisor4.setVisibility(View.GONE);
-
-        holder.assignedCharacters = 0;
-        for(int i = 0, stringIndex = 0; i < holder.textViews.length; i++) {
-            TextView[] tset = holder.textViews[i];
-
-            tset[0].setVisibility(View.GONE);
-            tset[1].setVisibility(View.GONE);
-            tset[2].setVisibility(View.GONE);
-            tset[3].setVisibility(View.GONE);
-            tset[4].setVisibility(View.GONE);
-        }
-
-        KanjiElement kanjiObj = t.getFirstKanjiElement();
-        if(kanjiObj == null){
-            holder.expandButton.setVisibility(View.GONE);
-            return;
-        }
-        String kanji = kanjiObj.kanji;
-
-        holder.assignedCharacters = 0;
-        for(int i = 0, stringIndex = 0; i < holder.textViews.length; i++){
-            TextView[] tset = holder.textViews[i];
-
-            try {
-                Kanji k = null;
-                while(stringIndex < kanji.length()) {
-                    char c = kanji.charAt(stringIndex);
-                    if (Kana.isKanji(c)) {
-                        k = this.kanjiFinder.find(c);
-                        break;
-                    }
-                    stringIndex++;
-                }
-                if(k == null){
-                    continue;
-                }
-                String kanjiChar = String.valueOf(k.kanji);
-
-                String commonnessPrefix = "";
-                if(Kanji.JOUYOU_G1.contains(kanjiChar)){
-                    commonnessPrefix = "Joyou Level 1; ";
-
-                } else if(Kanji.JOUYOU_G2.contains(kanjiChar)){
-                    commonnessPrefix = "Joyou Level 2; ";
-
-                } else if(Kanji.JOUYOU_G3.contains(kanjiChar)){
-                    commonnessPrefix = "Joyou Level 3; ";
-
-                } else if(Kanji.JOUYOU_G4.contains(kanjiChar)){
-                    commonnessPrefix = "Joyou Level 4; ";
-
-                } else if(Kanji.JOUYOU_G5.contains(kanjiChar)){
-                    commonnessPrefix = "Joyou Level 5; ";
-
-                } else if(Kanji.JOUYOU_G6.contains(kanjiChar)){
-                    commonnessPrefix = "Joyou Level 6; ";
-                }
-
-                tset[0].setText(kanjiChar);
-
-                tset[1].setText(k.meanings[0]);
-                if(k.meanings.length > 1) {
-                    tset[2].setText("Other meanings: " +
-                            TextUtils.join(", ", Arrays.copyOfRange(k.meanings, 1, k.meanings.length)));
-                } else {
-                    tset[2].setVisibility(View.GONE);
-                }
-
-                if(k.freq != null || commonnessPrefix != null) {
-                    tset[3].setText(commonnessPrefix + (k.freq == null ? "" : "Frequency: " + k.freq));
-                } else {
-                    tset[3].setVisibility(View.GONE);
-                }
-
-                tset[4].setText(
-                        "Kunyomi: " + TextUtils.join(", ", k.onyomi) +
-                        "\nOnyomi:  "  + TextUtils.join(", ", k.kunyomi));
-                holder.assignedCharacters += 1;
-
-                stringIndex++;
-
-            } catch (IOException e) {
-                Log.e("nakama", "Error finding first kanji for " + kanji);
-            }
-        }
+        holder.bind(t, this.kanjiFinder);
     }
 
     @Override
@@ -303,7 +301,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             return new ShowStrokesViewHolder(view);
          } else {
             View view = inflater.inflate(R.layout.translation_slide, parent, false);
-            return new TranslationViewHolder(view);
+            return new TranslationViewHolder(view, engTextSize);
         }
     }
 }
