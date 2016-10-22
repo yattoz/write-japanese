@@ -92,7 +92,7 @@ import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
-import dmeeuwis.nakama.views.KanjiVocabRecyclerAdapter;
+import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.StrictnessDialog;
