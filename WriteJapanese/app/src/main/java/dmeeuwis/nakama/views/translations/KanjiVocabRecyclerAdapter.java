@@ -20,13 +20,9 @@ import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 
-import static android.R.attr.x;
-
 public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final float engTextSize;
-    private boolean characterHeader = false;
-    private boolean meaningsHeader = false;
 
     private final Activity context;
     private final KanjiFinder kanjiFinder;
@@ -34,6 +30,15 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
     private CurveDrawing knownCharacter;
     private PointDrawing drawnCharacter;
+
+    private String character, meanings;
+
+    private final static int DRAWN_CORRECTLY_HEADER = 0;
+    private final static int TRANSLATION_HEADER = 1;
+    private final static int CHARACTER_HEADER = 2;
+    private final static int MEANINGS_HEADER = 3;
+
+    private List<Integer> headers = new ArrayList<>(3);
 
     public KanjiVocabRecyclerAdapter(Activity context, KanjiFinder kanjiFinder) {
         super();
@@ -50,45 +55,83 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public void addKnownAndDrawnHeader(CurveDrawing known, PointDrawing drawn){
+        Log.i("nakama", "addKnownAndDrawnHeader called!");
+        if(known == null || drawn == null){
+            throw new IllegalArgumentException("known and drawn must be non-null");
+        }
+
         this.knownCharacter = known;
         this.drawnCharacter = drawn;
+        recalculateHeaders();
+        this.notifyDataSetChanged();
     }
 
-    public void addMeaningsHeader(){
-        this.meaningsHeader = true;
+    public void addMeaningsHeader(String meanings){
+        Log.i("nakama", "addMeaningsHeader called!");
+        if(meanings == null){
+            throw new IllegalArgumentException("known and drawn must be non-null");
+        }
+        this.meanings = meanings;
+        recalculateHeaders();
+        this.notifyDataSetChanged();
     }
 
-    public void addCharacterHeader(){
-        this.characterHeader = true;
+    public void addCharacterHeader(String character, CurveDrawing knownCharacter){
+        Log.i("nakama", "addCharacterHeader called!");
+        if(character == null){
+            throw new IllegalArgumentException("known and drawn must be non-null");
+        }
+        this.character = character;
+        this.knownCharacter = knownCharacter;
+        recalculateHeaders();
+        this.notifyDataSetChanged();
+    }
+
+    private void recalculateHeaders(){
+        headers.clear();
+        if(drawnCharacter != null){ headers.add(DRAWN_CORRECTLY_HEADER); }
+        if(character != null){ headers.add(CHARACTER_HEADER); }
+        if(meanings != null){ headers.add(MEANINGS_HEADER); }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder h, int p) {
-        if(knownCharacter != null && p == 0){
-            Log.i("nakama", "KanjiVocabRecyclerAdapter.onBindViewholder " + p + ": setting known/drawn view");
+        Log.i("nakama", "onBindViewHolder binding to " + h.getClass().toString());
+        if(h instanceof ShowStrokesViewHolder){
             ShowStrokesViewHolder showHolder = (ShowStrokesViewHolder)h;
             showHolder.drawn.setDrawing(drawnCharacter, AnimatedCurveView.DrawTime.STATIC, new ArrayList<Criticism.PaintColourInstructions>(0));
             showHolder.known.setDrawing(knownCharacter, AnimatedCurveView.DrawTime.STATIC, new ArrayList<Criticism.PaintColourInstructions>(0));
-            return;
+
+        } else if(h instanceof TranslationViewHolder) {
+            int tIndex = posToTranslationIndex(p);
+            TranslationViewHolder holder = (TranslationViewHolder) h;
+            Translation t = this.translations.get(tIndex);
+            holder.bind(t, this.kanjiFinder);
+
+        } else if(h instanceof ShowMeaningsViewHolder){
+            ShowMeaningsViewHolder holder = (ShowMeaningsViewHolder)h;
+            holder.meanings.setText(meanings);
+
+        } else if(h instanceof ShowCharacterInfoViewHolder){
+            ShowCharacterInfoViewHolder holder = (ShowCharacterInfoViewHolder) h;
+            holder.anim.setDrawing(knownCharacter.toDrawing(), AnimatedCurveView.DrawTime.ANIMATED,
+                    new ArrayList<Criticism.PaintColourInstructions>(0));
+            holder.anim.startAnimation(500);
+            holder.bigKanji.setText(character);
+
         }
-        Log.i("nakama", "KanjiVocabRecyclerAdapter.onBindViewholder " + p + ": setting translation view");
-
-        int translationIndex = knownCharacter != null ? p - 1 : p;
-
-        TranslationViewHolder holder = (TranslationViewHolder)h;
-
-        Translation t = this.translations.get(translationIndex);
-        holder.bind(t, this.kanjiFinder);
     }
 
     @Override
     public int getItemCount() {
-        return drawnCharacter == null ? this.translations.size() : this.translations.size() + 1;
+        Log.i("nakama", "Custom itemCount is " + translationIndex(translations.size()));
+        return translationIndex(translations.size());
     }
 
     public void add(Translation t){
+        Log.i("nakama", "Adapter adding translation " + t.toKanjiString());
         this.translations.add(t);
-        this.notifyItemChanged(this.translations.size()-1);
+        this.notifyItemChanged(translationIndex(Math.max(0, this.translations.size()-1)));
     }
 
     public void clear(){
@@ -96,29 +139,51 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         this.notifyDataSetChanged();
     }
 
+    private int posToTranslationIndex(int pos){
+        return pos -
+                (meanings != null ? 1 : 0) -
+                (character != null ? 1 : 0) -
+                (drawnCharacter != null ? 1 : 0);
+    }
+
+    private int translationIndex(int translationI){
+        return translationI +
+                (meanings != null ? 1 : 0) +
+                (character != null ? 1 : 0) +
+                (drawnCharacter != null ? 1 : 0);
+    }
+
     @Override
     public int getItemViewType(int position) {
-        List<Integer> headers = new ArrayList<>();
-        if(drawnCharacter != null){ headers.add(DRAWN_HEADER); }
-        if(characterHeader){ headers.add(CHARACTER_HEADER); }
-        if(meaningsHeader){ headers.add(MEANINGS_HEADER); }
+        Log.i("nakama", "getItemViewType headers count is " + headers.size());
 
         if(position < headers.size()){
+            Log.i("nakama", "getItemViewType for " + position + " returning " + headers.get(position));
             return headers.get(position);
         }
 
+        Log.i("nakama", "getItemViewType for " + position + " returning " + TRANSLATION_HEADER);
         return TRANSLATION_HEADER;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.i("nakama", "onCreatveViewHolder for type " + viewType);
         LayoutInflater inflater = this.context.getLayoutInflater();
-        if(viewType == 0){
+        if(viewType == DRAWN_CORRECTLY_HEADER){
             View view = inflater.inflate(R.layout.translation_correct_drawn_row, parent, false);
             return new ShowStrokesViewHolder(view);
-         } else {
+         } else if (viewType == TRANSLATION_HEADER){
             View view = inflater.inflate(R.layout.translation_slide, parent, false);
             return new TranslationViewHolder(view, engTextSize);
+        } else if (viewType == MEANINGS_HEADER){
+            View view = inflater.inflate(R.layout.translation_meanings_row, parent, false);
+            return new ShowMeaningsViewHolder(view);
+        } else if (viewType == CHARACTER_HEADER){
+            View view = inflater.inflate(R.layout.translation_character_info_row, parent, false);
+            return new ShowCharacterInfoViewHolder(view);
+        } else {
+            return null;
         }
     }
 }

@@ -91,7 +91,7 @@ import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
-import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
+import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
@@ -299,13 +299,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                             }
                             Log.i("nakama", "VOCAB: Starting vocab async task.");
 
+                            correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
                             if(correctKnownView == null) {
                                 Log.i("nakama", "Setting challenger/drawing in recyclerview adapter");
-                                correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
                                 correctVocabArrayAdapter.addKnownAndDrawnHeader(known, challenger);
                             } else {
                                 Log.i("nakama", "Setting challenger/drawing in layouts");
-                                correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
                                 correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
                                 correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
                             }

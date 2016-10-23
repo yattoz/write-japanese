@@ -3,6 +3,9 @@ package dmeeuwis.nakama.teaching;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,26 +19,22 @@ import java.util.List;
 
 import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
+import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
 import dmeeuwis.nakama.views.AnimatedCurveView;
-import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
-import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask.AddTranslation;
+import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
+import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask.AddTranslation;
+import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 import dmeeuwis.util.Util;
 import uk.co.deanwild.flowtextview.FlowTextView;
 
 public class TeachingInfoFragment extends Fragment {
 
-
-	AnimatedCurveView kanim;
-	LinearLayout examplesLayout;
-	List<Translation> usedInTranslations;
-	TextView kanjiLabel;
     float engTextSize;
-
 
 	private KanjiTranslationListAsyncTask searchTask;
 
@@ -51,44 +50,29 @@ public class TeachingInfoFragment extends Fragment {
         String[] currentCharacterSvg = parent.getCurrentCharacterSvg();
         final DictionarySet dictSet = parent.dictSet;
 
-        this.kanim = (AnimatedCurveView)view.findViewById(R.id.kanji_animation);
-        this.kanjiLabel = (TextView)view.findViewById(R.id.bigkanji);
-
         Resources r = getActivity().getResources();
         this.engTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
 
-        this.usedInTranslations = new LinkedList<>();
-        this.examplesLayout = (LinearLayout)view.findViewById(R.id.exampleSpace);
+        DictionarySet d = DictionarySet.get(getContext());
+        KanjiFinder kf = d.kanjiFinder();
+
+        RecyclerView rec = (RecyclerView)view.findViewById(R.id.teaching_recycler);
+        rec.setLayoutManager(new LinearLayoutManager(getActivity()));
+        final KanjiVocabRecyclerAdapter adapt = new KanjiVocabRecyclerAdapter(getActivity(), kf);
+        adapt.addCharacterHeader(String.valueOf(kanji.kanji), new CurveDrawing(currentCharacterSvg));
+        adapt.addMeaningsHeader(kanji.toMeaningString());
+        rec.setAdapter(adapt);
 
         // TODO: this should probably be made into a RecyclerView
         AddTranslation adder = new AddTranslation(){
             public void add(Translation t){
-                View newTranslation = View.inflate(parent, R.layout.translation_slide, null);
-                AdvancedFuriganaTextView af = (AdvancedFuriganaTextView) newTranslation.findViewById(R.id.kanji);
-                af.setTranslation(t, dictSet.kanjiFinder());
-                FlowTextView eng = (FlowTextView) newTranslation.findViewById(R.id.english);
-                eng.setTextSize(engTextSize);
-                eng.setText(t.toEnglishString());
-
-                examplesLayout.addView(newTranslation);
+                Log.i("nakama", "Adding translation to list " + t.toString());
+                adapt.add(t);
             }
         };
 
         this.searchTask = new KanjiTranslationListAsyncTask(adder, dictSet, character);
         this.searchTask.execute();
-
-        CurveDrawing animCurveDrawing = new CurveDrawing(currentCharacterSvg);
-        kanjiLabel.setText(Character.toString(character));
-        this.kanim.setDrawing(animCurveDrawing, AnimatedCurveView.DrawTime.ANIMATED, Criticism.SKIP_LIST);
-
-        LinearLayout meanings = (LinearLayout) view.findViewById(R.id.meanings);
-        if(kanji != null) {
-            meanings.setVisibility(View.VISIBLE);
-            addTextViewsToLayout(meanings, kanji.meanings);
-        } else {
-            // no meaning for kana
-            meanings.setVisibility(View.GONE);
-        }
 
         startAnimation();
         //Log.i("nakama", "TeachingInfoFragment lifecycle: at end of onResume, kanim is " + this.kanim + "; kanjiLabel is " + this.kanjiLabel);
@@ -97,7 +81,7 @@ public class TeachingInfoFragment extends Fragment {
     }
 
     public void clear(){
-        this.kanim.clear();
+        // this.kanim.clear();
     }
 
     @Override public void onDetach(){
@@ -108,30 +92,14 @@ public class TeachingInfoFragment extends Fragment {
     }
 
     public void startAnimation(){
-        if(this.kanim != null) {
+        //if(this.kanim != null) {
             //Log.d("nakama", "TeachingInfoFragment lifecycle: startAnimation success. " + System.identityHashCode(this));
-            this.kanim.startAnimation(500);
-        }
+        //this.kanim.startAnimation(500);
+        //}
     }
 	
 	 @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Log.d("nakama", "TeachingInfoFragment lifecycle: onCreateView");
 		return inflater.inflate(R.layout.activity_teaching, container, false);
-	}
-	 
-		
-	public static void addTextViewsToLayout(LinearLayout l, String[] texts){
-		if(texts.length == 0){
-			l.setVisibility(View.GONE);
-		} else {
-			l.setVisibility(View.VISIBLE);
-			String joined = Util.join("   ", texts);
-			TextView on = new TextView(l.getContext());
-			on.setText(joined);
-			on.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			//Log.d("nakama", "Set a text view: " + joined);
-			l.addView(on, params);
-		}
 	}
 }

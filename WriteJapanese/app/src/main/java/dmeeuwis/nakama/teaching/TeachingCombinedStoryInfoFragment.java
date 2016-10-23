@@ -1,7 +1,6 @@
 package dmeeuwis.nakama.teaching;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -36,15 +35,13 @@ import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.LoadRadicalsFile;
 import dmeeuwis.nakama.data.RadicalAdapter;
 import dmeeuwis.nakama.data.StoryDataHelper;
-import dmeeuwis.nakama.primary.CharacterSetStatusFragment;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
-import dmeeuwis.nakama.views.KanjiTranslationListAsyncTask;
+import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
 import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.TallGridView;
-import dmeeuwis.util.Util;
 import uk.co.deanwild.flowtextview.FlowTextView;
 
 public class TeachingCombinedStoryInfoFragment extends Fragment {

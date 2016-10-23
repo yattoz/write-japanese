@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.views;
+package dmeeuwis.nakama.views.translations;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -41,10 +41,8 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 			
 				List<Translation> accepted = new ArrayList<Translation>(nextBatch.size());
 				for(Translation t: nextBatch){
-					Log.d("nakama", "Found a background translation: " + t.toKanjiString());
 					Translation restricted = t.restrictToCommonKanjiElements(kanji);
 					if(restricted != null){
-						Log.d("nakama", "Accepted a background translation: " + restricted.toKanjiString());
 						accepted.add(restricted);
 					}
 				}
