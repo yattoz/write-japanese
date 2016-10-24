@@ -3,7 +3,7 @@
     android:shareInterpolator="false" >
 
     <translate
-        android:duration="500"
+        android:duration="@integer/slide_duration_ms"
         android:toYDelta="-100%" />
 
 </set>

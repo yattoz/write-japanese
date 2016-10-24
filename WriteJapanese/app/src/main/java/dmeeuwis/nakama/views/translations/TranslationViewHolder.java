@@ -111,6 +111,7 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
     }
 
     void bind(Translation t, KanjiFinder kanjiFinder) {
+        long start = System.nanoTime();
         englishText.setTextSize(engTextSize);
         englishText.setText(t.toEnglishString());
         furigana.setTranslation(t, kanjiFinder);
@@ -206,5 +207,6 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
                 Log.e("nakama", "Error finding first kanji for " + kanji);
             }
         }
+        Log.i("nakama", "Translation bind took " + ((System.nanoTime() - start) / 1000000.0) + "ms");
     }
 }

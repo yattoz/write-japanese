@@ -201,7 +201,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
 
         Animation outToLeft = AnimationUtils.loadAnimation(this, R.anim.screen_transition_out);
-
         flipper = (ViewFlipper) findViewById(R.id.viewflipper);
         if (flipper != null) {
             flipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.screen_transition_in));
@@ -316,7 +315,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                                 }
                             };
                             vocabAsync = new KanjiTranslationListAsyncTask(adder, dictionarySet, currentCharacterSet.currentCharacter());
-                            vocabAsync.execute();
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    vocabAsync.execute();
+                                }
+                            }, 450);
 
 
                         } else {
