@@ -67,6 +67,10 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
         furigana.setTranslation(t, kanjiFinder);
 
         expandButton.setVisibility(View.VISIBLE);
+        View ex = view.findViewById(R.id.translation_expansion);
+        if(ex != null){
+            ((RelativeLayout)view.findViewById(R.id.translation_layout)).removeView(ex);
+        }
     }
 
     private void expand(){
