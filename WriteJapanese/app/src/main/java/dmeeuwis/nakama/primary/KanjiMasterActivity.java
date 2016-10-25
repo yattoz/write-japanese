@@ -91,11 +91,11 @@ import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
-import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
-import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.StrictnessDialog;
+import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
+import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 import dmeeuwis.util.Util;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
@@ -152,6 +152,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected TextSwitcher instructionsLabel;
     protected TextSwitcher target;
     protected ColorDrawable actionBarBackground;
+
+    private KanjiTranslationListAsyncTask.AddTranslation adder;
 
     protected View correctCard, charsetCard, instructionCard, incorrectCard;
 
@@ -292,13 +294,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
                             setUiState(State.CORRECT_ANSWER);
 
-                            if (vocabAsync != null) {
-                                vocabAsync.cancel(true);
-                                correctVocabArrayAdapter.clear();
-                            }
-                            Log.i("nakama", "VOCAB: Starting vocab async task.");
-
-                            correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
                             if(correctKnownView == null) {
                                 Log.i("nakama", "Setting challenger/drawing in recyclerview adapter");
                                 correctVocabArrayAdapter.addKnownAndDrawnHeader(known, challenger);
@@ -307,21 +302,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                                 correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
                                 correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
                             }
-                            correctVocabList.setAdapter(correctVocabArrayAdapter);
-
-                            KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation() {
-                                public void add(Translation t) {
-                                    correctVocabArrayAdapter.add(t);
-                                }
-                            };
-                            vocabAsync = new KanjiTranslationListAsyncTask(adder, dictionarySet, currentCharacterSet.currentCharacter());
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    vocabAsync.execute();
-                                }
-                            }, 450);
 
 
                         } else {
@@ -393,6 +373,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 drawPad.clear();
                 setUiState(State.DRAWING);
                 loadNextCharacter(true);
+
+                delayedStartBackgroundLoadTranslations();
             }
         };
 
@@ -418,6 +400,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         correctVocabList = (RecyclerView) findViewById(R.id.correctExamples);
         correctVocabList.setLayoutManager(new LinearLayoutManager(this));
+        correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
+        correctVocabList.setAdapter(correctVocabArrayAdapter);
 
         drawPad.setOnStrokeListener(new DrawView.OnStrokeListener() {
             @Override
@@ -489,6 +473,36 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
+        delayedStartBackgroundLoadTranslations();
+    }
+
+
+    public void delayedStartBackgroundLoadTranslations(){
+        correctVocabArrayAdapter.clear();
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                backgroundLoadTranslations();
+            }
+        }, 500L);
+    }
+
+    public void backgroundLoadTranslations(){
+        correctVocabList.scrollToPosition(0);
+        KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation() {
+            public void add(Translation t) {
+                correctVocabArrayAdapter.add(t);
+            }
+        };
+
+        if (vocabAsync != null) {
+            vocabAsync.cancel(true);
+        }
+        correctVocabArrayAdapter.clear();
+        vocabAsync = new KanjiTranslationListAsyncTask(adder, dictionarySet, currentCharacterSet.currentCharacter());
+        vocabAsync.execute();
+        Log.i("nakama", "VOCAB: Starting vocab async task.");
     }
 
     public void animateActionBar(Integer colorTo) {
