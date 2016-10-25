@@ -96,7 +96,6 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder h, int p) {
-        Log.i("nakama", "onBindViewHolder binding to " + h.getClass().toString());
         if(h instanceof ShowStrokesViewHolder){
             ShowStrokesViewHolder showHolder = (ShowStrokesViewHolder)h;
             showHolder.drawn.setDrawing(drawnCharacter, AnimatedCurveView.DrawTime.STATIC, new ArrayList<Criticism.PaintColourInstructions>(0));
@@ -124,12 +123,10 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemCount() {
-        Log.i("nakama", "Custom itemCount is " + translationIndex(translations.size()));
         return translationIndex(translations.size());
     }
 
     public void add(Translation t){
-        Log.i("nakama", "Adapter adding translation " + t.toKanjiString());
         this.translations.add(t);
         this.notifyItemChanged(translationIndex(Math.max(0, this.translations.size()-1)));
     }
@@ -155,20 +152,14 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemViewType(int position) {
-        Log.i("nakama", "getItemViewType headers count is " + headers.size());
-
         if(position < headers.size()){
-            Log.i("nakama", "getItemViewType for " + position + " returning " + headers.get(position));
             return headers.get(position);
         }
-
-        Log.i("nakama", "getItemViewType for " + position + " returning " + TRANSLATION_HEADER);
         return TRANSLATION_HEADER;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.i("nakama", "onCreatveViewHolder for type " + viewType);
         LayoutInflater inflater = this.context.getLayoutInflater();
         if(viewType == DRAWN_CORRECTLY_HEADER){
             View view = inflater.inflate(R.layout.translation_correct_drawn_row, parent, false);
