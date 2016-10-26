@@ -478,7 +478,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
 
     public void delayedStartBackgroundLoadTranslations(){
-        correctVocabArrayAdapter.clear();
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             @Override
