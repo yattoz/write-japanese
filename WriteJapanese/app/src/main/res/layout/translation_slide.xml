@@ -6,8 +6,25 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     card_view:cardUseCompatPadding="true"
-    android:padding="15dp"
     >
+
+    <View
+        android:id="@+id/translation_collapsed_header"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/MidnightBlue"
+        />
+
+    <TextView
+        android:id="@+id/translation_first_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/MidnightBlue"
+        android:textColor="@color/White"
+        android:text="@string/vocab"
+        android:padding="6dp"
+        android:textSize="12sp"
+        />
 
     <include layout="@layout/translation_slide_contents"/>
 </android.support.v7.widget.CardView>

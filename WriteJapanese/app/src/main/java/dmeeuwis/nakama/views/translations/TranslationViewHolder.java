@@ -27,13 +27,11 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
     private final AdvancedFuriganaTextView furigana;
     private final FlowTextView englishText;
     private final View view;
-    private View expandButton, divisor1, divisor2, divisor3, divisor4;
+    private View expandButton, divisor1, divisor2, divisor3, divisor4, headerSmall, headerBig;
     private final float engTextSize;
     private Translation t;
 
     private KanjiFinder kanjiFinder;
-
-    private TextView[][] textViews;
 
     int assignedCharacters = 0;
 
@@ -43,6 +41,8 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
         this.engTextSize = engTextSize;
         this.furigana = (AdvancedFuriganaTextView) view.findViewById(kanji);
         this.englishText = (FlowTextView) view.findViewById(R.id.english);
+        this.headerSmall = view.findViewById(R.id.translation_collapsed_header);
+        this.headerBig = view.findViewById(R.id.translation_first_header);
 
         this.expandButton = view.findViewById(R.id.translation_card_expand);
         View.OnClickListener touch = new View.OnClickListener() {
@@ -58,7 +58,7 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
         this.englishText.setOnClickListener(touch);
     }
 
-    void bind(Translation t, KanjiFinder kanjiFinder) {
+    void bind(Translation t, KanjiFinder kanjiFinder, int translationIndex) {
         this.kanjiFinder = kanjiFinder;
         this.t = t;
 
@@ -70,6 +70,15 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
         View ex = view.findViewById(R.id.translation_expansion);
         if(ex != null){
             ((RelativeLayout)view.findViewById(R.id.translation_layout)).removeView(ex);
+        }
+
+        Log.i("nakama", "Seeing translation " + t.toKanjiString() + " with index " + translationIndex);
+        if(translationIndex == 0){
+            headerBig.setVisibility(View.VISIBLE);
+            headerSmall.setVisibility(View.GONE);
+        } else {
+            headerBig.setVisibility(View.GONE);
+            headerSmall.setVisibility(View.VISIBLE);
         }
     }
 

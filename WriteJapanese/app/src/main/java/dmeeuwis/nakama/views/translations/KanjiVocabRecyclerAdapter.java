@@ -3,15 +3,19 @@ package dmeeuwis.nakama.views.translations;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
+import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
@@ -31,12 +35,13 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     private CurveDrawing knownCharacter;
     private PointDrawing drawnCharacter;
 
-    private String character, meanings;
+    private String character, meanings, onyomi, kunyomi;
 
     private final static int DRAWN_CORRECTLY_HEADER = 0;
     private final static int TRANSLATION_HEADER = 1;
     private final static int CHARACTER_HEADER = 2;
     private final static int MEANINGS_HEADER = 3;
+    private final static int READINGS_HEADER = 4;
 
     private List<Integer> headers = new ArrayList<>(3);
 
@@ -66,6 +71,19 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         this.notifyDataSetChanged();
     }
 
+    public void addReadingsHeader(Character character){
+        try {
+            Kanji k = kanjiFinder.find(character);
+            this.onyomi = TextUtils.join(", ", k.onyomi);
+            this.kunyomi = TextUtils.join(", ", k.kunyomi);
+            recalculateHeaders();
+            this.notifyDataSetChanged();
+        } catch (IOException e) {
+            // kana character?
+            return;
+        }
+    }
+
     public void addMeaningsHeader(String meanings){
         Log.i("nakama", "addMeaningsHeader called!");
         if(meanings == null){
@@ -92,6 +110,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         if(drawnCharacter != null){ headers.add(DRAWN_CORRECTLY_HEADER); }
         if(character != null){ headers.add(CHARACTER_HEADER); }
         if(meanings != null){ headers.add(MEANINGS_HEADER); }
+        if(onyomi != null){ headers.add(READINGS_HEADER); }
     }
 
     @Override
@@ -105,7 +124,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             int tIndex = posToTranslationIndex(p);
             TranslationViewHolder holder = (TranslationViewHolder) h;
             Translation t = this.translations.get(tIndex);
-            holder.bind(t, this.kanjiFinder);
+            holder.bind(t, this.kanjiFinder, posToTranslationIndex(p));
 
         } else if(h instanceof ShowMeaningsViewHolder){
             ShowMeaningsViewHolder holder = (ShowMeaningsViewHolder)h;
@@ -118,6 +137,21 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             holder.anim.startAnimation(500);
             holder.bigKanji.setText(character);
 
+        } else if(h instanceof ShowCharacterDetailsViewHolder){
+            ShowCharacterDetailsViewHolder holder = (ShowCharacterDetailsViewHolder) h;
+            if(onyomi.length() > 0) {
+                holder.onyomi.setText(onyomi);
+                holder.onyomi.setVisibility(View.VISIBLE);
+            } else {
+                holder.onyomi.setVisibility(View.GONE);
+            }
+
+            if(kunyomi.length() > 0) {
+                holder.kunyomi.setText(kunyomi);
+                holder.kunyomi.setVisibility(View.VISIBLE);
+            } else {
+                holder.kunyomi.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -140,6 +174,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         return pos -
                 (meanings != null ? 1 : 0) -
                 (character != null ? 1 : 0) -
+                (onyomi != null ? 1 : 0) -
                 (drawnCharacter != null ? 1 : 0);
     }
 
@@ -147,6 +182,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         return translationI +
                 (meanings != null ? 1 : 0) +
                 (character != null ? 1 : 0) +
+                (onyomi != null ? 1 : 0) +
                 (drawnCharacter != null ? 1 : 0);
     }
 
@@ -173,6 +209,9 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         } else if (viewType == CHARACTER_HEADER){
             View view = inflater.inflate(R.layout.translation_character_info_row, parent, false);
             return new ShowCharacterInfoViewHolder(view);
+        } else if (viewType == READINGS_HEADER){
+            View view = inflater.inflate(R.layout.translation_readings_row, parent, false);
+            return new ShowCharacterDetailsViewHolder(view);
         } else {
             return null;
         }

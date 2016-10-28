@@ -489,6 +489,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     public void backgroundLoadTranslations(){
         correctVocabList.scrollToPosition(0);
+        correctVocabArrayAdapter.clear();
+        Character c = currentCharacterSet.currentCharacter();
+        correctVocabArrayAdapter.addReadingsHeader(c);
         KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation() {
             public void add(Translation t) {
                 correctVocabArrayAdapter.add(t);
@@ -498,7 +501,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if (vocabAsync != null) {
             vocabAsync.cancel(true);
         }
-        correctVocabArrayAdapter.clear();
         vocabAsync = new KanjiTranslationListAsyncTask(adder, dictionarySet, currentCharacterSet.currentCharacter());
         vocabAsync.execute();
         Log.i("nakama", "VOCAB: Starting vocab async task.");

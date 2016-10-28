@@ -214,13 +214,12 @@
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical">
+                    >
 
                     <TextView
                         android:layout_width="fill_parent"
@@ -232,17 +231,17 @@
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/correctKnownView"
+                        android:layout_marginTop="40dp"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent" />
-                </LinearLayout>
+                </android.support.v7.widget.CardView>
 
-                <LinearLayout
+                <android.support.v7.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical">
+                    >
 
                     <TextView
                         android:layout_width="fill_parent"
@@ -256,10 +255,9 @@
                         android:id="@+id/correctDrawnView"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_card" />
-                </LinearLayout>
+                        android:layout_marginTop="40dp"
+                        />
+                </android.support.v7.widget.CardView>
             </LinearLayout>
 
             <FrameLayout
