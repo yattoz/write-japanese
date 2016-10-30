@@ -1,136 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#e5e5e5" >
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#e5e5e5">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp" >
+        android:padding="8dp">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:padding="5dp" >
-
-            <dmeeuwis.nakama.views.AnimatedCurveView
-                android:id="@+id/kanji_animation"
-                android:layout_width="0dp"
-                android:layout_height="170sp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/bigkanji"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layerType="software"
-                android:includeFontPadding="false"
-                android:textSize="160sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="5dp" >
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Your Story"
-                android:textColor="#878787"
-                android:textSize="18sp" />
-
-            <EditText
-                android:id="@+id/storyEditor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:hint="@string/edit_story_hint"
-                android:imeOptions="actionDone"
-                android:inputType="textMultiLine|textAutoCorrect"
-                android:lines="4"
-                android:scrollHorizontally="false"
-                android:singleLine="false" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/networkStories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
             android:padding="5dp"
-            android:visibility="gone" >
+            >
 
-            <TextView
-                android:id="@+id/network_story_label"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                >
+
+                <dmeeuwis.nakama.views.AnimatedCurveView
+                    android:id="@+id/kanji_animation"
+                    android:layout_width="0dp"
+                    android:layout_height="170sp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/bigkanji"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:includeFontPadding="false"
+                    android:layerType="software"
+                    android:textSize="160sp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:padding="6dp"
-                android:text="User stories from the Internet"
-                android:textColor="#878787"
-                android:textSize="18sp"
-                android:visibility="gone" />
-        </LinearLayout>
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="5dp">
 
-        <LinearLayout
-            android:id="@+id/radicalsCard"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Your Story"
+                    android:textColor="#878787"
+                    android:textSize="18sp"/>
+
+                <EditText
+                    android:id="@+id/storyEditor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:hint="@string/edit_story_hint"
+                    android:imeOptions="actionDone"
+                    android:inputType="textMultiLine|textAutoCorrect"
+                    android:lines="4"
+                    android:scrollHorizontally="false"
+                    android:singleLine="false"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone" >
+            android:padding="5dp"
+            >
 
-            <TextView
-                android:id="@+id/radicals_label"
+            <LinearLayout
+                android:id="@+id/networkStories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/radicals_label"
-                android:textColor="#878787"
-                android:textSize="18sp" />
+                android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:visibility="gone">
 
-            <dmeeuwis.nakama.views.TallGridView
-                android:id="@+id/radicalsGrid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:numColumns="3" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/network_story_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:padding="6dp"
+                    android:text="User stories from the Internet"
+                    android:textColor="#878787"
+                    android:textSize="18sp"
+                    android:visibility="gone"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
 
-        <LinearLayout
-            android:id="@+id/networkStoriesCard"
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:showDividers="middle"
-            android:divider="?android:listDivider"
-            android:visibility="gone" >
+            android:padding="5dp"
+            >
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/radicalsCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Shared Stories"
-                android:textColor="#878787"
-                android:textSize="18sp" />
-        </LinearLayout>
+                android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/radicals_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/radicals_label"
+                    android:textColor="#878787"
+                    android:textSize="18sp"/>
+
+                <dmeeuwis.nakama.views.TallGridView
+                    android:id="@+id/radicalsGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:numColumns="3"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/networkStoriesCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:divider="?android:listDivider"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:showDividers="middle"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Shared Stories"
+                    android:textColor="#878787"
+                    android:textSize="18sp"/>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
     </LinearLayout>
 
 </ScrollView>
