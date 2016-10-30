@@ -20,8 +20,9 @@
 
     <TextView
         android:id="@+id/translation_meanings"
-        android:paddingTop="26sp"
+        android:padding="12dp"
         android:textSize="24sp"
+        android:layout_marginTop="24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
