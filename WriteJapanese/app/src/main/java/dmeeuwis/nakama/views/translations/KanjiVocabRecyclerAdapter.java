@@ -74,6 +74,10 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     public void addReadingsHeader(Character character){
         try {
             Kanji k = kanjiFinder.find(character);
+            if(k == null){
+                // probably kana character
+                return;
+            }
             this.onyomi = TextUtils.join(", ", k.onyomi);
             this.kunyomi = TextUtils.join(", ", k.kunyomi);
             recalculateHeaders();
