@@ -52,7 +52,8 @@ public class TeachingStoryFragment extends Fragment {
 	GridView gridView;
 	ArrayAdapter<Kanji> radicalAdapter;
 	LoadRadicalsFile loadFileTask;
-    LinearLayout storiesCard;
+    LinearLayout storiesLayout;
+    View storiesCard;
 	View radicalsCard;
 
     UUID iid;
@@ -122,7 +123,8 @@ public class TeachingStoryFragment extends Fragment {
         loadFileTask = new LoadRadicalsFile(parent, character, radicalAdapter, radicalsCard);
         loadFileTask.execute();
 
-        this.storiesCard = (LinearLayout)view.findViewById(R.id.networkStoriesCard);
+        this.storiesCard = view.findViewById(R.id.networkStoriesCard);
+        this.storiesLayout = (LinearLayout) view.findViewById(R.id.networkStoriesLayout);
         startAnimation();
         super.onResume();
     }
@@ -179,7 +181,7 @@ public class TeachingStoryFragment extends Fragment {
                 }
 
                 storiesCard.setVisibility(View.VISIBLE);
-                storiesCard.addView(layout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                storiesLayout.addView(layout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
                 Log.d("nakama", "Added story as view: " + s);
             }
