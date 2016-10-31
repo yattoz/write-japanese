@@ -72,13 +72,17 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
             ((RelativeLayout)view.findViewById(R.id.translation_layout)).removeView(ex);
         }
 
-        Log.i("nakama", "Seeing translation " + t.toKanjiString() + " with index " + translationIndex);
         if(translationIndex == 0){
             headerBig.setVisibility(View.VISIBLE);
             headerSmall.setVisibility(View.GONE);
         } else {
             headerBig.setVisibility(View.GONE);
             headerSmall.setVisibility(View.VISIBLE);
+        }
+
+        KanjiElement kanjiObj = t.getFirstKanjiElement();
+        if (kanjiObj == null) {
+            expandButton.setVisibility(View.GONE);
         }
     }
 
@@ -150,8 +154,7 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
         }
 
         KanjiElement kanjiObj = t.getFirstKanjiElement();
-        if (kanjiObj == null) {
-            expandButton.setVisibility(View.GONE);
+        if(kanjiObj == null){
             return;
         }
         String kanji = kanjiObj.kanji;
