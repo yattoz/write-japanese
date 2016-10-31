@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -36,13 +38,12 @@ import dmeeuwis.nakama.data.LoadRadicalsFile;
 import dmeeuwis.nakama.data.RadicalAdapter;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.primary.Iid;
-import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
-import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
 import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.TallGridView;
-import uk.co.deanwild.flowtextview.FlowTextView;
+import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
+import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 
 public class TeachingCombinedStoryInfoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -51,7 +52,8 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     private char character;
     private UUID iid;
 
-    private LinearLayout combinedExamplesLayout, combinedStoriesLayout;
+    private RecyclerView combinedExamples;
+    private LinearLayout combinedStoriesLayout;
     private TallGridView radicalsGrid;
     private EditText storyEditor;
     private CardView combinedStoriesCard;
@@ -62,11 +64,12 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
     ArrayAdapter<Kanji> radicalAdapter;
     LoadRadicalsFile loadFileTask;
-    View radicalsCard, examplesCard;
+    View radicalsCard;
 
     List<String> networkStories = new ArrayList<>();
 
     private float engTextSize;
+    private KanjiVocabRecyclerAdapter combinedExamplesAdapter;
 
     public static TeachingCombinedStoryInfoFragment newInstance(String charsetPath) {
         TeachingCombinedStoryInfoFragment fragment = new TeachingCombinedStoryInfoFragment();
@@ -122,15 +125,20 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
         this.combinedStoriesLayout = (LinearLayout)v.findViewById(R.id.combined_stories);
         this.combinedStoriesCard = (CardView)v.findViewById(R.id.combined_stories_card);
-        this.examplesCard = v.findViewById(R.id.combined_examples_card);
-        this.combinedExamplesLayout = (LinearLayout)v.findViewById(R.id.combined_examples);
+
+        DictionarySet df = DictionarySet.get(getActivity().getApplicationContext());
+        this.combinedExamples = (RecyclerView)v.findViewById(R.id.combined_examples);
+        this.combinedExamples.setNestedScrollingEnabled(false);
+        this.combinedExamplesAdapter = new KanjiVocabRecyclerAdapter(this.getActivity(), df.kanjiFinder());
+        this.combinedExamples.setAdapter(combinedExamplesAdapter);
+        this.combinedExamples.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+
         this.radicalsGrid = (TallGridView)v.findViewById(R.id.combinedRadicalsGrid);
         this.storyEditor = (EditText)v.findViewById(R.id.combined_story_edit);
 
         this.radicalsCard = v.findViewById(R.id.combinedRadicalsCard);
         this.radicalAdapter = new RadicalAdapter(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<Kanji>());
         this.radicalsGrid.setAdapter(this.radicalAdapter);
-
 
         return v;
     }
@@ -149,16 +157,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
                         return;
                     }
 
-                    View newTranslation = View.inflate(parent, R.layout.translation_slide_contents, null);
-
-                    AdvancedFuriganaTextView af = (AdvancedFuriganaTextView) newTranslation.findViewById(R.id.kanji);
-                    af.setTranslation(t, dictionarySet.kanjiFinder());
-                    FlowTextView eng = (FlowTextView) newTranslation.findViewById(R.id.english);
-                    eng.setTextSize(engTextSize);
-                    eng.setText(t.toEnglishString());
-                    combinedExamplesLayout.addView(newTranslation);
-
-                    examplesCard.setVisibility(View.VISIBLE);
+                    combinedExamplesAdapter.add(t);
                 }
             };
 

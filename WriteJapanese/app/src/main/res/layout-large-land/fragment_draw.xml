@@ -21,11 +21,10 @@
         android:layout_marginTop="10dp"
         >
 
-<!--        <View
+        <View
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@color/DarkGreen"/> -->
-
+            android:layout_height="2dp"
+            android:id="@+id/messageCard_colour"/>
         <TextView
             android:id="@+id/tipMessage"
             android:layout_width="match_parent"

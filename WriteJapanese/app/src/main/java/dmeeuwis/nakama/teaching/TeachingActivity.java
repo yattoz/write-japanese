@@ -42,7 +42,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	String callingClass;
 
     MyFragmentPagerAdapter kanjiAdapter;
-    MyFragmentPagerAdapter adapter;
 
     TeachingCombinedStoryInfoFragment combinedFragment;
     TeachingDrawFragment drawFragment;
@@ -84,9 +83,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
             final FragmentManager fm = getSupportFragmentManager();
             kanjiAdapter = new MyFragmentPagerAdapter(fm,
                     new String[] { "Draw", "Story", "Usage" });
-
-            //this.adapter = this.kanji == null ? kanaAdapter : kanjiAdapter;
-            this.adapter = kanjiAdapter;
 
 
             tabStrip = (PagerSlidingTabStrip)findViewById(R.id.teachingTabStrip);
@@ -159,7 +155,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
             throw new RuntimeException(e);
         }
 
-        adapter = kanjiAdapter;
         if(Kana.isKanji(kanjiIn)){
             try {
                 Kanji k = dictSet.kanjiFinder().find(kanjiIn);
@@ -172,7 +167,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         }
 
         if(pager != null) {
-            pager.setAdapter(adapter);
+            pager.setAdapter(kanjiAdapter);
             tabStrip.setViewPager(pager);
         }
 
@@ -204,20 +199,27 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	@Override
 	public void onBackPressed(){
-        if(adapter != null) {
-            TeachingDrawFragment drawFragment = (TeachingDrawFragment) adapter.getRegisteredFragment(0);
+        if(kanjiAdapter != null) {
+            TeachingDrawFragment drawFragment = (TeachingDrawFragment) kanjiAdapter.getRegisteredFragment(0);
             if (drawFragment.undo()){
                 return;
             }
         }
+
+        if(drawFragment != null){
+            if(drawFragment.undo()){
+                return;
+            }
+        }
+
 		finish();
 	}
 	
 	@Override 
 	public void onPause(){
         try {
-            if(adapter != null) {
-                TeachingStoryFragment storyFragment = (TeachingStoryFragment) adapter.getRegisteredFragment(1);
+            if(kanjiAdapter != null) {
+                TeachingStoryFragment storyFragment = (TeachingStoryFragment) kanjiAdapter.getRegisteredFragment(1);
                 storyFragment.saveStory(this);
             }
 
@@ -239,9 +241,9 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
     int previousScrollState = ViewPager.SCROLL_STATE_IDLE;
     @Override public void onPageScrollStateChanged(int state) {
-        TeachingDrawFragment drawFragment = (TeachingDrawFragment)adapter.getRegisteredFragment(0);
-        TeachingStoryFragment storyFragment = (TeachingStoryFragment)adapter.getRegisteredFragment(1);
-        TeachingInfoFragment infoFragment = (TeachingInfoFragment)adapter.getRegisteredFragment(2);
+        TeachingDrawFragment drawFragment = (TeachingDrawFragment)kanjiAdapter.getRegisteredFragment(0);
+        TeachingStoryFragment storyFragment = (TeachingStoryFragment)kanjiAdapter.getRegisteredFragment(1);
+        TeachingInfoFragment infoFragment = (TeachingInfoFragment)kanjiAdapter.getRegisteredFragment(2);
 
         int position = pager.getCurrentItem();
 

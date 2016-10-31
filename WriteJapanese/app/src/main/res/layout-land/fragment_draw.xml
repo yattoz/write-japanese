@@ -18,6 +18,11 @@
         android:layout_marginLeft="20dp"
         android:padding="25dp">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:id="@+id/messageCard_colour"/>
+
         <TextView
             android:id="@+id/tipMessage"
             android:layout_width="match_parent"
