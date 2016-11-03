@@ -1121,6 +1121,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         loadNextCharacter(false);
         drawPad.clear();
         setUiState(State.DRAWING);
+        backgroundLoadTranslations();
         return true;
     }
 
