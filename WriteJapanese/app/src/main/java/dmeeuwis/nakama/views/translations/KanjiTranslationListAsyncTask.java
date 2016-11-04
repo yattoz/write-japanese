@@ -8,6 +8,7 @@ import java.util.List;
 
 import dmeeuwis.Translation;
 import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
 public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, Void> {
 	static final private int MAX_TRANSLATIONS = 20;
@@ -54,7 +55,7 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 			return null;
 			
 		} catch(Throwable e){
-			Log.e("nakama", "Error caught from vocab background thread", e);
+			UncaughtExceptionLogger.logError(Thread.currentThread(), "nakama", e, null);
 			return null;
 		}
 	}

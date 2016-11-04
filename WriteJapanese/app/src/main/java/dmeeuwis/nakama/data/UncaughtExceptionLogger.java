@@ -57,7 +57,7 @@ public class UncaughtExceptionLogger {
             jw.name("exception");
             jw.value((message == null ? "" : message + ": ") + ex.toString());
             jw.name("iid");
-            jw.value(Iid.get(applicationContext).toString());
+            jw.value(applicationContext == null ? "?" : Iid.get(applicationContext).toString());
             jw.name("version");
             jw.value(String.valueOf(BuildConfig.VERSION_CODE));
             jw.name("device");
