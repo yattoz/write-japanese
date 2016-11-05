@@ -25,14 +25,13 @@ import java.util.Map;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.CharacterSets;
+import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.ProgressTracker.Progress;
 import dmeeuwis.nakama.primary.Iid;
-import dmeeuwis.nakama.views.PurchaseDialog;
-import dmeeuwis.nakama.data.CharacterProgressDataHelper;
-import dmeeuwis.nakama.data.CharacterSets;
-import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.teaching.TeachingActivity;
+import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.SingleBarChart;
 import dmeeuwis.nakama.views.SingleBarChart.BarChartEntry;
 
@@ -88,7 +87,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         callingClass = params.getString("parent");
         callingPath = params.getString(Constants.KANJI_PATH_PARAM);
 
-        DictionarySet dictSet = DictionarySet.get(this.getApplicationContext());
+        DictionarySet dictSet = new DictionarySet(this.getApplicationContext());
         if(lc != null){ lc.dispose(); }
         lc = new LockChecker(this);
 

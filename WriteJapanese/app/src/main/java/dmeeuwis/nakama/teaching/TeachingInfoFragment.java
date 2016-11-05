@@ -10,27 +10,16 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
-import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
-import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask.AddTranslation;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
-import dmeeuwis.util.Util;
-import uk.co.deanwild.flowtextview.FlowTextView;
 
 public class TeachingInfoFragment extends Fragment {
 
@@ -71,7 +60,7 @@ public class TeachingInfoFragment extends Fragment {
             }
         };
 
-        this.searchTask = new KanjiTranslationListAsyncTask(adder, dictSet, character);
+        this.searchTask = new KanjiTranslationListAsyncTask(adder, getActivity().getApplicationContext(), character);
         this.searchTask.execute();
 
         startAnimation();

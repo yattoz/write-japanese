@@ -162,7 +162,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
             };
 
             if(searchTask == null && k != null){
-                this.searchTask = new KanjiTranslationListAsyncTask(adder, dictionarySet, k.kanji);
+                this.searchTask = new KanjiTranslationListAsyncTask(adder, getActivity().getApplicationContext(), k.kanji);
                 this.searchTask.execute();
             }
 

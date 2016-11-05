@@ -62,19 +62,16 @@ public class DictionarySet {
 	    	dictionaryFileFd = asm.openFd(SMALL_EDICT_FILE);
 	    	dictionaryFileStream = dictionaryFileFd.createInputStream();
 			long dictionaryFileOffset = dictionaryFileFd.getStartOffset();
-			Log.i("nakama", "DictionarySet: Time to get to dictionary file: " + (System.currentTimeMillis() - start) + "ms");
-	    	
+
 	    	searchHashToEdictIdFd = asm.openFd(SMALL_SEARCH_HASH_TO_EDICT_ID);
 	    	searchHashToEdictIdStream = searchHashToEdictIdFd.createInputStream();
 			long searchHashToEdictIdOffset = searchHashToEdictIdFd.getStartOffset();
-			Log.i("nakama", "DictionarySet: Time to get to hash file: " + (System.currentTimeMillis() - start) + "ms");
-	    	
+
 	    	edictIdToLocationSizeFd = asm.openFd(SMALL_EDICT_ID_TO_LOCATION_SIZE);
 	    	edictIdToLocationSizeStream = edictIdToLocationSizeFd.createInputStream();
 			long edictIdToLocationSizeOffset = edictIdToLocationSizeFd.getStartOffset();
 			long edictIdToLocationSizeByteLength = edictIdToLocationSizeFd.getLength();
-			Log.i("nakama", "DictionarySet: Time to get to hash file: " + (System.currentTimeMillis() - start) + "ms");
-	    	
+
 	    	querier = new QuerierFileInputStream(searchHashToEdictIdStream, searchHashToEdictIdOffset, edictIdToLocationSizeStream, edictIdToLocationSizeOffset, edictIdToLocationSizeByteLength,  dictionaryFileStream, dictionaryFileOffset);
 	
 			kanjiDictFd = asm.openFd(KANJIDICT_FILE);
@@ -83,8 +80,8 @@ public class DictionarySet {
 			
 	        kanjiIndexFd = asm.openFd(KANJIDICT_INDEX);
 	        kanjiIndexStream = this.kanjiIndexFd.createInputStream();
-			Log.i("nakama", "DictionarySet: Time to get to kanji index file: " + (System.currentTimeMillis() - start) + "ms");
-	    	
+
+			Log.i("nakama", "DictionarySet: Time to ready DictionarySet: " + (System.currentTimeMillis() - start) + "ms");
 
 		} catch(IOException e){
 			throw new RuntimeException("Error accessing internal assets", e);
@@ -103,7 +100,7 @@ public class DictionarySet {
 		return kanjiFinder;
 	}
 	
-/*	public void close(){
+	public void close(){
 		safeClose(dictionaryFileStream);
 		safeClose(dictionaryFileFd);
 		
@@ -120,7 +117,7 @@ public class DictionarySet {
 		safeClose(kanjiIndexStream);
 		safeClose(kanjiIndexFd);
 	}
-    public static void safeClose(Closeable c){
+    private static void safeClose(Closeable c){
         if(c != null){
             try {
                 c.close();
@@ -129,5 +126,14 @@ public class DictionarySet {
             }
         }
     }
-*/
+
+	private static void safeClose(AssetFileDescriptor c){
+		if(c != null){
+			try {
+				c.close();
+			} catch(Throwable t){
+				// ignore
+			}
+		}
+	}
 }

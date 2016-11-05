@@ -501,7 +501,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if (vocabAsync != null) {
             vocabAsync.cancel(true);
         }
-        vocabAsync = new KanjiTranslationListAsyncTask(adder, dictionarySet, currentCharacterSet.currentCharacter());
+        vocabAsync = new KanjiTranslationListAsyncTask(adder, getApplicationContext(), currentCharacterSet.currentCharacter());
         vocabAsync.execute();
         Log.i("nakama", "VOCAB: Starting vocab async task.");
     }
