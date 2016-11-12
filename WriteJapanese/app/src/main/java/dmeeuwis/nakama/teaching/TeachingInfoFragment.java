@@ -48,8 +48,10 @@ public class TeachingInfoFragment extends Fragment {
         RecyclerView rec = (RecyclerView)view.findViewById(R.id.teaching_recycler);
         rec.setLayoutManager(new LinearLayoutManager(getActivity()));
         final KanjiVocabRecyclerAdapter adapt = new KanjiVocabRecyclerAdapter(getActivity(), kf);
-        adapt.addCharacterHeader(String.valueOf(kanji.kanji), new CurveDrawing(currentCharacterSvg));
-        adapt.addMeaningsHeader(kanji.toMeaningString());
+        adapt.addCharacterHeader(String.valueOf(character), new CurveDrawing(currentCharacterSvg));
+        if(kanji != null) {
+            adapt.addMeaningsHeader(kanji.toMeaningString());
+        }
         rec.setAdapter(adapt);
 
         // TODO: this should probably be made into a RecyclerView
