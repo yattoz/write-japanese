@@ -105,7 +105,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     public enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
-    static final boolean DEBUG_MENU = false;
+    static final boolean DEBUG_MENU = true;
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
@@ -179,12 +179,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             return;
         }
 
-        //TODO: set a requestCode for the lockChecker
-        if (!lockChecker.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        } else {
-            Log.d("nakama", "AbstractMasterActivity: onActivityResult handled by IABUtil.");
-        }
+        lockChecker.handleActivityResult(requestCode, resultCode, data);
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -823,14 +820,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public void onPause() {
         Log.i("nakama", "KanjiMasterActivity.onPause: saving state.");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        drawPad.stopAnimation();
         Editor ed = prefs.edit();
         ed.putBoolean("shuffleEnabled", currentCharacterSet.isShuffling());
         ed.apply();
         saveCurrentCharacterSet();
-        if (pd != null) {
-            pd.dismiss();
-        }
         super.onPause();
     }
 
