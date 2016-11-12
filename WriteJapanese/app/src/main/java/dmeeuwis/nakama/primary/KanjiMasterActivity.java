@@ -469,8 +469,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         actionBar.setListNavigationCallbacks(characterSetAdapter, this);
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-        delayedStartBackgroundLoadTranslations();
     }
 
 
@@ -500,7 +498,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
         vocabAsync = new KanjiTranslationListAsyncTask(adder, getApplicationContext(), currentCharacterSet.currentCharacter());
         vocabAsync.execute();
-        Log.i("nakama", "VOCAB: Starting vocab async task.");
     }
 
     public void animateActionBar(Integer colorTo) {

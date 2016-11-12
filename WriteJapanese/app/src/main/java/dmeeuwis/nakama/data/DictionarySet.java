@@ -53,9 +53,7 @@ public class DictionarySet {
     }
 
     public DictionarySet(Context context) {
-	   	Log.i("nakama", "Starting to create DictionarySet");
 	   	long start = System.currentTimeMillis();
-	   	
 	   	asm = context.getAssets();
         
 		try {

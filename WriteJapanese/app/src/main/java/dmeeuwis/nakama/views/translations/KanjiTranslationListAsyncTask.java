@@ -7,7 +7,6 @@ import android.util.Log;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,8 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 		this.query = new String[] { kanji + ""};
 		this.kanji = kanji;
 		this.adder = adder;
+
+		Log.i("nakama", "Starting background vocab translation for " + kanji);
 	}
 	
 	@Override
@@ -40,15 +41,6 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 			doTranslationsLoop();
 			return null;
 
-		} catch(ClosedByInterruptException cex){
-			Log.e("nakama", "ClosedByInterruptException, retrying DictionarySet translations", cex);
-			try {
-				doTranslationsLoop();
-				return null;
-			} catch(Throwable e){
-				UncaughtExceptionLogger.logError(Thread.currentThread(), "nakama", e, null);
-				return null;
-			}
 		} catch(Throwable e){
 			UncaughtExceptionLogger.logError(Thread.currentThread(), "nakama", e, null);
 			return null;
@@ -58,9 +50,10 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 	private void doTranslationsLoop() throws IOException, XmlPullParserException {
 		int translationIndex = 0;
 		final int BATCH_SIZE = 1;
+
+        List<Translation> nextBatch;
 		DictionarySet dictSet = new DictionarySet(context);
 		try {
-			List<Translation> nextBatch;
 			do {
 				nextBatch = dictSet.querier.orQueries(translationIndex, BATCH_SIZE, this.query);
 				translationIndex += BATCH_SIZE;
@@ -74,12 +67,23 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 				}
 
 				publishProgress(accepted.toArray(new Translation[0]));
+
+				if (this.isCancelled()) {
+					Log.i("nakama", "Translation background task for " + kanji + " is cancelled, ending.");
+					return;
+				}
 			}
-			while (nextBatch.size() <= BATCH_SIZE && nextBatch.size() > 0 && translationIndex < MAX_TRANSLATIONS && !this.isCancelled());
-			Log.i("nakama", "Finished background translation work");
+			while (nextBatch.size() <= BATCH_SIZE && nextBatch.size() > 0 && translationIndex < MAX_TRANSLATIONS);
+		} catch(Throwable e){
+			if(this.isCancelled()) {
+				Log.d("nakama", "Caught exception in translation background thread, but isCancelled anyways", e);
+			} else {
+				UncaughtExceptionLogger.backgroundLogError("Error during background translation", e, context);
+			}
 		} finally {
 			dictSet.close();
 		}
+        Log.i("nakama", "Completed background translation work for " + kanji);
 
 	}
 	
