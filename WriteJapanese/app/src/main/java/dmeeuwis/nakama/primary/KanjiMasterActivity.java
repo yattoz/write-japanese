@@ -48,6 +48,8 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -77,6 +79,7 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
+import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
@@ -90,6 +93,7 @@ import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
+import dmeeuwis.nakama.views.ClueDialog;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
@@ -745,6 +749,23 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             return;
         }
 
+        if(Kana.isKanji(currentCharacterSet.currentCharacter()) && Settings.getClueType(getApplicationContext()) == Settings.ClueType.VOCAB) {
+            try {
+                List<Translation> trans = dictionarySet.querier.orQueries(0, 1, new String[]{ String.valueOf(currentCharacterSet.currentCharacter()) });
+                Log.i("nakama", "Found " + trans.size() + " translations for " + currentCharacterSet.currentCharacter());
+                if(trans.size() > 0) {
+                    target.setCurrentText(trans.get(0).toReadingString());
+                    instructionsLabel.setCurrentText(currentCharacterClueIndex == 0 ?
+                            "Draw the " + currentCharacterSet.label() + " for" :
+                            "which can also mean");
+
+                    return;
+                }
+            } catch (IOException | XmlPullParserException e) {
+                // ignore, fall back to meaning
+            }
+        }
+
         String[] clues = currentCharacterSet.currentCharacterClues();
         if (clues.length == 1) {
             otherMeaningsButton.setVisibility(View.GONE);
@@ -982,6 +1003,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_strictness) {
             // show criticism selection fragment
             showStrictnessDialog();
+        } else if (item.getItemId() == R.id.menu_clue) {
+            // show criticism selection fragment
+            showClueDialog();
         }
 
         if (BuildConfig.DEBUG) {
@@ -1045,6 +1069,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         FragmentManager fm = getSupportFragmentManager();
         StrictnessDialog strictnessDialog = new StrictnessDialog();
         strictnessDialog.show(fm, "fragment_strictness");
+    }
+
+    private void showClueDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        ClueDialog cd = new ClueDialog();
+        cd.show(fm, "fragment_clue");
     }
 
     public void updateStorySharingPreferences(boolean sharing) {

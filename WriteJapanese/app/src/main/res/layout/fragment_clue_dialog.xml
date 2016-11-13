@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:padding="20dp"
+
+    >
+
+
+    <RadioGroup
+        android:id="@+id/clue_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/clue_meanings_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kanji Meaning"
+            />
+
+        <TextView
+            android:id="@+id/clue_meanings_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            android:text="Study from the primary meaning of the kanji."
+            />
+
+        <RadioButton
+            android:id="@+id/clue_vocab_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vocabulary Example"
+            />
+
+        <TextView
+            android:id="@+id/clue_vocab_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            android:text="Study from real usages of the kanji."
+            />
+    </RadioGroup>
+</LinearLayout>

@@ -13,6 +13,7 @@ public class Settings {
     public static Map<String, String> settingsCache = new ConcurrentHashMap<>();
 
     public enum Strictness { CASUAL, CASUAL_ORDERED, STRICT }
+    public enum ClueType { MEANING, VOCAB }
 
     public static Strictness getStrictness(Context appContext){
         return Strictness.valueOf(getSetting("strictness", Strictness.CASUAL.toString(), appContext));
@@ -31,6 +32,13 @@ public class Settings {
         setSetting("story_sharing", value, appContext);
     }
 
+    public static void setClueType(ClueType value, Context appContext){
+        setSetting("clue_type", value.toString(), appContext);
+    }
+
+    public static ClueType getClueType(Context appContext){
+        return ClueType.valueOf(getSetting("clue_type", ClueType.MEANING.toString(), appContext));
+    }
 
     private static String getSetting(String key, String defaultValue, Context appContext){
         WriteJapaneseOpenHelper dbh = new WriteJapaneseOpenHelper(appContext);
