@@ -26,6 +26,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -58,6 +59,7 @@ import java.util.List;
 import java.util.UUID;
 
 import dmeeuwis.Kana;
+import dmeeuwis.KanjiElement;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
@@ -157,8 +159,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected TextSwitcher instructionsLabel;
     protected TextSwitcher target;
     protected ColorDrawable actionBarBackground;
-
-    private KanjiTranslationListAsyncTask.AddTranslation adder;
 
     protected View correctCard, charsetCard, instructionCard, incorrectCard;
 
@@ -749,23 +749,57 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             return;
         }
 
+
+        // clue from translation
         if(Kana.isKanji(currentCharacterSet.currentCharacter()) && Settings.getClueType(getApplicationContext()) == Settings.ClueType.VOCAB) {
             try {
                 List<Translation> trans = dictionarySet.querier.orQueries(0, 1, new String[]{ String.valueOf(currentCharacterSet.currentCharacter()) });
                 Log.i("nakama", "Found " + trans.size() + " translations for " + currentCharacterSet.currentCharacter());
                 if(trans.size() > 0) {
-                    target.setCurrentText(trans.get(0).toReadingString());
+                    Translation translation = trans.get(0);
+                    Log.d("nakama", translation.toDetailedString());
+
+
+                    for(KanjiElement ke: translation.kanjiElements){
+                        Log.d("nakama", "All kanjiElements in translation: " + ke.kanji);
+                    }
+
+                    KanjiElement[] kmatches = translation.findKanjiElementsWith(currentCharacterSet.currentCharacter());
+                    for(KanjiElement ke: kmatches){
+                        Log.d("nakama", "Matching kanjiElement: " + ke.kanji);
+                    }
+
+                    KanjiElement k = kmatches[0];
+
+                    String[] furigana = k.getFurigana(translation.toReadingString(), dictionarySet.kanjiFinder());
+                    Log.d("nakama", "Found furigana: " + TextUtils.join(", ", furigana));
+
+                    StringBuffer htmlString = new StringBuffer();
+                    for(int i = 0; i < k.kanji.length(); i++){
+                        if(k.kanji.charAt(i) == currentCharacterSet.currentCharacter()){
+                            Log.d("nakama", "Character " + i + " is study target! " + k.kanji.charAt(i));
+                            htmlString.append("<u>");
+                            htmlString.append(furigana[i]);
+                            htmlString.append("</u>");
+                        } else {
+                            Log.d("nakama", "Character " + i + " is just some other chracter! " + k.kanji.charAt(i));
+                            htmlString.append(k.kanji.charAt(i));
+                        }
+                    }
+
+                    target.setText(Html.fromHtml(htmlString.toString()));
                     instructionsLabel.setCurrentText(currentCharacterClueIndex == 0 ?
                             "Draw the " + currentCharacterSet.label() + " for" :
                             "which can also mean");
 
                     return;
                 }
-            } catch (IOException | XmlPullParserException e) {
+            } catch (IOException | XmlPullParserException | KanjiElement.FuriganaException e) {
                 // ignore, fall back to meaning
             }
         }
 
+        // clue from meaning
         String[] clues = currentCharacterSet.currentCharacterClues();
         if (clues.length == 1) {
             otherMeaningsButton.setVisibility(View.GONE);
