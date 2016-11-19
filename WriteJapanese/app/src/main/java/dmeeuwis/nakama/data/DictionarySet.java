@@ -82,7 +82,7 @@ public class DictionarySet {
 			Log.i("nakama", "DictionarySet: Time to ready DictionarySet: " + (System.currentTimeMillis() - start) + "ms");
 
 		} catch(IOException e){
-			throw new RuntimeException("Error accessing internal assets", e);
+			throw new RuntimeException("Error accessing internal assets: " + e.getMessage(), e);
 		}
 	}
 

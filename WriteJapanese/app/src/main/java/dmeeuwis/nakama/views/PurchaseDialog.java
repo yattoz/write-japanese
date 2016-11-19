@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.ILockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
 
 public class PurchaseDialog extends DialogFragment {
@@ -39,7 +39,7 @@ public class PurchaseDialog extends DialogFragment {
     	this.setRetainInstance(true);
     	
     	final DialogMessage mess = DialogMessage.valueOf(this.getArguments().getString(MESSAGE_KEY));
-    	final LockChecker lc = ((LockCheckerHolder)getActivity()).getLockChecker();
+    	final ILockChecker lc = ((LockCheckerHolder)getActivity()).getLockChecker();
     	
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder

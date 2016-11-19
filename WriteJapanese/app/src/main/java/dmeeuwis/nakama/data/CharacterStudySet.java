@@ -15,7 +15,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.ILockChecker;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.util.Util;
 
@@ -30,7 +30,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 	final public Set<Character> allCharactersSet;
 	final public String name, shortName, description;
 
-	final private LockChecker lockChecker;
+	final private ILockChecker ILockChecker;
     private ProgressTracker tracker;
 	final private Random random = new Random();
     final private UUID iid;
@@ -93,7 +93,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		return String.format("%s (%d)", this.name, this.allCharactersSet.size());
 	}
 
-	public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker lockChecker, UUID iid){
+	public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, ILockChecker ILockChecker, UUID iid){
 		this.name = name;
 		this.shortName = shortName;
         this.description = description;
@@ -105,7 +105,7 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 
 		this.pathPrefix = pathPrefix;
 		this.tracker = new ProgressTracker(this.allCharactersSet);
-		this.lockChecker = lockChecker;
+		this.ILockChecker = ILockChecker;
 	}
 
 
@@ -135,8 +135,8 @@ public abstract class CharacterStudySet implements Iterable<Character> {
     }
 
 	public boolean locked(){
-        if(lockChecker == null){ return false; }
-		boolean globalLock = lockChecker.getPurchaseStatus() == LockLevel.LOCKED;
+        if(ILockChecker == null){ return false; }
+		boolean globalLock = ILockChecker.getPurchaseStatus() == LockLevel.LOCKED;
 		boolean localLock = this.locked == LockLevel.LOCKED;
 		// Log.d("nakama", "CharacterStudySet: globalLock: " + globalLock + "; localLock: " + localLock + " => " + (globalLock && localLock));
 		return globalLock && localLock;
