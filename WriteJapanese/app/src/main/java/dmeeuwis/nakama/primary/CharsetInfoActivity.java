@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.ILockChecker;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
@@ -24,6 +25,7 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
     private final String CHARSET_SAVED_INSTANCE = "charset";
 
     CharacterStudySet charset;
+    ILockChecker lockChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,8 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
             e.apply();
         }
 
-        charset = CharacterSets.fromName(charsetName, dictionarySet.kanjiFinder(), new LockCheckerIInAppBillingService(this), Iid.get(this.getApplicationContext()));
+        lockChecker = new LockCheckerIInAppBillingService(this);
+        charset = CharacterSets.fromName(charsetName, dictionarySet.kanjiFinder(), lockChecker, Iid.get(this.getApplicationContext()));
         charset.load(this.getApplicationContext());
 
         CharacterSetStatusFragment frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_holder);
@@ -78,6 +81,14 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
     public void onPause() {
         charset.save(this.getApplicationContext());
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+       if(lockChecker != null){
+           lockChecker.dispose();
+       }
+       super.onDestroy();
     }
 
     @Override

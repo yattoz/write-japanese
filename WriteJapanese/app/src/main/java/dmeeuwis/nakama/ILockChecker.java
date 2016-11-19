@@ -31,7 +31,7 @@ public abstract class ILockChecker {
 	}
 
 	public void coreLock(){
-		Log.d("nakama", "IABLockChecker: coreLock");
+		Log.d("nakama", "LockChecker: coreLock");
 
 		SharedPreferences prefs = getSharedPrefs();
 		SharedPreferences.Editor ed = prefs.edit();
@@ -40,7 +40,7 @@ public abstract class ILockChecker {
 	}
 
 	public void coreUnlock(){
-		Log.d("nakama", "IABLockChecker: coreUnlock");
+		Log.d("nakama", "LockChecker: coreUnlock");
 
 		SharedPreferences prefs = getSharedPrefs();
 		SharedPreferences.Editor ed = prefs.edit();
@@ -48,7 +48,7 @@ public abstract class ILockChecker {
 		ed.apply();
 	}
 
-	private SharedPreferences getSharedPrefs(){
+	protected SharedPreferences getSharedPrefs(){
 		return PreferenceManager.getDefaultSharedPreferences(parentActivity.getApplicationContext());
 	}
 
@@ -59,14 +59,14 @@ public abstract class ILockChecker {
 
 	public static CharacterStudySet.LockLevel getPurchaseStatus(SharedPreferences prefs){
 		String unlocked = prefs.getString(PREFS_KEY, null);
-		// Log.d("nakama", "IABLockChecker: Unlock key from SharedPreferences: " + unlocked);
+		// Log.d("nakama", "LockChecker: Unlock key from SharedPreferences: " + unlocked);
 		if(unlocked != null){
 			if(unlocked.equals(unlockKey())){
-				// Log.d("nakama", "IABLockChecker: getPurchaseStatus: Unlock key matched: UNLOCKED");
+				// Log.d("nakama", "LockChecker: getPurchaseStatus: Unlock key matched: UNLOCKED");
 				return CharacterStudySet.LockLevel.UNLOCKED;
 			}
 		}
-		// Log.d("nakama", "IABLockChecker: getPurchaseStatus: Unlock key didn't match: LOCKED");
+		// Log.d("nakama", "LockChecker: getPurchaseStatus: Unlock key didn't match: LOCKED");
 		return CharacterStudySet.LockLevel.LOCKED;
 
 	}
