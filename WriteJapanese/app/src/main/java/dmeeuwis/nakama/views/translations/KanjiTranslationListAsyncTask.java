@@ -52,8 +52,9 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 		final int BATCH_SIZE = 1;
 
         List<Translation> nextBatch;
-		DictionarySet dictSet = new DictionarySet(context);
+		DictionarySet dictSet = null;
 		try {
+			dictSet = new DictionarySet(context);
 			do {
 				nextBatch = dictSet.querier.orQueries(translationIndex, BATCH_SIZE, this.query);
 				translationIndex += BATCH_SIZE;
@@ -78,10 +79,12 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 			if(this.isCancelled()) {
 				Log.d("nakama", "Caught exception in translation background thread, but isCancelled anyways", e);
 			} else {
-				UncaughtExceptionLogger.backgroundLogError("Error during background translation", e, context);
+				UncaughtExceptionLogger.backgroundLogError("Error during (non-cancelled) background translation", e, context);
 			}
 		} finally {
-			dictSet.close();
+			if(dictSet != null) {
+				dictSet.close();
+			}
 		}
         Log.i("nakama", "Completed background translation work for " + kanji);
 
