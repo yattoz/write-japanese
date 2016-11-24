@@ -172,7 +172,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         }
 
         if(combinedFragment != null){
-            combinedFragment.setCharacter(this.getCharacter().charAt(0), this);
+            combinedFragment.setCharacter(this.getCharacter().charAt(0));
         }
 
         super.onResume();

@@ -161,8 +161,8 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
                 }
             };
 
-            if(searchTask == null && k != null){
-                this.searchTask = new KanjiTranslationListAsyncTask(adder, getActivity().getApplicationContext(), k.kanji);
+            if(searchTask == null){
+                this.searchTask = new KanjiTranslationListAsyncTask(adder, getActivity().getApplicationContext(), character);
                 this.searchTask.execute();
             }
 
@@ -181,7 +181,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
         super.onResume();
     }
 
-    public void setCharacter(char c, final Activity parent){
+    public void setCharacter(char c){
         Log.i("nakama", "TeachingCombinedStoryInfoFragment.setCharacter " + c);
         this.character = c;
     }
