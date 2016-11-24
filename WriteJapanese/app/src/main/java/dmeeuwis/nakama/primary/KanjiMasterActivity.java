@@ -62,7 +62,7 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.nakama.DrawViewTestActivity;
-import dmeeuwis.nakama.ILockChecker;
+import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.KanjiCheckActivity;
 import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
@@ -92,7 +92,7 @@ import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
-import dmeeuwis.nakama.views.LockCheckerIInAppBillingService;
+import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.StrictnessDialog;
@@ -118,7 +118,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
     protected DictionarySet dictionarySet;
-    protected ILockChecker ILockChecker;
+    protected LockChecker LockChecker;
 
     public CharacterStudySet joyouG1, joyouG2, joyouG3, joyouG4, joyouG5, joyouG6; // , joyouSS;
     public CharacterStudySet hiraganaCharacterSet, katakanaCharacterSet;
@@ -181,7 +181,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             return;
         }
 
-        ILockChecker.handleActivityResult(requestCode, resultCode, data);
+        LockChecker.handleActivityResult(requestCode, resultCode, data);
 
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -195,7 +195,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.PROMPTED, this, false);
 
-        ILockChecker = new LockCheckerIInAppBillingService(this);
+        LockChecker = new LockCheckerInAppBillingService(this);
 
         setContentView(R.layout.main);
 
@@ -440,14 +440,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         UUID iid = Iid.get(this.getApplicationContext());
-        hiraganaCharacterSet = CharacterSets.hiragana(ILockChecker, iid);
-        katakanaCharacterSet = CharacterSets.katakana(ILockChecker, iid);
-        joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), ILockChecker, iid);
-        joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), ILockChecker, iid);
-        joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), ILockChecker, iid);
-        joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), ILockChecker, iid);
-        joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), ILockChecker, iid);
-        joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), ILockChecker, iid);
+        hiraganaCharacterSet = CharacterSets.hiragana(LockChecker, iid);
+        katakanaCharacterSet = CharacterSets.katakana(LockChecker, iid);
+        joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), LockChecker, iid);
+        joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), LockChecker, iid);
+        joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), LockChecker, iid);
+        joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), LockChecker, iid);
+        joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), LockChecker, iid);
+        joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), LockChecker, iid);
 
         this.characterSets.put("hiragana", hiraganaCharacterSet);
         this.characterSets.put("katakana", katakanaCharacterSet);
@@ -670,7 +670,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         }
 
-        if (ILockChecker.getPurchaseStatus() == LockLevel.LOCKED && (freq == Frequency.ALWAYS || (freq == Frequency.ONCE_PER_SESSION && pd == null))) {
+        if (LockChecker.getPurchaseStatus() == LockLevel.LOCKED && (freq == Frequency.ALWAYS || (freq == Frequency.ONCE_PER_SESSION && pd == null))) {
             try {
                 if (pd == null) {
                     pd = PurchaseDialog.make(message);
@@ -694,7 +694,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         // TODO: improve this... show a page, give congratulations...?
         if (increment && currentCharacterSet.locked() && currentCharacterSet.passedAllCharacters()) {
-            if (currentCharacterSet.locked() && ILockChecker.getPurchaseStatus() == LockLevel.LOCKED) {
+            if (currentCharacterSet.locked() && LockChecker.getPurchaseStatus() == LockLevel.LOCKED) {
                 raisePurchaseDialog(PurchaseDialog.DialogMessage.END_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
             } else {
                 Toast.makeText(this, "You have completed all the characters in this set!", Toast.LENGTH_LONG).show();
@@ -840,12 +840,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     @Override
     protected void onDestroy() {
         Log.i("nakama", "KanjiMasterActivity.onDestroy");
-        this.ILockChecker.dispose();
+        this.LockChecker.dispose();
         super.onDestroy();
     }
 
-    public ILockChecker getLockChecker() {
-        return this.ILockChecker;
+    public LockChecker getLockChecker() {
+        return this.LockChecker;
     }
 
     @Override
@@ -889,7 +889,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         MenuItem lockItem = menu.findItem(R.id.menu_lock);
         //Log.d("nakama", "KanjiMaster.onPrepareOptionsMenus: setting actionbar lock to: " +
         //  (lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED) + " (" + lockChecker.getPurchaseStatus() + ")");
-        lockItem.setVisible(ILockChecker.getPurchaseStatus() != LockLevel.UNLOCKED);
+        lockItem.setVisible(LockChecker.getPurchaseStatus() != LockLevel.UNLOCKED);
 
         MenuItem shareCheck = menu.findItem(R.id.menu_share_stories);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -998,7 +998,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 getLockChecker().coreLock();
                 recreate();
             } else if (item.getTitle().equals("DEBUG:IabConsume")) {
-                ILockChecker.startConsume();
+                LockChecker.startConsume();
             } else if (item.getTitle().equals("DEBUG:ResetStorySharing")) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Editor e = prefs.edit();

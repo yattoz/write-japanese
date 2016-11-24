@@ -26,7 +26,7 @@ import java.util.List;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
-public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFinishedListener, OnConsumeFinishedListener {
+public class LockCheckerIabHelper extends LockChecker implements OnIabSetupFinishedListener, OnIabPurchaseFinishedListener, OnConsumeFinishedListener {
 
 	private FixedIabHelper iab = null;
 	private boolean iabHelperSetupFinished = false;
@@ -40,15 +40,15 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 
 	List<Runnable> queuedCommands;
 	
-	private IABLockChecker(ActionBarActivity parentActivity){
+	private LockCheckerIabHelper(ActionBarActivity parentActivity){
 		super(parentActivity);
 
-		Log.i("nakama", "New IABLockChecker: about to start iab setup.");
+		Log.i("nakama", "New LockCheckerIabHelper: about to start iab setup.");
 		this.startTime = System.currentTimeMillis();
 		this.parentActivity = parentActivity;
 		this.queuedCommands = new ArrayList<Runnable>();
 		
-		Log.i("nakama", "IABLockChecker: about to run iabStartSetup");
+		Log.i("nakama", "LockCheckerIabHelper: about to run iabStartSetup");
 		try {
 			this.iab = new FixedIabHelper(parentActivity, GOOGLE_PLAY_PUBLIC_KEY);
 			iab.enableDebugLogging(true);
@@ -64,7 +64,7 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					iab.startSetup(IABLockChecker.this);
+					iab.startSetup(LockCheckerIabHelper.this);
 				}
 			}).start();
 			*/
@@ -81,15 +81,15 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 	}
 	
 	@Override public void onIabSetupFinished(IabResult result) {
-		Log.i("nakama", "IABLockChecker: IAB onIabSetupFinish listener. Took " + (System.currentTimeMillis() - startTime) + "ms from startup.");
+		Log.i("nakama", "LockCheckerIabHelper: IAB onIabSetupFinish listener. Took " + (System.currentTimeMillis() - startTime) + "ms from startup.");
 		if(result.isSuccess()){
-			Log.i("nakama", "IABLockChecker: IabSetup onIabSetupFinish: result success! Will run queue.");
+			Log.i("nakama", "LockCheckerIabHelper: IabSetup onIabSetupFinish: result success! Will run queue.");
 			iabLog("iab setup finished SUCCESS in " + (System.currentTimeMillis() - startTime) + "ms");
 			iabHelperSetupFinished = true;
 			runQueue();
 		} else {
 			iabLog("iab setup finished FAILURE! " + (System.currentTimeMillis() - startTime) + "ms");
-			log("IABLockChecker: iabSetup onIabSetupFinish: result failure: " +
+			log("LockCheckerIabHelper: iabSetup onIabSetupFinish: result failure: " +
 					result.getMessage() + " " + result.getResponse(),
 				new RuntimeException("onIabSetupFinished error: " + result.getMessage()));
 		}
@@ -97,16 +97,16 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 	
 	private void runQueue(){
 		if(!iabHelperSetupFinished){
-			Log.i("nakama", "IABLockChecker: runQueue: ending early, iabHelperSetup is not finished.");
+			Log.i("nakama", "LockCheckerIabHelper: runQueue: ending early, iabHelperSetup is not finished.");
 			return;
 		}
 
 		if(iabHelperInventoryRefreshing){
-			Log.i("nakama", "IABLockChecker: runQueue: ending early, iabHelper is refreshing.");
+			Log.i("nakama", "LockCheckerIabHelper: runQueue: ending early, iabHelper is refreshing.");
 			return;
 		}
 
-		Log.i("nakama", "IABLockChecker: runQueue: will run queue.");
+		Log.i("nakama", "LockCheckerIabHelper: runQueue: will run queue.");
 		
 		Runnable r = null;
 		synchronized(queuedCommands){
@@ -115,7 +115,7 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 			}
 		}
 		if(r != null){
-			Log.i("nakama", "IABLockChecker: runQueue: will run queue.");
+			Log.i("nakama", "LockCheckerIabHelper: runQueue: will run queue.");
 			r.run();
 			runQueue();
 		}
@@ -130,12 +130,12 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 			queuedCommands.add(new Runnable(){
 				@Override public void run() {
 					try {
-						Log.d("nakama", "IABLockChecker: runPurchase");
+						Log.d("nakama", "LockCheckerIabHelper: runPurchase");
 						iabDebugLog.add(df.format(new Date()) + " iab run purchase flow dequeued and launched!");
-						iab.launchPurchaseFlow(parentActivity, LICENSE_SKU, REQUEST_CODE, IABLockChecker.this);
+						iab.launchPurchaseFlow(parentActivity, LICENSE_SKU, REQUEST_CODE, LockCheckerIabHelper.this);
 					} catch(Throwable e){
 						Toast.makeText(parentActivity, "Error contacting Google Play for unlock. Please try again later.", Toast.LENGTH_LONG).show();
-						log("IABLockChecker: Error in launchPurchaseFlow", e);
+						log("LockCheckerIabHelper: Error in launchPurchaseFlow", e);
 					}
 				}
 			});
@@ -144,11 +144,11 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 	}
 	
 	@Override public void onIabPurchaseFinished(IabResult result, Purchase info) {
-		Log.d("nakama", "IABLockChecker: onIabPurchaseFinished");
+		Log.d("nakama", "LockCheckerIabHelper: onIabPurchaseFinished");
 		iabDebugLog.add(df.format(new Date()) + " iab onPurchaseFinished CANCELLED");
 
 		if (result.getResponse() == IabHelper.IABHELPER_USER_CANCELLED){
-			Log.d("nakama", "IABLockChecker: onIabPurchaseFinished user cancelled");
+			Log.d("nakama", "LockCheckerIabHelper: onIabPurchaseFinished user cancelled");
 			iabDebugLog.add(df.format(new Date()) + " iab onPurchaseFinished CANCELLED");
 			return;
 		}
@@ -161,12 +161,12 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 		
 		if(result.isSuccess() && info != null && info.getPurchaseState() == 0){
 			iabDebugLog.add(df.format(new Date()) + " iab onPurchaseFinished SUCCESS");
-			Log.d("nakama", "IABLockChecker: onIabPurchaseFinished isSuccess!");
+			Log.d("nakama", "LockCheckerIabHelper: onIabPurchaseFinished isSuccess!");
 			Toast.makeText(parentActivity, "Thank you, your purchase completed! You have full access to all features of Write Japanese. Good luck in your studies!", Toast.LENGTH_LONG).show();
 			coreUnlock();
 			parentActivity.recreate();
 		} else {
-			log("IABLockChecker.onIabPurchaseFinished NOT isSuccess! Result: " + result.getResponse() + " " + result.getMessage() + ". Purchase info: " + info + "; getPurchaseState: " + ( info == null ? "" : info.getPurchaseState()),
+			log("LockCheckerIabHelper.onIabPurchaseFinished NOT isSuccess! Result: " + result.getResponse() + " " + result.getMessage() + ". Purchase info: " + info + "; getPurchaseState: " + ( info == null ? "" : info.getPurchaseState()),
 					new RuntimeException());
 			Toast.makeText(parentActivity, "Unfortunately, there was an error while processing the unlock: " + result.getMessage(), Toast.LENGTH_LONG).show();
 		}
@@ -181,11 +181,11 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 	// === consume flow =====
 	@Override
 	public void startConsume(){
-		Log.d("nakama", "IABLockChecker: startConsume");
+		Log.d("nakama", "LockCheckerIabHelper: startConsume");
 		synchronized(this.queuedCommands){
 			this.queuedCommands.add(new Runnable(){
 				@Override public void run() {
-					Log.d("nakama", "IABLockChecker: startConsume runnable");
+					Log.d("nakama", "LockCheckerIabHelper: startConsume runnable");
 					checkForPurchase(Action.CONSUME);
 				}
 			});
@@ -212,15 +212,15 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 	public boolean handleActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if(requestCode != REQUEST_CODE){ return false; }
 
-		Log.d("nakama", "IABLockChecker: handleActivityResult " + requestCode + " " + resultCode + " " + data);
+		Log.d("nakama", "LockCheckerIabHelper: handleActivityResult " + requestCode + " " + resultCode + " " + data);
 		iabLog("handleActivityResult: " + requestCode + " " + resultCode + " " + data);
 
 		if(!iabHelperSetupFinished){
-			iabLog("IABLockChecker: iabHelper not finished! Queuing response");
+			iabLog("LockCheckerIabHelper: iabHelper not finished! Queuing response");
 			queuedCommands.add(new Runnable() {
 				@Override
 				public void run() {
-					Log.d("nakama", "IABLockChecker: doing delayed handleActivityResult");
+					Log.d("nakama", "LockCheckerIabHelper: doing delayed handleActivityResult");
 					iabLog("running delayed handleActivityResult");
 					doHandleActivityResultWork(requestCode, resultCode, data);
 				}
@@ -234,14 +234,14 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 
 	private boolean doHandleActivityResultWork(int requestCode, int resultCode, Intent data){
 		try {
-			// hack iab listener so that if orientation changed during payment, current IABLockChecker's
+			// hack iab listener so that if orientation changed during payment, current LockCheckerIabHelper's
 			// iabPurchaseListener still works
-			iab.forcePurchaseListener(requestCode, IABLockChecker.this);
+			iab.forcePurchaseListener(requestCode, LockCheckerIabHelper.this);
 
 			return iab.handleActivityResult(requestCode, resultCode, data);
 
 		} catch(Throwable e){
-			UncaughtExceptionLogger.backgroundLogError("Error in IABLockChecker.handleActivityResult processing\n" +
+			UncaughtExceptionLogger.backgroundLogError("Error in LockCheckerIabHelper.handleActivityResult processing\n" +
 					TextUtils.join("\n", iabDebugLog), e, parentActivity);
 			Toast.makeText(parentActivity, "Error processing response from Google Play. Please try again later.", Toast.LENGTH_LONG).show();
 			return false;
@@ -255,12 +255,12 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 
 	private enum Action { UNLOCK, CONSUME }
 	private void checkForPurchase(final Action action) {
-		iabLog("IABLockChecker: checkForPurchase: about to query async inventory");
+		iabLog("LockCheckerIabHelper: checkForPurchase: about to query async inventory");
 
 		// in normal application, action should always be UNLOCK. Only for debug builds where consume
 		// is an option might it be CONSUME.
 		if(action == Action.UNLOCK && getPurchaseStatus() == LockLevel.UNLOCKED){
-			Log.i("nakama", "IABLockChecker: skipping checkForPurchase, found registration key.");
+			Log.i("nakama", "LockCheckerIabHelper: skipping checkForPurchase, found registration key.");
 			return;
 		}
 
@@ -268,28 +268,28 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 			iabHelperInventoryRefreshing = true;
 			iab.queryInventoryAsync(new QueryInventoryFinishedListener() {
                 @Override public void onQueryInventoryFinished(IabResult result, Inventory inv) throws IabHelper.IabAsyncInProgressException {
-                    iabLog("IABLockChecker: got checkForPurchase asnyc inventory query result: success=" + result.isFailure() + " : " + result.getMessage());
+                    iabLog("LockCheckerIabHelper: got checkForPurchase asnyc inventory query result: success=" + result.isFailure() + " : " + result.getMessage());
                     if(inv == null){
-                        Log.i("nakama", "IABLockChecker: No Inventory listing found!");
+                        Log.i("nakama", "LockCheckerIabHelper: No Inventory listing found!");
                         return;
                     }
 
                     Purchase license = inv.getPurchase(LICENSE_SKU);
-					Log.i("nakama", "IABLockChecker: checkForPurchase found license " + license);
+					Log.i("nakama", "LockCheckerIabHelper: checkForPurchase found license " + license);
 
                     if(license != null){
                         if(action == Action.UNLOCK){
-                            Log.i("nakama", "IABLockChecker: checkForPurchase found existing purchase! Will Unlock.");
+                            Log.i("nakama", "LockCheckerIabHelper: checkForPurchase found existing purchase! Will Unlock.");
                             coreUnlock();
-							Log.i("nakama", "IABLockChecker: unlocked! Will restart!");
+							Log.i("nakama", "LockCheckerIabHelper: unlocked! Will restart!");
                             parentActivity.recreate();
                         }
                         if(action == Action.CONSUME){
-                            Log.i("nakama", "IABLockChecker: checkForPurchase found existing purchase! Will CONSUME.");
-                            iab.consumeAsync(license, IABLockChecker.this);
+                            Log.i("nakama", "LockCheckerIabHelper: checkForPurchase found existing purchase! Will CONSUME.");
+                            iab.consumeAsync(license, LockCheckerIabHelper.this);
                         }
                     } else {
-                        Log.i("nakama", "IABLockChecker: Check for previous purchase failed! Application is still locked!! No remote license found.");
+                        Log.i("nakama", "LockCheckerIabHelper: Check for previous purchase failed! Application is still locked!! No remote license found.");
                     }
 
 					iabHelperInventoryRefreshing = false;
@@ -300,7 +300,7 @@ public class IABLockChecker extends ILockChecker implements OnIabSetupFinishedLi
 			if(BuildConfig.DEBUG) {
 				Toast.makeText(parentActivity, "Error contacting Google Play for unlock.", Toast.LENGTH_LONG).show();
 			}
-			UncaughtExceptionLogger.backgroundLogError("IABLockChecker: Error in checkForPurchase", e, parentActivity);
+			UncaughtExceptionLogger.backgroundLogError("LockCheckerIabHelper: Error in checkForPurchase", e, parentActivity);
 		}
 	}
 	

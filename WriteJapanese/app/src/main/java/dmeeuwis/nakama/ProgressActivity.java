@@ -31,7 +31,7 @@ import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.ProgressTracker.Progress;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.teaching.TeachingActivity;
-import dmeeuwis.nakama.views.LockCheckerIInAppBillingService;
+import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.SingleBarChart;
 import dmeeuwis.nakama.views.SingleBarChart.BarChartEntry;
@@ -44,7 +44,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	String[] strings;
 	Map<Character, Progress> scores;
 	
-	ILockChecker lc;
+	LockChecker lc;
 
 	String characterList;
 	CharacterStudySet charSet;
@@ -90,7 +90,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 
         DictionarySet dictSet = new DictionarySet(this.getApplicationContext());
         if(lc != null){ lc.dispose(); }
-        lc = new LockCheckerIInAppBillingService(this);
+        lc = new LockCheckerInAppBillingService(this);
 
         charSet = CharacterSets.fromName(callingPath, dictSet.kanjiFinder(), lc, Iid.get(this.getApplicationContext()));
         charSet.load(this.getApplicationContext());
@@ -161,7 +161,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	}
 
     @Override
-    public ILockChecker getLockChecker() {
+    public LockChecker getLockChecker() {
         return this.lc;
     }
 

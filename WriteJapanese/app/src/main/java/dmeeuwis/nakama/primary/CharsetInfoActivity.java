@@ -11,12 +11,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.ILockChecker;
+import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.views.LockCheckerIInAppBillingService;
+import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 
 /**
  * On small devices, holds the CharacterSetStatusFragment all by itself.
@@ -25,7 +25,7 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
     private final String CHARSET_SAVED_INSTANCE = "charset";
 
     CharacterStudySet charset;
-    ILockChecker lockChecker;
+    LockChecker lockChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +60,7 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
             e.apply();
         }
 
-        lockChecker = new LockCheckerIInAppBillingService(this);
+        lockChecker = new LockCheckerInAppBillingService(this);
         charset = CharacterSets.fromName(charsetName, dictionarySet.kanjiFinder(), lockChecker, Iid.get(this.getApplicationContext()));
         charset.load(this.getApplicationContext());
 

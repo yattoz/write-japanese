@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.nakama.ILockChecker;
+import dmeeuwis.nakama.LockChecker;
 
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE;
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR;
@@ -39,7 +39,7 @@ import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE;
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED;
 
-public class LockCheckerIInAppBillingService extends ILockChecker {
+public class LockCheckerInAppBillingService extends LockChecker {
 
     final Activity parent;
     final ServiceConnection mServiceConn;
@@ -53,7 +53,7 @@ public class LockCheckerIInAppBillingService extends ILockChecker {
     boolean googlePlayFound = false;
     String purchaseCode;
 
-    public LockCheckerIInAppBillingService(final Activity parent){
+    public LockCheckerInAppBillingService(final Activity parent){
         super(parent);
 
         this.delayed = new ArrayList<>();
@@ -92,7 +92,7 @@ public class LockCheckerIInAppBillingService extends ILockChecker {
             }
         };
 
-        Log.d("nakama-iiab", "LockCheckerIInAppBilling: constuctoring, starting to bind service");
+        Log.d("nakama-iiab", "LockCheckerIInAppBilling: constructing, starting to bind service");
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");
         googlePlayFound = parent.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
@@ -121,6 +121,11 @@ public class LockCheckerIInAppBillingService extends ILockChecker {
 
     @Override
     public void runPurchase() {
+        if(!googlePlayFound){
+            toast("Error: Could not contact Google Play on the device.");
+            return;
+        }
+
         Log.d("nakama-iiab", "LockCheckerIInAppBilling: queuing purchase run");
         addJob(new Runnable() {
             @Override
@@ -132,9 +137,9 @@ public class LockCheckerIInAppBillingService extends ILockChecker {
                         return;
                     }
 
-                    if(!googlePlayFound){
-                        toast("Error: Could not contact Google Play on the device.");
-                        return;
+                    int result = mService.isBillingSupported(3, parent.getPackageName(), "inapp");
+                    if(result != BILLING_RESPONSE_RESULT_OK){
+                        toast("Sorry, Google Play in-app purchases are not supported on your device (" + result + ")");
                     }
 
                     Bundle buyIntentBundle = mService.getBuyIntent(3, parent.getPackageName(),
@@ -145,7 +150,7 @@ public class LockCheckerIInAppBillingService extends ILockChecker {
                     if(responseCode == BILLING_RESPONSE_RESULT_OK){
                         PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
                         parent.startIntentSenderForResult(pendingIntent.getIntentSender(),
-                            ILockChecker.REQUEST_CODE, new Intent(), 0, 0, 0);
+                            LockChecker.REQUEST_CODE, new Intent(), 0, 0, 0);
 
                     } else if(responseCode == BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE){
                         toast("Could not contact Google Play: Billing response unavailable. Please try again later.");
@@ -230,13 +235,14 @@ public class LockCheckerIInAppBillingService extends ILockChecker {
     @Override
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("nakama-iiab", "LockCheckerIInAppBilling: handleActivityResult " + requestCode + " " + resultCode + " " + data);
-        if(requestCode != ILockChecker.REQUEST_CODE){ return false; }
+        if(requestCode != LockChecker.REQUEST_CODE){ return false; }
 
         if(resultCode == Activity.RESULT_OK){
-            Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase succeeded!");
-            // String responseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+            String responseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+            Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase succeeded!" + responseData);
             // logToServer("Successful purchase! " + responseData);
             coreUnlock();
+            toast("Thank you, your purchase completed! You have full access to all features of Write Japanese. Good luck in your studies!");
             parent.recreate();
         } else if(resultCode == Activity.RESULT_CANCELED){
             Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase cancelled");
@@ -271,7 +277,7 @@ public class LockCheckerIInAppBillingService extends ILockChecker {
                     //String signature = signatureList.get(i);
                     String sku = ownedSkus.get(i);
                     Log.d("nakama-iiab", "Purchase " + i + ": " + purchaseData);
-                    if(sku.equals(ILockChecker.LICENSE_SKU)){
+                    if(sku.equals(LockChecker.LICENSE_SKU)){
 
                         Log.i("nakama-iiab", "Attempt to parse JSON: " + purchaseData);
                         JSONObject j = new JSONObject(purchaseData);
