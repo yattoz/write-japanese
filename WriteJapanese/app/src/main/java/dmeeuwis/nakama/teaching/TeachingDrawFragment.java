@@ -146,7 +146,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
     }
 
     public boolean undo() {
-        if (tracingView.drawnStrokeCount() > 0) {
+        if (tracingView != null && tracingView.drawnStrokeCount() > 0) {
             tracingView.undo();
             return true;
         }
