@@ -55,6 +55,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import dmeeuwis.Kana;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
@@ -486,7 +487,18 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         correctVocabList.scrollToPosition(0);
         correctVocabArrayAdapter.clear();
         Character c = currentCharacterSet.currentCharacter();
-        correctVocabArrayAdapter.addReadingsHeader(c);
+        if(Kana.isKanji(c)) {
+            correctVocabArrayAdapter.addReadingsHeader(c);
+            try {
+                correctVocabArrayAdapter.addMeaningsHeader(
+                        TextUtils.join(", ", dictionarySet.kanjiFinder().find(c).meanings));
+            } catch (IOException e) {
+                correctVocabArrayAdapter.removeMeaningsHeader();
+            }
+        } else {
+            correctVocabArrayAdapter.removeReadingsHeader();
+            correctVocabArrayAdapter.removeMeaningsHeader();
+        }
         KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation() {
             public void add(Translation t) {
                 correctVocabArrayAdapter.add(t);

@@ -88,12 +88,25 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
+    public void removeReadingsHeader(){
+        this.onyomi = null;
+        this.kunyomi = null;
+        recalculateHeaders();
+        this.notifyDataSetChanged();
+    }
+
     public void addMeaningsHeader(String meanings){
         Log.i("nakama", "addMeaningsHeader called!");
         if(meanings == null){
             throw new IllegalArgumentException("known and drawn must be non-null");
         }
         this.meanings = meanings;
+        recalculateHeaders();
+        this.notifyDataSetChanged();
+    }
+
+    public void removeMeaningsHeader(){
+        this.meanings = null;
         recalculateHeaders();
         this.notifyDataSetChanged();
     }
