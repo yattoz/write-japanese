@@ -51,6 +51,7 @@ public class TeachingInfoFragment extends Fragment {
         adapt.addCharacterHeader(String.valueOf(character), new CurveDrawing(currentCharacterSvg));
         if(kanji != null) {
             adapt.addMeaningsHeader(kanji.toMeaningString());
+            adapt.addReadingsHeader(kanji.kanji);
         }
         rec.setAdapter(adapt);
 
