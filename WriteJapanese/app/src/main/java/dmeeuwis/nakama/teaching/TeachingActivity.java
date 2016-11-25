@@ -106,7 +106,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         Bundle params = getIntent().getExtras();
         Character kanjiIn;
         String kanjiPath;
-        if(params.size() > 0){
+        if(params != null && params.size() > 0){
             callingClass = params.getString("parent");
             kanjiIn = params.getChar(Constants.KANJI_PARAM);
             kanjiPath = params.getString(Constants.KANJI_PATH_PARAM);

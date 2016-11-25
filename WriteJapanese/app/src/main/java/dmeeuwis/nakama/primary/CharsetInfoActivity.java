@@ -69,7 +69,9 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
 
     public void setGoal(int year, int month, int day){
         CharacterSetStatusFragment frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_holder);
-        frag.setGoal(year, month, day);
+        if(frag != null) {
+            frag.setGoal(year, month, day);
+        }
     }
 
     @Override
