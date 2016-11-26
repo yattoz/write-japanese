@@ -62,8 +62,8 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.nakama.DrawViewTestActivity;
-import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.KanjiCheckActivity;
+import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.ProgressActivity;
@@ -111,7 +111,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
-    public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
 
     public static final long SECONDS_PER_MINUTE = 60L;
     public static final long SYNC_INTERVAL_IN_MINUTES = 60L * 12;
@@ -841,6 +840,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected void onDestroy() {
         Log.i("nakama", "KanjiMasterActivity.onDestroy");
         this.LockChecker.dispose();
+        if(pd != null && pd.isAdded()){
+            //pd.dismiss();
+        }
         super.onDestroy();
     }
 
@@ -869,7 +871,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:Notify");
             menu.add("DEBUG:ClearAllNotify");
             menu.add("DEBUG:Register");
-            menu.add("DEBUG:ClearAuthcode");
+            menu.add("DEBUG:ClearSharedPrefs");
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
             menu.add("DEBUG:SyncNow");
@@ -1010,10 +1012,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 ReminderManager.clearAllReminders(this);
             } else if (item.getTitle().equals("DEBUG:ClearSync")) {
                 new PracticeLogSync(KanjiMasterActivity.this).clearSync();
-            } else if (item.getTitle().equals("DEBUG:ClearAuthcode")) {
+            } else if (item.getTitle().equals("DEBUG:ClearSharedPrefs")) {
+                Log.i("nakama", "DEBUG clearing all shared prefs");
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Editor e = prefs.edit();
-                e.remove(AUTHCODE_SHARED_PREF_KEY);
+                e.clear();
                 e.apply();
             } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
                 new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();

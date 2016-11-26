@@ -96,5 +96,4 @@ public abstract class LockChecker {
 		}
 		return new String( hexChars );
 	}
-
 }

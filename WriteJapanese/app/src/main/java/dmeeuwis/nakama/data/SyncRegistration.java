@@ -19,6 +19,7 @@ import dmeeuwis.nakama.primary.KanjiMasterActivity;
 public class SyncRegistration {
     public static final int REQUEST_CODE_PICK_ACCOUNT = 255;
     public static final String HAVE_ASKED_ABOUT_SYNC_KEY = "ASKED_SYNC";
+    public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
 
     public enum RegisterRequest {
         REQUESTED("Do you want to enable progress sync among all Android devices authenticated with your Google account?"),
@@ -32,13 +33,13 @@ public class SyncRegistration {
 
     public static boolean checkIsRegistered(Activity activity) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
-        String auth = pref.getString(KanjiMasterActivity.AUTHCODE_SHARED_PREF_KEY, null);
+        String auth = pref.getString(AUTHCODE_SHARED_PREF_KEY, null);
         return auth != null;
     }
 
     public static void registerAccount(final RegisterRequest request, final Activity activity, final boolean force) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
-        String auth = pref.getString(KanjiMasterActivity.AUTHCODE_SHARED_PREF_KEY, null);
+        String auth = pref.getString(AUTHCODE_SHARED_PREF_KEY, null);
 
         if (auth != null && !force) {
             Log.i("nakama-sync", "Found existing authcode, already registered for server sync");
@@ -118,7 +119,7 @@ public class SyncRegistration {
         Log.i("nakama-auth", "Recording authcode to shared prefs: " + authcode);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
         SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(KanjiMasterActivity.AUTHCODE_SHARED_PREF_KEY, authcode);
+        ed.putString(AUTHCODE_SHARED_PREF_KEY, authcode);
         ed.apply();
     }
 

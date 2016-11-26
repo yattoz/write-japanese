@@ -115,10 +115,6 @@ public class LockCheckerInAppBillingService extends LockChecker {
          */
     }
 
-    private void flagBadConnection(){
-        this.badConnection = true;
-    }
-
     @Override
     public void runPurchase() {
         if(!googlePlayFound){
@@ -162,8 +158,9 @@ public class LockCheckerInAppBillingService extends LockChecker {
                         toast("Could not contact Google Play: error response. Please try again later.");
 
                     } else if(responseCode == BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED){
-                        toast("Google Play reported already purchased; unlocking.");
+                        toast("Google Play found existing purchase; unlocking.");
                         coreUnlock();
+                        recreateActivity();
 
                     } else if (responseCode == BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED){
                         toast("Google Play reported error; item not owned.");
@@ -198,6 +195,17 @@ public class LockCheckerInAppBillingService extends LockChecker {
         );
     }
 
+    private void recreateActivity(){
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+                         @Override
+                         public void run() {
+                             parent.recreate();
+                         }
+                     }
+        );
+    }
+
     @Override
     public void startConsume() {
         Log.d("nakama-iiab", "LockCheckerIInAppBilling: debug CONSUMING");
@@ -218,11 +226,11 @@ public class LockCheckerInAppBillingService extends LockChecker {
                 if(consume == BILLING_RESPONSE_RESULT_OK) {
                     Toast.makeText(parent, "Consumed!", Toast.LENGTH_LONG).show();
                     coreLock();
-                    parent.recreate();
+                    recreateActivity();
                 } else if(consume == BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED){
                     Toast.makeText(parent, "Previously Consumed!", Toast.LENGTH_LONG).show();
                     coreLock();
-                    parent.recreate();
+                    recreateActivity();
                 } else {
                     Toast.makeText(parent, "Unknown response: " + consume, Toast.LENGTH_LONG).show();
                 }
@@ -240,8 +248,12 @@ public class LockCheckerInAppBillingService extends LockChecker {
         if(resultCode == Activity.RESULT_OK){
             String responseData = data.getStringExtra("INAPP_PURCHASE_DATA");
             Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase succeeded!" + responseData);
-            // logToServer("Successful purchase! " + responseData);
-            coreUnlock();
+            try {
+                savePurchaseTokenFromPurchaseData(responseData);
+            } catch (JSONException e) {
+                toast("Error parsing JSON response from Google Play");
+                return true;
+            }
             toast("Thank you, your purchase completed! You have full access to all features of Write Japanese. Good luck in your studies!");
             parent.recreate();
         } else if(resultCode == Activity.RESULT_CANCELED){
@@ -278,18 +290,10 @@ public class LockCheckerInAppBillingService extends LockChecker {
                     String sku = ownedSkus.get(i);
                     Log.d("nakama-iiab", "Purchase " + i + ": " + purchaseData);
                     if(sku.equals(LockChecker.LICENSE_SKU)){
-
-                        Log.i("nakama-iiab", "Attempt to parse JSON: " + purchaseData);
-                        JSONObject j = new JSONObject(purchaseData);
-                        String token = j.getString("purchaseToken");
-                        this.purchaseCode = token;
-                        SharedPreferences shared = getSharedPrefs();
-
-                        Log.i("nakama-iiab", "Unlock and recording previous purchase token: " + token);
-                        coreUnlock();
-                        SharedPreferences.Editor ed = shared.edit();
-                        ed.putString("purchase_token", token);
-                        ed.apply();
+                        boolean saved = savePurchaseTokenFromPurchaseData(purchaseData);
+                        if(saved) {
+                            recreateActivity();
+                        }
                     }
                 }
             } else {
@@ -298,7 +302,28 @@ public class LockCheckerInAppBillingService extends LockChecker {
         } catch (JSONException e) {
             toast("Error parsing JSON response from Google Play");
         } catch (RemoteException e) {
-            flagBadConnection();
+            badConnection = true;
+        }
+    }
+
+    private boolean savePurchaseTokenFromPurchaseData(String purchaseData) throws JSONException {
+        Log.i("nakama-iiab", "Attempt to parse JSON: " + purchaseData);
+        JSONObject j = new JSONObject(purchaseData);
+        String token = j.getString("purchaseToken");
+        this.purchaseCode = token;
+        SharedPreferences shared = getSharedPrefs();
+
+        Log.i("nakama-iiab", "Unlock and recording previous purchase token: " + token);
+        coreUnlock();
+
+        String existing = shared.getString("purchase_token", "");
+        if(existing.equals(token)){
+            return false;
+        } else {
+            SharedPreferences.Editor ed = shared.edit();
+            ed.putString("purchase_token", token);
+            ed.apply();
+            return true;
         }
     }
 
