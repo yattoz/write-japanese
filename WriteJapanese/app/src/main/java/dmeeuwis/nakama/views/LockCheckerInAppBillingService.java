@@ -22,12 +22,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.data.LoggingRunnable;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE;
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR;
@@ -43,7 +45,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
     final Activity parent;
     final ServiceConnection mServiceConn;
-    final List<Runnable> delayed;
+    final ConcurrentLinkedQueue<Runnable> delayed;
 
     // only instantiated with billing connection
     ExecutorService commsExec;
@@ -56,7 +58,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
     public LockCheckerInAppBillingService(final Activity parent){
         super(parent);
 
-        this.delayed = new ArrayList<>();
+        this.delayed = new ConcurrentLinkedQueue<>();
         this.parent = parent;
 
         mServiceConn = new ServiceConnection() {
@@ -71,6 +73,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 Log.d("nakama-iiab", "LockCheckerIInAppBilling: onServiceConnected");
+
                 mService = IInAppBillingService.Stub.asInterface(service);
                 badConnection = false;
 
@@ -78,14 +81,15 @@ public class LockCheckerInAppBillingService extends LockChecker {
                     commsExec = Executors.newSingleThreadExecutor();
                 }
 
-                if(delayed.size() > 0){
-                    for(Runnable r: delayed){
+                while(!delayed.isEmpty()){
+                    Runnable r = delayed.poll();
+                    if(r != null) {
                         addJob(r);
                     }
                 }
 
-                commsExec.execute(new Runnable() {
-                    @Override public void run() {
+                commsExec.execute(new LoggingRunnable(parent) {
+                    public void runCore() {
                         checkPastPurchases();
                     }
                 });
@@ -96,36 +100,18 @@ public class LockCheckerInAppBillingService extends LockChecker {
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");
         googlePlayFound = parent.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
-
-        /** special debug delayed version of startup
-        new Thread(){
-            @Override
-            public void run() {
-                Log.d("nakama-iiab", "DEBUG DELAY OF 10 Seconds for testing!");
-                try {
-                    Thread.sleep(10_000);
-                } catch (InterruptedException e) {
-                    // do nothing
-                }
-                Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
-                serviceIntent.setPackage("com.android.vending");
-                parent.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
-            }
-        }.start();
-         */
     }
 
     @Override
     public void runPurchase() {
         if(!googlePlayFound){
-            toast("Error: Could not contact Google Play on the device.");
+            toast("Error: Could not contact Google Play for purchasing on this device.");
             return;
         }
 
         Log.d("nakama-iiab", "LockCheckerIInAppBilling: queuing purchase run");
-        addJob(new Runnable() {
-            @Override
-            public void run() {
+        addJob(new LoggingRunnable(parent) {
+            public void runCore() {
                 try {
                     Log.d("nakama-iiab", "LockCheckerIInAppBilling: doing purchase run");
                     if(badConnection){
@@ -178,6 +164,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
                     }
                 } catch (IntentSender.SendIntentException|RemoteException e) {
+                    UncaughtExceptionLogger.backgroundLogError(e.getMessage(), e, parent);
                     toast("Error in contacting Google Play; please try again later.");
                 }
             }
@@ -186,9 +173,8 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
     private void toast(final String msg){
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-                 @Override
-                 public void run() {
+        handler.post(new LoggingRunnable(parent) {
+                 public void runCore() {
                      Toast.makeText(parent, msg, Toast.LENGTH_LONG).show();
                  }
             }
@@ -197,9 +183,8 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
     private void recreateActivity(){
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-                         @Override
-                         public void run() {
+        handler.post(new LoggingRunnable(parent) {
+                         public void runCore() {
                              parent.recreate();
                          }
                      }
@@ -247,10 +232,11 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
         if(resultCode == Activity.RESULT_OK){
             String responseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-            Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase succeeded!" + responseData);
+            // Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase succeeded!" + responseData);
             try {
                 savePurchaseTokenFromPurchaseData(responseData);
             } catch (JSONException e) {
+                UncaughtExceptionLogger.backgroundLogError("Error parsing JSON response from Google Play: " + responseData, e, parent);
                 toast("Error parsing JSON response from Google Play");
                 return true;
             }
@@ -288,7 +274,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
                     String purchaseData = purchaseDataList.get(i);
                     //String signature = signatureList.get(i);
                     String sku = ownedSkus.get(i);
-                    Log.d("nakama-iiab", "Purchase " + i + ": " + purchaseData);
+                    //Log.d("nakama-iiab", "Purchase " + i + ": " + purchaseData);
                     if(sku.equals(LockChecker.LICENSE_SKU)){
                         boolean saved = savePurchaseTokenFromPurchaseData(purchaseData);
                         if(saved) {
@@ -307,13 +293,13 @@ public class LockCheckerInAppBillingService extends LockChecker {
     }
 
     private boolean savePurchaseTokenFromPurchaseData(String purchaseData) throws JSONException {
-        Log.i("nakama-iiab", "Attempt to parse JSON: " + purchaseData);
+        // Log.i("nakama-iiab", "Attempt to parse JSON: " + purchaseData);
         JSONObject j = new JSONObject(purchaseData);
         String token = j.getString("purchaseToken");
         this.purchaseCode = token;
         SharedPreferences shared = getSharedPrefs();
 
-        Log.i("nakama-iiab", "Unlock and recording previous purchase token: " + token);
+        // Log.i("nakama-iiab", "Unlock and recording previous purchase token: " + token);
         coreUnlock();
 
         String existing = shared.getString("purchase_token", "");
