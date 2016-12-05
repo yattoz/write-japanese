@@ -26,7 +26,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -49,8 +48,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.ViewSwitcher;
 
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -59,7 +56,6 @@ import java.util.List;
 import java.util.UUID;
 
 import dmeeuwis.Kana;
-import dmeeuwis.KanjiElement;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
@@ -81,7 +77,6 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
-import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
@@ -157,6 +152,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected ArrayAdapter<String> criticismArrayAdapter;
     protected ImageView reviewBug;
     protected TextSwitcher instructionsLabel;
+    protected TextSwitcher targetTranslation;
     protected TextSwitcher target;
     protected ColorDrawable actionBarBackground;
 
@@ -234,6 +230,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         instructionsLabel.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
         instructionsLabel.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
 
+        /*
+        targetTranslation = (TextSwitcher) findViewById(R.id.targetTranslation);
+        targetTranslation.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
+        targetTranslation.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
+        */
 
         target.setFactory(new ViewSwitcher.ViewFactory() {
             @Override
@@ -272,6 +273,18 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         });
 
+/*        targetTranslation.setFactory(new ViewSwitcher.ViewFactory() {
+            @Override
+            public View makeView() {
+                TextView t = new TextView(KanjiMasterActivity.this);
+                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                t.setSingleLine();
+                t.setMaxLines(1);
+                t.setGravity(Gravity.CENTER);
+                return t;
+            }
+        });
+*/
         doneButton = (FloatingActionButton) findViewById(R.id.finishedButton);
         doneButton.hideInstantly();
         doneButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
@@ -343,10 +356,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 String[] clues = currentCharacterSet.currentCharacterClues();
                 currentCharacterClueIndex = (currentCharacterClueIndex + 1) % clues.length;
                 target.setText(clues[currentCharacterClueIndex]);
-                instructionsLabel.setText(currentCharacterClueIndex == 0 ?
-                        "Draw the " + currentCharacterSet.label() + " for" :
-                        "which can also mean");
-
+                instructionsLabel.setText(currentCharacterSet.currentCharacterCluesText(currentCharacterClueIndex));
             }
         });
 
@@ -749,57 +759,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             return;
         }
 
-
-        // clue from translation
-        if(Kana.isKanji(currentCharacterSet.currentCharacter()) && Settings.getClueType(getApplicationContext()) == Settings.ClueType.VOCAB) {
-            try {
-                List<Translation> trans = dictionarySet.querier.orQueries(0, 1, new String[]{ String.valueOf(currentCharacterSet.currentCharacter()) });
-                Log.i("nakama", "Found " + trans.size() + " translations for " + currentCharacterSet.currentCharacter());
-                if(trans.size() > 0) {
-                    Translation translation = trans.get(0);
-                    Log.d("nakama", translation.toDetailedString());
-
-
-                    for(KanjiElement ke: translation.kanjiElements){
-                        Log.d("nakama", "All kanjiElements in translation: " + ke.kanji);
-                    }
-
-                    KanjiElement[] kmatches = translation.findKanjiElementsWith(currentCharacterSet.currentCharacter());
-                    for(KanjiElement ke: kmatches){
-                        Log.d("nakama", "Matching kanjiElement: " + ke.kanji);
-                    }
-
-                    KanjiElement k = kmatches[0];
-
-                    String[] furigana = k.getFurigana(translation.toReadingString(), dictionarySet.kanjiFinder());
-                    Log.d("nakama", "Found furigana: " + TextUtils.join(", ", furigana));
-
-                    StringBuffer htmlString = new StringBuffer();
-                    for(int i = 0; i < k.kanji.length(); i++){
-                        if(k.kanji.charAt(i) == currentCharacterSet.currentCharacter()){
-                            Log.d("nakama", "Character " + i + " is study target! " + k.kanji.charAt(i));
-                            htmlString.append("<u>");
-                            htmlString.append(furigana[i]);
-                            htmlString.append("</u>");
-                        } else {
-                            Log.d("nakama", "Character " + i + " is just some other chracter! " + k.kanji.charAt(i));
-                            htmlString.append(k.kanji.charAt(i));
-                        }
-                    }
-
-                    target.setText(Html.fromHtml(htmlString.toString()));
-                    instructionsLabel.setCurrentText(currentCharacterClueIndex == 0 ?
-                            "Draw the " + currentCharacterSet.label() + " for" :
-                            "which can also mean");
-
-                    return;
-                }
-            } catch (IOException | XmlPullParserException | KanjiElement.FuriganaException e) {
-                // ignore, fall back to meaning
-            }
-        }
-
-        // clue from meaning
         String[] clues = currentCharacterSet.currentCharacterClues();
         if (clues.length == 1) {
             otherMeaningsButton.setVisibility(View.GONE);
@@ -810,10 +769,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         //Log.i("nakama", "target: setText to " + clues[currentCharacterClueIndex]);
         target.setCurrentText(clues[currentCharacterClueIndex]);
-        instructionsLabel.setCurrentText(currentCharacterClueIndex == 0 ?
-                "Draw the " + currentCharacterSet.label() + " for" :
-                "which can also mean");
+        //targetTranslation.setVisibility(View.GONE);
+        instructionsLabel.setCurrentText(currentCharacterSet.currentCharacterCluesText(currentCharacterClueIndex));
     }
+
 
     private void saveCurrentCharacterSet() {
         if (currentCharacterSet == null || currentCharacterSet.currentCharacter() == null) {
@@ -1102,13 +1061,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     private void showStrictnessDialog() {
         FragmentManager fm = getSupportFragmentManager();
         StrictnessDialog strictnessDialog = new StrictnessDialog();
-        strictnessDialog.show(fm, "fragment_strictness");
+        if(!isFinishing()) {
+            strictnessDialog.show(fm, "fragment_strictness");
+        }
     }
 
     private void showClueDialog() {
         FragmentManager fm = getSupportFragmentManager();
         ClueDialog cd = new ClueDialog();
-        cd.show(fm, "fragment_clue");
+        if(!isFinishing()) {
+            cd.show(fm, "fragment_clue");
+        }
     }
 
     public void updateStorySharingPreferences(boolean sharing) {
@@ -1144,7 +1107,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         });
 
         AlertDialog alert = builder.create();
-        alert.show();
+        if(!isFinishing()) {
+            alert.show();
+        }
     }
 
     @Override

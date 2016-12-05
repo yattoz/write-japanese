@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/clue_meanings_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextSwitcher
+            android:id="@+id/instructionsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextSwitcher
+            android:id="@+id/target"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/clue_readings_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center_horizontal"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <TextSwitcher
+            android:id="@+id/readingsInstructionsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextSwitcher
+            android:id="@+id/readingsTarget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/clue_translation_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:gravity="center_horizontal"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <TextSwitcher
+            android:id="@+id/translationInstructionsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <dmeeuwis.nakama.views.AdvancedFuriganaTextView
+            android:id="@+id/translationTarget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextSwitcher
+            android:id="@+id/translationEnglish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/other_meanings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:contentDescription="@string/other_meanings_content_description"
+        android:padding="5dp"
+        android:src="@drawable/ic_action_overflow" />
+
+    <ImageView
+        android:id="@+id/other_clue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:contentDescription="@string/other_meanings_content_description"
+        android:padding="5dp"
+        android:src="@drawable/ic_action_overflow" />
+</android.support.v7.widget.CardView>

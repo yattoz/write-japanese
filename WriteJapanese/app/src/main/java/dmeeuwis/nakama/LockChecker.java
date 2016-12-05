@@ -96,4 +96,8 @@ public abstract class LockChecker {
 		}
 		return new String( hexChars );
 	}
+
+	public Activity getParentActivity(){
+		return parentActivity;
+	}
 }

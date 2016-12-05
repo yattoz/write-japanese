@@ -3,11 +3,11 @@ package dmeeuwis.nakama.data;
 import java.io.IOException;
 import java.util.UUID;
 
-import android.util.Log;
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.util.Util;
 
 public class CharacterSets  {
 
@@ -74,15 +74,37 @@ public class CharacterSets  {
 			super(name, shortName, desc, path, locked, data, freeData, LockChecker, iid);
 			this.kanjiFinder = kanjiFinder;
 		}
-		
+
+		@Override
+		public String currentCharacterCluesText(int currentCharacterClueIndex) {
+			readings: if(Kana.isKanji(currentCharacter()) && Settings.getClueType(LockChecker.getParentActivity()) == Settings.ClueType.VOCAB) {
+				return currentCharacterClueIndex == 0 ?
+					"Draw the kanji with reading" :
+					"which can also be read as";
+			}
+			return super.currentCharacterCluesText(currentCharacterClueIndex);
+		}
+
 		@Override public String label(){
 			return "kanji";
 		}
 
 		@Override public String[] currentCharacterClues() {
 			try {
+				// clue from readings
+				readings: if(Kana.isKanji(currentCharacter()) && Settings.getClueType(LockChecker.getParentActivity()) == Settings.ClueType.VOCAB) {
+					Kanji k;
+					try {
+						k = kanjiFinder.find(currentCharacter());
+					} catch (IOException e) {
+						break readings;
+					}
+					String[] readings = Util.concat(k.onyomi, k.kunyomi);
+					return readings;
+				}
+
+
 				Kanji k = kanjiFinder.find(currentCharacter());
-				Log.d("nakama", "currentCharacterClue:  Matched current character " + currentCharacter() + " to " + k);
 				return k.meanings;
 			} catch (IOException e) {
 				throw new RuntimeException(e);

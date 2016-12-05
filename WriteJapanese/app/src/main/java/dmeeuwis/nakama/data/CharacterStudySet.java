@@ -24,21 +24,27 @@ import dmeeuwis.util.Util;
  */
 public abstract class CharacterStudySet implements Iterable<Character> {
 
+	public String currentCharacterCluesText(int currentCharacterClueIndex){
+		return currentCharacterClueIndex == 0 ?
+						"Draw the " + label() + " for" :
+                        "which can also mean";
+	}
+
 	public enum LockLevel { NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED }
 
 	final public Set<Character> freeCharactersSet;
 	final public Set<Character> allCharactersSet;
 	final public String name, shortName, description;
 
-	final private LockChecker LockChecker;
-    private ProgressTracker tracker;
-	final private Random random = new Random();
-    final private UUID iid;
+	final LockChecker LockChecker;
+    ProgressTracker tracker;
+	final Random random = new Random();
+    final UUID iid;
 
-	private boolean shuffling = false;
-	private Character currentChar;
-	private boolean reviewing = false;
-	private LockLevel locked;
+	boolean shuffling = false;
+	Character currentChar;
+	boolean reviewing = false;
+	LockLevel locked;
 	public final String pathPrefix;
 
 	private GregorianCalendar studyGoal, goalStarted;
