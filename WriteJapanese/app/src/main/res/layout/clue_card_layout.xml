@@ -31,7 +31,7 @@
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:gravity="center_horizontal"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:orientation="vertical">
 
         <TextSwitcher
@@ -53,7 +53,7 @@
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:gravity="center_horizontal"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:orientation="vertical">
 
         <TextSwitcher
@@ -79,6 +79,26 @@
         android:layout_gravity="end|center_vertical"
         android:contentDescription="@string/other_meanings_content_description"
         android:padding="5dp"
+        android:src="@drawable/ic_action_overflow" />
+
+    <ImageView
+        android:id="@+id/other_readings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:contentDescription="@string/other_meanings_content_description"
+        android:padding="5dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_action_overflow" />
+
+    <ImageView
+        android:id="@+id/other_translations"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:contentDescription="@string/other_meanings_content_description"
+        android:padding="5dp"
+        android:visibility="gone"
         android:src="@drawable/ic_action_overflow" />
 
     <ImageView

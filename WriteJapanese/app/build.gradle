@@ -11,12 +11,12 @@ android {
     }
 
 
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion "23.0.3"
     defaultConfig {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 15
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 96
         versionName "8.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

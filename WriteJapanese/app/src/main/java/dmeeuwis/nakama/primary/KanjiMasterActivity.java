@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -23,15 +22,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,13 +35,9 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextSwitcher;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
-import android.widget.ViewSwitcher;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,6 +88,7 @@ import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.StrictnessDialog;
+import dmeeuwis.nakama.views.translations.ClueCard;
 import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 import dmeeuwis.util.Util;
@@ -130,12 +122,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected boolean showedStartOfSetDialog = false;
     protected boolean queuedNextCharLoad = false;   // when switching to teaching activity, queue a next char load for onResume
     protected PurchaseDialog pd;
-    private int currentCharacterClueIndex = 0;
 
     private int animateSlide = 2000;    // replace by max screen width/height onResume
 
     // ui references
     protected DrawView drawPad;
+    protected ClueCard instructionCard;
     protected AnimatedCurveView correctAnimation;
     protected AnimatedCurveView playbackAnimation;
     protected AnimatedCurveView correctDrawnView;
@@ -147,16 +139,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected FlipperAnimationListener flipperAnimationListener;
     protected View maskView;
     protected FloatingActionButton remindStoryButton, doneButton, teachMeButton;
-    protected ImageView otherMeaningsButton;
     protected ListView criticism;           // TODO: to RecyclerView
     protected ArrayAdapter<String> criticismArrayAdapter;
-    protected ImageView reviewBug;
-    protected TextSwitcher instructionsLabel;
-    protected TextSwitcher targetTranslation;
-    protected TextSwitcher target;
     protected ColorDrawable actionBarBackground;
 
-    protected View correctCard, charsetCard, instructionCard, incorrectCard;
+    protected View correctCard, charsetCard, incorrectCard;
 
     protected String[] currentCharacterSvg;
 
@@ -217,74 +204,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         drawPad = (DrawView) findViewById(R.id.drawPad);
         drawPad.setBackgroundColor(DrawView.BACKGROUND_COLOR);
 
-        reviewBug = (ImageView) findViewById(R.id.reviewBug);
-
-        target = (TextSwitcher) findViewById(R.id.target);
-        target.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
-        target.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
-
         correctKnownView = (AnimatedCurveView) findViewById(R.id.correctKnownView);
         correctDrawnView = (AnimatedCurveView) findViewById(R.id.correctDrawnView);
 
-        instructionsLabel = (TextSwitcher) findViewById(R.id.instructionsLabel);
-        instructionsLabel.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
-        instructionsLabel.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
-
-        /*
-        targetTranslation = (TextSwitcher) findViewById(R.id.targetTranslation);
-        targetTranslation.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
-        targetTranslation.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
-        */
-
-        target.setFactory(new ViewSwitcher.ViewFactory() {
-            @Override
-            public View makeView() {
-                final TextView t = new TextView(KanjiMasterActivity.this);
-                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 36);
-                t.setSingleLine();
-                t.setEllipsize(TextUtils.TruncateAt.END);
-                t.setGravity(Gravity.CENTER);
-                t.setTextColor(Color.BLACK);
-                t.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Layout layout = t.getLayout();
-                        if (layout != null && layout.getLineCount() > 0) {
-                            if (layout.getEllipsisCount(0) > 0) {
-                                String[] clues = currentCharacterSet.currentCharacterClues();
-                                Toast.makeText(KanjiMasterActivity.this, clues[currentCharacterClueIndex], Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }
-                });
-                return t;
-            }
-        });
-
-        instructionsLabel.setFactory(new ViewSwitcher.ViewFactory() {
-            @Override
-            public View makeView() {
-                TextView t = new TextView(KanjiMasterActivity.this);
-                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                t.setSingleLine();
-                t.setMaxLines(1);
-                t.setGravity(Gravity.CENTER);
-                return t;
-            }
-        });
-
-/*        targetTranslation.setFactory(new ViewSwitcher.ViewFactory() {
-            @Override
-            public View makeView() {
-                TextView t = new TextView(KanjiMasterActivity.this);
-                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-                t.setSingleLine();
-                t.setMaxLines(1);
-                t.setGravity(Gravity.CENTER);
-                return t;
-            }
-        });
-*/
         doneButton = (FloatingActionButton) findViewById(R.id.finishedButton);
         doneButton.hideInstantly();
         doneButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
@@ -346,17 +268,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), db.getStory(currentCharacterSet.currentCharacter()), Toast.LENGTH_LONG).show();
-            }
-        });
-
-        otherMeaningsButton = (ImageView) findViewById(R.id.other_meanings);
-        otherMeaningsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String[] clues = currentCharacterSet.currentCharacterClues();
-                currentCharacterClueIndex = (currentCharacterClueIndex + 1) % clues.length;
-                target.setText(clues[currentCharacterClueIndex]);
-                instructionsLabel.setText(currentCharacterSet.currentCharacterCluesText(currentCharacterClueIndex));
             }
         });
 
@@ -445,8 +356,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         correctCard = findViewById(R.id.correctCard);
         incorrectCard = findViewById(R.id.incorrectCard);
-        charsetCard = (CardView) findViewById(R.id.charsetInfoCard);
-        instructionCard = (CardView) findViewById(R.id.instructionCard);
+        charsetCard = findViewById(R.id.charsetInfoCard);
+        instructionCard = (ClueCard) findViewById(R.id.clueCard);
         if(correctCard != null){
             correctCard.setTranslationY(-1 * animateSlide);
             incorrectCard.setTranslationY(-1 * animateSlide);
@@ -610,7 +521,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             if(correctCard.getY() >= 0) slideOut(correctCard);
             if(incorrectCard.getY() >= 0) slideOut(incorrectCard);
 
-            slideIn(instructionCard, charsetCard, reviewBug);
+            slideIn(instructionCard, charsetCard);
             teachMeButton.showFloatingActionButton();
 
             currentState = State.DRAWING;
@@ -622,7 +533,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             correctCard.animate().translationY(animateSlide);
 
             slideIn(correctCard);
-            slideOut(instructionCard, charsetCard, reviewBug);
+            slideOut(instructionCard, charsetCard);
             doneButton.hideFloatingActionButton();
 
             currentState = State.CORRECT_ANSWER;
@@ -632,7 +543,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
 
             slideIn(incorrectCard);
-            slideOut(instructionCard, charsetCard, reviewBug);
+            slideOut(instructionCard, charsetCard);
             doneButton.hideFloatingActionButton();
 
             correctAnimation.startAnimation(200);
@@ -715,10 +626,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         if (increment) {
-            this.reviewBug.setVisibility(View.GONE);
             currentCharacterSet.nextCharacter();
-            if (currentCharacterSet.isReviewing())
-                this.reviewBug.setVisibility(View.VISIBLE);
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
         }
         storyButtonUpdate();
@@ -759,18 +667,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             return;
         }
 
-        String[] clues = currentCharacterSet.currentCharacterClues();
-        if (clues.length == 1) {
-            otherMeaningsButton.setVisibility(View.GONE);
-        } else {
-            otherMeaningsButton.setVisibility(View.VISIBLE);
-        }
-        currentCharacterClueIndex = 0;
-
-        //Log.i("nakama", "target: setText to " + clues[currentCharacterClueIndex]);
-        target.setCurrentText(clues[currentCharacterClueIndex]);
-        //targetTranslation.setVisibility(View.GONE);
-        instructionsLabel.setCurrentText(currentCharacterSet.currentCharacterCluesText(currentCharacterClueIndex));
+        instructionCard.setCurrentCharacter(dictionarySet.kanjiFinder(), currentCharacterSet);
     }
 
 
@@ -1152,7 +1049,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(this.currentCharacterSet);
         }
-        this.reviewBug.setVisibility(View.GONE);
         loadNextCharacter(false);
         drawPad.clear();
         setUiState(State.DRAWING);

@@ -24,7 +24,10 @@
                 android:layout_height="fill_parent"
                 nakama:gridPaddingTop="50dp" />
 
-            <include layout="@layout/clue_card_layout" />
+            <dmeeuwis.nakama.views.translations.ClueCard
+                android:id="@+id/clueCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
 
             <dmeeuwis.nakama.views.FloatingActionButton
