@@ -26,8 +26,11 @@
 
             <dmeeuwis.nakama.views.translations.ClueCard
                 android:id="@+id/clueCard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                />
 
 
             <dmeeuwis.nakama.views.FloatingActionButton

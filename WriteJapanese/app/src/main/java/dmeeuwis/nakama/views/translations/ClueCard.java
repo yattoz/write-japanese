@@ -54,6 +54,18 @@ public class ClueCard extends CardView {
 
     private ClueExtractor clueExtractor;
 
+    private class SimpleInstructionsLabel implements ViewSwitcher.ViewFactory {
+        @Override
+        public View makeView() {
+            TextView t = new TextView(getContext());
+            t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            t.setSingleLine();
+            t.setMaxLines(1);
+            t.setGravity(Gravity.CENTER);
+            return t;
+        }
+    }
+
 
     public ClueCard(Context context) {
         super(context);
@@ -145,22 +157,14 @@ public class ClueCard extends CardView {
             }
         });
 
-        instructionsLabel.setFactory(new ViewSwitcher.ViewFactory() {
-            @Override
-            public View makeView() {
-                TextView t = new TextView(getContext());
-                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                t.setSingleLine();
-                t.setMaxLines(1);
-                t.setGravity(Gravity.CENTER);
-                return t;
-            }
-        });
+        instructionsLabel.setFactory(new SimpleInstructionsLabel());
+        readingsInstructionLabel.setFactory(new SimpleInstructionsLabel());
 
         otherMeaningsButton = (ImageView) findViewById(R.id.other_meanings);
         otherMeaningsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("nakama", "Other meanings switch!");
                 String[] clues = clueExtractor.meaningsClues(currentCharacterSet.currentCharacter());
                 currentMeaningsClueIndex = (currentMeaningsClueIndex + 1) % clues.length;
                 target.setText(clues[currentMeaningsClueIndex]);
@@ -168,11 +172,11 @@ public class ClueCard extends CardView {
             }
         });
 
-
         otherReadingsButton = (ImageView) findViewById(R.id.other_readings);
         otherReadingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("nakama", "Other readings switch!");
                 String[] clues = clueExtractor.readingClues(currentCharacterSet.currentCharacter());
                 currentMeaningsClueIndex = (currentMeaningsClueIndex + 1) % clues.length;
                 readingsTarget.setText(clues[currentMeaningsClueIndex]);
@@ -180,11 +184,11 @@ public class ClueCard extends CardView {
             }
         });
 
-
         otherTranslationsButton = (ImageView) findViewById(R.id.other_translations);
         otherTranslationsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("nakama", "Other translations switch!");
                 /*Translation t = clueExtractor.TranslationsClue(currentCharacterSet.currentCharacter(), currentTranslationsClueIndex+1);
                 currentMeaningsClueIndex = (currentMeaningsClueIndex + 1) % clues.length;
                 target.setText(clues[currentMeaningsClueIndex]);
@@ -198,16 +202,30 @@ public class ClueCard extends CardView {
             public void onClick(View view) {
                 if(meaningsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama", "ClueCard other clue click, hiding meanings, showing readings");
-                    meaningsLayout.setVisibility(View.INVISIBLE);
+                    meaningsLayout.setVisibility(View.GONE);
+                    translationsLayout.setVisibility(View.GONE);
+                    otherMeaningsButton.setVisibility(View.GONE);
+                    otherTranslationsButton.setVisibility(View.GONE);
+
                     readingsLayout.setVisibility(View.VISIBLE);
+                    otherReadingsButton.setVisibility(View.VISIBLE);
                 } else if(readingsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama", "ClueCard other clue click, hiding readings, showing translations");
-                    readingsLayout.setVisibility(View.INVISIBLE);
+                    readingsLayout.setVisibility(View.GONE);
+                    meaningsLayout.setVisibility(View.GONE);
+                    otherMeaningsButton.setVisibility(View.GONE);
+                    otherReadingsButton.setVisibility(View.GONE);
+
                     translationsLayout.setVisibility(View.VISIBLE);
+                    otherTranslationsButton.setVisibility(View.VISIBLE);
                 } else if(translationsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama", "ClueCard other clue click, hiding translations, showing meanings");
-                    translationsLayout.setVisibility(View.INVISIBLE);
+                    readingsLayout.setVisibility(View.GONE);
+                    translationsLayout.setVisibility(View.GONE);
+                    otherTranslationsButton.setVisibility(View.GONE);
+
                     meaningsLayout.setVisibility(View.VISIBLE);
+                    otherMeaningsButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -221,26 +239,30 @@ public class ClueCard extends CardView {
         // =============== meanings =====================
         String[] meaningClues = clueExtractor.meaningsClues(currentCharacter.currentCharacter());
         Log.i("nakama", "Setting meanings to " + TextUtils.join(", ", meaningClues));
-        if (meaningClues.length == 1) {
-            otherMeaningsButton.setVisibility(View.GONE);
-        } else {
+        if(meaningsLayout.getVisibility() == View.VISIBLE && meaningClues.length > 1){
             otherMeaningsButton.setVisibility(View.VISIBLE);
+        } else {
+            otherMeaningsButton.setVisibility(View.GONE);
         }
         currentMeaningsClueIndex = 0;
         target.setCurrentText(meaningClues[currentMeaningsClueIndex]);
-        instructionsLabel.setCurrentText(currentCharacterSet.currentCharacterCluesText(currentMeaningsClueIndex));
+        instructionsLabel.setCurrentText(currentMeaningsClueIndex == 0 ?
+                    "Character means " :
+                    "can also mean");
 
         // =============== readings =====================
         String[] readingsClues = clueExtractor.readingClues(currentCharacter.currentCharacter());
         Log.i("nakama", "Setting readings to " + TextUtils.join(", ", readingsClues));
-        if(readingsClues.length == 1){
-            otherReadingsButton.setVisibility(View.GONE);
-        } else {
+        if(readingsLayout.getVisibility() == View.VISIBLE && readingsClues.length > 1){
             otherReadingsButton.setVisibility(View.VISIBLE);
+        } else {
+            otherReadingsButton.setVisibility(View.GONE);
         }
         currentReadingsClueIndex = 0;
         readingsTarget.setCurrentText(readingsClues[currentReadingsClueIndex]);
-        readingsInstructionLabel.setCurrentText(currentCharacterSet.currentCharacterCluesText(currentReadingsClueIndex));
+        readingsInstructionLabel.setCurrentText(currentReadingsClueIndex == 0 ?
+                    "Character can be read" :
+                    "can also be read as");
 
         // =============== translations =====================
     }

@@ -79,6 +79,7 @@
         android:layout_gravity="end|center_vertical"
         android:contentDescription="@string/other_meanings_content_description"
         android:padding="5dp"
+        android:visibility="gone"
         android:src="@drawable/ic_action_overflow" />
 
     <ImageView
