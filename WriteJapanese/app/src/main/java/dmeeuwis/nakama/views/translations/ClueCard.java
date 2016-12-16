@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterStudySet;
@@ -40,7 +41,7 @@ public class ClueCard extends CardView {
     protected ImageView otherReadingsButton;
 
     private View translationsLayout;
-    private TextSwitcher translationInstructionsLabel;
+    private TextView translationInstructionsLabel;
     private AdvancedFuriganaTextView translationTarget;
     private TextSwitcher translationEnglish;
     protected ImageView otherTranslationsButton;
@@ -96,7 +97,7 @@ public class ClueCard extends CardView {
         this.readingsTarget = (TextSwitcher)findViewById(R.id.readingsTarget);
 
         this.translationsLayout = findViewById(R.id.clue_translation_layout);
-        this.translationInstructionsLabel = (TextSwitcher)findViewById(R.id.translationInstructionsLabel);
+        this.translationInstructionsLabel = (TextView) findViewById(R.id.translationInstructionsLabel);
         this.translationTarget = (AdvancedFuriganaTextView) findViewById(R.id.translationTarget);
         this.translationEnglish = (TextSwitcher)findViewById(R.id.translationEnglish);
 
@@ -158,6 +159,7 @@ public class ClueCard extends CardView {
         });
 
         instructionsLabel.setFactory(new SimpleInstructionsLabel());
+        translationEnglish.setFactory(new SimpleInstructionsLabel());
         readingsInstructionLabel.setFactory(new SimpleInstructionsLabel());
 
         otherMeaningsButton = (ImageView) findViewById(R.id.other_meanings);
@@ -188,12 +190,9 @@ public class ClueCard extends CardView {
         otherTranslationsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("nakama", "Other translations switch!");
-                /*Translation t = clueExtractor.TranslationsClue(currentCharacterSet.currentCharacter(), currentTranslationsClueIndex+1);
-                currentMeaningsClueIndex = (currentMeaningsClueIndex + 1) % clues.length;
-                target.setText(clues[currentMeaningsClueIndex]);
-                instructionsLabel.setText(currentCharacterSet.currentCharacterCluesText(currentMeaningsClueIndex));
-                */
+                Log.i("nakama", "Other translations switch! " + currentTranslationsClueIndex);
+                currentTranslationsClueIndex++;
+                updateToTranslation(currentTranslationsClueIndex);
             }
         });
 
@@ -231,10 +230,9 @@ public class ClueCard extends CardView {
         });
     }
 
-    public void setCurrentCharacter(KanjiFinder kanjiFinder, CharacterStudySet currentCharacter) {
+    public void setCurrentCharacter(ClueExtractor clueExtractor, CharacterStudySet currentCharacter) {
         this.currentCharacterSet = currentCharacter;
-
-        clueExtractor = new ClueExtractor(kanjiFinder);
+        this.clueExtractor = clueExtractor;
 
         // =============== meanings =====================
         String[] meaningClues = clueExtractor.meaningsClues(currentCharacter.currentCharacter());
@@ -265,5 +263,30 @@ public class ClueCard extends CardView {
                     "can also be read as");
 
         // =============== translations =====================
+        currentTranslationsClueIndex = 0;
+        updateToTranslation(currentTranslationsClueIndex);
     }
+
+    private void updateToTranslation(int i){
+        Translation t = clueExtractor.translationsClue(this.currentCharacterSet.currentCharacter(), i);
+        if(t != null){
+            Log.i("nakama", "Updating translation to: " + t.toInfoString());
+            translationTarget.setTranslationQuiz(t, this.currentCharacterSet.currentCharacter(), clueExtractor.getDictionarySet().kanjiFinder());
+            translationTarget.setTextAndReadingSizesDp(24, 14);
+            translationEnglish.setText(t.toEnglishString());
+            translationInstructionsLabel.setText("Write the kanji used in");
+        } else {
+            Log.i("nakama", "Clearing translation " + i);
+        }
+
+        Translation next = clueExtractor.translationsClue(this.currentCharacterSet.currentCharacter(), i+1);
+        if(next == null){
+            Log.i("nakama", "Next translation " + i + " " + next);
+            otherTranslationsButton.setVisibility(View.VISIBLE);
+        } else {
+            Log.i("nakama", "Hiding next translation " + i + " button");
+            otherTranslationsButton.setVisibility(View.GONE);
+        }
+    }
+
 }

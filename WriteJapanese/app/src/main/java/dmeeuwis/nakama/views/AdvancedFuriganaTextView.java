@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 
 import dmeeuwis.KanjiElement;
@@ -85,7 +86,32 @@ public class AdvancedFuriganaTextView extends View {
         this.requestLayout();
         this.invalidate();
 	}
-	
+
+
+    public void setTranslationQuiz(Translation t, Character targetChar, KanjiFinder finder){
+        if(t == null) throw new NullPointerException("Null translation passed in.");
+        if(finder == null) throw new NullPointerException("Null KanjiFinder passed in.");
+
+        KanjiElement kanji = t.getFirstKanjiElement();
+        if(kanji != null){
+            this.parts = kanji.getFuriganaBreakdown(t.toReadingString(), finder);
+            for(int i = 0; i < this.parts.length; i++){
+                if(this.parts[i].kanji.charAt(0) == targetChar.charValue()){
+                    this.parts[i] = new Furigana("?", this.parts[i].furigana);
+                }
+            }
+        } else {
+            // kana-only word
+            this.parts = new Furigana[] { new Furigana(t.toKanjiString(), "")};
+        }
+        this.kanjiWidths = new int[this.parts.length];
+        this.furiWidths = new int[this.parts.length];
+
+        calculateTextBounds();
+        this.requestLayout();
+        this.invalidate();
+    }
+
 	private void calculateTextBounds(){
         Rect bounds = new Rect();
         textWidth = 0;
@@ -113,7 +139,13 @@ public class AdvancedFuriganaTextView extends View {
 		
         this.invalidate();
 	}
-	
+
+    public void setTextAndReadingSizesDp(int mainSizeDp, int furiganaSizeDp){
+        int mainSizePx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, mainSizeDp, this.getResources().getDisplayMetrics());
+        int furiganaSizePx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, furiganaSizeDp, this.getResources().getDisplayMetrics());
+        this.setTextAndReadingSizes(mainSizePx, furiganaSizePx);
+    }
+
 	public void setTextAndReadingSizes(int mainSize, int furiganaSize){
 		this.mainPaint.setTextSize(mainSize);
 		this.furiganaPaint.setTextSize(furiganaSize);

@@ -66,6 +66,7 @@ import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
+import dmeeuwis.nakama.data.ClueExtractor;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
@@ -667,7 +668,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             return;
         }
 
-        instructionCard.setCurrentCharacter(dictionarySet.kanjiFinder(), currentCharacterSet);
+        ClueExtractor clueExtractor = new ClueExtractor(dictionarySet);
+        instructionCard.setCurrentCharacter(clueExtractor, currentCharacterSet);
     }
 
 
