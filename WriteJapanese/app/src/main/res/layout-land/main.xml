@@ -23,66 +23,15 @@
                 android:layout_height="fill_parent"
                 app:gridPaddingLeft="240dp" />
 
-            <android.support.v7.widget.CardView
-                android:layout_width="240dp"
-                android:layout_height="fill_parent"
+            <dmeeuwis.nakama.views.translations.ClueCard
+                android:id="@+id/clueCard"
+                android:layout_width="340dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
                 android:clickable="true"
-                android:layout_margin="5dp">
-
-                <ImageView
-                    android:id="@+id/other_meanings"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:contentDescription="@string/other_meanings_content_description"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_action_overflow" />
-
-                <LinearLayout
-                    android:id="@+id/instructionsSpace"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:orientation="vertical">
-
-                    <TextSwitcher
-                        android:id="@+id/instructionsLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextSwitcher
-                        android:id="@+id/target"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-
-                <dmeeuwis.nakama.views.FloatingActionButton
-                    android:id="@+id/remindStoryButton"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_gravity="bottom|start"
-                    android:layout_marginLeft="72dp"
-                    android:layout_marginStart="106dp"
-                    android:elevation="@dimen/elevation_low"
-
-                    />
-
-                <dmeeuwis.nakama.views.FloatingActionButton
-                    android:id="@+id/teachButton"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_gravity="bottom|start"
-                    android:elevation="@dimen/elevation_low" />
-
-
-                <dmeeuwis.nakama.views.FloatingActionButton
-                    android:id="@+id/finishedButton"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:layout_gravity="bottom|end"
-                    android:elevation="@dimen/elevation_low" />
-            </android.support.v7.widget.CardView>
+                android:elevation="300dp"
+                />
 
             <ImageView
                 android:id="@+id/reviewBug"

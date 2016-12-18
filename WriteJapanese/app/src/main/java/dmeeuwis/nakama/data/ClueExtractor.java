@@ -8,7 +8,6 @@ import java.util.List;
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
-import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.util.Util;
 
 public class ClueExtractor {
@@ -45,7 +44,10 @@ public class ClueExtractor {
 
     public Translation translationsClue(Character currentCharacter, int index) {
         try {
-            List<Translation> t = set.querier.orQueries(0, 1, new String[] { String.valueOf(currentCharacter) });
+            List<Translation> t = set.querier.orQueries(index, 1, new String[] { String.valueOf(currentCharacter) });
+            if(t.size() == 0){
+                return null;
+            }
             return t.get(0);
         } catch (IOException|XmlPullParserException e) {
             return null;
