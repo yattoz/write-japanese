@@ -92,13 +92,16 @@ public class AdvancedFuriganaTextView extends View {
         if(t == null) throw new NullPointerException("Null translation passed in.");
         if(finder == null) throw new NullPointerException("Null KanjiFinder passed in.");
 
-        KanjiElement kanji = t.getFirstKanjiElement();
+		String targetCharString = String.valueOf(targetChar);
+
+        KanjiElement kanji = t.getMatchingKanjiElement(targetChar);
         if(kanji != null){
-            this.parts = kanji.getFuriganaBreakdown(t.toReadingString(), finder);
+			this.parts = kanji.getFuriganaBreakdown(t.toReadingString(), finder);
+
             for(int i = 0; i < this.parts.length; i++){
-                if(this.parts[i].kanji.charAt(0) == targetChar.charValue()){
-                    this.parts[i] = new Furigana("?", this.parts[i].furigana);
-                }
+                if (this.parts[i].kanji.contains(targetCharString)){
+                    this.parts[i] = new Furigana(this.parts[i].kanji.replaceAll(targetCharString, "?"), this.parts[i].furigana);
+				}
             }
         } else {
             // kana-only word
