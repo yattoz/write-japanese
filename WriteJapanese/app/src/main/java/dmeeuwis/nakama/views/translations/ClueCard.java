@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import dmeeuwis.Kana;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterStudySet;
@@ -238,6 +239,16 @@ public class ClueCard extends CardView {
         this.currentCharacterSet = currentCharacter;
         this.clueExtractor = clueExtractor;
 
+        currentMeaningsClueIndex = 0;
+        currentReadingsClueIndex = 0;
+        currentTranslationsClueIndex = 0;
+
+        if(Kana.isKana(currentCharacter.currentCharacter())){
+            // setup kana
+
+            return;
+        }
+
         // =============== meanings =====================
         String[] meaningClues = clueExtractor.meaningsClues(currentCharacter.currentCharacter());
         Log.i("nakama-clue", "Setting meanings to " + TextUtils.join(", ", meaningClues));
@@ -246,7 +257,6 @@ public class ClueCard extends CardView {
         } else {
             otherMeaningsButton.setVisibility(View.GONE);
         }
-        currentMeaningsClueIndex = 0;
         target.setCurrentText(meaningClues[currentMeaningsClueIndex]);
         instructionsLabel.setCurrentText(currentMeaningsClueIndex == 0 ?
                     "Character means " :
@@ -260,14 +270,12 @@ public class ClueCard extends CardView {
         } else {
             otherReadingsButton.setVisibility(View.GONE);
         }
-        currentReadingsClueIndex = 0;
         readingsTarget.setCurrentText(readingsClues[currentReadingsClueIndex]);
         readingsInstructionLabel.setCurrentText(currentReadingsClueIndex == 0 ?
                     "Character can be read" :
                     "or read as");
 
         // =============== translations =====================
-        currentTranslationsClueIndex = 0;
         updateToTranslation(currentTranslationsClueIndex);
     }
 
