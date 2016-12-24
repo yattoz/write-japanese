@@ -187,7 +187,7 @@ public class ClueCard extends CardView {
                 String[] clues = clueExtractor.readingClues(currentCharacterSet.currentCharacter());
                 currentMeaningsClueIndex = (currentMeaningsClueIndex + 1) % clues.length;
                 readingsTarget.setText(clues[currentMeaningsClueIndex]);
-                readingsInstructionLabel.setText(currentCharacterSet.currentCharacterCluesText(currentMeaningsClueIndex));
+                readingsInstructionLabel.setText(currentCharacterSet.currentReadingCluesText(currentMeaningsClueIndex));
             }
         });
 
@@ -235,35 +235,52 @@ public class ClueCard extends CardView {
         });
     }
 
-    public void setCurrentCharacter(ClueExtractor clueExtractor, CharacterStudySet currentCharacter) {
-        this.currentCharacterSet = currentCharacter;
+    public void setCurrentCharacter(ClueExtractor clueExtractor, CharacterStudySet currentCharacterSet) {
+        this.currentCharacterSet = currentCharacterSet;
+        Character currentCharacter = currentCharacterSet.currentCharacter();
         this.clueExtractor = clueExtractor;
 
         currentMeaningsClueIndex = 0;
         currentReadingsClueIndex = 0;
         currentTranslationsClueIndex = 0;
 
-        if(Kana.isKana(currentCharacter.currentCharacter())){
-            // setup kana
-
-            return;
-        }
 
         // =============== meanings =====================
-        String[] meaningClues = clueExtractor.meaningsClues(currentCharacter.currentCharacter());
+        String[] meaningClues = clueExtractor.meaningsClues(currentCharacter);
         Log.i("nakama-clue", "Setting meanings to " + TextUtils.join(", ", meaningClues));
-        if(meaningsLayout.getVisibility() == View.VISIBLE && meaningClues.length > 1){
+        if (meaningsLayout.getVisibility() == View.VISIBLE && meaningClues.length > 1) {
             otherMeaningsButton.setVisibility(View.VISIBLE);
         } else {
             otherMeaningsButton.setVisibility(View.GONE);
         }
         target.setCurrentText(meaningClues[currentMeaningsClueIndex]);
-        instructionsLabel.setCurrentText(currentMeaningsClueIndex == 0 ?
-                    "Character means " :
-                    "or mean");
+
+        if (Kana.isHiragana(currentCharacter)) {
+            instructionsLabel.setCurrentText("Draw the hiragana");
+        } else if (Kana.isKatakana(currentCharacter)) {
+            instructionsLabel.setCurrentText("Draw the katakana");
+        } else {
+            instructionsLabel.setText(currentCharacterSet.currentCharacterCluesText(currentMeaningsClueIndex));
+            instructionsLabel.setCurrentText(currentMeaningsClueIndex == 0 ?
+                    "Draw the kanji meaning" :
+                    "which can also mean");
+        }
+
+        if(Kana.isKana(currentCharacter)){
+            meaningsLayout.setVisibility(View.VISIBLE);
+            readingsLayout.setVisibility(View.GONE);
+            translationsLayout.setVisibility(View.GONE);
+            otherClueButton.setVisibility(View.GONE);
+            otherReadingsButton.setVisibility(View.GONE);
+            otherMeaningsButton.setVisibility(View.GONE);
+            otherTranslationsButton.setVisibility(View.GONE);
+            return;
+        }
+
+        otherClueButton.setVisibility(View.VISIBLE);
 
         // =============== readings =====================
-        String[] readingsClues = clueExtractor.readingClues(currentCharacter.currentCharacter());
+        String[] readingsClues = clueExtractor.readingClues(currentCharacter);
         Log.i("nakama-clue", "Setting readings to " + TextUtils.join(", ", readingsClues));
         if(readingsLayout.getVisibility() == View.VISIBLE && readingsClues.length > 1){
             otherReadingsButton.setVisibility(View.VISIBLE);
@@ -271,9 +288,7 @@ public class ClueCard extends CardView {
             otherReadingsButton.setVisibility(View.GONE);
         }
         readingsTarget.setCurrentText(readingsClues[currentReadingsClueIndex]);
-        readingsInstructionLabel.setCurrentText(currentReadingsClueIndex == 0 ?
-                    "Character can be read" :
-                    "or read as");
+        readingsInstructionLabel.setText(currentCharacterSet.currentReadingCluesText(currentMeaningsClueIndex));
 
         // =============== translations =====================
         updateToTranslation(currentTranslationsClueIndex);
@@ -303,17 +318,8 @@ public class ClueCard extends CardView {
         }
 
         Translation next = clueExtractor.translationsClue(this.currentCharacterSet.currentCharacter(), i+1);
-        if(next != null){
-            Log.i("nakama-clue", "Next translation " + i + " " + next.toKanjiString());
-            otherTranslationsButton.setVisibility(View.VISIBLE);
-        } else {
-            if(i == 0) {
-                Log.i("nakama-clue", "No " + (i + 1) + " translation found, hiding next button");
-                otherTranslationsButton.setVisibility(View.GONE);
-            } else {
-                // no next found, will loop back
-            }
-        }
+        boolean nextVisible = (next != null || i != 0) && translationsLayout.getVisibility() == View.VISIBLE;
+        otherTranslationsButton.setVisibility(nextVisible ? View.VISIBLE : View.GONE);
     }
 
 }

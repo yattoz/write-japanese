@@ -33,6 +33,9 @@ public class ClueExtractor {
     }
 
     public String[] meaningsClues(Character currentCharacter) {
+        if(Kana.isKana(currentCharacter)){
+            return new String[] { Kana.kana2Romaji(String.valueOf(currentCharacter)) };
+        }
         try {
             Kanji k = set.kanjiFinder().find(currentCharacter);
             return k.meanings;

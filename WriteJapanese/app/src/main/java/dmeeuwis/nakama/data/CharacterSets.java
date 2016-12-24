@@ -37,6 +37,11 @@ public class CharacterSets  {
 	
 	public static CharacterStudySet hiragana(LockChecker LockChecker, UUID iid){
     	return new CharacterStudySet("Hiragana", "Hiragana", HIRAGANA_DESC, "hiragana", CharacterStudySet.LockLevel.UNLOCKED, Kana.commonHiragana(), "", LockChecker, iid){
+			@Override
+			public CharSequence currentReadingCluesText(int currentMeaningsClueIndex) {
+				return null;
+			}
+
 			@Override public String label(){
    		 		return "hiragana";
 	   		}
@@ -50,7 +55,12 @@ public class CharacterSets  {
 	public static CharacterStudySet katakana(LockChecker LockChecker, UUID iid){
 		return 
 		 new CharacterStudySet("Katakana", "Katakana", KATAKANA_DESC, "katakana", CharacterStudySet.LockLevel.LOCKED, Kana.commonKatakana(), "アイネホキタロマザピド", LockChecker, iid){
-				@Override public String label(){
+			 @Override
+			 public CharSequence currentReadingCluesText(int currentMeaningsClueIndex) {
+				 return null;
+			 }
+
+			 @Override public String label(){
 					return "katakana";
 				}
 
@@ -83,6 +93,15 @@ public class CharacterSets  {
 					"which can also be read as";
 			}
 			return super.currentCharacterCluesText(currentCharacterClueIndex);
+		}
+
+		@Override
+		public CharSequence currentReadingCluesText(int currentMeaningsClueIndex) {
+			String reading = currentCharacterClues()[currentMeaningsClueIndex];
+			String readingType = Kana.hasHiragana(reading) ? "kunyomi" : "onyomi";
+			return currentMeaningsClueIndex == 0 ?
+					"Draw the character with " + readingType :
+					"and " + readingType;
 		}
 
 		@Override public String label(){

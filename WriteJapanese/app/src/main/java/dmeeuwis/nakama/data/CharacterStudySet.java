@@ -30,6 +30,8 @@ public abstract class CharacterStudySet implements Iterable<Character> {
                         "which can also mean";
 	}
 
+	public abstract CharSequence currentReadingCluesText(int currentMeaningsClueIndex);
+
 	public enum LockLevel { NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED }
 
 	final public Set<Character> freeCharactersSet;
