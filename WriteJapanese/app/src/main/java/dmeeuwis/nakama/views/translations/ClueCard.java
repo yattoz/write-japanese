@@ -41,7 +41,7 @@ public class ClueCard extends CardView {
     protected ImageView otherReadingsButton;
 
     private View translationsLayout;
-    private TextView translationInstructionsLabel;
+    private TextSwitcher translationInstructionsLabel;
     private AdvancedFuriganaTextView translationTarget;
     private TextSwitcher translationEnglish;
     protected ImageView otherTranslationsButton;
@@ -97,7 +97,7 @@ public class ClueCard extends CardView {
         this.readingsTarget = (TextSwitcher)findViewById(R.id.readingsTarget);
 
         this.translationsLayout = findViewById(R.id.clue_translation_layout);
-        this.translationInstructionsLabel = (TextView) findViewById(R.id.translationInstructionsLabel);
+        this.translationInstructionsLabel = (TextSwitcher) findViewById(R.id.translationInstructionsLabel);
         this.translationTarget = (AdvancedFuriganaTextView) findViewById(R.id.translationTarget);
         this.translationEnglish = (TextSwitcher)findViewById(R.id.translationEnglish);
 
@@ -109,6 +109,12 @@ public class ClueCard extends CardView {
 
         instructionsLabel.setInAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left));
         instructionsLabel.setOutAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right));
+
+        translationInstructionsLabel.setInAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left));
+        translationInstructionsLabel.setOutAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right));
+
+        translationEnglish.setInAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left));
+        translationEnglish.setOutAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right));
 
         this.readingsInstructionLabel.setInAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left));
         this.readingsInstructionLabel.setOutAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right));
@@ -165,6 +171,7 @@ public class ClueCard extends CardView {
 
         instructionsLabel.setFactory(new SimpleInstructionsLabel());
         translationEnglish.setFactory(new SimpleInstructionsLabel());
+        translationInstructionsLabel.setFactory(new SimpleInstructionsLabel());
         readingsInstructionLabel.setFactory(new SimpleInstructionsLabel());
 
         otherMeaningsButton = (ImageView) findViewById(R.id.other_meanings);
@@ -208,29 +215,19 @@ public class ClueCard extends CardView {
                     Log.i("nakama-clue", "ClueCard other clue click, hiding meanings, showing readings");
                     meaningsLayout.setVisibility(View.GONE);
                     translationsLayout.setVisibility(View.GONE);
-                    otherMeaningsButton.setVisibility(View.GONE);
-                    otherTranslationsButton.setVisibility(View.GONE);
-
                     readingsLayout.setVisibility(View.VISIBLE);
-                    otherReadingsButton.setVisibility(View.VISIBLE);
                 } else if(readingsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama-clue", "ClueCard other clue click, hiding readings, showing translations");
                     readingsLayout.setVisibility(View.GONE);
                     meaningsLayout.setVisibility(View.GONE);
-                    otherMeaningsButton.setVisibility(View.GONE);
-                    otherReadingsButton.setVisibility(View.GONE);
-
                     translationsLayout.setVisibility(View.VISIBLE);
-                    otherTranslationsButton.setVisibility(View.VISIBLE);
                 } else if(translationsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama-clue", "ClueCard other clue click, hiding translations, showing meanings");
                     readingsLayout.setVisibility(View.GONE);
                     translationsLayout.setVisibility(View.GONE);
-                    otherTranslationsButton.setVisibility(View.GONE);
-
                     meaningsLayout.setVisibility(View.VISIBLE);
-                    otherMeaningsButton.setVisibility(View.VISIBLE);
                 }
+                setCurrentCharacter(clueExtractor, currentCharacterSet);
             }
         });
     }
@@ -253,18 +250,9 @@ public class ClueCard extends CardView {
         } else {
             otherMeaningsButton.setVisibility(View.GONE);
         }
-        target.setCurrentText(meaningClues[currentMeaningsClueIndex]);
+        target.setText(meaningClues[currentMeaningsClueIndex]);
 
-        if (Kana.isHiragana(currentCharacter)) {
-            instructionsLabel.setCurrentText("Draw the hiragana");
-        } else if (Kana.isKatakana(currentCharacter)) {
-            instructionsLabel.setCurrentText("Draw the katakana");
-        } else {
-            instructionsLabel.setText(currentCharacterSet.currentCharacterCluesText(currentMeaningsClueIndex));
-            instructionsLabel.setCurrentText(currentMeaningsClueIndex == 0 ?
-                    "Draw the kanji meaning" :
-                    "which can also mean");
-        }
+        instructionsLabel.setText(currentCharacterSet.currentCharacterCluesText(currentMeaningsClueIndex));
 
         if(Kana.isKana(currentCharacter)){
             meaningsLayout.setVisibility(View.VISIBLE);
@@ -287,7 +275,7 @@ public class ClueCard extends CardView {
         } else {
             otherReadingsButton.setVisibility(View.GONE);
         }
-        readingsTarget.setCurrentText(readingsClues[currentReadingsClueIndex]);
+        readingsTarget.setText(readingsClues[currentReadingsClueIndex]);
         readingsInstructionLabel.setText(currentCharacterSet.currentReadingCluesText(currentMeaningsClueIndex));
 
         // =============== translations =====================
@@ -311,14 +299,15 @@ public class ClueCard extends CardView {
             Log.i("nakama-clue", "Clearing translation " + i);
             if(i == 0){
                 Log.e("nakama-clue", "Error: cannot find a 0th translation for " + currentCharacterSet.currentCharacter());
-                return;
+            } else {
+                currentTranslationsClueIndex = 0;
+                updateToTranslation(currentTranslationsClueIndex);
             }
-            currentTranslationsClueIndex = 0;
-            updateToTranslation(currentTranslationsClueIndex);
         }
 
         Translation next = clueExtractor.translationsClue(this.currentCharacterSet.currentCharacter(), i+1);
         boolean nextVisible = (next != null || i != 0) && translationsLayout.getVisibility() == View.VISIBLE;
+        Log.i("nakama-clue", "Updating to translation " + i + "; next was found " + next + "; setting next button visibility to " + nextVisible);
         otherTranslationsButton.setVisibility(nextVisible ? View.VISIBLE : View.GONE);
     }
 

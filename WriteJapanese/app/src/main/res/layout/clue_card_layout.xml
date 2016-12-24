@@ -58,7 +58,7 @@
         android:visibility="invisible"
         android:orientation="vertical">
 
-        <TextView
+        <TextSwitcher
             android:id="@+id/translationInstructionsLabel"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"

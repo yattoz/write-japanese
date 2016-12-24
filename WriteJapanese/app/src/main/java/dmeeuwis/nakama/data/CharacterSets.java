@@ -42,6 +42,10 @@ public class CharacterSets  {
 				return null;
 			}
 
+			public String currentCharacterCluesText(int currentCharacterClueIndex){
+				return "Draw the hiragana";
+			}
+
 			@Override public String label(){
    		 		return "hiragana";
 	   		}
@@ -58,6 +62,10 @@ public class CharacterSets  {
 			 @Override
 			 public CharSequence currentReadingCluesText(int currentMeaningsClueIndex) {
 				 return null;
+			 }
+
+			 public String currentCharacterCluesText(int currentCharacterClueIndex){
+				 return "Draw the katakana";
 			 }
 
 			 @Override public String label(){
