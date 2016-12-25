@@ -240,12 +240,16 @@ public class ClueCard extends CardView {
                     translationsLayout.setVisibility(View.GONE);
                     meaningsLayout.setVisibility(View.VISIBLE);
                 }
-                setCurrentCharacter(clueExtractor, currentCharacterSet);
+                setCurrentCharacter(clueExtractor, currentCharacterSet, true);
             }
         });
     }
 
     public void setCurrentCharacter(ClueExtractor clueExtractor, CharacterStudySet currentCharacterSet) {
+        setCurrentCharacter(clueExtractor, currentCharacterSet, false);
+    }
+
+    private void setCurrentCharacter(ClueExtractor clueExtractor, CharacterStudySet currentCharacterSet, boolean immediate) {
         this.currentCharacterSet = currentCharacterSet;
         Character currentCharacter = currentCharacterSet.currentCharacter();
         this.clueExtractor = clueExtractor;
@@ -263,9 +267,9 @@ public class ClueCard extends CardView {
         } else {
             otherMeaningsButton.setVisibility(View.GONE);
         }
-        target.setText(meaningClues[currentMeaningsClueIndex]);
+        setTextImmediate(target, immediate, meaningClues[currentMeaningsClueIndex]);
 
-        instructionsLabel.setText(currentCharacterSet.currentCharacterCluesText(currentMeaningsClueIndex));
+        setTextImmediate(instructionsLabel, immediate, currentCharacterSet.currentCharacterCluesText(currentMeaningsClueIndex));
 
         if(Kana.isKana(currentCharacter)){
             meaningsLayout.setVisibility(View.VISIBLE);
@@ -288,24 +292,42 @@ public class ClueCard extends CardView {
         } else {
             otherReadingsButton.setVisibility(View.GONE);
         }
-        readingsTarget.setText(readingsClues[currentReadingsClueIndex]);
-        readingsInstructionLabel.setText(currentCharacterSet.currentReadingCluesText(currentMeaningsClueIndex));
+
+        setTextImmediate(readingsTarget, immediate, readingsClues[currentReadingsClueIndex]);
+        setTextImmediate(readingsInstructionLabel, immediate, currentCharacterSet.currentReadingCluesText(currentMeaningsClueIndex).toString());
 
         // =============== translations =====================
-        updateToTranslation(currentTranslationsClueIndex);
+        updateToTranslation(currentTranslationsClueIndex, immediate);
     }
 
     private void updateToTranslation(int i){
+        updateToTranslation(i, false);
+    }
+
+    private void setTextImmediate(TextSwitcher t, boolean immediate, String text){
+        if(immediate){
+            t.setCurrentText(text);
+        } else {
+            t.setText(text);
+        }
+    }
+
+    private void updateToTranslation(int i, boolean immediate){
         Translation t = clueExtractor.translationsClue(this.currentCharacterSet.currentCharacter(), i);
         if(t != null){
             Log.i("nakama-clue", "Updating " + i + "-th translation to: " + t.toKanjiString());
-            translationTarget.setTranslationQuiz(t, this.currentCharacterSet.currentCharacter(), clueExtractor.getDictionarySet().kanjiFinder());
-            translationEnglish.setText(t.toEnglishString());
+            if(immediate) {
+                translationTarget.setCurrentTranslationQuiz(t, this.currentCharacterSet.currentCharacter(), clueExtractor.getDictionarySet().kanjiFinder());
+            } else {
+                translationTarget.setTranslationQuiz(t, this.currentCharacterSet.currentCharacter(), clueExtractor.getDictionarySet().kanjiFinder());
+            }
+
+            setTextImmediate(translationEnglish, immediate, t.toEnglishString());
 
             if(i == 0) {
-                translationInstructionsLabel.setText("Write the kanji used in");
+                setTextImmediate(translationInstructionsLabel, immediate, "Write the kanji used in");
             } else {
-                translationInstructionsLabel.setText("also used in");
+                setTextImmediate(translationInstructionsLabel, immediate, "also used in");
             }
         } else {
             Log.i("nakama-clue", "Clearing translation " + i);

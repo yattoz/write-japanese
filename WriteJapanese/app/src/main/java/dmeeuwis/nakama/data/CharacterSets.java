@@ -38,7 +38,7 @@ public class CharacterSets  {
 	public static CharacterStudySet hiragana(LockChecker LockChecker, UUID iid){
     	return new CharacterStudySet("Hiragana", "Hiragana", HIRAGANA_DESC, "hiragana", CharacterStudySet.LockLevel.UNLOCKED, Kana.commonHiragana(), "", LockChecker, iid){
 			@Override
-			public CharSequence currentReadingCluesText(int currentMeaningsClueIndex) {
+			public String currentReadingCluesText(int currentMeaningsClueIndex) {
 				return null;
 			}
 
@@ -60,7 +60,7 @@ public class CharacterSets  {
 		return 
 		 new CharacterStudySet("Katakana", "Katakana", KATAKANA_DESC, "katakana", CharacterStudySet.LockLevel.LOCKED, Kana.commonKatakana(), "アイネホキタロマザピド", LockChecker, iid){
 			 @Override
-			 public CharSequence currentReadingCluesText(int currentMeaningsClueIndex) {
+			 public String currentReadingCluesText(int currentMeaningsClueIndex) {
 				 return null;
 			 }
 
@@ -104,7 +104,7 @@ public class CharacterSets  {
 		}
 
 		@Override
-		public CharSequence currentReadingCluesText(int currentMeaningsClueIndex) {
+		public String currentReadingCluesText(int currentMeaningsClueIndex) {
 			String reading = currentCharacterClues()[currentMeaningsClueIndex];
 			String readingType = Kana.hasHiragana(reading) ? "kunyomi" : "onyomi";
 			return currentMeaningsClueIndex == 0 ?

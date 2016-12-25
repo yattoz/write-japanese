@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -188,8 +189,8 @@ public class FuriganaTextView extends View {
 		
 		int furiGap = maxKanjiHeight / 4;
 
-		//Log.i("nakama", "onDraw!\n");
-		float currentX = this.padding;
+		// Log.i("nakama", "FuriganaTextView.onDraw! measuredWidth: " + getMeasuredWidth() + "; textWidth: " + textWidth + "; padding: " + padding);
+		float currentX = (getMeasuredWidth() - this.padding - textWidth) / 2;
 		for(int i = 0; i < this.parts.length; i++){
 			Furigana s = this.parts[i];
 			float partWidth = Math.max(this.kanjiWidths[i], this.furiWidths[i]) + characterPadding*2; // + inter-char padding
