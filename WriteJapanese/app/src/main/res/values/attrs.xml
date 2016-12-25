@@ -25,7 +25,7 @@
         <attr name="gridPaddingLeft"/>
     </declare-styleable>
 
-    <declare-styleable name="AdvancedFuriganaTextView">
+    <declare-styleable name="FuriganaTextView">
         <attr name="mainTextSize" format="dimension"/>
         <attr name="furiganaTextSize" format="dimension"/>
     </declare-styleable>

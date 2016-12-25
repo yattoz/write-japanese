@@ -18,13 +18,13 @@ import dmeeuwis.KanjiElement;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
+import dmeeuwis.nakama.views.FuriganaTextView;
 import uk.co.deanwild.flowtextview.FlowTextView;
 
 import static dmeeuwis.kanjimaster.R.id.kanji;
 
 class TranslationViewHolder extends RecyclerView.ViewHolder {
-    private final AdvancedFuriganaTextView furigana;
+    private final FuriganaTextView furigana;
     private final FlowTextView englishText;
     private final View view;
     private View expandButton, divisor1, divisor2, divisor3, divisor4, headerSmall, headerBig;
@@ -39,7 +39,7 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
         super(view);
         this.view = view;
         this.engTextSize = engTextSize;
-        this.furigana = (AdvancedFuriganaTextView) view.findViewById(kanji);
+        this.furigana = (FuriganaTextView) view.findViewById(kanji);
         this.englishText = (FlowTextView) view.findViewById(R.id.english);
         this.headerSmall = view.findViewById(R.id.translation_collapsed_header);
         this.headerBig = view.findViewById(R.id.translation_first_header);

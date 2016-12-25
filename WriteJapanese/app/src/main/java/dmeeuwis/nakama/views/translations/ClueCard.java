@@ -22,7 +22,8 @@ import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.ClueExtractor;
-import dmeeuwis.nakama.views.AdvancedFuriganaTextView;
+import dmeeuwis.nakama.views.FuriganaSwitcher;
+import dmeeuwis.nakama.views.FuriganaTextView;
 
 public class ClueCard extends CardView {
 
@@ -42,7 +43,7 @@ public class ClueCard extends CardView {
 
     private View translationsLayout;
     private TextSwitcher translationInstructionsLabel;
-    private AdvancedFuriganaTextView translationTarget;
+    private FuriganaSwitcher translationTarget;
     private TextSwitcher translationEnglish;
     protected ImageView otherTranslationsButton;
 
@@ -98,8 +99,20 @@ public class ClueCard extends CardView {
 
         this.translationsLayout = findViewById(R.id.clue_translation_layout);
         this.translationInstructionsLabel = (TextSwitcher) findViewById(R.id.translationInstructionsLabel);
-        this.translationTarget = (AdvancedFuriganaTextView) findViewById(R.id.translationTarget);
+        this.translationTarget = (FuriganaSwitcher) findViewById(R.id.translationTarget);
         this.translationEnglish = (TextSwitcher)findViewById(R.id.translationEnglish);
+
+        translationTarget.setFactory(
+                new ViewSwitcher.ViewFactory() {
+                     @Override public View makeView() {
+                         FuriganaTextView f = new FuriganaTextView(getContext());
+                         f.setTextAndReadingSizesDp(32, 16);
+                         return f;
+                     }
+                 }
+        );
+        translationTarget.setInAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left));
+        translationTarget.setOutAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right));
 
         target.setInAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left));
         target.setOutAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right));
@@ -287,7 +300,6 @@ public class ClueCard extends CardView {
         if(t != null){
             Log.i("nakama-clue", "Updating " + i + "-th translation to: " + t.toKanjiString());
             translationTarget.setTranslationQuiz(t, this.currentCharacterSet.currentCharacter(), clueExtractor.getDictionarySet().kanjiFinder());
-            translationTarget.setTextAndReadingSizesDp(32, 16);
             translationEnglish.setText(t.toEnglishString());
 
             if(i == 0) {

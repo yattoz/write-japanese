@@ -16,7 +16,7 @@ import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 
-public class AdvancedFuriganaTextView extends View {
+public class FuriganaTextView extends View {
 
 	Furigana[] parts;
 	int kanjiWidths[];
@@ -30,18 +30,18 @@ public class AdvancedFuriganaTextView extends View {
 
 	private float padding = 10;
 	
-	public AdvancedFuriganaTextView(Context context, AttributeSet attrs, int defStyle) {
+	public FuriganaTextView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init(attrs);
 		
 	}
 
-	public AdvancedFuriganaTextView(Context context, AttributeSet attrs) {
+	public FuriganaTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(attrs);
 	}
 
-	public AdvancedFuriganaTextView(Context context) {
+	public FuriganaTextView(Context context) {
 		super(context);
 		init(null);
 	}
@@ -58,9 +58,9 @@ public class AdvancedFuriganaTextView extends View {
 		this.furiganaPaint.setAntiAlias(true);
 
         if(attrs != null){
-            TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.AdvancedFuriganaTextView);
-            int mainTextSize = typedArray.getDimensionPixelSize(R.styleable.AdvancedFuriganaTextView_mainTextSize, 56);
-            int furiTextSize = typedArray.getDimensionPixelSize(R.styleable.AdvancedFuriganaTextView_furiganaTextSize, 16);
+            TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.FuriganaTextView);
+            int mainTextSize = typedArray.getDimensionPixelSize(R.styleable.FuriganaTextView_mainTextSize, 56);
+            int furiTextSize = typedArray.getDimensionPixelSize(R.styleable.FuriganaTextView_furiganaTextSize, 16);
             typedArray.recycle();
 
             this.mainPaint.setTextSize(mainTextSize);
@@ -118,6 +118,8 @@ public class AdvancedFuriganaTextView extends View {
 	private void calculateTextBounds(){
         Rect bounds = new Rect();
         textWidth = 0;
+		if(this.parts == null) { return; }
+
         for(int i = 0; i < this.parts.length; i++){
         	Furigana f = this.parts[i];
         	this.mainPaint.getTextBounds(f.kanji, 0, f.kanji.length(), bounds);

@@ -61,13 +61,13 @@
         <TextSwitcher
             android:id="@+id/translationInstructionsLabel"
             android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <dmeeuwis.nakama.views.AdvancedFuriganaTextView
+        <dmeeuwis.nakama.views.FuriganaSwitcher
             android:id="@+id/translationTarget"
             android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextSwitcher
