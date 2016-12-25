@@ -245,11 +245,7 @@ public class ClueCard extends CardView {
         });
     }
 
-    public void setCurrentCharacter(ClueExtractor clueExtractor, CharacterStudySet currentCharacterSet) {
-        setCurrentCharacter(clueExtractor, currentCharacterSet, false);
-    }
-
-    private void setCurrentCharacter(ClueExtractor clueExtractor, CharacterStudySet currentCharacterSet, boolean immediate) {
+    public void setCurrentCharacter(ClueExtractor clueExtractor, CharacterStudySet currentCharacterSet, boolean immediate) {
         this.currentCharacterSet = currentCharacterSet;
         Character currentCharacter = currentCharacterSet.currentCharacter();
         this.clueExtractor = clueExtractor;
@@ -335,7 +331,7 @@ public class ClueCard extends CardView {
                 Log.e("nakama-clue", "Error: cannot find a 0th translation for " + currentCharacterSet.currentCharacter());
             } else {
                 currentTranslationsClueIndex = 0;
-                updateToTranslation(currentTranslationsClueIndex);
+                updateToTranslation(currentTranslationsClueIndex, immediate);
             }
         }
 

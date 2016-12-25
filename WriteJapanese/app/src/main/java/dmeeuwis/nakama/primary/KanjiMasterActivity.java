@@ -631,7 +631,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
         }
         storyButtonUpdate();
-        this.loadDrawDetails();
+        this.loadDrawDetails(increment);
 
         if(this.charSetFrag != null){
             this.charSetFrag.updateProgress();
@@ -647,7 +647,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    private void loadDrawDetails() {
+    private void loadDrawDetails(boolean increment) {
         //Log.i("nakama", "loadDrawDetails()");
         Character first = this.currentCharacterSet.currentCharacter();
 
@@ -669,7 +669,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         ClueExtractor clueExtractor = new ClueExtractor(dictionarySet);
-        instructionCard.setCurrentCharacter(clueExtractor, currentCharacterSet);
+        instructionCard.setCurrentCharacter(clueExtractor, currentCharacterSet, !increment);
     }
 
 

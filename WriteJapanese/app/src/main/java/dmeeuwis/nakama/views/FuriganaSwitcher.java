@@ -30,6 +30,5 @@ public class FuriganaSwitcher extends ViewSwitcher {
     public void setCurrentTranslationQuiz(Translation t, Character targetChar, KanjiFinder finder) {
         FuriganaTextView next = (FuriganaTextView) getCurrentView();
         next.setTranslationQuiz(t, targetChar, finder);
-        showNext();
     }
 }
