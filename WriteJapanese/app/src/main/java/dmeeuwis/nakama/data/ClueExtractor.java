@@ -60,4 +60,25 @@ public class ClueExtractor {
     public DictionarySet getDictionarySet(){
         return set;
     }
+
+    public String meaningsInstructionsText(Character character, int currentMeaningsClueIndex) {
+        if(Kana.isKatakana(character)) {
+            return "Draw the katakana";
+        }
+        if(Kana.isHiragana(character)) {
+            return "Draw the hiragana";
+        }
+
+        return currentMeaningsClueIndex == 0 ?
+                    "Draw the kanji with reading" :
+                    "which can also be read as";
+    }
+
+    public CharSequence readingsInstructionsText(String[] readings, int i) {
+        String reading = readings[i];
+        String readingType = Kana.hasHiragana(reading) ? "kunyomi" : "onyomi";
+        return i == 0 ?
+                "Draw the character with " + readingType :
+                "and " + readingType;
+    }
 }

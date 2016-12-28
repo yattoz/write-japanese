@@ -1,13 +1,11 @@
 package dmeeuwis.nakama.data;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.nakama.LockChecker;
-import dmeeuwis.util.Util;
 
 public class CharacterSets  {
 
@@ -37,7 +35,7 @@ public class CharacterSets  {
 	
 	public static CharacterStudySet hiragana(LockChecker LockChecker, UUID iid){
     	return new CharacterStudySet("Hiragana", "Hiragana", HIRAGANA_DESC, "hiragana", CharacterStudySet.LockLevel.UNLOCKED, Kana.commonHiragana(), "", LockChecker, iid){
-			@Override
+/*			@Override
 			public String currentReadingCluesText(int currentMeaningsClueIndex) {
 				return null;
 			}
@@ -45,21 +43,21 @@ public class CharacterSets  {
 			public String currentCharacterCluesText(int currentCharacterClueIndex){
 				return "Draw the hiragana";
 			}
-
+			@Override public String[] currentReadingClues() {
+				return new String[] { Kana.kana2Romaji(Character.toString(currentCharacter())) };
+			}
+*/
 			@Override public String label(){
    		 		return "hiragana";
 	   		}
 
-			@Override public String[] currentCharacterClues() {
-				return new String[] { Kana.kana2Romaji(Character.toString(currentCharacter())) };
-			}
 		};
 	}
 
 	public static CharacterStudySet katakana(LockChecker LockChecker, UUID iid){
 		return 
 		 new CharacterStudySet("Katakana", "Katakana", KATAKANA_DESC, "katakana", CharacterStudySet.LockLevel.LOCKED, Kana.commonKatakana(), "アイネホキタロマザピド", LockChecker, iid){
-			 @Override
+/*			 @Override
 			 public String currentReadingCluesText(int currentMeaningsClueIndex) {
 				 return null;
 			 }
@@ -68,14 +66,14 @@ public class CharacterSets  {
 				 return "Draw the katakana";
 			 }
 
+				@Override public String[] currentReadingClues() {
+					return new String[] { Kana.kana2Romaji(Character.toString(currentCharacter())) };
+				}
+*/
 			 @Override public String label(){
 					return "katakana";
 				}
-
-				@Override public String[] currentCharacterClues() {
-					return new String[] { Kana.kana2Romaji(Character.toString(currentCharacter())) };
-				}
-			};
+		 };
 	}
 
 	public static CharacterStudySet joyouG1(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 1", "Kanji J1", G1_DESCRIPTION, "j1", Kanji.JOUYOU_G1, "", kf, CharacterStudySet.LockLevel.UNLOCKED, lc, iid); };
@@ -92,7 +90,7 @@ public class CharacterSets  {
 			super(name, shortName, desc, path, locked, data, freeData, LockChecker, iid);
 			this.kanjiFinder = kanjiFinder;
 		}
-
+/*
 		@Override
 		public String currentCharacterCluesText(int currentCharacterClueIndex) {
 			readings: if(Kana.isKanji(currentCharacter()) && Settings.getClueType(LockChecker.getParentActivity()) == Settings.ClueType.VOCAB) {
@@ -104,38 +102,17 @@ public class CharacterSets  {
 		}
 
 		@Override
-		public String currentReadingCluesText(int currentMeaningsClueIndex) {
-			String reading = currentCharacterClues()[currentMeaningsClueIndex];
+		public String currentReadingCluesText(int i) {
+			String reading = currentReadingClues()[i];
 			String readingType = Kana.hasHiragana(reading) ? "kunyomi" : "onyomi";
-			return currentMeaningsClueIndex == 0 ?
+			return i == 0 ?
 					"Draw the character with " + readingType :
 					"and " + readingType;
 		}
-
+*/
 		@Override public String label(){
 			return "kanji";
 		}
 
-		@Override public String[] currentCharacterClues() {
-			try {
-				// clue from readings
-				readings: if(Kana.isKanji(currentCharacter()) && Settings.getClueType(LockChecker.getParentActivity()) == Settings.ClueType.VOCAB) {
-					Kanji k;
-					try {
-						k = kanjiFinder.find(currentCharacter());
-					} catch (IOException e) {
-						break readings;
-					}
-					String[] readings = Util.concat(k.onyomi, k.kunyomi);
-					return readings;
-				}
-
-
-				Kanji k = kanjiFinder.find(currentCharacter());
-				return k.meanings;
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} 
-		}
 	}
 }

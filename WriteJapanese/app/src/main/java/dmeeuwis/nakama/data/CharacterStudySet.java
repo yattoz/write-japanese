@@ -24,14 +24,6 @@ import dmeeuwis.util.Util;
  */
 public abstract class CharacterStudySet implements Iterable<Character> {
 
-	public String currentCharacterCluesText(int currentCharacterClueIndex){
-		return currentCharacterClueIndex == 0 ?
-						"Draw the " + label() + " for" :
-                        "which can also mean";
-	}
-
-	public abstract String currentReadingCluesText(int currentMeaningsClueIndex);
-
 	public enum LockLevel { NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED }
 
 	final public Set<Character> freeCharactersSet;
@@ -159,7 +151,6 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 	}
 
 	abstract public String label();
-	abstract public String[] currentCharacterClues();
 
 	public boolean passedAllCharacters(){
 		return this.tracker.passedAllCharacters(availableCharactersSet());

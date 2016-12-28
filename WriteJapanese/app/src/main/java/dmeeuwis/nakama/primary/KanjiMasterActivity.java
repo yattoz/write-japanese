@@ -669,7 +669,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         ClueExtractor clueExtractor = new ClueExtractor(dictionarySet);
-        instructionCard.setCurrentCharacter(clueExtractor, currentCharacterSet, !increment);
+        instructionCard.setCurrentCharacter(clueExtractor, currentCharacterSet.currentCharacter(), !increment);
     }
 
 

@@ -67,5 +67,6 @@
     <string name="release_notes_menu">Release Notes</string>
     <string name="vocab">Vocab</string>
     <string name="study_method_clue_type">Study Method / Clue Type</string>
+    <string name="other_readings">Other Readings</string>
 
 </resources>
