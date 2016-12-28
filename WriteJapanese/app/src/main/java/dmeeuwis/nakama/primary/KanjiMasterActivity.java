@@ -735,6 +735,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         loadNextCharacter(queuedNextCharLoad);
         queuedNextCharLoad = false;
 
+        instructionCard.onResume(getApplicationContext());
+
         super.onResume();
     }
 
@@ -746,6 +748,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         ed.putBoolean("shuffleEnabled", currentCharacterSet.isShuffling());
         ed.apply();
         saveCurrentCharacterSet();
+        instructionCard.saveCurrentClueType(getApplicationContext());
         super.onPause();
     }
 

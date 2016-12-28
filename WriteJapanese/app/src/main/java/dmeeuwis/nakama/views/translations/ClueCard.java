@@ -1,7 +1,9 @@
 package dmeeuwis.nakama.views.translations;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.text.Layout;
 import android.text.TextUtils;
@@ -25,6 +27,9 @@ import dmeeuwis.nakama.views.FuriganaSwitcher;
 import dmeeuwis.nakama.views.FuriganaTextView;
 
 public class ClueCard extends CardView {
+    final static private String SHARED_PREFS_CLUE_TYPE_KEY = "clueType";
+
+    public enum ClueType { MEANING, READING, TRANSLATION }
 
     // ui references
 
@@ -244,6 +249,27 @@ public class ClueCard extends CardView {
         });
     }
 
+    public void onResume(Context ctx){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        String typeStr = prefs.getString(SHARED_PREFS_CLUE_TYPE_KEY, ClueType.MEANING.name());
+        ClueType type = ClueType.valueOf(typeStr);
+
+        if(type == ClueType.TRANSLATION && translationsLayout.getVisibility() != View.VISIBLE){
+            translationsLayout.setVisibility(View.VISIBLE);
+            readingsLayout.setVisibility(View.GONE);
+            meaningsLayout.setVisibility(View.GONE);
+        } else if(type == ClueType.READING && readingsLayout.getVisibility() != View.VISIBLE){
+            translationsLayout.setVisibility(View.GONE);
+            readingsLayout.setVisibility(View.VISIBLE);
+            meaningsLayout.setVisibility(View.GONE);
+        } else if(type == ClueType.MEANING && meaningsLayout.getVisibility() != View.VISIBLE){
+            translationsLayout.setVisibility(View.GONE);
+            readingsLayout.setVisibility(View.GONE);
+            meaningsLayout.setVisibility(View.VISIBLE);
+        }
+        setCurrentCharacter(clueExtractor, currentCharacter, true);
+    }
+
     public void setCurrentCharacter(ClueExtractor clueExtractor, Character currentCharacter, boolean immediate) {
         this.currentCharacter = currentCharacter;
         this.clueExtractor = clueExtractor;
@@ -339,4 +365,14 @@ public class ClueCard extends CardView {
         otherTranslationsButton.setVisibility(nextVisible ? View.VISIBLE : View.GONE);
     }
 
+    public void saveCurrentClueType(Context ctx){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor ed = prefs.edit();
+        String v = meaningsLayout.getVisibility() == View.VISIBLE ? ClueType.MEANING.name() :
+                    readingsLayout.getVisibility() == View.VISIBLE ? ClueType.READING.name() :
+                            ClueType.TRANSLATION.name();
+        ed.putString(SHARED_PREFS_CLUE_TYPE_KEY, v);
+
+        ed.apply();
+    }
 }
