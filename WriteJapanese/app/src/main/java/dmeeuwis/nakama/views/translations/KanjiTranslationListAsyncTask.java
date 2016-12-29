@@ -62,7 +62,7 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 				List<Translation> accepted = new ArrayList<Translation>(nextBatch.size());
 				for (Translation t : nextBatch) {
 					Translation restricted = t.restrictToCommonKanjiElements(kanji);
-					if (restricted != null) {
+					if (restricted != null && restricted.toKanjiString().contains(String.valueOf(kanji))) {
 						accepted.add(restricted);
 					}
 				}
