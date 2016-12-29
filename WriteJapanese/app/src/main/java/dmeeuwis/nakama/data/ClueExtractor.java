@@ -44,19 +44,6 @@ public class ClueExtractor {
         }
     }
 
-
-    public Translation translationsClue(Character currentCharacter, int index) {
-        try {
-            List<Translation> t = set.querier.orQueries(index, 1, new String[] { String.valueOf(currentCharacter) });
-            if(t.size() == 0){
-                return null;
-            }
-            return t.get(0);
-        } catch (IOException|XmlPullParserException e) {
-            return null;
-        }
-    }
-
     public DictionarySet getDictionarySet(){
         return set;
     }
@@ -80,5 +67,27 @@ public class ClueExtractor {
         return i == 0 ?
                 "Draw the character with " + readingType :
                 "and " + readingType;
+    }
+
+    private final int MAX_TRANSLATIONS = 5;
+    public Translation translationsClue(Character currentCharacter, int index) {
+        index = index % MAX_TRANSLATIONS;
+        try {
+            List<Translation> t = set.querier.singleCharacterSearch(1, index, currentCharacter);
+            if(t.size() == 0){
+                return null;
+            }
+            return t.get(0);
+        } catch (IOException|XmlPullParserException e) {
+            return null;
+        }
+    }
+
+    public String translationsInstructionsText(int i){
+        i = i % MAX_TRANSLATIONS;
+        if(i == 0) {
+            return "Write the kanji replaced by ?";
+        }
+        return "also used in";
     }
 }

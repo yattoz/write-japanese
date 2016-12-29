@@ -151,7 +151,7 @@ public class ClueCard extends CardView {
                         Layout layout = t.getLayout();
                         if (layout != null && layout.getLineCount() > 0) {
                             if (layout.getEllipsisCount(0) > 0) {
-                                String[] clues = clueExtractor.readingClues(currentCharacter);
+                                String[] clues = clueExtractor.meaningsClues(currentCharacter);
                                 Toast.makeText(getContext(), clues[currentMeaningsClueIndex], Toast.LENGTH_LONG).show();
                             }
                         }
@@ -343,12 +343,7 @@ public class ClueCard extends CardView {
             }
 
             setTextImmediate(translationEnglish, immediate, t.toEnglishString());
-
-            if(i == 0) {
-                setTextImmediate(translationInstructionsLabel, immediate, "Write the kanji replaced by ?");
-            } else {
-                setTextImmediate(translationInstructionsLabel, immediate, "also used in");
-            }
+            setTextImmediate(translationInstructionsLabel, immediate, clueExtractor.translationsInstructionsText(i));
         } else {
             Log.i("nakama-clue", "Clearing translation " + i);
             if(i == 0){
