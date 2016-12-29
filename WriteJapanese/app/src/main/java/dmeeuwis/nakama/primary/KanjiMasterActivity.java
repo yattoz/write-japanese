@@ -82,7 +82,6 @@ import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
-import dmeeuwis.nakama.views.ClueDialog;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
@@ -898,9 +897,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_strictness) {
             // show criticism selection fragment
             showStrictnessDialog();
-        } else if (item.getItemId() == R.id.menu_clue) {
-            // show criticism selection fragment
-            showClueDialog();
         }
 
         if (BuildConfig.DEBUG) {
@@ -965,14 +961,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         StrictnessDialog strictnessDialog = new StrictnessDialog();
         if(!isFinishing()) {
             strictnessDialog.show(fm, "fragment_strictness");
-        }
-    }
-
-    private void showClueDialog() {
-        FragmentManager fm = getSupportFragmentManager();
-        ClueDialog cd = new ClueDialog();
-        if(!isFinishing()) {
-            cd.show(fm, "fragment_clue");
         }
     }
 

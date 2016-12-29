@@ -30,10 +30,6 @@
         android:title="@string/share_kanji_stories"/>
 
     <item
-        android:id="@+id/menu_clue"
-        android:title="@string/study_method_clue_type"/>
-
-    <item
         android:id="@+id/menu_strictness"
         android:title="@string/menu_strictness"/>
 
