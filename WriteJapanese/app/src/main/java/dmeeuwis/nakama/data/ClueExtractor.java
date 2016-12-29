@@ -57,8 +57,8 @@ public class ClueExtractor {
         }
 
         return currentMeaningsClueIndex == 0 ?
-                    "Draw the kanji with reading" :
-                    "which can also be read as";
+                    "Draw the kanji with meaning" :
+                    "which can also mean";
     }
 
     public CharSequence readingsInstructionsText(String[] readings, int i) {

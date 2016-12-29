@@ -61,12 +61,25 @@ public class ClueCard extends CardView {
     private ClueExtractor clueExtractor;
 
     private class SimpleInstructionsLabel implements ViewSwitcher.ViewFactory {
+        int maxLines = 1;
+        int fontSizeDp = 1;
+
+        public SimpleInstructionsLabel(int fontSizeDp, int maxLines){
+            this.fontSizeDp = fontSizeDp;
+            this.maxLines = maxLines;
+        }
+
         @Override
         public View makeView() {
             TextView t = new TextView(getContext());
-            t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-            t.setSingleLine();
-            t.setMaxLines(1);
+            t.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSizeDp);
+            t.setMaxLines(maxLines);
+            if(maxLines == 1) {
+                t.setSingleLine();
+                t.setEllipsize(TextUtils.TruncateAt.END);
+            } else {
+                t.setSingleLine(false);
+            }
             t.setGravity(Gravity.CENTER);
             return t;
         }
@@ -186,10 +199,18 @@ public class ClueCard extends CardView {
             }
         });
 
-        instructionsLabel.setFactory(new SimpleInstructionsLabel());
-        translationEnglish.setFactory(new SimpleInstructionsLabel());
-        translationInstructionsLabel.setFactory(new SimpleInstructionsLabel());
-        readingsInstructionLabel.setFactory(new SimpleInstructionsLabel());
+        instructionsLabel.setFactory(new SimpleInstructionsLabel(16, 1));
+
+        String tag = (String)(findViewById(R.id.clueCardOuter)).getTag();
+        if("land".equals(tag)){
+            translationEnglish.setFactory(new SimpleInstructionsLabel(16, 3));
+            translationTarget.setTextAndReadingSizesDp(38, 16);
+            translationInstructionsLabel.setFactory(new SimpleInstructionsLabel(14, 1));
+        } else {
+            translationEnglish.setFactory(new SimpleInstructionsLabel(16, 1));
+            translationInstructionsLabel.setFactory(new SimpleInstructionsLabel(16, 1));
+        }
+        readingsInstructionLabel.setFactory(new SimpleInstructionsLabel(16, 1));
 
         otherMeaningsButton = (ImageView) findViewById(R.id.other_meanings);
         otherMeaningsButton.setOnClickListener(new View.OnClickListener() {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#e5e5e5">
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent"
+             android:background="#e5e5e5">
 
     <dmeeuwis.nakama.primary.SafeViewFlipper
         android:id="@+id/viewflipper"
@@ -21,17 +21,48 @@
                 android:id="@+id/drawPad"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                app:gridPaddingLeft="240dp" />
+                app:gridPaddingLeft="240dp"/>
 
             <dmeeuwis.nakama.views.translations.ClueCard
                 android:id="@+id/clueCard"
-                android:layout_width="340dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="10dp"
+                android:layout_width="240dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
                 android:clickable="true"
                 android:elevation="300dp"
                 />
+
+
+            <dmeeuwis.nakama.views.FloatingActionButton
+                android:id="@+id/remindStoryButton"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginLeft="86dp"
+                android:layout_marginStart="86dp"
+                android:layout_marginBottom="10dp"
+                android:elevation="@dimen/elevation_low"
+
+                />
+
+
+            <dmeeuwis.nakama.views.FloatingActionButton
+                android:id="@+id/teachButton"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:elevation="@dimen/elevation_low"/>
+
+
+            <dmeeuwis.nakama.views.FloatingActionButton
+                android:id="@+id/finishedButton"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="bottom|end"
+                android:elevation="@dimen/elevation_low"/>
 
             <ImageView
                 android:id="@+id/reviewBug"
@@ -40,7 +71,7 @@
                 android:contentDescription="@string/reviewing_content_description"
                 android:elevation="@dimen/elevation_high"
                 android:src="@drawable/review_bug"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
         </FrameLayout>
 
@@ -69,14 +100,14 @@
                         android:background="#FFA20D1B"
                         android:padding="6dp"
                         android:text="Drawn"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="#FFFFFF"/>
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/animatedDrawnReplay"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="bottom"
-                        android:layout_marginTop="40dp" />
+                        android:layout_marginTop="40dp"/>
                 </android.support.v7.widget.CardView>
 
                 <!-- Correct -->
@@ -95,14 +126,14 @@
                         android:background="#FF1BA20D"
                         android:padding="6dp"
                         android:text="Correct"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="#FFFFFF"/>
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/animatedKnownReplay"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="bottom"
-                        android:layout_marginTop="40dp" />
+                        android:layout_marginTop="40dp"/>
                 </android.support.v7.widget.CardView>
 
                 <!-- Advice -->
@@ -111,8 +142,8 @@
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:orientation="vertical"
                     android:clickable="true"
+                    android:orientation="vertical"
                     android:padding="4dp">
 
                     <TextView
@@ -121,14 +152,14 @@
                         android:background="#449def"
                         android:padding="6dp"
                         android:text="Advice"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="#FFFFFF"/>
 
                     <ListView
                         android:id="@+id/criticism"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:layout_marginTop="40dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"/>
                 </android.support.v7.widget.CardView>
             </LinearLayout>
 
@@ -138,14 +169,14 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|start"
-                android:elevation="@dimen/elevation_low" />
+                android:elevation="@dimen/elevation_low"/>
 
             <dmeeuwis.nakama.views.FloatingActionButton
                 android:id="@+id/nextButton"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_gravity="bottom|end"
-                android:elevation="@dimen/elevation_low" />
+                android:elevation="@dimen/elevation_low"/>
         </FrameLayout>
 
         <LinearLayout
@@ -176,13 +207,13 @@
                         android:background="#FF1BA20D"
                         android:padding="6dp"
                         android:text="Correct"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="#FFFFFF"/>
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/correctKnownView"
-                        android:layout_marginTop="40dp"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent" />
+                        android:layout_height="fill_parent"
+                        android:layout_marginTop="40dp"/>
                 </android.support.v7.widget.CardView>
 
                 <android.support.v7.widget.CardView
@@ -198,7 +229,7 @@
                         android:background="#FF1BA20D"
                         android:padding="6dp"
                         android:text="Drawn"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="#FFFFFF"/>
 
                     <dmeeuwis.nakama.views.AnimatedCurveView
                         android:id="@+id/correctDrawnView"
@@ -218,17 +249,17 @@
                     android:id="@+id/correctExamples"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:divider="@android:color/transparent"
-                    android:paddingBottom="85dp"
                     android:clipToPadding="false"
-                    android:dividerHeight="10.0sp" />
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="10.0sp"
+                    android:paddingBottom="85dp"/>
 
                 <dmeeuwis.nakama.views.FloatingActionButton
                     android:id="@id/correctNextButton"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
                     android:layout_gravity="bottom|end"
-                    android:elevation="@dimen/elevation_low" />
+                    android:elevation="@dimen/elevation_low"/>
             </FrameLayout>
         </LinearLayout>
     </dmeeuwis.nakama.primary.SafeViewFlipper>
@@ -236,6 +267,6 @@
     <View
         android:id="@+id/maskView"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"/>
 
 </FrameLayout>
