@@ -56,7 +56,7 @@ public class KanjiTranslationListAsyncTask extends AsyncTask<Void, Translation, 
 		try {
 			dictSet = new DictionarySet(context);
 			do {
-				nextBatch = dictSet.querier.orQueries(translationIndex, BATCH_SIZE, this.query);
+				nextBatch = dictSet.querier.singleCharacterSearch(BATCH_SIZE, translationIndex, Character.valueOf(kanji));
 				translationIndex += BATCH_SIZE;
 
 				List<Translation> accepted = new ArrayList<Translation>(nextBatch.size());
