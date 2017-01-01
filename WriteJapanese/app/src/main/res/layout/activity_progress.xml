@@ -27,7 +27,7 @@
         android:gravity="center"
         android:numColumns="auto_fit"
         android:background="@color/White"
-        android:padding="5sp" >
+        >
     </GridView>
 
 </RelativeLayout>
