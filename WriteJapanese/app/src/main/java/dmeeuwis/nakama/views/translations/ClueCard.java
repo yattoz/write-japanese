@@ -203,7 +203,7 @@ public class ClueCard extends CardView {
 
         instructionsLabel.setFactory(new SimpleInstructionsLabel(16, 1));
 
-        String tag = (String)(findViewById(R.id.clueCardOuter)).getTag();
+        String tag = (String)(findViewById(R.id.clue_meanings_layout)).getTag();
         if("land".equals(tag)){
             translationEnglish.setFactory(new SimpleInstructionsLabel(16, 3));
             translationTarget.setTextAndReadingSizesDp(38, 16);
