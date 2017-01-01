@@ -10,8 +10,7 @@
     <WebView
         android:id="@+id/release_notes_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="5dp"
+        android:layout_height="wrap_content"
         >
 
     </WebView>
