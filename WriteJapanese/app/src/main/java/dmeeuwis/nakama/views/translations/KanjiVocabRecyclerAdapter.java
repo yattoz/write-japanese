@@ -149,7 +149,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
         } else if(h instanceof ShowCharacterInfoViewHolder){
             ShowCharacterInfoViewHolder holder = (ShowCharacterInfoViewHolder) h;
-            holder.anim.setDrawing(knownCharacter.toDrawing(), AnimatedCurveView.DrawTime.ANIMATED,
+            holder.anim.setDrawing(knownCharacter, AnimatedCurveView.DrawTime.ANIMATED,
                     new ArrayList<Criticism.PaintColourInstructions>(0));
             holder.anim.startAnimation(500);
             holder.bigKanji.setText(character);
