@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import java.util.List;
+
 import dmeeuwis.Kana;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.R;
@@ -363,7 +365,9 @@ public class ClueCard extends CardView {
                 translationTarget.setTranslationQuiz(t, currentCharacter, clueExtractor.getDictionarySet().kanjiFinder());
             }
 
-            setTextImmediate(translationEnglish, immediate, t.toEnglishString());
+            List<String> englishTrans = t.allGlosses();
+            List<String> subset = englishTrans.subList(0, Math.min(englishTrans.size(), 3));
+            setTextImmediate(translationEnglish, immediate, TextUtils.join("; ", subset));
             setTextImmediate(translationInstructionsLabel, immediate, clueExtractor.translationsInstructionsText(i));
         } else {
             Log.i("nakama-clue", "Clearing translation " + i);
