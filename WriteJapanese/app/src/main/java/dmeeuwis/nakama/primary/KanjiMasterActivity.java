@@ -50,6 +50,7 @@ import dmeeuwis.Kana;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.kanjimaster.charsets.CharacterSetListActivity;
 import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.nakama.DrawViewTestActivity;
@@ -390,6 +391,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         ActionBar actionBar = getSupportActionBar();
         this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
         actionBar.setBackgroundDrawable(this.actionBarBackground);
+
         LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
         actionBar.setListNavigationCallbacks(characterSetAdapter, this);
@@ -1033,6 +1035,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 7) {
             this.currentCharacterSet = joyouG6;
+        } else if (itemPosition == 8) {
+            startActivity(new Intent(this, CharacterSetListActivity.class));
             //this.correctVocabList.setVisibility(View.VISIBLE);
 //		} else if(itemPosition == 8){
 //			Toast.makeText(this, "Showing SS", Toast.LENGTH_SHORT);
