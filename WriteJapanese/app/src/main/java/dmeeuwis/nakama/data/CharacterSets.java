@@ -83,7 +83,20 @@ public class CharacterSets  {
 	public static CharacterStudySet joyouG5(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 5", "Kanji J5", G5_DESCRIPTION, "j5", Kanji.JOUYOU_G5, "犯寄舎財税統像境飼謝", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
 	public static CharacterStudySet joyouG6(KanjiFinder kf, LockChecker lc, UUID iid){ return new KanjiCharacterStudySet("Joyou Kanji 6", "Kanji J6", G6_DESCRIPTION, "j6", Kanji.JOUYOU_G6, "至捨推針割疑層模訳欲", kf, CharacterStudySet.LockLevel.LOCKED, lc, iid); }
 
-	private static class KanjiCharacterStudySet extends CharacterStudySet {
+    public static CharacterStudySet[] all(KanjiFinder kf, LockChecker lc, UUID iid) {
+        return new CharacterStudySet[] {
+                hiragana(lc, iid),
+                katakana(lc, iid),
+                joyouG1(kf, lc, iid),
+                joyouG2(kf, lc, iid),
+                joyouG3(kf, lc, iid),
+                joyouG4(kf, lc, iid),
+                joyouG5(kf, lc, iid),
+                joyouG6(kf, lc, iid)
+        };
+    }
+
+    private static class KanjiCharacterStudySet extends CharacterStudySet {
 		private final KanjiFinder kanjiFinder;
 		
 		public KanjiCharacterStudySet(String name, String shortName, String desc, String path, String data, String freeData, KanjiFinder kanjiFinder, LockLevel locked, LockChecker LockChecker, UUID iid) {

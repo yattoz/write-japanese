@@ -17,7 +17,14 @@ import android.widget.TextView;
 import dmeeuwis.kanjimaster.R;
 
 import dmeeuwis.kanjimaster.charsets.dummy.DummyContent;
+import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.data.CharacterSets;
+import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,11 +42,14 @@ public class CharacterSetListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    DictionarySet set;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_characterset_list);
+
+        set = DictionarySet.get(getApplicationContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,15 +78,16 @@ public class CharacterSetListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        CharacterStudySet[] sets = CharacterSets.all(set.kanjiFinder(), new LockCheckerInAppBillingService(this), Iid.get(getApplicationContext()));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(sets)));
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<CharacterStudySet> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
+        public SimpleItemRecyclerViewAdapter(List<CharacterStudySet> items) {
             mValues = items;
         }
 
@@ -90,15 +101,15 @@ public class CharacterSetListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position).name);
+            holder.mContentView.setText(mValues.get(position).description);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(CharacterSetDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        arguments.putString(CharacterSetDetailFragment.ARG_ITEM_ID, holder.mItem.pathPrefix);
                         CharacterSetDetailFragment fragment = new CharacterSetDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -107,7 +118,7 @@ public class CharacterSetListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, CharacterSetDetailActivity.class);
-                        intent.putExtra(CharacterSetDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        intent.putExtra(CharacterSetDetailFragment.ARG_ITEM_ID, holder.mItem.pathPrefix);
 
                         context.startActivity(intent);
                     }
@@ -124,7 +135,7 @@ public class CharacterSetListActivity extends AppCompatActivity {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public CharacterStudySet mItem;
 
             public ViewHolder(View view) {
                 super(view);
