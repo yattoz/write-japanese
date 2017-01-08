@@ -103,7 +103,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
             strings[i] = Character.toString(chars[i]);
         }
 
-        gridAdapter = new CharacterGridAdapter(this, characterList, charSet.availableCharactersSet());
+        gridAdapter = new CharacterGridAdapter(this, characterList, charSet.availableCharactersSet(), scores);
         characterGrid.setAdapter(gridAdapter);
         characterGrid.setOnItemClickListener(this);
 
@@ -165,19 +165,23 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         return this.lc;
     }
 
-    public class CharacterGridAdapter extends BaseAdapter {
+    public static class CharacterGridAdapter extends BaseAdapter {
 
 	    final private Context context;
 	    final private String characterList;
 	    final private Set<Character> unlockedCharacterList;
 	    final private GridView.LayoutParams params = new GridView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final private Map<Character, Progress> scores;
 	    final private int textSize = 48;
+        final private char[] chars;
 
-	    public CharacterGridAdapter(Context context, String characterList, Set<Character> unlockedCharacterList) {
+	    public CharacterGridAdapter(Context context, String characterList, Set<Character> unlockedCharacterList, Map<Character, Progress> scores) {
 	        this.context = context;
 	        this.characterList = characterList;
 	        this.unlockedCharacterList = unlockedCharacterList;
-	        
+            this.scores = scores;
+            this.chars = characterList.toCharArray();
+
 	        Log.d("nakama", "Making CharacterGridAdapter: characterList size is " + this.characterList.length() + " vs unlocked set size " + this.unlockedCharacterList.size());
 	    }
 
@@ -224,7 +228,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
                    }
 			}
 
-            tv.setText(strings[position]);
+            tv.setText(String.valueOf(chars[position]));
 	        return tv;
 	    }
 	}

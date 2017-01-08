@@ -7,13 +7,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+
+import java.util.HashMap;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.charsets.dummy.DummyContent;
+import dmeeuwis.nakama.ProgressActivity;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 
@@ -72,6 +80,10 @@ public class CharacterSetDetailFragment extends Fragment {
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.characterset_detail)).setText(mItem.description);
+
+            GridView grid = (GridView)rootView.findViewById(R.id.charset_detail_grid);
+            grid.setAdapter(new ProgressActivity.CharacterGridAdapter(
+                    this.getActivity(), mItem.charactersAsString(), mItem.availableCharactersSet(), new HashMap<Character, ProgressTracker.Progress>()));
         }
 
         return rootView;
