@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 import dmeeuwis.Kanji;
 import dmeeuwis.Translation;

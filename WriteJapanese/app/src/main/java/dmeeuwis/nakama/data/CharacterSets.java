@@ -40,4 +40,18 @@ public class CharacterSets  {
 	public static CharacterStudySet joyouG4(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 4", "Kanji J4", G4_DESCRIPTION, "j4", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G4, "令徒貨例害覚停副議給", lc, iid); }
 	public static CharacterStudySet joyouG5(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 5", "Kanji J5", G5_DESCRIPTION, "j5", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G5, "犯寄舎財税統像境飼謝", lc, iid); }
 	public static CharacterStudySet joyouG6(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 6", "Kanji J6", G6_DESCRIPTION, "j6", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G6, "至捨推針割疑層模訳欲", lc, iid); }
+
+
+    public static CharacterStudySet[] all(LockChecker lc, UUID iid) {
+        return new CharacterStudySet[]{
+                hiragana(lc, iid),
+                katakana(lc, iid),
+                joyouG1(lc, iid),
+                joyouG2(lc, iid),
+                joyouG3(lc, iid),
+                joyouG4(lc, iid),
+                joyouG5(lc, iid),
+                joyouG6(lc, iid)
+        };
+    }
 }

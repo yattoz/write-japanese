@@ -51,7 +51,8 @@ public class CharacterSetListActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        toolbar.setTitle("Character Study Sets");
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +77,7 @@ public class CharacterSetListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        CharacterStudySet[] sets = CharacterSets.all(set.kanjiFinder(), new LockCheckerInAppBillingService(this), Iid.get(getApplicationContext()));
+        CharacterStudySet[] sets = CharacterSets.all(new LockCheckerInAppBillingService(this), Iid.get(getApplicationContext()));
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(sets)));
     }
 

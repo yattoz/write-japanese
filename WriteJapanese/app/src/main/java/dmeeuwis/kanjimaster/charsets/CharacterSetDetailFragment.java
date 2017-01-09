@@ -4,21 +4,19 @@ import android.app.Activity;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.TextView;
 
-import java.util.HashMap;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.ProgressActivity;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.views.AutofitRecyclerView;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 
 /**
@@ -37,7 +35,7 @@ public class CharacterSetDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private CharacterStudySet mItem;
+    private CharacterStudySet studySet;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -58,12 +56,12 @@ public class CharacterSetDetailFragment extends Fragment {
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             String name = getArguments().getString(ARG_ITEM_ID);
-            mItem = CharacterSets.fromName(name, ds.kanjiFinder(), new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
+            studySet = CharacterSets.fromName(name, ds.kanjiFinder(), new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.name);
+                appBarLayout.setTitle(studySet.name);
             }
         }
     }
@@ -73,15 +71,47 @@ public class CharacterSetDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.characterset_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.characterset_detail)).setText(mItem.description);
+        if (studySet != null) {
+            ((TextView) rootView.findViewById(R.id.characterset_detail)).setText(studySet.description);
 
-            GridView grid = (GridView)rootView.findViewById(R.id.charset_detail_grid);
-            grid.setAdapter(new ProgressActivity.CharacterGridAdapter(
-                    this.getActivity(), mItem.charactersAsString(), mItem.availableCharactersSet(), new HashMap<Character, ProgressTracker.Progress>()));
+            AutofitRecyclerView grid = (AutofitRecyclerView) rootView.findViewById(R.id.charset_detail_grid);
+            grid.setAdapter(new CharacterGridAdapter(studySet));
         }
 
         return rootView;
+    }
+
+    private static class CharacterGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private final CharacterStudySet set;
+
+        private class CharacterViewHolder extends RecyclerView.ViewHolder {
+            public TextView text;
+            public CharacterViewHolder(View itemView) {
+                super(itemView);
+                this.text = (TextView)itemView.findViewById(R.id.character_grid_text);
+            }
+        }
+
+        CharacterGridAdapter(CharacterStudySet set){
+           this.set = set;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_character_grid_layout, parent, false);
+            CharacterViewHolder vh = new CharacterViewHolder(mView);
+            return vh;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            CharacterViewHolder ch = (CharacterViewHolder)holder;
+            ch.text.setText(String.valueOf(set.charactersAsString().charAt(position)));
+        }
+
+        @Override
+        public int getItemCount() {
+            return set.charactersAsString().length();
+        }
     }
 }

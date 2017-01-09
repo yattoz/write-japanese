@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment">
 
     <TextView
@@ -14,8 +15,9 @@
         android:textIsSelectable="true"
         tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment"/>
 
-    <GridView
+    <dmeeuwis.nakama.views.AutofitRecyclerView
         android:id="@+id/charset_detail_grid"
+        android:columnWidth="36sp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>
