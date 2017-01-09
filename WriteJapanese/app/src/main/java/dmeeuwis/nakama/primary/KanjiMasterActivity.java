@@ -367,12 +367,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         UUID iid = Iid.get(this.getApplicationContext());
         hiraganaCharacterSet = CharacterSets.hiragana(LockChecker, iid);
         katakanaCharacterSet = CharacterSets.katakana(LockChecker, iid);
-        joyouG1 = CharacterSets.joyouG1(this.dictionarySet.kanjiFinder(), LockChecker, iid);
-        joyouG2 = CharacterSets.joyouG2(this.dictionarySet.kanjiFinder(), LockChecker, iid);
-        joyouG3 = CharacterSets.joyouG3(this.dictionarySet.kanjiFinder(), LockChecker, iid);
-        joyouG4 = CharacterSets.joyouG4(this.dictionarySet.kanjiFinder(), LockChecker, iid);
-        joyouG5 = CharacterSets.joyouG5(this.dictionarySet.kanjiFinder(), LockChecker, iid);
-        joyouG6 = CharacterSets.joyouG6(this.dictionarySet.kanjiFinder(), LockChecker, iid);
+        joyouG1 = CharacterSets.joyouG1(LockChecker, iid);
+        joyouG2 = CharacterSets.joyouG2(LockChecker, iid);
+        joyouG3 = CharacterSets.joyouG3(LockChecker, iid);
+        joyouG4 = CharacterSets.joyouG4(LockChecker, iid);
+        joyouG5 = CharacterSets.joyouG5(LockChecker, iid);
+        joyouG6 = CharacterSets.joyouG6(LockChecker, iid);
 
         this.characterSets.put("hiragana", hiraganaCharacterSet);
         this.characterSets.put("katakana", katakanaCharacterSet);

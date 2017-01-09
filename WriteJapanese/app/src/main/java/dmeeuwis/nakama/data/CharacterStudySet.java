@@ -22,7 +22,7 @@ import dmeeuwis.util.Util;
 /**
  * Holds a set of characters to study, and all current user study progress on those characters.
  */
-public abstract class CharacterStudySet implements Iterable<Character> {
+public class CharacterStudySet implements Iterable<Character> {
 
 	public enum LockLevel { NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED }
 
@@ -150,7 +150,9 @@ public abstract class CharacterStudySet implements Iterable<Character> {
 		return Util.join("", allCharactersSet);
 	}
 
-	abstract public String label();
+	public String label(){
+		return this.shortName;
+	}
 
 	public boolean passedAllCharacters(){
 		return this.tracker.passedAllCharacters(availableCharactersSet());

@@ -99,6 +99,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
     }
 
     @Override public void onResume(){
+        super.onResume();
         Log.i("nakama", "TeachingActivity lifecycle: onResume");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -174,8 +175,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         if(combinedFragment != null){
             combinedFragment.setCharacter(this.getCharacter().charAt(0));
         }
-
-        super.onResume();
     }
 
 	@Override
