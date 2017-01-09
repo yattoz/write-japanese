@@ -8,15 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import java.util.HashMap;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.charsets.dummy.DummyContent;
 import dmeeuwis.nakama.ProgressActivity;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;

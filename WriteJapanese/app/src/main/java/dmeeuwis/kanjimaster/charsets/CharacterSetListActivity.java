@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 import dmeeuwis.kanjimaster.R;
 
-import dmeeuwis.kanjimaster.charsets.dummy.DummyContent;
-import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
