@@ -7,17 +7,38 @@
     android:orientation="vertical"
     tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment">
 
-    <TextView
-        android:id="@+id/characterset_detail"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textIsSelectable="true"
-        tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment"/>
+        android:layout_height="match_parent"
+        android:hint="Name"
+        >
+
+        <EditText
+            android:id="@+id/characterset_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:hint="Description"
+        >
+
+        <EditText
+            android:id="@+id/characterset_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:padding="16dp"
+            tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment"/>
+    </android.support.design.widget.TextInputLayout>
 
     <dmeeuwis.nakama.views.AutofitRecyclerView
         android:id="@+id/charset_detail_grid"
-        android:columnWidth="36sp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:columnWidth="36sp"/>
 </LinearLayout>

@@ -6,6 +6,11 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
+import java.util.Map;
+import java.util.Set;
+
+import dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment;
+
 public class AutofitRecyclerView extends RecyclerView {
 
     private int columnWidth;
@@ -39,6 +44,25 @@ public class AutofitRecyclerView extends RecyclerView {
 
         manager = new GridLayoutManager(getContext(), 1);
         setLayoutManager(manager);
+    }
+
+    public void setAdapter(CharacterSetDetailFragment.CharacterGridAdapter a){
+        super.setAdapter(a);
+        Map<Integer, String> headers = a.headers;
+        final Set<Integer> headerPos = headers.keySet();
+
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (headerPos.contains(position)){
+                    return manager.getSpanCount();
+                } else {
+                    return 1;
+                }
+
+            }
+        });
+
     }
 
     protected void onMeasure(int widthSpec, int heightSpec) {
