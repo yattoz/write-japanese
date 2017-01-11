@@ -64,9 +64,10 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	}
 
 	@Override public void onCreate(Bundle saveInstanceState) {
+        super.onCreate(saveInstanceState);
+
         Log.i("nakama", "TeachingActivity lifecycle: onCreate");
         long startTime = System.currentTimeMillis();
-        super.onCreate(saveInstanceState);
 
         this.setContentView(R.layout.teaching_activity);
         this.dictSet = DictionarySet.get(this);
@@ -216,6 +217,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	
 	@Override 
 	public void onPause(){
+        super.onPause();
         try {
             if(kanjiAdapter != null) {
                 TeachingStoryFragment storyFragment = (TeachingStoryFragment) kanjiAdapter.getRegisteredFragment(1);
@@ -228,7 +230,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         } catch(NullPointerException e){
             Log.i("nakama", "Ignoring null fragment at onPause.");
         }
-		super.onPause();
 	}
 	
     @Override protected void onNewIntent(Intent intent){
