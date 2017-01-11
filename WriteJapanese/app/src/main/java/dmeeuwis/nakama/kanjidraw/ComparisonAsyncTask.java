@@ -1,7 +1,9 @@
 package dmeeuwis.nakama.kanjidraw;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteFullException;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import dmeeuwis.nakama.data.CharacterStudySet;
 
@@ -36,7 +38,12 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
     @Override
     protected void onPostExecute(Criticism criticism) {
-        currentCharacterSet.markCurrent(drawn, criticism.pass, appContext);
+        try {
+            currentCharacterSet.markCurrent(drawn, criticism.pass, appContext);
+        } catch(SQLiteFullException e){
+            Toast.makeText(appContext, "Could not record progress: disk is full.", Toast.LENGTH_SHORT).show();
+        }
+
         onDone.run(criticism);
     }
 }
