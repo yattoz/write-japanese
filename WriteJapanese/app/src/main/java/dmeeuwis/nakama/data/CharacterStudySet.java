@@ -30,6 +30,7 @@ public class CharacterStudySet implements Iterable<Character> {
 	final public Set<Character> allCharactersSet;
 	final public String name, shortName, description;
 
+	final public boolean systemSet;
 	final LockChecker LockChecker;
     ProgressTracker tracker;
 	final Random random = new Random();
@@ -93,10 +94,11 @@ public class CharacterStudySet implements Iterable<Character> {
 		return String.format("%s (%d)", this.name, this.allCharactersSet.size());
 	}
 
-	public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid){
+	public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet){
 		this.name = name;
 		this.shortName = shortName;
         this.description = description;
+		this.systemSet = systemSet;
 		this.locked = locked;
         this.iid = iid;
 

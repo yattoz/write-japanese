@@ -4,26 +4,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import dmeeuwis.kanjimaster.R;
+import java.util.Arrays;
+import java.util.List;
 
+import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * An activity representing a list of CharacterSets. This activity
@@ -33,7 +31,7 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class CharacterSetListActivity extends AppCompatActivity {
+public class CharacterSetListActivity extends ActionBarActivity {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -49,17 +47,17 @@ public class CharacterSetListActivity extends AppCompatActivity {
 
         set = DictionarySet.get(getApplicationContext());
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle("Character Study Sets");
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = this.getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("Character Study Sets");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            Intent intent = new Intent(CharacterSetListActivity.this, CharacterSetDetailActivity.class);
+            intent.putExtra(CharacterSetDetailFragment.ARG_ITEM_ID, "create");
+            startActivity(intent);
             }
         });
 
@@ -84,10 +82,10 @@ public class CharacterSetListActivity extends AppCompatActivity {
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<CharacterStudySet> mValues;
+        private final List<CharacterStudySet> sets;
 
         public SimpleItemRecyclerViewAdapter(List<CharacterStudySet> items) {
-            mValues = items;
+            sets = items;
         }
 
         @Override
@@ -99,9 +97,8 @@ public class CharacterSetListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).name);
-            holder.mContentView.setText(mValues.get(position).description);
+            holder.mItem = sets.get(position);
+            holder.nameField.setText(sets.get(position).name);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -118,34 +115,35 @@ public class CharacterSetListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, CharacterSetDetailActivity.class);
                         intent.putExtra(CharacterSetDetailFragment.ARG_ITEM_ID, holder.mItem.pathPrefix);
-
                         context.startActivity(intent);
                     }
                 }
             });
+
+            boolean sysSet = sets.get(position).systemSet;
+            holder.editButton.setVisibility(sysSet ? View.GONE : View.VISIBLE);
+            holder.deleteButton.setVisibility(sysSet ? View.GONE : View.VISIBLE);
         }
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return sets.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public CharacterStudySet mItem;
+            final View mView;
+            final TextView nameField;
+            final View editButton, copyButton, deleteButton;
+            CharacterStudySet mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
+                nameField = (TextView) view.findViewById(R.id.charset_list_name);
 
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
+                editButton = view.findViewById(R.id.charset_edit);
+                deleteButton = view.findViewById(R.id.charset_delete);
+                copyButton = view.findViewById(R.id.charset_copy);
             }
         }
     }

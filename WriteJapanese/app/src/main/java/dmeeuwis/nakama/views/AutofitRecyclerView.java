@@ -59,7 +59,6 @@ public class AutofitRecyclerView extends RecyclerView {
                 } else {
                     return 1;
                 }
-
             }
         });
 

@@ -1,8 +1,6 @@
 package dmeeuwis.kanjimaster.charsets;
 
-import android.app.Activity;
 import android.graphics.Color;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-
 
 import java.util.BitSet;
 import java.util.HashMap;
@@ -62,12 +59,11 @@ public class CharacterSetDetailFragment extends Fragment {
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             String name = getArguments().getString(ARG_ITEM_ID);
-            studySet = CharacterSets.fromName(name, ds.kanjiFinder(), new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle("Edit Character Set");
+            if(name.equals("create")){
+                studySet = CharacterSets.createCustom(ds.kanjiFinder(), new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
+            } else {
+                studySet = CharacterSets.fromName(name, ds.kanjiFinder(), new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
             }
         }
     }
@@ -78,11 +74,9 @@ public class CharacterSetDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.characterset_detail, container, false);
 
         if (studySet != null) {
-            ((EditText) rootView.findViewById(R.id.characterset_name)).setText(studySet.name);
-            ((EditText) rootView.findViewById(R.id.characterset_detail)).setText(studySet.description);
 
             AutofitRecyclerView grid = (AutofitRecyclerView) rootView.findViewById(R.id.charset_detail_grid);
-            grid.setAdapter(new CharacterGridAdapter(
+            grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description,
                     CharacterSets.all(
                             new LockCheckerInAppBillingService(getActivity()),
                             Iid.get(getActivity().getApplicationContext()))));
@@ -94,14 +88,26 @@ public class CharacterSetDetailFragment extends Fragment {
     public static class CharacterGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final int CHARACTER_TYPE = 0;
         private final int HEADER_TYPE = 1;
+        private final int METADATA_TYPE = 2;
 
-        private final String asLongString;
+        private final String asLongString, setName, setDesc;
         private final BitSet selected;
         public final Map<Integer, String> headers;
 
+
+        private class MetadataViewHolder extends RecyclerView.ViewHolder {
+            final EditText nameInput;
+            final EditText descInput;
+
+            MetadataViewHolder(View itemView) {
+                super(itemView);
+                nameInput = ((EditText) itemView.findViewById(R.id.characterset_name));
+                descInput = ((EditText) itemView.findViewById(R.id.characterset_detail));
+            }
+        }
+
         private class CharacterViewHolder extends RecyclerView.ViewHolder {
             public TextView text;
-            int currentPosition;
 
             CharacterViewHolder(View itemView) {
                 super(itemView);
@@ -110,6 +116,7 @@ public class CharacterSetDetailFragment extends Fragment {
                 this.text.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                       int currentPosition = getAdapterPosition();
                        if(selected.get(currentPosition)){
                            selected.set(currentPosition, false);
                            text.setBackgroundColor(Color.WHITE);
@@ -130,14 +137,18 @@ public class CharacterSetDetailFragment extends Fragment {
             }
         }
 
-        CharacterGridAdapter(CharacterStudySet[] sets){
+        CharacterGridAdapter(String setName, String setDescription, CharacterStudySet[] sets){
             headers = new HashMap<>();
+            headers.put(0, "Meta");
             StringBuilder sb = new StringBuilder();
+            sb.append('X');             // represents edit metadata header
             for(CharacterStudySet s: sets){
                 headers.put(sb.length(), s.name);
                 sb.append(" "); // header
                 sb.append(s.charactersAsString());
             }
+            this.setName = setName;
+            this.setDesc = setDescription;
             this.asLongString = sb.toString();
             this.selected = new BitSet(asLongString.length());
         }
@@ -148,6 +159,10 @@ public class CharacterSetDetailFragment extends Fragment {
                 View mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_character_grid_layout, parent, false);
                 CharacterViewHolder vh = new CharacterViewHolder(mView);
                 return vh;
+            } else if(viewType == METADATA_TYPE) {
+                View mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_character_grid_metadata, parent, false);
+                MetadataViewHolder vh = new MetadataViewHolder(mView);
+                return vh;
             } else {
                 View mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_character_header_layout, parent, false);
                 HeaderViewHolder vh = new HeaderViewHolder(mView);
@@ -157,13 +172,17 @@ public class CharacterSetDetailFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if(asLongString.charAt(position) == ' '){
+            if(asLongString.charAt(position) == 'X') {
+                MetadataViewHolder ch = (MetadataViewHolder) holder;
+                ch.nameInput.setText(setName);
+                ch.descInput.setText(setDesc);
+
+            } else if(asLongString.charAt(position) == ' '){
                 HeaderViewHolder ch = (HeaderViewHolder) holder;
                 ch.text.setText(headers.get(position));
             } else {
                 CharacterViewHolder ch = (CharacterViewHolder) holder;
                 ch.text.setText(String.valueOf(asLongString.charAt(position)));
-                ch.currentPosition = position;
 
                 if(selected.get(position)){
                     ch.text.setBackgroundColor(Color.GREEN);
@@ -175,9 +194,11 @@ public class CharacterSetDetailFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            // Just as an example, return 0 or 2 depending on position
-            // Note that unlike in ListView adapters, types don't have to be contiguous
-            return asLongString.charAt(position) == ' ' ? HEADER_TYPE : CHARACTER_TYPE;
+            switch (asLongString.charAt(position)){
+                case ' ': return HEADER_TYPE;
+                case 'X': return METADATA_TYPE;
+                default:  return CHARACTER_TYPE;
+            }
         }
 
         @Override

@@ -124,13 +124,13 @@
         <activity
             android:name=".charsets.CharacterSetListActivity"
             android:label="@string/title_characterset_list"
-            android:theme="@style/AppTheme.NoActionBar">
+            >
         </activity>
         <activity
             android:name=".charsets.CharacterSetDetailActivity"
             android:label="@string/title_characterset_detail"
             android:parentActivityName=".charsets.CharacterSetListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dmeeuwis.kanjimaster.charsets.CharacterSetListActivity"/>

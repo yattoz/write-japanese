@@ -31,15 +31,19 @@ public class CharacterSets  {
 		else if(name.equals("j6")){ return joyouG6(LockChecker, iid); }
 		else { throw new RuntimeException("Unknown character set: " + name); }
 	}
-	
-	public static CharacterStudySet hiragana(LockChecker LockChecker, UUID iid){ return new CharacterStudySet("Hiragana", "Hiragana", HIRAGANA_DESC, "hiragana", CharacterStudySet.LockLevel.UNLOCKED, Kana.commonHiragana(), "", LockChecker, iid); }
-	public static CharacterStudySet katakana(LockChecker LockChecker, UUID iid){ return new CharacterStudySet("Katakana", "Katakana", KATAKANA_DESC, "katakana", CharacterStudySet.LockLevel.LOCKED, Kana.commonKatakana(), "アイネホキタロマザピド", LockChecker, iid); }
-	public static CharacterStudySet joyouG1(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 1", "Kanji J1", G1_DESCRIPTION, "j1", CharacterStudySet.LockLevel.UNLOCKED, Kanji.JOUYOU_G1, "", lc, iid); }
-	public static CharacterStudySet joyouG2(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 2", "Kanji J2", G2_DESCRIPTION, "j2", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G2, "内友行光図店星食記親", lc, iid); }
-	public static CharacterStudySet joyouG3(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 3", "Kanji J3", G3_DESCRIPTION, "j3", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G3, "申両世事泳指暗湯昭様", lc, iid); }
-	public static CharacterStudySet joyouG4(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 4", "Kanji J4", G4_DESCRIPTION, "j4", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G4, "令徒貨例害覚停副議給", lc, iid); }
-	public static CharacterStudySet joyouG5(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 5", "Kanji J5", G5_DESCRIPTION, "j5", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G5, "犯寄舎財税統像境飼謝", lc, iid); }
-	public static CharacterStudySet joyouG6(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 6", "Kanji J6", G6_DESCRIPTION, "j6", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G6, "至捨推針割疑層模訳欲", lc, iid); }
+
+	static public CharacterStudySet createCustom(KanjiFinder kf, LockChecker lc, UUID iid){
+		return new CharacterStudySet("Custom Set", "Custom", "Your custom character set", UUID.randomUUID().toString(), CharacterStudySet.LockLevel.UNLOCKED, "", "", lc, iid, false);
+	}
+
+	public static CharacterStudySet hiragana(LockChecker LockChecker, UUID iid){ return new CharacterStudySet("Hiragana", "Hiragana", HIRAGANA_DESC, "hiragana", CharacterStudySet.LockLevel.UNLOCKED, Kana.commonHiragana(), "", LockChecker, iid, true); }
+	public static CharacterStudySet katakana(LockChecker LockChecker, UUID iid){ return new CharacterStudySet("Katakana", "Katakana", KATAKANA_DESC, "katakana", CharacterStudySet.LockLevel.LOCKED, Kana.commonKatakana(), "アイネホキタロマザピド", LockChecker, iid, true); }
+	public static CharacterStudySet joyouG1(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 1", "Kanji J1", G1_DESCRIPTION, "j1", CharacterStudySet.LockLevel.UNLOCKED, Kanji.JOUYOU_G1, "", lc, iid, true); }
+	public static CharacterStudySet joyouG2(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 2", "Kanji J2", G2_DESCRIPTION, "j2", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G2, "内友行光図店星食記親", lc, iid, true); }
+	public static CharacterStudySet joyouG3(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 3", "Kanji J3", G3_DESCRIPTION, "j3", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G3, "申両世事泳指暗湯昭様", lc, iid, true); }
+	public static CharacterStudySet joyouG4(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 4", "Kanji J4", G4_DESCRIPTION, "j4", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G4, "令徒貨例害覚停副議給", lc, iid, true); }
+	public static CharacterStudySet joyouG5(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 5", "Kanji J5", G5_DESCRIPTION, "j5", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G5, "犯寄舎財税統像境飼謝", lc, iid, true); }
+	public static CharacterStudySet joyouG6(LockChecker lc, UUID iid){ return new CharacterStudySet("Joyou Kanji 6", "Kanji J6", G6_DESCRIPTION, "j6", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G6, "至捨推針割疑層模訳欲", lc, iid, true); }
 
 
     public static CharacterStudySet[] all(LockChecker lc, UUID iid) {
