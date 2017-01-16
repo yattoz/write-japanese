@@ -50,6 +50,8 @@ import dmeeuwis.Kana;
 import dmeeuwis.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.kanjimaster.charsets.CharacterSetDetailActivity;
+import dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment;
 import dmeeuwis.kanjimaster.charsets.CharacterSetListActivity;
 import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.CreditsActivity;
@@ -68,6 +70,7 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.ClueExtractor;
+import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.StoryDataHelper;
@@ -1008,7 +1011,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         saveCurrentCharacterSet();
 
-        if (!(itemPosition == 0 || itemPosition == 2)) {
+        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition == 8)) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
 
@@ -1036,7 +1039,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         } else if (itemPosition == 7) {
             this.currentCharacterSet = joyouG6;
         } else if (itemPosition == 8) {
-            startActivity(new Intent(this, CharacterSetListActivity.class));
+            if(charSetFrag == null && new CustomCharacterSetDataHelper(this).getSets().size() == 0){
+                Intent intent = new Intent(this, CharacterSetDetailActivity.class);
+                intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, "create");
+                startActivity(intent);
+            } else {
+                startActivity(new Intent(this, CharacterSetListActivity.class));
+                return true;
+            }
             //this.correctVocabList.setVisibility(View.VISIBLE);
 //		} else if(itemPosition == 8){
 //			Toast.makeText(this, "Showing SS", Toast.LENGTH_SHORT);

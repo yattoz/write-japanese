@@ -28,6 +28,7 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
 
         ActionBar actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("Edit Custom Character Set");
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -75,7 +76,6 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
             NavUtils.navigateUpTo(this, new Intent(this, CharacterSetListActivity.class));
             return true;
         } else if(id == R.id.menu_save_character_set){
-            Toast.makeText(this, "Save new set!", Toast.LENGTH_SHORT).show();
             CharacterSetDetailFragment f = (CharacterSetDetailFragment) getSupportFragmentManager().findFragmentById(R.id.characterset_detail_container);
             if(f != null){
                 f.save();

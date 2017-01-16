@@ -22,7 +22,7 @@ public class CustomCharacterSetDataHelper {
     public void recordEdit(String id, String name, String desc, String set) {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         try {
-            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, name, description, set, install_id, timestamp) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
+            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, name, description, characters, install_id, timestamp) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
                     new String[]{id, name, desc, set, Iid.get(context).toString()});
         } finally {
             db.close();

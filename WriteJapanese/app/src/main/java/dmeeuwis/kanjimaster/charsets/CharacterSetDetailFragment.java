@@ -67,6 +67,7 @@ public class CharacterSetDetailFragment extends Fragment {
 
     public void save(){
         new CustomCharacterSetDataHelper(getActivity()).recordEdit(studySet.pathPrefix, studySet.name, studySet.description, studySet.charactersAsString());
+
     }
 
     @Override
