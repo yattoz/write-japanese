@@ -70,5 +70,6 @@
     <string name="other_readings">Other Readings</string>
     <string name="title_characterset_list">CharacterSets</string>
     <string name="title_characterset_detail">CharacterSet Detail</string>
+    <string name="save">Save</string>
 
 </resources>

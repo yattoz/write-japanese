@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
 /**
  * An activity representing a single CharacterSet detail screen. This
@@ -38,8 +42,8 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(CharacterSetDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(CharacterSetDetailFragment.ARG_ITEM_ID));
+            arguments.putString(CharacterSetDetailFragment.CHARSET_ID,
+                    getIntent().getStringExtra(CharacterSetDetailFragment.CHARSET_ID));
 
             CharacterSetDetailFragment fragment = new CharacterSetDetailFragment();
             fragment.setArguments(arguments);
@@ -47,6 +51,14 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
                     .add(R.id.characterset_detail_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.charset_edit_menu, menu);
+
+        return true;
     }
 
     @Override
@@ -61,6 +73,16 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
             NavUtils.navigateUpTo(this, new Intent(this, CharacterSetListActivity.class));
+            return true;
+        } else if(id == R.id.menu_save_character_set){
+            Toast.makeText(this, "Save new set!", Toast.LENGTH_SHORT).show();
+            CharacterSetDetailFragment f = (CharacterSetDetailFragment) getSupportFragmentManager().findFragmentById(R.id.characterset_detail_container);
+            if(f != null){
+                f.save();
+            } else {
+                Toast.makeText(this, "Error connecting to fragment", Toast.LENGTH_SHORT);
+                UncaughtExceptionLogger.backgroundLogError("Error connecting to CharsetDetailFragment", new RuntimeException(), this);
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);

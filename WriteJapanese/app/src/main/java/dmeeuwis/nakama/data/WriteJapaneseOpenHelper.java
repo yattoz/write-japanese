@@ -17,7 +17,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 22;
+	private static final int DB_VERSION = 23;
 
     private final String iid;
     private final Context context;
@@ -144,6 +144,26 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         }
     }
 
+    private void addCharacterSets(SQLiteDatabase sqlite) {
+        Log.d("nakama-db", "Adding character set table");
+
+        try {
+            sqlite.execSQL("CREATE TABLE character_set_edits ( " +
+                    "id TEXT PRIMARY KEY, " +
+                    "name TEXT NOT NULL, " +
+                    "description TEXT NOT NULL, " +
+                    "install_id TEXT NOT NULL, " +
+                    "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+                    "characters TEXT NOT NULL )");
+        } catch (SQLiteException e) {
+            if (e.getMessage().contains("already exists")) {
+                Log.i("nakama", "Saw settings log already exists errror, its OK");
+            } else {
+                UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception creating settings log table", e, context);
+            }
+        }
+    }
+
 
 	@Override
 	public void onUpgrade(SQLiteDatabase dbase, int oldVersion, int newVersion) {
@@ -172,6 +192,10 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         if(oldVersion <= 22) {
             addSettingsLog(dbase);
+        }
+
+        if(oldVersion <= 23) {
+            addCharacterSets(dbase);
         }
 	}
 }

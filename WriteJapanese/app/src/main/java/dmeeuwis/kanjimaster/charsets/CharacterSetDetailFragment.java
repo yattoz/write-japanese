@@ -17,7 +17,7 @@ import java.util.Map;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
-import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.views.AutofitRecyclerView;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
@@ -33,12 +33,10 @@ public class CharacterSetDetailFragment extends Fragment {
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String CHARSET_ID = "item_id";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
     private CharacterStudySet studySet;
+    private AutofitRecyclerView grid;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -51,21 +49,24 @@ public class CharacterSetDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // is it safe?
-        DictionarySet ds = DictionarySet.get(getActivity().getApplicationContext());
-
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        if (getArguments().containsKey(CHARSET_ID)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            String name = getArguments().getString(ARG_ITEM_ID);
+            String name = getArguments().getString(CHARSET_ID);
 
+            // for small devices, this fragment gets loaded into a otherwise-empty activity, and "create"
+            // is passed as id. On large layouts, this fragment is beside the list, and setCharacterStudySet is called instead
             if(name.equals("create")){
-                studySet = CharacterSets.createCustom(ds.kanjiFinder(), new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
+                studySet = CharacterSets.createCustom(Iid.get(getActivity().getApplicationContext()));
             } else {
-                studySet = CharacterSets.fromName(name, ds.kanjiFinder(), new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
+                studySet = CharacterSets.fromName(name, new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
             }
         }
+    }
+
+    public void save(){
+        new CustomCharacterSetDataHelper(getActivity()).recordEdit(studySet.pathPrefix, studySet.name, studySet.description, studySet.charactersAsString());
     }
 
     @Override
@@ -75,7 +76,7 @@ public class CharacterSetDetailFragment extends Fragment {
 
         if (studySet != null) {
 
-            AutofitRecyclerView grid = (AutofitRecyclerView) rootView.findViewById(R.id.charset_detail_grid);
+            grid = (AutofitRecyclerView) rootView.findViewById(R.id.charset_detail_grid);
             grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description,
                     CharacterSets.all(
                             new LockCheckerInAppBillingService(getActivity()),
@@ -83,6 +84,14 @@ public class CharacterSetDetailFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    public void setCharacterStudySet(CharacterStudySet characterStudySet) {
+        this.studySet = characterStudySet;
+        grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description,
+                CharacterSets.all(
+                        new LockCheckerInAppBillingService(getActivity()),
+                        Iid.get(getActivity().getApplicationContext()))));
     }
 
     public static class CharacterGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

@@ -63,7 +63,7 @@ public class ReminderManager extends BroadcastReceiver {
     public static void clearAllReminders(Activity c){
         final String[] set = { "j1", "j2", "j3", "j4", "j5", "j6", "hiragana", "katakana" };
         for(String s: set){
-            CharacterStudySet charset = CharacterSets.fromName(s, null, null, Iid.get(c.getApplication()));
+            CharacterStudySet charset = CharacterSets.fromName(s, null, Iid.get(c.getApplication()));
             charset.load(c.getApplicationContext());
             clearReminders(c.getApplicationContext(), charset);
         }
@@ -91,7 +91,7 @@ public class ReminderManager extends BroadcastReceiver {
 
         UUID iid = Iid.get(context.getApplicationContext());
         Log.i("nakama-remind", "Found iid in reminder notification task as: " + iid);
-        CharacterStudySet set = CharacterSets.fromName(charset, null, null, iid);
+        CharacterStudySet set = CharacterSets.fromName(charset, null, iid);
         set.load(context);
         CharacterStudySet.GoalProgress gp = set.getGoalProgress();
         int charCount = gp.neededPerDay;

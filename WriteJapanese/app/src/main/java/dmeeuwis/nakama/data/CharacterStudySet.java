@@ -314,4 +314,13 @@ public class CharacterStudySet implements Iterable<Character> {
 	public void debugMarkAllPassed(){
 		this.tracker.debugMarkAllSuccess();
 	}
+
+	public void saveCustomSet(Context c){
+		if(systemSet){
+			return;
+		}
+
+		CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(c);
+		helper.recordEdit(pathPrefix, name, description, charactersAsString());
+	}
 }
