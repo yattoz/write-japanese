@@ -22,6 +22,7 @@
     <TextView
         android:id="@+id/character_set_select_all_link"
         android:textSize="12sp"
+        android:padding="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/charset_header_divider"

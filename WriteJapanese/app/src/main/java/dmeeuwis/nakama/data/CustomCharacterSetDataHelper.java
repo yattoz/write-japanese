@@ -39,7 +39,7 @@ public class CustomCharacterSetDataHelper {
 
             for(Map<String, String> r: records){
                 CharacterStudySet s = new CharacterStudySet(r.get("name"), r.get("name"), r.get("description"),
-                        r.get("id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("set"), r.get("set"), null, Iid.get(context), false);
+                        r.get("id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, Iid.get(context), false);
                 sets.put(r.get("id"), s);
             }
         } finally {

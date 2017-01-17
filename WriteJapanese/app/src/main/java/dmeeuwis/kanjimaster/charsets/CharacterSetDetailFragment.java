@@ -1,9 +1,12 @@
 package dmeeuwis.kanjimaster.charsets;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +38,13 @@ public class CharacterSetDetailFragment extends Fragment {
      */
     public static final String CHARSET_ID = "item_id";
 
+    private static final char HEADER_CHAR = ' ';
+    private static final char METADATA_CHAR = 'X';
+
     private CharacterStudySet studySet;
     private AutofitRecyclerView grid;
+
+    private static final int SELECT_COLOUR = 0xffbbdefb;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -95,6 +103,21 @@ public class CharacterSetDetailFragment extends Fragment {
                         Iid.get(getActivity().getApplicationContext()))));
     }
 
+    public static void makeColorAnimater(final View view, int color1, int color2){
+        ValueAnimator anim = new ValueAnimator();
+        anim.setIntValues(color1, color2);
+        anim.setEvaluator(new ArgbEvaluator());
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                view.setBackgroundColor((Integer)valueAnimator.getAnimatedValue());
+            }
+        });
+
+        anim.setDuration(100);
+        anim.start();
+    }
+
     public static class CharacterGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final int CHARACTER_TYPE = 0;
         private final int HEADER_TYPE = 1;
@@ -123,16 +146,17 @@ public class CharacterSetDetailFragment extends Fragment {
                 super(itemView);
                 this.text = (TextView)itemView.findViewById(R.id.character_grid_text);
 
+
                 this.text.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                        int currentPosition = getAdapterPosition();
                        if(selected.get(currentPosition)){
                            selected.set(currentPosition, false);
-                           text.setBackgroundColor(Color.WHITE);
+                           makeColorAnimater(text, SELECT_COLOUR, Color.WHITE);
                        } else {
                            selected.set(currentPosition, true);
-                           text.setBackgroundColor(Color.GREEN);
+                           makeColorAnimater(text, Color.WHITE, SELECT_COLOUR);
                        }
                     }
                 });
@@ -140,10 +164,25 @@ public class CharacterSetDetailFragment extends Fragment {
         }
 
         private class HeaderViewHolder extends RecyclerView.ViewHolder {
-            public TextView text;
+            public TextView text, allLink;
             public HeaderViewHolder(View itemView) {
                 super(itemView);
                 this.text = (TextView)itemView.findViewById(R.id.character_grid_header);
+                this.allLink = (TextView)itemView.findViewById(R.id.character_set_select_all_link);
+                this.allLink.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int i = getAdapterPosition();
+                        Log.i("nakama", "Header type onClick! " + i);
+                        i++;
+                        while(i < asLongString.length() && asLongString.charAt(i) != HEADER_CHAR){
+                            Log.i("nakama", "Selecting " + i);
+                            selected.set(i, true);
+                            i++;
+                        }
+                        CharacterGridAdapter.this.notifyDataSetChanged();
+                    }
+                });
             }
         }
 
@@ -151,7 +190,7 @@ public class CharacterSetDetailFragment extends Fragment {
             headers = new HashMap<>();
             headers.put(0, "Meta");
             StringBuilder sb = new StringBuilder();
-            sb.append('X');             // represents edit metadata header
+            sb.append(METADATA_CHAR);             // represents edit metadata header
             for(CharacterStudySet s: sets){
                 headers.put(sb.length(), s.name);
                 sb.append(" "); // header
@@ -182,12 +221,12 @@ public class CharacterSetDetailFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if(asLongString.charAt(position) == 'X') {
+            if(asLongString.charAt(position) == METADATA_CHAR) {
                 MetadataViewHolder ch = (MetadataViewHolder) holder;
                 ch.nameInput.setText(setName);
                 ch.descInput.setText(setDesc);
 
-            } else if(asLongString.charAt(position) == ' '){
+            } else if(asLongString.charAt(position) == HEADER_CHAR){
                 HeaderViewHolder ch = (HeaderViewHolder) holder;
                 ch.text.setText(headers.get(position));
             } else {
@@ -195,7 +234,7 @@ public class CharacterSetDetailFragment extends Fragment {
                 ch.text.setText(String.valueOf(asLongString.charAt(position)));
 
                 if(selected.get(position)){
-                    ch.text.setBackgroundColor(Color.GREEN);
+                    ch.text.setBackgroundColor(SELECT_COLOUR);
                 } else {
                     ch.text.setBackgroundColor(Color.WHITE);
                 }
@@ -205,8 +244,8 @@ public class CharacterSetDetailFragment extends Fragment {
         @Override
         public int getItemViewType(int position) {
             switch (asLongString.charAt(position)){
-                case ' ': return HEADER_TYPE;
-                case 'X': return METADATA_TYPE;
+                case HEADER_CHAR: return HEADER_TYPE;
+                case METADATA_CHAR: return METADATA_TYPE;
                 default:  return CHARACTER_TYPE;
             }
         }
