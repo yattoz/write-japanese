@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import dmeeuwis.nakama.primary.Iid;
 
@@ -22,11 +23,31 @@ public class CustomCharacterSetDataHelper {
     public void recordEdit(String id, String name, String desc, String set) {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         try {
-            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, name, description, characters, install_id, timestamp) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
-                    new String[]{id, name, desc, set, Iid.get(context).toString()});
+            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp) VALUES(?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
+                    new Object[]{UUID.randomUUID().toString(), id, name, desc, set, Iid.get(context).toString()});
         } finally {
             db.close();
         }
+    }
+
+    public void delete(CharacterStudySet c){
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
+        try {
+            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)",
+                    new Object[]{ UUID.randomUUID().toString(), c.pathPrefix, c.name, c.description, c.charactersAsString(), Iid.get(context).toString(), Boolean.TRUE});
+        } finally {
+            db.close();
+        }
+    }
+
+    public CharacterStudySet get(String id){
+        List<CharacterStudySet> customs = getSets();
+        for(CharacterStudySet s: customs){
+            if(s.pathPrefix.equals(id)){
+                return s;
+            }
+        }
+        return null;
     }
 
     public List<CharacterStudySet> getSets() {
@@ -35,12 +56,16 @@ public class CustomCharacterSetDataHelper {
         try {
             List<Map<String, String>> records =
                 DataHelper.selectRecords(db.getReadableDatabase(),
-                        "SELECT id, name, description, characters FROM character_set_edits ORDER BY timestamp");
+                        "SELECT charset_id, name, description, characters, deleted FROM character_set_edits ORDER BY timestamp");
 
             for(Map<String, String> r: records){
-                CharacterStudySet s = new CharacterStudySet(r.get("name"), r.get("name"), r.get("description"),
-                        r.get("id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, Iid.get(context), false);
-                sets.put(r.get("id"), s);
+                if(r.get("deleted").equals("1")){
+                    sets.remove(r.get("charset_id"));
+                } else {
+                    CharacterStudySet s = new CharacterStudySet(r.get("name"), r.get("name"), r.get("description"),
+                            r.get("charset_id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, Iid.get(context), false);
+                    sets.put(r.get("charset_id"), s);
+                }
             }
         } finally {
             db.close();

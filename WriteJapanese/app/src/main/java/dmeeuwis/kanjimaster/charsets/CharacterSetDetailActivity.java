@@ -79,6 +79,9 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
             CharacterSetDetailFragment f = (CharacterSetDetailFragment) getSupportFragmentManager().findFragmentById(R.id.characterset_detail_container);
             if(f != null){
                 f.save();
+                NavUtils.navigateUpTo(this, new Intent(this, CharacterSetListActivity.class));
+                return true;
+
             } else {
                 Toast.makeText(this, "Error connecting to fragment", Toast.LENGTH_SHORT);
                 UncaughtExceptionLogger.backgroundLogError("Error connecting to CharsetDetailFragment", new RuntimeException(), this);

@@ -68,14 +68,13 @@ public class CharacterSetDetailFragment extends Fragment {
             if(name.equals("create")){
                 studySet = CharacterSets.createCustom(Iid.get(getActivity().getApplicationContext()));
             } else {
-                studySet = CharacterSets.fromName(name, new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
+                studySet = CharacterSets.fromName(getActivity(), name, new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
             }
         }
     }
 
     public void save(){
         new CustomCharacterSetDataHelper(getActivity()).recordEdit(studySet.pathPrefix, studySet.name, studySet.description, studySet.charactersAsString());
-
     }
 
     @Override
@@ -86,7 +85,7 @@ public class CharacterSetDetailFragment extends Fragment {
         if (studySet != null) {
 
             grid = (AutofitRecyclerView) rootView.findViewById(R.id.charset_detail_grid);
-            grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description,
+            grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description, studySet,
                     CharacterSets.all(
                             new LockCheckerInAppBillingService(getActivity()),
                             Iid.get(getActivity().getApplicationContext()))));
@@ -97,7 +96,7 @@ public class CharacterSetDetailFragment extends Fragment {
 
     public void setCharacterStudySet(CharacterStudySet characterStudySet) {
         this.studySet = characterStudySet;
-        grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description,
+        grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description, characterStudySet,
                 CharacterSets.all(
                         new LockCheckerInAppBillingService(getActivity()),
                         Iid.get(getActivity().getApplicationContext()))));
@@ -186,7 +185,7 @@ public class CharacterSetDetailFragment extends Fragment {
             }
         }
 
-        CharacterGridAdapter(String setName, String setDescription, CharacterStudySet[] sets){
+        CharacterGridAdapter(String setName, String setDescription, CharacterStudySet editing, CharacterStudySet[] sets){
             headers = new HashMap<>();
             headers.put(0, "Meta");
             StringBuilder sb = new StringBuilder();
@@ -200,6 +199,14 @@ public class CharacterSetDetailFragment extends Fragment {
             this.setDesc = setDescription;
             this.asLongString = sb.toString();
             this.selected = new BitSet(asLongString.length());
+
+            Log.i("nakama", "CharacterGridAdapter: editing = " + editing);
+            if(editing != null){
+                for(char c: editing.allCharactersSet){
+                    Log.i("nakama", "Setting as selected: " + c + " = " + asLongString.indexOf(c));
+                    this.selected.set(asLongString.indexOf(c));
+                }
+            }
         }
 
         @Override

@@ -112,6 +112,7 @@ public class CharacterSetListActivity extends ActionBarActivity {
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final List<CharacterStudySet> sets;
+        private View editButton, deleteButton;
 
         public SimpleItemRecyclerViewAdapter(List<CharacterStudySet> items) {
             sets = items;
@@ -121,20 +122,47 @@ public class CharacterSetListActivity extends ActionBarActivity {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.characterset_list_content, parent, false);
-            return new ViewHolder(view);
-        }
 
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = sets.get(position);
-            holder.nameField.setText(sets.get(position).name);
+            final ViewHolder viewHolder = new ViewHolder(view);
 
-            holder.mView.setOnClickListener(new View.OnClickListener() {
+            editButton = view.findViewById(R.id.charset_edit);
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, CharacterSetDetailActivity.class);
+                    intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, sets.get(viewHolder.getAdapterPosition()).pathPrefix);
+                            context.startActivity(intent);
+                    context.startActivity(intent);
+                }
+            });
+
+            deleteButton = view.findViewById(R.id.charset_delete);
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = viewHolder.getAdapterPosition();
+                    CharacterStudySet doomed = sets.get(position);
+                    new CustomCharacterSetDataHelper(getApplicationContext()).delete(doomed);
+                    sets.remove(position);
+                    notifyDataSetChanged();
+
+                    if(sets.size() == 0){
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, KanjiMasterActivity.class);
+                        context.startActivity(intent);
+                    }
+
+                    // do undo SnackBar
+                }
+            });
+
+            view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(CharacterSetDetailFragment.CHARSET_ID, holder.mItem.pathPrefix);
+                        arguments.putString(CharacterSetDetailFragment.CHARSET_ID, sets.get(viewHolder.getAdapterPosition()).pathPrefix);
                         CharacterSetDetailFragment fragment = new CharacterSetDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -143,11 +171,21 @@ public class CharacterSetListActivity extends ActionBarActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, CharacterSetDetailActivity.class);
-                        intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, holder.mItem.pathPrefix);
+                        intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, sets.get(viewHolder.getAdapterPosition()).pathPrefix);
                         context.startActivity(intent);
                     }
                 }
             });
+
+            deleteButton = view.findViewById(R.id.charset_delete);
+
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, int position) {
+            holder.mItem = sets.get(position);
+            holder.nameField.setText(sets.get(position).name);
 
             boolean sysSet = sets.get(position).systemSet;
             holder.editButton.setVisibility(sysSet ? View.GONE : View.VISIBLE);
@@ -162,7 +200,7 @@ public class CharacterSetListActivity extends ActionBarActivity {
         public class ViewHolder extends RecyclerView.ViewHolder {
             final View mView;
             final TextView nameField;
-            final View editButton, copyButton, deleteButton;
+            final View editButton, deleteButton;
             CharacterStudySet mItem;
 
             public ViewHolder(View view) {
@@ -172,7 +210,6 @@ public class CharacterSetListActivity extends ActionBarActivity {
 
                 editButton = view.findViewById(R.id.charset_edit);
                 deleteButton = view.findViewById(R.id.charset_delete);
-                copyButton = view.findViewById(R.id.charset_copy);
             }
         }
     }

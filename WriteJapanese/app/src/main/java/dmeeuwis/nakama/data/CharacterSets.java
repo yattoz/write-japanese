@@ -1,5 +1,7 @@
 package dmeeuwis.nakama.data;
 
+import android.content.Context;
+
 import java.util.UUID;
 
 import dmeeuwis.Kana;
@@ -19,7 +21,7 @@ public class CharacterSets  {
     private static final String G5_DESCRIPTION = "The fifth level of 'regular use kanji' (常用漢字). Learned by Japanese schoolchildren in their fifth year of school, at around 9 years of age.";
     private static final String G6_DESCRIPTION = "The sixth level of 'regular use kanji' (常用漢字). Learned by Japanese schoolchildren in their sixth year of school, at around 10 years of age.";
 
-	static public CharacterStudySet fromName(String name, LockChecker LockChecker, UUID iid){
+	static public CharacterStudySet fromName(Context ctx, String name, LockChecker LockChecker, UUID iid){
 		if(name.equals("hiragana")){ return hiragana(LockChecker, iid); }
 		else if(name.equals("katakana")){ return katakana(LockChecker, iid); }
 		else if(name.equals("j1")){ return joyouG1(LockChecker, iid); }
@@ -28,7 +30,13 @@ public class CharacterSets  {
 		else if(name.equals("j4")){ return joyouG4(LockChecker, iid); }
 		else if(name.equals("j5")){ return joyouG5(LockChecker, iid); }
 		else if(name.equals("j6")){ return joyouG6(LockChecker, iid); }
-		else { throw new RuntimeException("Unknown character set: " + name); }
+		else {
+			CharacterStudySet s = new CustomCharacterSetDataHelper(ctx).get(name);
+			if(s != null){
+				return s;
+			}
+			throw new RuntimeException("Unknown character set: " + name);
+		}
 	}
 
 	static public CharacterStudySet createCustom(UUID iid){
