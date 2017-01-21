@@ -15,7 +15,8 @@
             android:id="@+id/characterset_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:imeOptions="actionNext"
+            android:inputType="textCapWords"
             />
     </android.support.design.widget.TextInputLayout>
 
@@ -30,7 +31,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Description"
-            android:padding="16dp"
+            android:imeOptions="actionDone"
+            android:inputType="textCapSentences"
             />
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

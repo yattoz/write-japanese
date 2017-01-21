@@ -42,8 +42,10 @@ import android.widget.ViewFlipper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import dmeeuwis.Kana;
@@ -53,6 +55,7 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.charsets.CharacterSetDetailActivity;
 import dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment;
 import dmeeuwis.kanjimaster.charsets.CharacterSetListActivity;
+import dmeeuwis.nakama.AndroidUtil;
 import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.nakama.DrawViewTestActivity;
@@ -118,6 +121,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     public CharacterStudySet joyouG1, joyouG2, joyouG3, joyouG4, joyouG5, joyouG6; // , joyouSS;
     public CharacterStudySet hiraganaCharacterSet, katakanaCharacterSet;
+    public List<CharacterStudySet> customSets;
     protected CharacterStudySet currentCharacterSet;
     protected StoryDataHelper db;
 
@@ -386,6 +390,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         this.characterSets.put("j5", joyouG5);
         this.characterSets.put("j6", joyouG6);
 
+        CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
+        customSets = helper.getSets();
+
+        for(CharacterStudySet c: customSets){
+            this.characterSets.put(c.pathPrefix, c);
+        }
+
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(joyouG1);
@@ -397,6 +408,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
+
+/*        for(CharacterStudySet c: customSets){
+            characterSetAdapter.add(new LockableArrayAdapter.CharsetLabel(c.name, c.shortName, c.allCharactersSet.size(), false));
+        }
+*/
         actionBar.setListNavigationCallbacks(characterSetAdapter, this);
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -651,12 +667,31 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
+    private String findPathFile(Character character){
+        String path = null;
+        if(this.currentCharacterSet.systemSet) {
+            path = currentCharacterSet.pathPrefix;
+        } else {
+            for(CharacterStudySet c: CharacterSets.all(getLockChecker(), Iid.get(this))){
+                if(c.allCharactersSet.contains(Character.valueOf(character))){
+                    path = c.pathPrefix;
+                    break;
+                }
+            }
+            if(path == null){
+                path = "";      // failure!
+            }
+        }
+        String fullPath = path + "/" + Integer.toHexString(character.charValue()) + ".path";
+        Log.i("nakama", "Found .path file for " + character + " as " + fullPath);
+        return fullPath;
+    }
+
     private void loadDrawDetails(boolean increment) {
         //Log.i("nakama", "loadDrawDetails()");
         Character first = this.currentCharacterSet.currentCharacter();
 
-        int unicodeValue = this.currentCharacterSet.currentCharacter().charValue();
-        String path = this.currentCharacterSet.pathPrefix + "/" + Integer.toHexString(unicodeValue) + ".path";
+        String path = findPathFile(this.currentCharacterSet.currentCharacter());
 
         AssetManager assets = getAssets();
         try {
@@ -667,7 +702,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 is.close();
             }
         } catch (IOException e) {
-            Log.e("nakama", "Error loading path: " + path + " for character " + first + " (" + unicodeValue + ")");
+            Log.e("nakama", "Error loading path: " + path + " for character " + first + " (" + currentCharacterSet.currentCharacter().charValue() + ")");
             Toast.makeText(this.getBaseContext(), "Internal Error loading stroke for " + first + "; " + path, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -710,7 +745,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         // shuffle setting
-        currentCharacterSet.setShuffle(prefs.getBoolean("shuffleEnabled", false));
+        boolean shuffle = prefs.getBoolean("shuffleEnabled", false);
+        Log.i("nakama", "Setting shuffle on " + currentCharacterSet.name + " to " + shuffle);
+        currentCharacterSet.setShuffle(shuffle);
 
         try {
             invalidateOptionsMenu();
@@ -770,6 +807,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         return this.LockChecker;
     }
 
+
+    Map<Integer, CharacterStudySet> menuToCharsetMap = new HashMap<>();
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -799,6 +838,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:LogBackgroundException");
             menu.add("DEBUG:MarkAllPassed");
         }
+
         return true;
     }
 
@@ -843,6 +883,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             item.setChecked(!item.isChecked());
 
             for (CharacterStudySet c : characterSets.values()) {
+                Log.i("nakama", "Setting charset " + c.name + " shuffle to " + item.isChecked());
                 c.setShuffle(item.isChecked());
             }
         } else if (item.getItemId() == R.id.menu_share_stories) {
@@ -1038,8 +1079,21 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 7) {
             this.currentCharacterSet = joyouG6;
-        } else if (itemPosition == 8) {
-            if(charSetFrag == null && new CustomCharacterSetDataHelper(this).getSets().size() == 0){
+        }
+
+            //this.correctVocabList.setVisibility(View.VISIBLE);
+//		} else if(itemPosition == 8){
+//			Toast.makeText(this, "Showing SS", Toast.LENGTH_SHORT);
+//			this.currentCharacterSet = this.joyouSS;
+//        }
+
+        if(itemPosition >= 8 &&  itemPosition < 8 + customSets.size()){
+            int customSetIndex = itemPosition - 8;
+            this.currentCharacterSet = customSets.get(customSetIndex);
+        }
+
+        if(itemPosition >= 8 + customSets.size()) {
+            if (charSetFrag == null && new CustomCharacterSetDataHelper(this).getSets().size() == 0) {
                 Intent intent = new Intent(this, CharacterSetDetailActivity.class);
                 intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, "create");
                 startActivity(intent);
@@ -1047,11 +1101,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 startActivity(new Intent(this, CharacterSetListActivity.class));
                 return true;
             }
-            //this.correctVocabList.setVisibility(View.VISIBLE);
-//		} else if(itemPosition == 8){
-//			Toast.makeText(this, "Showing SS", Toast.LENGTH_SHORT);
-//			this.currentCharacterSet = this.joyouSS;
         }
+
         this.currentCharacterSet.load(this.getApplicationContext());
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(this.currentCharacterSet);

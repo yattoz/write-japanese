@@ -58,6 +58,12 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
     }
 
     @Override
+    public void add(CharsetLabel c){
+        data.add(c);
+        super.add(c);
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return getCustomView(position, convertView, parent);
     }

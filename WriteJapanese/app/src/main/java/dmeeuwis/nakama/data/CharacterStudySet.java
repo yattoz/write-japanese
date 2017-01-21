@@ -28,7 +28,7 @@ public class CharacterStudySet implements Iterable<Character> {
 
 	final public Set<Character> freeCharactersSet;
 	final public Set<Character> allCharactersSet;
-	final public String name, shortName, description;
+	public String name, shortName, description;
 
 	final public boolean systemSet;
 	final LockChecker LockChecker;

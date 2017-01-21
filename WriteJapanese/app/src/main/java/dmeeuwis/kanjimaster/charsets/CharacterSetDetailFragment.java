@@ -6,7 +6,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +47,8 @@ public class CharacterSetDetailFragment extends Fragment {
     private CharacterStudySet studySet;
     private AutofitRecyclerView grid;
 
+    private TextView nameEdit, descriptionEdit;
+
     private static final int SELECT_COLOUR = 0xffbbdefb;
 
     /**
@@ -74,7 +79,18 @@ public class CharacterSetDetailFragment extends Fragment {
     }
 
     public void save(){
-        new CustomCharacterSetDataHelper(getActivity()).recordEdit(studySet.pathPrefix, studySet.name, studySet.description, studySet.charactersAsString());
+        String editName = nameEdit.getText().toString();
+        String editDesc = descriptionEdit.getText().toString();
+        String characters = ((CharacterGridAdapter)grid.getAdapter()).getCharacters();
+        new CustomCharacterSetDataHelper(getActivity()).recordEdit(studySet.pathPrefix, editName, editDesc, characters);
+    }
+
+    private void setName(String update){
+        studySet.name = update;
+    }
+
+    private void setDescription(String update){
+        studySet.description = update;
     }
 
     @Override
@@ -85,7 +101,7 @@ public class CharacterSetDetailFragment extends Fragment {
         if (studySet != null) {
 
             grid = (AutofitRecyclerView) rootView.findViewById(R.id.charset_detail_grid);
-            grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description, studySet,
+            grid.setAdapter(new CharacterGridAdapter(
                     CharacterSets.all(
                             new LockCheckerInAppBillingService(getActivity()),
                             Iid.get(getActivity().getApplicationContext()))));
@@ -96,7 +112,7 @@ public class CharacterSetDetailFragment extends Fragment {
 
     public void setCharacterStudySet(CharacterStudySet characterStudySet) {
         this.studySet = characterStudySet;
-        grid.setAdapter(new CharacterGridAdapter(studySet.name, studySet.description, characterStudySet,
+        grid.setAdapter(new CharacterGridAdapter(
                 CharacterSets.all(
                         new LockCheckerInAppBillingService(getActivity()),
                         Iid.get(getActivity().getApplicationContext()))));
@@ -117,12 +133,12 @@ public class CharacterSetDetailFragment extends Fragment {
         anim.start();
     }
 
-    public static class CharacterGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public class CharacterGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final int CHARACTER_TYPE = 0;
         private final int HEADER_TYPE = 1;
         private final int METADATA_TYPE = 2;
 
-        private final String asLongString, setName, setDesc;
+        private final String asLongString;
         private final BitSet selected;
         public final Map<Integer, String> headers;
 
@@ -176,16 +192,18 @@ public class CharacterSetDetailFragment extends Fragment {
                         i++;
                         while(i < asLongString.length() && asLongString.charAt(i) != HEADER_CHAR){
                             Log.i("nakama", "Selecting " + i);
-                            selected.set(i, true);
+                            if(!selected.get(i)) {
+                                selected.set(i, true);
+                                notifyItemChanged(i);
+                            }
                             i++;
                         }
-                        CharacterGridAdapter.this.notifyDataSetChanged();
                     }
                 });
             }
         }
 
-        CharacterGridAdapter(String setName, String setDescription, CharacterStudySet editing, CharacterStudySet[] sets){
+        CharacterGridAdapter(CharacterStudySet[] sets){
             headers = new HashMap<>();
             headers.put(0, "Meta");
             StringBuilder sb = new StringBuilder();
@@ -195,14 +213,12 @@ public class CharacterSetDetailFragment extends Fragment {
                 sb.append(" "); // header
                 sb.append(s.charactersAsString());
             }
-            this.setName = setName;
-            this.setDesc = setDescription;
             this.asLongString = sb.toString();
             this.selected = new BitSet(asLongString.length());
 
-            Log.i("nakama", "CharacterGridAdapter: editing = " + editing);
-            if(editing != null){
-                for(char c: editing.allCharactersSet){
+            Log.i("nakama", "CharacterGridAdapter: studySet = " + studySet);
+            if(studySet != null){
+                for(char c: studySet.allCharactersSet){
                     Log.i("nakama", "Setting as selected: " + c + " = " + asLongString.indexOf(c));
                     this.selected.set(asLongString.indexOf(c));
                 }
@@ -218,6 +234,45 @@ public class CharacterSetDetailFragment extends Fragment {
             } else if(viewType == METADATA_TYPE) {
                 View mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_character_grid_metadata, parent, false);
                 MetadataViewHolder vh = new MetadataViewHolder(mView);
+
+                nameEdit = (TextView) mView.findViewById(R.id.characterset_name);
+                nameEdit.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        Log.i("nakama", "OnEditorAction name: " + charSequence);
+                        studySet.name = charSequence.toString();
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+
+                descriptionEdit = (TextView) mView.findViewById(R.id.characterset_detail);
+                descriptionEdit.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        Log.i("nakama", "OnEditorAction description: " + charSequence);
+                        studySet.description = charSequence.toString();
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+
                 return vh;
             } else {
                 View mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_character_header_layout, parent, false);
@@ -230,8 +285,8 @@ public class CharacterSetDetailFragment extends Fragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if(asLongString.charAt(position) == METADATA_CHAR) {
                 MetadataViewHolder ch = (MetadataViewHolder) holder;
-                ch.nameInput.setText(setName);
-                ch.descInput.setText(setDesc);
+                ch.nameInput.setText(studySet.name);
+                ch.descInput.setText(studySet.description);
 
             } else if(asLongString.charAt(position) == HEADER_CHAR){
                 HeaderViewHolder ch = (HeaderViewHolder) holder;
@@ -260,6 +315,16 @@ public class CharacterSetDetailFragment extends Fragment {
         @Override
         public int getItemCount() {
             return asLongString.length();
+        }
+
+        public String getCharacters(){
+            StringBuilder s = new StringBuilder();
+            for(int i = 0; i < selected.length(); i++){
+                if(selected.get(i)){
+                    s.append(asLongString.charAt(i));
+                }
+            }
+            return s.toString();
         }
     }
 }
