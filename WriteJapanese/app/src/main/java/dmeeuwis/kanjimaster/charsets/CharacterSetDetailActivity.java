@@ -78,9 +78,11 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
         } else if(id == R.id.menu_save_character_set){
             CharacterSetDetailFragment f = (CharacterSetDetailFragment) getSupportFragmentManager().findFragmentById(R.id.characterset_detail_container);
             if(f != null){
-                f.save();
-                NavUtils.navigateUpTo(this, new Intent(this, CharacterSetListActivity.class));
-                return true;
+                boolean saveSuccess = f.save();
+                if(saveSuccess) {
+                    NavUtils.navigateUpTo(this, new Intent(this, CharacterSetListActivity.class));
+                    return true;
+                }
 
             } else {
                 Toast.makeText(this, "Error connecting to fragment", Toast.LENGTH_SHORT);

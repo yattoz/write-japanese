@@ -30,7 +30,7 @@ public class DrawingComparator implements Comparator {
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 	static private final int PERCENTAGE_DISTANCE_DIFF_LIMIT = 100;
 
-	private static final boolean DEBUG = BuildConfig.DEBUG && false;
+	private static final boolean DEBUG = BuildConfig.DEBUG && true;
 
     static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
     static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);

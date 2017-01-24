@@ -9,12 +9,12 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.BitSet;
 import java.util.HashMap;
@@ -78,11 +78,28 @@ public class CharacterSetDetailFragment extends Fragment {
         }
     }
 
-    public void save(){
+    public boolean save(){
         String editName = nameEdit.getText().toString();
         String editDesc = descriptionEdit.getText().toString();
         String characters = ((CharacterGridAdapter)grid.getAdapter()).getCharacters();
+
+        if(editName.isEmpty()){
+            Toast.makeText(getContext(), "Custom character set must have a name.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if(editDesc.isEmpty()){
+            Toast.makeText(getContext(), "Custom character set must have a description.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if(characters.length() == 0){
+            Toast.makeText(getContext(), "Custom character set must have at least 1 character selected.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         new CustomCharacterSetDataHelper(getActivity()).recordEdit(studySet.pathPrefix, editName, editDesc, characters);
+        return true;
     }
 
     private void setName(String update){

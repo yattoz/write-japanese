@@ -42,10 +42,8 @@ import android.widget.ViewFlipper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import dmeeuwis.Kana;
@@ -55,7 +53,6 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.charsets.CharacterSetDetailActivity;
 import dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment;
 import dmeeuwis.kanjimaster.charsets.CharacterSetListActivity;
-import dmeeuwis.nakama.AndroidUtil;
 import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.CreditsActivity;
 import dmeeuwis.nakama.DrawViewTestActivity;
@@ -371,6 +368,25 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             incorrectCard.setTranslationY(-1 * animateSlide);
         }
 
+        initializeCharacterSets();
+
+        ActionBar actionBar = getSupportActionBar();
+        this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
+        actionBar.setBackgroundDrawable(this.actionBarBackground);
+
+        LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
+        characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
+
+/*        for(CharacterStudySet c: customSets){
+            characterSetAdapter.add(new LockableArrayAdapter.CharsetLabel(c.name, c.shortName, c.allCharactersSet.size(), false));
+        }
+*/
+        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
+        actionBar.show();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+    }
+
+    private void initializeCharacterSets(){
         UUID iid = Iid.get(this.getApplicationContext());
         hiraganaCharacterSet = CharacterSets.hiragana(LockChecker, iid);
         katakanaCharacterSet = CharacterSets.katakana(LockChecker, iid);
@@ -401,21 +417,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(joyouG1);
         }
-
-        ActionBar actionBar = getSupportActionBar();
-        this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
-        actionBar.setBackgroundDrawable(this.actionBarBackground);
-
-        LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
-        characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
-
-/*        for(CharacterStudySet c: customSets){
-            characterSetAdapter.add(new LockableArrayAdapter.CharsetLabel(c.name, c.shortName, c.allCharactersSet.size(), false));
-        }
-*/
-        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
-        actionBar.show();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
     }
 
 
@@ -760,6 +761,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     @Override
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
+        initializeCharacterSets();
 
         loadCurrentCharacterSet();
         currentCharacterSet.load(this.getApplicationContext());
@@ -807,8 +809,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         return this.LockChecker;
     }
 
-
-    Map<Integer, CharacterStudySet> menuToCharsetMap = new HashMap<>();
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -1093,7 +1093,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         if(itemPosition >= 8 + customSets.size()) {
-            if (charSetFrag == null && new CustomCharacterSetDataHelper(this).getSets().size() == 0) {
+            if (customSets.size() == 0) {
                 Intent intent = new Intent(this, CharacterSetDetailActivity.class);
                 intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, "create");
                 startActivity(intent);

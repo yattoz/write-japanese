@@ -209,9 +209,15 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         charLabel.setText(charSet.name);
         descLabel.setText(charSet.description);
 
-        CharsetColor color = CharsetColor.valueOf(charSet.pathPrefix.toUpperCase(Locale.ENGLISH));
-        charLabel.setBackgroundColor(getResources().getColor(color.color));
-        descLabel.setBackgroundColor(getResources().getColor(color.color));
+        int color;
+        if(charSet.systemSet) {
+            CharsetColor cc = CharsetColor.valueOf(charSet.pathPrefix.toUpperCase(Locale.ENGLISH));
+            color = cc.color;
+        } else {
+            color = R.color.BlueGrey;
+        }
+        charLabel.setBackgroundColor(getResources().getColor(color));
+        descLabel.setBackgroundColor(getResources().getColor(color));
         charLabel.setTextColor(Color.WHITE);
         descLabel.setTextColor(Color.WHITE);
 

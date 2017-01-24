@@ -129,11 +129,21 @@ public class CharacterSetListActivity extends ActionBarActivity {
             editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, CharacterSetDetailActivity.class);
-                    intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, sets.get(viewHolder.getAdapterPosition()).pathPrefix);
-                            context.startActivity(intent);
-                    context.startActivity(intent);
+                    if(mTwoPane){
+                        Bundle arguments = new Bundle();
+                        arguments.putString(CharacterSetDetailFragment.CHARSET_ID, sets.get(viewHolder.getAdapterPosition()).pathPrefix);
+                        CharacterSetDetailFragment fragment = new CharacterSetDetailFragment();
+                        fragment.setArguments(arguments);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.characterset_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, CharacterSetDetailActivity.class);
+                        intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, sets.get(viewHolder.getAdapterPosition()).pathPrefix);
+                        context.startActivity(intent);
+                        context.startActivity(intent);
+                    }
                 }
             });
 

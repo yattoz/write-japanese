@@ -87,10 +87,11 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
         boolean lockIconVisible = d.locked;
         lockIcon.setVisibility(lockIconVisible ? View.VISIBLE : View.INVISIBLE);
         String text;
+        String countText = d.length == 0 ? "" : " (" + d.length + ")";
         if(screenWidthInches > 5.0d) {
-            text = d.name + " (" + d.length + ")";
+            text = d.name + countText;
         } else {
-            text = d.shortName + " (" + d.length + ")";
+            text = d.shortName + countText;
         }
         ((TextView) row.findViewById(R.id.text)).setText(text);
         return row;
