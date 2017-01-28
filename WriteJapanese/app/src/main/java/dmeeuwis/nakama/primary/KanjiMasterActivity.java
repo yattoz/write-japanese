@@ -62,6 +62,7 @@ import dmeeuwis.nakama.ReleaseNotesActivity;
 import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.SpenDrawActivity;
 import dmeeuwis.nakama.TestDrawActivity;
+import dmeeuwis.nakama.data.AndroidInputStreamGenerator;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
@@ -221,8 +222,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 final PointDrawing challenger = drawPad.getDrawing();
                 final CurveDrawing known = new CurveDrawing(currentCharacterSvg);
 
+                AndroidInputStreamGenerator is = new AndroidInputStreamGenerator(KanjiMasterActivity.this.getAssets());
                 Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(),
-                        new AssetFinder(KanjiMasterActivity.this.getAssets()));
+                        new AssetFinder(is));
 
                 ComparisonAsyncTask comp = new ComparisonAsyncTask(getApplicationContext(), comparator, currentCharacterSet, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
                     public void run(Criticism critique) {

@@ -155,9 +155,20 @@ public class DrawView extends View implements OnTouchListener {
 	}
 
 	public PointDrawing getDrawing(){
-		return PointDrawing.fromDetailedPoints(screenWidth, screenHeight, this.linesToDraw, this.getContext());
+		return PointDrawing.fromDetailedPoints(screenWidth, screenHeight, convertPoints(this.linesToDraw), this.getContext());
 	}
-	
+
+    private List<List<dmeeuwis.nakama.data.Point>> convertPoints(List<List<Point>> drawing){
+        List<List<dmeeuwis.nakama.data.Point>> newDrawing = new ArrayList<>(drawing.size());
+        for(List<Point> l2: drawing){
+            List<dmeeuwis.nakama.data.Point> newStroke = new ArrayList<>(l2.size());
+            for(Point p: l2){
+                newStroke.add(new dmeeuwis.nakama.data.Point(p.x, p.y));
+            }
+        }
+        return newDrawing;
+    }
+
 	/**
 	 * Returns the number of on-screen strokes the user has drawn.
 	 */

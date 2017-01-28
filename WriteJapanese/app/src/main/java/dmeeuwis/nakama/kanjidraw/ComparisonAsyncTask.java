@@ -5,7 +5,10 @@ import android.database.sqlite.SQLiteFullException;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
 public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
@@ -31,8 +34,12 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
     @Override
     protected Criticism doInBackground(Void ... params) {
-        final Criticism critique = comparator.compare(currentCharacterSet.currentCharacter(), drawn, known);
-        return critique;
+        try {
+            return comparator.compare(currentCharacterSet.currentCharacter(), drawn, known);
+        } catch (IOException e) {
+            UncaughtExceptionLogger.backgroundLogError("IO error from comparator", e, appContext);
+            return null;
+        }
     }
 
 

@@ -1,12 +1,13 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Point;
-import android.graphics.Rect;
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;

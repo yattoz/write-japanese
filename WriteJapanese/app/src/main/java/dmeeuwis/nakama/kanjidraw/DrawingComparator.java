@@ -1,9 +1,8 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -16,6 +15,8 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
 import dmeeuwis.util.Util;
 
@@ -49,11 +50,11 @@ public class DrawingComparator implements Comparator {
 		this.assetFinder = assetFinder;
 	}
 
-	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known){
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known) throws IOException {
 		return compare(target, challenger, known, Recursion.ALLOW);
 	}
 
-	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion){
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion) throws IOException {
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 
 		Rect drawnBox = this.drawn.findBoundingBox();
@@ -137,7 +138,7 @@ public class DrawingComparator implements Comparator {
 	
 	
 	private enum Recursion { ALLOW, DISALLOW }
-	private Criticism compare(Recursion allowRecursion){
+	private Criticism compare(Recursion allowRecursion) throws IOException {
 		Criticism c = new Criticism();
 		List<OverallFailure> overallFailures = new ArrayList<OverallFailure>();
 		

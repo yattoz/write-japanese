@@ -9,7 +9,6 @@ import android.graphics.Paint.Cap;
 import android.graphics.Paint.Join;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
-import android.graphics.RectF;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -22,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.Rect;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.ParameterizedEquation;
@@ -53,7 +53,7 @@ public class AnimatedCurveView extends View implements Animatable {
     int paddingTop = 0, paddingRight = 0, paddingBottom = 0, paddingLeft = 0;
 
 	Drawing drawing = null;
-	RectF unscaledBoundingBox = null;
+	Rect unscaledBoundingBox = null;
 
     Handler animateHandler;
     Runnable animationRunnable;
@@ -172,7 +172,7 @@ public class AnimatedCurveView extends View implements Animatable {
             this.scaleAndOffsets.initialized = false;
         }
 
-        this.unscaledBoundingBox = new RectF(drawing.findBoundingBox());
+        this.unscaledBoundingBox = new Rect(drawing.findBoundingBox());
         this.eqns = drawing.toParameterizedEquations(1);
         this.scaleAndOffsets.initialized = false;
 

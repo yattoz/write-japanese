@@ -1,8 +1,8 @@
 package dmeeuwis.nakama.kanjidraw;
 
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 import android.util.Pair;
 
 import java.util.ArrayList;

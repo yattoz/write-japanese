@@ -5,6 +5,8 @@ import android.graphics.RectF;
 import android.util.Log;
 import android.view.View.MeasureSpec;
 
+import dmeeuwis.nakama.data.Rect;
+
 public class MeasureUtil {
 	public static class WidthAndHeight {
 		final public int width;
@@ -48,7 +50,7 @@ public class MeasureUtil {
 		public float scale = 0f, xOffset = 0f, yOffset = 0f;
 		public boolean initialized = false;
 
-		public void calculate(RectF unscaledBoundingBox, int width, int height){
+		public void calculate(Rect unscaledBoundingBox, int width, int height){
 			if(unscaledBoundingBox == null){
 				xOffset = 0;
 				yOffset = 0;

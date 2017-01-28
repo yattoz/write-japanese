@@ -1,10 +1,8 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Point;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
@@ -12,11 +10,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.BuildConfig;
+import dmeeuwis.nakama.data.Point;
 import dmeeuwis.util.Util;
 
 import static org.junit.Assert.*;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class DrawingComparatorTest {
 

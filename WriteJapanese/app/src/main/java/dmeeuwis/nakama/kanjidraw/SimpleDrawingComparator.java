@@ -1,9 +1,10 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Point;
-import android.graphics.Rect;
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,7 +31,7 @@ class SimpleDrawingComparator implements Comparator {
 	private float CIRCLE_DETECTION_DISTANCE;
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 
-	private static final boolean DEBUG = BuildConfig.DEBUG && false;
+	private static final boolean DEBUG = BuildConfig.DEBUG && true;
 
     static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
     static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
@@ -49,20 +50,28 @@ class SimpleDrawingComparator implements Comparator {
 		strokeOrder = order;
 	}
 
-	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known){
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known) throws IOException {
 		return compare(target, challenger, known, Recursion.ALLOW);
 	}
 
-	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion){
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion) throws IOException {
 
 		this.target = target;
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 		Rect drawnBox = this.drawn.findBoundingBox();
-		
-		PointDrawing cutOffKnown = known.pointPointDrawing.cutOffEdges();
+        if(DEBUG) Log.d("nakama", "Rect drawnBox is: " + drawnBox);
+
+        PointDrawing cutOffKnown;
+        if(target != 'ニ') {
+            cutOffKnown = known.pointPointDrawing.cutOffEdges();
+        } else {
+            cutOffKnown = known.pointPointDrawing;
+        }
+        if(DEBUG) Log.d("nakama", "Rect knownBox is: " + cutOffKnown.findBoundingBox());
 		this.known = cutOffKnown.scaleToBox(drawnBox);
 
 		Rect nBounds = this.known.findBoundingBox();
+        if(DEBUG) Log.d("nakama", "Rect knownBox is: " + nBounds);
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
 
 		// only characters with indeterminate stroke orders?
@@ -71,7 +80,11 @@ class SimpleDrawingComparator implements Comparator {
 			strokeOrder = StrokeOrder.DISCOUNT;
 		}
 
-		if(strokeOrder == StrokeOrder.DISCOUNT){
+        if(target == 'ニ') {
+            this.FAIL_POINT_START_DISTANCE = (float)drawingAreaMaxDim;
+            this.FAIL_POINT_END_DISTANCE = (float)drawingAreaMaxDim;
+
+        } else if(strokeOrder == StrokeOrder.DISCOUNT){
 			this.FAIL_POINT_START_DISTANCE = (float) (drawingAreaMaxDim * 0.50);
 			this.FAIL_POINT_END_DISTANCE = (float) (drawingAreaMaxDim * 0.50);
 		} else {
@@ -139,7 +152,7 @@ class SimpleDrawingComparator implements Comparator {
 	
 	
 	private enum Recursion { ALLOW, DISALLOW }
-	private Criticism compare(Recursion allowRecursion) {
+	private Criticism compare(Recursion allowRecursion) throws IOException {
 		Criticism c = new Criticism();
 		List<OverallFailure> overallFailures = new ArrayList<OverallFailure>();
 

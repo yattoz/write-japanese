@@ -9,11 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 import dmeeuwis.Kanji;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.AndroidInputStreamGenerator;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
@@ -39,7 +42,8 @@ public class KanjiCheckActivity extends ActionBarActivity {
         setContentView(R.layout.activity_kanji_check);
 
         final AssetManager am = this.getAssets();
-        final AssetFinder af = new AssetFinder(am);
+        final AndroidInputStreamGenerator is = new AndroidInputStreamGenerator(am);
+        final AssetFinder af = new AssetFinder(is);
 
         RecyclerView rv = (RecyclerView)this.findViewById(R.id.kanji_check_list);
         rv.setLayoutManager(new LinearLayoutManager(this));
@@ -59,7 +63,11 @@ public class KanjiCheckActivity extends ActionBarActivity {
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
                 CurveDrawing cv = null;
                 if(position < Kanji.JOUYOU_G1.length()) {
-                    cv = af.findGlyphForCharacter("j1", Kanji.JOUYOU_G1.charAt(position));
+                    try {
+                        cv = af.findGlyphForCharacter("j1", Kanji.JOUYOU_G1.charAt(position));
+                    } catch (IOException e) {
+                        Toast.makeText(KanjiCheckActivity.this, "Error finding glyph for " + Kanji.JOUYOU_G1.charAt(position), Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 if(cv != null) {

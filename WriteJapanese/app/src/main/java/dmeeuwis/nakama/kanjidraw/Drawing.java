@@ -1,6 +1,6 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Rect;
+import dmeeuwis.nakama.data.Rect;
 
 import java.util.Iterator;
 import java.util.List;
