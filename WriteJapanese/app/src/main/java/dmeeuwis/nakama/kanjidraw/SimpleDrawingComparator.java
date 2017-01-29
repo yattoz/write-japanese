@@ -54,6 +54,13 @@ class SimpleDrawingComparator implements Comparator {
 		return compare(target, challenger, known, Recursion.ALLOW);
 	}
 
+	public static Rect findBounds(char target, Drawing d){
+		if(target == 'ニ'){
+			return d.findBounds();
+		}
+		return d.findBoundingBox();
+	}
+
 	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion) throws IOException {
         Log.d("nakama", "Initial input to drawing comparator is: " + challenger);
 
@@ -63,21 +70,17 @@ class SimpleDrawingComparator implements Comparator {
         Log.d("nakama", "Trimmed input to drawing comparator is: " + this.drawn);
 
         Log.d("nakama", "\nFind drawn binding box....");
-		Rect drawnBox = this.drawn.findBoundingBox();
+		Rect drawnBox = findBounds(target, this.drawn);
         Log.d("nakama", "Rect drawnBox is: " + drawnBox);
 
         Log.d("nakama", "\nTrimming known binding box....");
         this.known = known.pointPointDrawing.cutOffEdges();
 
-        Log.d("nakama", "\nFind trimmed known binding box....");
-        Rect trimmedBox = this.known.findBoundingBox();
-        Log.d("nakama", "Trimmed known box is: " + trimmedBox);
-
         Log.d("nakama", "\nScaling known binding box....");
 		this.known = this.known.scaleToBox(drawnBox);
 
         Log.d("nakama", "\nFinding binding box for known-trimmed-scalled box....");
-		Rect nBounds = this.known.findBoundingBox();
+		Rect nBounds = findBounds(target, this.known);
         Log.d("nakama", "Rect final knownBox is: " + nBounds);
 
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
@@ -98,9 +101,9 @@ class SimpleDrawingComparator implements Comparator {
 		this.CIRCLE_DETECTION_DISTANCE = (float) (drawingAreaMaxDim * 0.10);
 
 		if(DEBUG) Log.d("nakama", "PathComparator.new: drawingAreaWidth: " + drawingAreaMaxDim);
-		if(DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + this.drawn.findBoundingBox());
+		if(DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + findBounds(target, this.drawn));
 		if(DEBUG) Log.d("nakama", "PathComparator.new: circle detection distance " + this.CIRCLE_DETECTION_DISTANCE);
-		if(DEBUG) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
+		if(DEBUG) Log.d("nakama", "PathComparator.new: known: " + findBounds(target, known));
 
 		return compare(recursion);
 	}

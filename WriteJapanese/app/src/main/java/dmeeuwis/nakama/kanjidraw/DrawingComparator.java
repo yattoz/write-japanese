@@ -54,15 +54,22 @@ public class DrawingComparator implements Comparator {
 		return compare(target, challenger, known, Recursion.ALLOW);
 	}
 
+	private static Rect findBounds(char target, Drawing d){
+		if(target == 'ニ'){
+			return d.findBounds();
+		}
+		return d.findBoundingBox();
+	}
+
 	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion) throws IOException {
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 
-		Rect drawnBox = this.drawn.findBoundingBox();
+		Rect drawnBox = findBounds(target, this.drawn);
 		
 		PointDrawing cutOffKnown = known.pointPointDrawing.cutOffEdges();
 		this.known = cutOffKnown.scaleToBox(drawnBox);
 
-		Rect nBounds = this.known.findBoundingBox();
+		Rect nBounds = findBounds(target, this.known);
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
 
         Log.d("nakama-calc", "========================================");
@@ -80,11 +87,9 @@ public class DrawingComparator implements Comparator {
 		this.CIRCLE_DETECTION_DISTANCE = (float)(drawingAreaMaxDim * 0.10);
 		
 		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: drawingAreaWidth: " + drawingAreaMaxDim);
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + this.drawn.findBoundingBox());
+		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + findBounds(target, this.drawn));
 		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: circle detection distance " + this.CIRCLE_DETECTION_DISTANCE);
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut bounds: " + cutOffKnown.findBoundingBox());
-		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
+		if(BuildConfig.DEBUG) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + findBounds(target, this.known));
 
 		return compare(recursion);
 	}

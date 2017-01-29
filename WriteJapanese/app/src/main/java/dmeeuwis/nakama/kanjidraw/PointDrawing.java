@@ -1,23 +1,21 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import dmeeuwis.nakama.data.Point;
-import dmeeuwis.nakama.data.Rect;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.JsonWriter;
 import android.util.Log;
 import android.util.TypedValue;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
 import dmeeuwis.util.Util;
 
@@ -89,7 +87,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	}
 
     @Override
-    public Rect findBoundingBox(){
+    public Rect findBounds(){
         Rect box = new Rect(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0);
         Log.i("nakama", "Bounding box for stroke 0 " + box);
         for(Stroke s: strokes){
@@ -101,6 +99,15 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
         }
         Log.i("nakama", "Created unioned bounding box: " + box);
 
+        return box;
+    }
+
+    @Override
+    public Rect findBoundingBox(){
+        Rect box = strokes.get(0).findBoundingBox();
+        for(int i = 1; i < this.strokeCount(); i++){
+            box.union(strokes.get(i).findBoundingBox());
+        }
         return box;
 	}
 
