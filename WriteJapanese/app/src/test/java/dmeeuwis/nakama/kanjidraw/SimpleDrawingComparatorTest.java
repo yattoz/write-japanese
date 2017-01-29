@@ -2,14 +2,15 @@ package dmeeuwis.nakama.kanjidraw;
 
 import android.util.Log;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.robolectric.shadows.ShadowLog;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import java.util.List;
 
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.Point;
-import dmeeuwis.util.Util;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,15 +25,21 @@ import static org.junit.Assert.assertEquals;
 @PrepareForTest({Log.class})
 public class SimpleDrawingComparatorTest {
 
+    @BeforeClass
+    public static void setup(){
+        ShadowLog.stream = System.out;
+    }
+
     public static class TestInputStreamGenerator implements AssetFinder.InputStreamGenerator {
         @Override
         public InputStream fromPath(String path) throws IOException {
-            return new FileInputStream(System.getProperty("user.dir") + "/app/src/main/assets/" + path);
+            return new FileInputStream(System.getProperty("user.dir") + "/src/main/assets/" + path);
         }
     }
 
     @Test
     public void testMisorderedStrokesOK(){
+        PowerMockito.mockStatic(Log.class);
         findMatch(new double[][]{
                 new double[]{1, 0, 2},
                 new double[]{0, 1, 2},
@@ -67,10 +73,13 @@ public class SimpleDrawingComparatorTest {
         SimpleDrawingComparator s = new SimpleDrawingComparator(as, SimpleDrawingComparator.StrokeOrder.DISCOUNT);
         List<List<Point>> list = new ArrayList<>();
         list.add(toStroke(213, 16, 1074, 24));
+        list.add(toStroke(0, 775, 1160, 742));
 
         String[] in = as.findSvgForCharacter("katakana", 'ニ');
         CurveDrawing known = new CurveDrawing(in);
         Criticism c = s.compare('ニ', PointDrawing.fromPrefilteredPoints(1176, 739, list), known);
+
+        System.out.println(c.toString());
         assertEquals("Simple katakana ni passed", true, c.pass);
     }
 

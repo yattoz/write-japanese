@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
@@ -174,4 +175,16 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             addSettingsLog(dbase);
         }
 	}
+
+    @Override
+    public void onDowngrade(SQLiteDatabase dbase, int oldVersion, int newVersion) {
+        if(BuildConfig.DEBUG){
+            dbase.execSQL("DROP TABLE IF EXISTS kanji_stories");
+            dbase.execSQL("DROP TABLE IF EXISTS charset_goals");
+            dbase.execSQL("DROP TABLE IF EXISTS practice_log");
+            dbase.execSQL("DROP TABLE IF EXISTS settings_log");
+
+            onCreate(dbase);
+        }
+    }
 }

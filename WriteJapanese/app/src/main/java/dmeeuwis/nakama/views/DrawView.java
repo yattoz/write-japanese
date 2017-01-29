@@ -165,6 +165,7 @@ public class DrawView extends View implements OnTouchListener {
             for(Point p: l2){
                 newStroke.add(new dmeeuwis.nakama.data.Point(p.x, p.y));
             }
+			newDrawing.add(newStroke);
         }
         return newDrawing;
     }

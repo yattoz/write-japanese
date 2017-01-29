@@ -1,7 +1,5 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import dmeeuwis.nakama.data.Point;
-import dmeeuwis.nakama.data.Rect;
 import android.util.Log;
 
 import java.io.IOException;
@@ -17,6 +15,8 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 import dmeeuwis.util.Util;
 
 class SimpleDrawingComparator implements Comparator {
@@ -163,6 +163,7 @@ class SimpleDrawingComparator implements Comparator {
 
 		StrokeCriticism[][] criticismMatrix = new StrokeCriticism[known.strokeCount()][drawn.strokeCount()];
 		double[][] scoreMatrix = new double[known.strokeCount()][drawn.strokeCount()];
+		c.setScoreMatrix(scoreMatrix);
 
 
 		boolean correctDiagonal = known.strokeCount() == drawn.strokeCount();

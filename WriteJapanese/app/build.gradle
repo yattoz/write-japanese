@@ -49,6 +49,18 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType(Test) {
+     systemProperty "robolectric.logging", "stdout"
+}
+
+android{
+    testOptions {
+        unitTests.all {
+            systemProperty 'robolectric.logging.enabled', 'true'
+        }
+    }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // flowlayout
