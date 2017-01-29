@@ -2,6 +2,7 @@ package dmeeuwis.kanjimaster.charsets;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,20 +14,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.views.AutofitRecyclerView;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
+import dmeeuwis.nakama.views.PurchaseDialog;
+import dmeeuwis.util.Util;
 
 /**
  * A fragment representing a single CharacterSet detail screen.
@@ -46,6 +53,7 @@ public class CharacterSetDetailFragment extends Fragment {
 
     private CharacterStudySet studySet;
     private AutofitRecyclerView grid;
+    private LockChecker lockChecker;
 
     private TextView nameEdit, descriptionEdit;
 
@@ -76,6 +84,12 @@ public class CharacterSetDetailFragment extends Fragment {
                 studySet = CharacterSets.fromName(getActivity(), name, new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
             }
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity){
+        this.lockChecker = ((LockCheckerHolder)activity).getLockChecker();
+        super.onAttach(activity);
     }
 
     public boolean save(){
@@ -158,6 +172,7 @@ public class CharacterSetDetailFragment extends Fragment {
         private final String asLongString;
         private final BitSet selected;
         public final Map<Integer, String> headers;
+        private final BitSet locked;
 
 
         private class MetadataViewHolder extends RecyclerView.ViewHolder {
@@ -173,16 +188,25 @@ public class CharacterSetDetailFragment extends Fragment {
 
         private class CharacterViewHolder extends RecyclerView.ViewHolder {
             public TextView text;
+            public ImageView lock;
 
             CharacterViewHolder(View itemView) {
                 super(itemView);
                 this.text = (TextView)itemView.findViewById(R.id.character_grid_text);
+                this.lock = (ImageView)itemView.findViewById(R.id.character_grid_lock);
 
 
                 this.text.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                       int currentPosition = getAdapterPosition();
+                        int currentPosition = getAdapterPosition();
+
+                        if(locked.get(currentPosition)){
+                            PurchaseDialog pd = PurchaseDialog.make(PurchaseDialog.DialogMessage.LOCKED_CHARACTER);
+                            pd.show(getActivity().getSupportFragmentManager(), "purchase");
+                            return;
+                        }
+
                        if(selected.get(currentPosition)){
                            selected.set(currentPosition, false);
                            makeColorAnimater(text, SELECT_COLOUR, Color.WHITE);
@@ -209,7 +233,7 @@ public class CharacterSetDetailFragment extends Fragment {
                         i++;
                         while(i < asLongString.length() && asLongString.charAt(i) != HEADER_CHAR){
                             Log.i("nakama", "Selecting " + i);
-                            if(!selected.get(i)) {
+                            if(!locked.get(i) && !selected.get(i)) {
                                 selected.set(i, true);
                                 notifyItemChanged(i);
                             }
@@ -227,17 +251,42 @@ public class CharacterSetDetailFragment extends Fragment {
             sb.append(METADATA_CHAR);             // represents edit metadata header
             for(CharacterStudySet s: sets){
                 headers.put(sb.length(), s.name);
-                sb.append(" "); // header
+                sb.append(String.valueOf(HEADER_CHAR)); // header
                 sb.append(s.charactersAsString());
             }
             this.asLongString = sb.toString();
             this.selected = new BitSet(asLongString.length());
+            this.locked = new BitSet(asLongString.length());
 
             Log.i("nakama", "CharacterGridAdapter: studySet = " + studySet);
             if(studySet != null){
                 for(char c: studySet.allCharactersSet){
                     Log.i("nakama", "Setting as selected: " + c + " = " + asLongString.indexOf(c));
-                    this.selected.set(asLongString.indexOf(c));
+                    int index = asLongString.indexOf(c);
+                    this.selected.set(index);
+
+                }
+            }
+
+            if(sets[sets.length-1].locked()) {
+                HashSet<Character> allFree = new HashSet<>();
+                for (CharacterStudySet s : sets) {
+                    if(s.locked()) {
+                        allFree.addAll(s.freeCharactersSet);
+                    } else {
+                        allFree.addAll(s.allCharactersSet);
+                    }
+                }
+                Log.i("nakama", "Set of all available chars: " + Util.join(", ", allFree));
+
+                for(int i = 0; i < asLongString.length(); i++){
+                    if(asLongString.charAt(i) == HEADER_CHAR || asLongString.charAt(i) == METADATA_CHAR){
+                        continue;
+                    }
+
+                    if(!allFree.contains(asLongString.charAt(i))){
+                        locked.set(i);
+                    }
                 }
             }
         }
@@ -316,6 +365,12 @@ public class CharacterSetDetailFragment extends Fragment {
                     ch.text.setBackgroundColor(SELECT_COLOUR);
                 } else {
                     ch.text.setBackgroundColor(Color.WHITE);
+                }
+
+                if(locked.get(position)){
+                    ch.lock.setVisibility(View.VISIBLE);
+                } else {
+                    ch.lock.setVisibility(View.GONE);
                 }
             }
         }

@@ -11,7 +11,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
+import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 
 /**
  * An activity representing a single CharacterSet detail screen. This
@@ -19,7 +22,9 @@ import dmeeuwis.nakama.data.UncaughtExceptionLogger;
  * item details are presented side-by-side with a list of items
  * in a {@link CharacterSetListActivity}.
  */
-public class CharacterSetDetailActivity extends ActionBarActivity {
+public class CharacterSetDetailActivity extends ActionBarActivity implements LockCheckerHolder {
+
+    LockChecker lockChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +34,8 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
         ActionBar actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Edit Custom Character Set");
+
+        this.lockChecker = new LockCheckerInAppBillingService(this);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -91,5 +98,10 @@ public class CharacterSetDetailActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public LockChecker getLockChecker() {
+        return this.lockChecker;
     }
 }

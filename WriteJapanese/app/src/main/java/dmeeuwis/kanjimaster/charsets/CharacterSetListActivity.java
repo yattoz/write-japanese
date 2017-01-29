@@ -18,10 +18,13 @@ import android.widget.TextView;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
+import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 
 /**
  * An activity representing a list of CharacterSets. This activity
@@ -31,7 +34,7 @@ import dmeeuwis.nakama.primary.KanjiMasterActivity;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class CharacterSetListActivity extends ActionBarActivity {
+public class CharacterSetListActivity extends ActionBarActivity implements LockCheckerHolder {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -39,6 +42,7 @@ public class CharacterSetListActivity extends ActionBarActivity {
      */
     private boolean mTwoPane;
     DictionarySet set;
+    LockChecker lockChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +86,8 @@ public class CharacterSetListActivity extends ActionBarActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+
+        this.lockChecker = new LockCheckerInAppBillingService(this);
     }
 
 
@@ -106,6 +112,11 @@ public class CharacterSetListActivity extends ActionBarActivity {
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         List<CharacterStudySet> sets = new CustomCharacterSetDataHelper(this).getSets();
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(sets));
+    }
+
+    @Override
+    public LockChecker getLockChecker() {
+        return this.lockChecker;
     }
 
     public class SimpleItemRecyclerViewAdapter
