@@ -1,8 +1,7 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.RectF;
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -14,9 +13,6 @@ import java.util.Set;
 
 public class PathCalculator {
 
-    public static float findBoxScaling(RectF child, RectF parent){
-        return Math.min(parent.width() / child.width(), parent.height() / child.height() );
-    }
 
 	public final static double reverseDirection(double direction){
 		double n = Math.PI + direction;

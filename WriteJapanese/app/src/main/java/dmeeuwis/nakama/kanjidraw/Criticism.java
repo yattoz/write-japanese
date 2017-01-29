@@ -5,12 +5,16 @@ import android.graphics.Paint;
 import java.util.ArrayList;
 import java.util.List;
 
+import dmeeuwis.util.Util;
+
 public class Criticism {
     public static final int CORRECT_COLOUR = 0xFF0EA10E;
     public static final int INCORRECT_COLOUR = 0xFF8B000B;
 
     public final static PaintColourInstructions SKIP = new NoColours();
     public final static ArrayList<PaintColourInstructions> SKIP_LIST = new ArrayList<>();
+
+    private double[][] matrix;
 
 
 	public final List<String> critiques;
@@ -30,6 +34,10 @@ public class Criticism {
         this.drawnPaintInstructions.add(drawnPaint);
 		this.pass = false;
 	}
+
+    public void setScoreMatrix(double[][] matrix){
+        this.matrix = matrix;
+    }
 
     public void add(Criticism c){
         for(String m: c.critiques){
@@ -169,5 +177,11 @@ public class Criticism {
         public void colour(int stroke, float t, Paint p, int defaultColor){
             p.setColor(colour);
         }
+    }
+
+    public String toString(){
+        return "Critique passed: " + pass + "\n" +
+                Util.join(critiques) +
+                (matrix == null ? "\n no score matrix" : "\n" + Util.printMatrix(matrix));
     }
 }

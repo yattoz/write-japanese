@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
@@ -43,7 +44,18 @@ public class VocabExistsTest {
         RandomAccessFile locsize = new RandomAccessFile(path + SMALL_EDICT_ID_TO_LOCATION_SIZE, "r");
 
         List<String> failures = new ArrayList<>();
-        CharacterStudySet[] sets = CharacterSets.all(kf, null, null);
+        UUID iid = UUID.randomUUID();
+        CharacterStudySet[] sets = new CharacterStudySet[]{
+                CharacterSets.hiragana(null, iid),
+                CharacterSets.katakana(null, iid),
+                CharacterSets.joyouG1(null, iid),
+                CharacterSets.joyouG2(null, iid),
+                CharacterSets.joyouG3(null, iid),
+                CharacterSets.joyouG4(null, iid),
+                CharacterSets.joyouG5(null, iid),
+                CharacterSets.joyouG6(null, iid)
+        };
+
         for(CharacterStudySet s: sets){
             for(Character c: s.allCharactersSet){
                 Querier q = new QuerierRandomAccessFile(hashToEdictId, locsize, dict);

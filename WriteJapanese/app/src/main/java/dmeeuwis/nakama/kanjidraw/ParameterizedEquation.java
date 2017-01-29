@@ -5,9 +5,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.RectF;
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 import dmeeuwis.util.Util;
 
 public abstract class ParameterizedEquation {

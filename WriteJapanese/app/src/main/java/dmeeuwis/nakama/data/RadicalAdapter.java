@@ -21,7 +21,14 @@ public class RadicalAdapter extends ArrayAdapter<Kanji> {
             convertView = new KanjiWithMeaningView(this.getContext());
         }
         Kanji k = getItem(position);
-        ((KanjiWithMeaningView)convertView).setKanjiAndMeaning(String.valueOf(k.kanji), k.meanings[0]);
+        String meaning;
+        if(k.meanings.length == 0){
+            UncaughtExceptionLogger.backgroundLogError("Error: cannot find meanings for kanji: " + k.kanji, new RuntimeException(), getContext());
+            meaning = "";
+        } else {
+            meaning = k.meanings[0];
+        }
+        ((KanjiWithMeaningView)convertView).setKanjiAndMeaning(String.valueOf(k.kanji), meaning);
         return convertView;
     }
 

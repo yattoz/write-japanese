@@ -12,9 +12,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.AndroidInputStreamGenerator;
 import dmeeuwis.nakama.data.AssetFinder;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 import dmeeuwis.nakama.kanjidraw.Comparator;
 import dmeeuwis.nakama.kanjidraw.ComparisonFactory;
 import dmeeuwis.nakama.kanjidraw.Criticism;
@@ -87,9 +92,17 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
 
     @Override
     public void onComplete(PointDrawing pointDrawing) {
+        AssetFinder.InputStreamGenerator is = new AndroidInputStreamGenerator(parent.getAssets());
         Comparator comp = ComparisonFactory.getUsersComparator(getActivity().getApplicationContext(),
-                new AssetFinder(parent.getAssets()));
-        Criticism c = comp.compare(character.charAt(0), pointDrawing, curveDrawing);
+                new AssetFinder(is));
+        Criticism c;
+        try {
+            c = comp.compare(character.charAt(0), pointDrawing, curveDrawing);
+        } catch (IOException e) {
+            Toast.makeText(getActivity(), "Error accessing comparison data for " + character.charAt(0), Toast.LENGTH_LONG).show();
+            UncaughtExceptionLogger.backgroundLogError("IOError from comparator", e, getContext());
+            return;
+        }
 
         if (c.pass) {
             teachingLevel = Math.max(0, Math.min(goodAdvice.length - 1, teachingLevel + 1));

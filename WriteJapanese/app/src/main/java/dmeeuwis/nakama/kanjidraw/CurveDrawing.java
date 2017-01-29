@@ -1,11 +1,11 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Rect;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import dmeeuwis.nakama.data.Rect;
 
 public class CurveDrawing implements Drawing {
 
@@ -25,7 +25,21 @@ public class CurveDrawing implements Drawing {
 	public int strokeCount(){
 		return this.strokes.size();
 	}
-	
+
+	@Override
+	public Rect findBounds(){
+		Rect box = new Rect(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0);
+		for(ParameterizedEquation s: strokes){
+			Rect r = s.findBoundingBox();
+			box.left = Math.min(r.left, box.left);
+			box.right = Math.max(r.right, box.right);
+			box.top = Math.min(r.top, box.top);
+			box.bottom = Math.max(r.bottom, box.bottom);
+		}
+
+		return box;
+	}
+
 	public Rect findBoundingBox(){
         Rect box = new Rect();
         for(ParameterizedEquation eqn: this.strokes){

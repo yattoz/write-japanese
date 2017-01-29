@@ -1,9 +1,8 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -16,6 +15,8 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 import dmeeuwis.util.Util;
 
 class SimpleDrawingComparator implements Comparator {
@@ -30,7 +31,7 @@ class SimpleDrawingComparator implements Comparator {
 	private float CIRCLE_DETECTION_DISTANCE;
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 
-	private static final boolean DEBUG = BuildConfig.DEBUG && false;
+	private static final boolean DEBUG = BuildConfig.DEBUG && true;
 
     static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
     static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
@@ -49,20 +50,39 @@ class SimpleDrawingComparator implements Comparator {
 		strokeOrder = order;
 	}
 
-	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known){
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known) throws IOException {
 		return compare(target, challenger, known, Recursion.ALLOW);
 	}
 
-	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion){
+	public static Rect findBounds(char target, Drawing d){
+		if(target == 'ニ'){
+			return d.findBounds();
+		}
+		return d.findBoundingBox();
+	}
+
+	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion) throws IOException {
+        Log.d("nakama", "Initial input to drawing comparator is: " + challenger);
 
 		this.target = target;
-		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
-		Rect drawnBox = this.drawn.findBoundingBox();
-		
-		PointDrawing cutOffKnown = known.pointPointDrawing.cutOffEdges();
-		this.known = cutOffKnown.scaleToBox(drawnBox);
 
-		Rect nBounds = this.known.findBoundingBox();
+		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
+        Log.d("nakama", "Trimmed input to drawing comparator is: " + this.drawn);
+
+        Log.d("nakama", "\nFind drawn binding box....");
+		Rect drawnBox = findBounds(target, this.drawn);
+        Log.d("nakama", "Rect drawnBox is: " + drawnBox);
+
+        Log.d("nakama", "\nTrimming known binding box....");
+        this.known = known.pointPointDrawing.cutOffEdges();
+
+        Log.d("nakama", "\nScaling known binding box....");
+		this.known = this.known.scaleToBox(drawnBox);
+
+        Log.d("nakama", "\nFinding binding box for known-trimmed-scalled box....");
+		Rect nBounds = findBounds(target, this.known);
+        Log.d("nakama", "Rect final knownBox is: " + nBounds);
+
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
 
 		// only characters with indeterminate stroke orders?
@@ -71,7 +91,7 @@ class SimpleDrawingComparator implements Comparator {
 			strokeOrder = StrokeOrder.DISCOUNT;
 		}
 
-		if(strokeOrder == StrokeOrder.DISCOUNT){
+        if(strokeOrder == StrokeOrder.DISCOUNT){
 			this.FAIL_POINT_START_DISTANCE = (float) (drawingAreaMaxDim * 0.50);
 			this.FAIL_POINT_END_DISTANCE = (float) (drawingAreaMaxDim * 0.50);
 		} else {
@@ -81,11 +101,9 @@ class SimpleDrawingComparator implements Comparator {
 		this.CIRCLE_DETECTION_DISTANCE = (float) (drawingAreaMaxDim * 0.10);
 
 		if(DEBUG) Log.d("nakama", "PathComparator.new: drawingAreaWidth: " + drawingAreaMaxDim);
-		if(DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + this.drawn.findBoundingBox());
+		if(DEBUG) Log.d("nakama", "PathComparator.new: scaled drawn to " + findBounds(target, this.drawn));
 		if(DEBUG) Log.d("nakama", "PathComparator.new: circle detection distance " + this.CIRCLE_DETECTION_DISTANCE);
-		if(DEBUG) Log.d("nakama", "PathComparator.new: known: " + known.findBoundingBox());
-		if(DEBUG) Log.d("nakama", "PathComparator.new: known cut bounds: " + cutOffKnown.findBoundingBox());
-		if(DEBUG) Log.d("nakama", "PathComparator.new: known cut scaled bounds: " + this.known.findBoundingBox());
+		if(DEBUG) Log.d("nakama", "PathComparator.new: known: " + findBounds(target, known));
 
 		return compare(recursion);
 	}
@@ -139,7 +157,7 @@ class SimpleDrawingComparator implements Comparator {
 	
 	
 	private enum Recursion { ALLOW, DISALLOW }
-	private Criticism compare(Recursion allowRecursion) {
+	private Criticism compare(Recursion allowRecursion) throws IOException {
 		Criticism c = new Criticism();
 		List<OverallFailure> overallFailures = new ArrayList<OverallFailure>();
 
@@ -150,6 +168,7 @@ class SimpleDrawingComparator implements Comparator {
 
 		StrokeCriticism[][] criticismMatrix = new StrokeCriticism[known.strokeCount()][drawn.strokeCount()];
 		double[][] scoreMatrix = new double[known.strokeCount()][drawn.strokeCount()];
+		c.setScoreMatrix(scoreMatrix);
 
 
 		boolean correctDiagonal = known.strokeCount() == drawn.strokeCount();
