@@ -15,9 +15,11 @@ import java.util.List;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.JsonWriter;
+import android.util.Log;
 import android.util.TypedValue;
 
 import dmeeuwis.nakama.kanjidraw.PathCalculator.Intersection;
+import dmeeuwis.util.Util;
 
 public class PointDrawing implements Iterable<Stroke>, Drawing {
     static final private float MIN_POINT_DISTANCE_DP = 25;
@@ -66,6 +68,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
             }
             gradeLines.add(new Stroke(gradeLine));
         }
+
         return new PointDrawing(scaleX, scaleY, gradeLines);
     }
 
@@ -87,10 +90,17 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 
     @Override
     public Rect findBoundingBox(){
-        Rect box = strokes.get(0).findBoundingBox();
-        for(int i = 1; i < this.strokeCount(); i++){
-            box.union(strokes.get(i).findBoundingBox());
+        Rect box = new Rect(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0);
+        Log.i("nakama", "Bounding box for stroke 0 " + box);
+        for(Stroke s: strokes){
+            Rect r = s.findBoundingBox();
+            box.left = Math.min(r.left, box.left);
+            box.right = Math.max(r.right, box.right);
+            box.top = Math.min(r.top, box.top);
+            box.bottom = Math.max(r.bottom, box.bottom);
         }
+        Log.i("nakama", "Created unioned bounding box: " + box);
+
         return box;
 	}
 
@@ -114,6 +124,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 
 	public PointDrawing cutOffEdges(){
 		Rect bounds = this.findBoundingBox();
+        System.out.println("Bounding box for " + this + " found as " + bounds);
 		List<List<Point>> newCopy = new ArrayList<>(this.strokeCount());
 		for(Stroke stroke: this.strokes){
 			ArrayList<Point> newStroke = new ArrayList<>(stroke.pointSize());
@@ -122,21 +133,30 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 			}
 			newCopy.add(newStroke);
 		}
-		return PointDrawing.fromPrefilteredPoints(scaleX, scaleY, newCopy);
+		PointDrawing newP = PointDrawing.fromPrefilteredPoints(scaleX, scaleY, newCopy);
+        Log.d("nakama", "cuttOffEdges for " + this + "\nproduces " + newP);
+        return newP;
 	}
 
 	public PointDrawing scaleToBox(Rect box){
 		Rect bbSubject = this.findBoundingBox();
+        Log.i("nakama",  "This drawing has box: " + bbSubject);
+        Log.i("nakama",  "Will scale to box: " + box);
 
 		float increaseXFactor = (float)(box.right - box.left) / bbSubject.right;
 		float increaseYFactor = (float)(box.bottom - box.top) / bbSubject.bottom;
-		
+        float scaleFactor = Math.min(increaseXFactor, increaseYFactor);
+
+        Log.i("nakama",  "Will scale by " + scaleFactor);
+
 		List<List<Point>> scaled = new ArrayList<>(this.strokeCount());
 		for(Stroke lp: this.strokes){
 			List<Point> sl = new ArrayList<>(lp.pointSize());
-			for(Point p: lp)
-				sl.add(new Point((int)(p.x * increaseXFactor), 
-						         (int)(p.y * increaseYFactor)));
+			for(Point p: lp) {
+                Point np = new Point((int) (p.x * scaleFactor), (int) (p.y * scaleFactor));
+                sl.add(np);
+                Log.i("nakama", p + " -> " + np);
+            }
 			scaled.add(sl);
 		}
 		
@@ -184,5 +204,15 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String toString(){
+        StringBuilder s = new StringBuilder();
+        s.append("PointDrawing: scaleX " + scaleX + "; scaleY: " + scaleY);
+        for(Stroke stroke: this.strokes){
+            s.append("\n\t");
+            s.append(Util.join(", ", stroke.points));
+        }
+        return s.toString();
     }
 }

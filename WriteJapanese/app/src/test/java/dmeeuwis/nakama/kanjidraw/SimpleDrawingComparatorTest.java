@@ -33,7 +33,14 @@ public class SimpleDrawingComparatorTest {
     public static class TestInputStreamGenerator implements AssetFinder.InputStreamGenerator {
         @Override
         public InputStream fromPath(String path) throws IOException {
-            return new FileInputStream(System.getProperty("user.dir") + "/src/main/assets/" + path);
+            String userDir = System.getProperty("user.dir");
+            String correctedPath;
+            if(userDir.endsWith("app")){
+                correctedPath = userDir;             // Linux
+            } else {
+                correctedPath = userDir + "/app";    // OS X
+            }
+            return new FileInputStream(correctedPath + "/src/main/assets/" + path);
         }
     }
 
@@ -57,7 +64,7 @@ public class SimpleDrawingComparatorTest {
                 new double[]{0, 0, 1}});
     }
 
-    public List<Point> toStroke(int ... values){
+    public static List<Point> toStroke(int ... values){
         List<Point> l = new ArrayList<>();
         for(int i = 0; i < values.length; i+= 2){
            l.add(new Point(values[i], values[i+1]));
