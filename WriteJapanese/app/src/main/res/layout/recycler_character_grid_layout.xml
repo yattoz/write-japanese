@@ -13,9 +13,10 @@
     <ImageView
         android:id="@+id/character_grid_lock"
         android:src="@drawable/ic_lock_gray"
-        android:background="@color/LightGrey"
+        android:background="#80D3D3D3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:alpha="0.4"
         />
 </FrameLayout>

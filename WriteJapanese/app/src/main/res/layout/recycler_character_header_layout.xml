@@ -18,17 +18,33 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/charset_header_divider"
         tools:text="Joyou J1"
+        android:padding="8dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         />
+
     <TextView
         android:id="@+id/character_set_select_all_link"
         android:textSize="12sp"
         android:padding="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/charset_header_divider"
         android:textColor="@color/Blue"
-        android:layout_alignParentRight="true"
         android:text="Select All"
-        />
+        android:layout_below="@+id/charset_header_divider"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/character_set_select_none_link"
+        android:textSize="12sp"
+        android:padding="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/Blue"
+        android:text="Select None"
+        android:layout_below="@+id/charset_header_divider"
+        android:layout_toLeftOf="@+id/character_set_select_all_link"
+        android:layout_toStartOf="@+id/character_set_select_all_link"/>
 
 </RelativeLayout>

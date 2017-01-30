@@ -24,6 +24,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

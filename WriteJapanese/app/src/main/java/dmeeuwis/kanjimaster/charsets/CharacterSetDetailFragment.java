@@ -220,10 +220,11 @@ public class CharacterSetDetailFragment extends Fragment {
         }
 
         private class HeaderViewHolder extends RecyclerView.ViewHolder {
-            public TextView text, allLink;
+            public TextView text, allLink, noneLink;
             public HeaderViewHolder(View itemView) {
                 super(itemView);
                 this.text = (TextView)itemView.findViewById(R.id.character_grid_header);
+
                 this.allLink = (TextView)itemView.findViewById(R.id.character_set_select_all_link);
                 this.allLink.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -235,6 +236,25 @@ public class CharacterSetDetailFragment extends Fragment {
                             Log.i("nakama", "Selecting " + i);
                             if(!locked.get(i) && !selected.get(i)) {
                                 selected.set(i, true);
+                                notifyItemChanged(i);
+                            }
+                            i++;
+                        }
+                    }
+                });
+
+
+                this.noneLink = (TextView)itemView.findViewById(R.id.character_set_select_none_link);
+                this.noneLink.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int i = getAdapterPosition();
+                        Log.i("nakama", "Header type onClick! " + i);
+                        i++;
+                        while(i < asLongString.length() && asLongString.charAt(i) != HEADER_CHAR){
+                            Log.i("nakama", "Selecting " + i);
+                            if(selected.get(i)) {
+                                selected.set(i, false);
                                 notifyItemChanged(i);
                             }
                             i++;

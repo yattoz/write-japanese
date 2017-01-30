@@ -1054,10 +1054,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         saveCurrentCharacterSet();
 
-        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition == 8)) {
-            raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
-        }
-
         if (itemPosition == 0) {
             this.currentCharacterSet = hiraganaCharacterSet;
             //this.correctVocabList.setVisibility(View.GONE);
@@ -1099,6 +1095,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 Intent intent = new Intent(this, CharacterSetDetailActivity.class);
                 intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, "create");
                 startActivity(intent);
+                return true;
             } else {
                 startActivity(new Intent(this, CharacterSetListActivity.class));
                 return true;
@@ -1109,6 +1106,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(this.currentCharacterSet);
         }
+
+        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition == 8)) {
+            raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
+        }
+
         loadNextCharacter(false);
         drawPad.clear();
         setUiState(State.DRAWING);
