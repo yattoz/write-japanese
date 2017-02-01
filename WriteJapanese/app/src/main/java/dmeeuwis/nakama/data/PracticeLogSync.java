@@ -24,7 +24,6 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +35,8 @@ import dmeeuwis.util.Util;
 
 public class PracticeLogSync {
 
-    final private static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
-    final private static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
+    final public static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
+    final public static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
     final private static String SYNC_URL = "https://dmeeuwis.com/write-japanese/progress-sync";
 
     final Context context;
@@ -45,7 +44,6 @@ public class PracticeLogSync {
     public PracticeLogSync(Context c) {
         this.context = c;
     }
-
 
     public void debugPrintLog(){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
@@ -55,7 +53,6 @@ public class PracticeLogSync {
         for(Map<String, String> r: all){
             Log.i("nakama-sync", new JSONObject(r).toString());
         }
-
     }
 
     public void clearSync(){
@@ -66,8 +63,9 @@ public class PracticeLogSync {
         e.apply();
     }
 
-
-    public void debugClearRegister(){
+    public String findLastDeviceSyncTimestamp(){
+        SharedPreferences prefs = context.getSharedPreferences("device_specific", Context.MODE_PRIVATE);
+        String lastSyncServerTimestamp = prefs.getString(SERVER_SYNC_PREFS_KEY + "_" + Iid.get(context), "2000-01-01 00:00:00 +00");
 
     }
 

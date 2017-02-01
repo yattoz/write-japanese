@@ -839,6 +839,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:ThrowException");
             menu.add("DEBUG:LogBackgroundException");
             menu.add("DEBUG:MarkAllPassed");
+            menu.add("DEBUG:ClearSyncTimestamp");
         }
 
         return true;
@@ -998,6 +999,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                         new RuntimeException("BOOM!", new RuntimeException("CRASH!", new RuntimeException("THUNK!"))), getApplicationContext());
             } else if(item.getTitle().equals("DEBUG:MarkAllPassed")){
                 this.currentCharacterSet.debugMarkAllPassed();
+            } else if(item.getTitle().equals("DEBUG:ClearSyncTimestamp")){
+                SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+                ed.remove(PracticeLogSync.DEVICE_SYNC_PREFS_KEY);
+                ed.remove(PracticeLogSync.SERVER_SYNC_PREFS_KEY);
+                ed.apply();
             }
         }
 

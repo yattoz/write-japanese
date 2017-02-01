@@ -3,6 +3,7 @@ package dmeeuwis.nakama.primary;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.audiofx.PresetReverb;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -21,8 +22,25 @@ public class Iid {
             return cachedIid;
         }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(app);
+        SharedPreferences prefs = app.getSharedPreferences("iid", Context.MODE_PRIVATE);
         String existingInstallId = prefs.getString("iid", null);
+
+        if(existingInstallId == null){
+            // try the previous shared prefs format, that used the global prefs for iid
+            SharedPreferences oldPrefs = PreferenceManager.getDefaultSharedPreferences(app);
+            existingInstallId = oldPrefs.getString("iid", null);
+
+            if(existingInstallId != null){
+                Log.i("nakama", "Migrating IID to new shared prefs storage");
+                SharedPreferences.Editor edit = oldPrefs.edit();
+                edit.remove("iid");
+                edit.apply();
+
+                SharedPreferences.Editor newEdit = prefs.edit();
+                newEdit.putString("iid", existingInstallId);
+                newEdit.apply();
+            }
+        }
         UUID iid = null;
         try {
             iid = UUID.fromString(existingInstallId);
