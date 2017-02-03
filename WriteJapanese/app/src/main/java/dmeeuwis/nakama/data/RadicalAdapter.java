@@ -23,7 +23,7 @@ public class RadicalAdapter extends ArrayAdapter<Kanji> {
         Kanji k = getItem(position);
         String meaning;
         if(k.meanings.length == 0){
-            UncaughtExceptionLogger.backgroundLogError("Error: cannot find meanings for kanji: " + k.kanji, new RuntimeException(), getContext());
+            UncaughtExceptionLogger.backgroundLogError("Error: cannot find meanings for kanji: " + k.toString(), new RuntimeException(), getContext());
             meaning = "";
         } else {
             meaning = k.meanings[0];
