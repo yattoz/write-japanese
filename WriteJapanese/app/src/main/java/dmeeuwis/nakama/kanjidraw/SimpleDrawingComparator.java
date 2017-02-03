@@ -33,8 +33,8 @@ class SimpleDrawingComparator implements Comparator {
 
 	private static final boolean DEBUG = BuildConfig.DEBUG && true;
 
-    static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
-    static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
+	static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
+	static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
 
 	char target;
 	PointDrawing known;
@@ -61,28 +61,26 @@ class SimpleDrawingComparator implements Comparator {
 		return d.findBoundingBox();
 	}
 
+
+	public static PointDrawing scaleToBox(char target, PointDrawing d, Rect box){
+		if(target == 'ニ'){
+			return d.scaleToBoxBetter(box);
+		}
+		return d.scaleToBox(box);
+	}
+
 	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion) throws IOException {
-        Log.d("nakama", "Initial input to drawing comparator is: " + challenger);
+		Log.d("nakama", "Initial input to drawing comparator is: " + challenger);
 
 		this.target = target;
 
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
-        Log.d("nakama", "Trimmed input to drawing comparator is: " + this.drawn);
-
-        Log.d("nakama", "\nFind drawn binding box....");
 		Rect drawnBox = findBounds(target, this.drawn);
-        Log.d("nakama", "Rect drawnBox is: " + drawnBox);
 
-        Log.d("nakama", "\nTrimming known binding box....");
-        this.known = known.pointPointDrawing.cutOffEdges();
+		PointDrawing cutoffKnown = known.pointPointDrawing.cutOffEdges();
+		this.known = scaleToBox(target, cutoffKnown, drawnBox);
 
-        Log.d("nakama", "\nScaling known binding box....");
-		this.known = this.known.scaleToBox(drawnBox);
-
-        Log.d("nakama", "\nFinding binding box for known-trimmed-scalled box....");
 		Rect nBounds = findBounds(target, this.known);
-        Log.d("nakama", "Rect final knownBox is: " + nBounds);
-
 		this.drawingAreaMaxDim = Math.max(nBounds.width(), nBounds.height());
 
 		// only characters with indeterminate stroke orders?
@@ -91,7 +89,7 @@ class SimpleDrawingComparator implements Comparator {
 			strokeOrder = StrokeOrder.DISCOUNT;
 		}
 
-        if(strokeOrder == StrokeOrder.DISCOUNT){
+		if(strokeOrder == StrokeOrder.DISCOUNT){
 			this.FAIL_POINT_START_DISTANCE = (float) (drawingAreaMaxDim * 0.50);
 			this.FAIL_POINT_END_DISTANCE = (float) (drawingAreaMaxDim * 0.50);
 		} else {
@@ -109,27 +107,27 @@ class SimpleDrawingComparator implements Comparator {
 	}
 
 	private int[] findExtraStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
-        int extra = drawnCount - knownCount;
-        if(extra <= 0){
-            // only try to colour if we're sure we can identify the extra strokes
-            return null;
-        }
+		int extra = drawnCount - knownCount;
+		if(extra <= 0){
+			// only try to colour if we're sure we can identify the extra strokes
+			return null;
+		}
 
-        // refactor this to streams when possible
-        List<Integer> drewWell = new ArrayList<>(knownCount);
-        for(StrokeResult r: best){
-            if(r.score == 0){
-                drewWell.add(r.drawnStrokeIndex);
-            }
-        }
+		// refactor this to streams when possible
+		List<Integer> drewWell = new ArrayList<>(knownCount);
+		for(StrokeResult r: best){
+			if(r.score == 0){
+				drewWell.add(r.drawnStrokeIndex);
+			}
+		}
 
-        // only colour extra strokes if every stoke you drew, you drew well
-        if(drewWell.size() == knownCount){
-            return Util.missingInts(drawnCount, drewWell);
-        } else {
-            return null;
-        }
-    }
+		// only colour extra strokes if every stoke you drew, you drew well
+		if(drewWell.size() == knownCount){
+			return Util.missingInts(drawnCount, drewWell);
+		} else {
+			return null;
+		}
+	}
 
 
 	private int[] findMissingStrokes(int knownCount, int drawnCount, List<StrokeResult> best){
@@ -139,7 +137,7 @@ class SimpleDrawingComparator implements Comparator {
 			return null;
 		}
 
-        // refactor this to streams when possible
+		// refactor this to streams when possible
 		List<Integer> drewWell = new ArrayList<>(drawnCount);
 		for(StrokeResult r: best){
 			if(r.score == 0){
@@ -240,20 +238,20 @@ class SimpleDrawingComparator implements Comparator {
 			}
 
 			if(strokeOrder != StrokeOrder.DISCOUNT) {
-                if (misorderedStrokes.size() > 2) {
-                    String message = misorderedStrokes.size() == known.strokeCount() ?
-                            "Your strokes seem correct, but are drawn in the wrong order." :
-                            "Several strokes are drawn correctly, but in the wrong order.";
-                    c.add(message,
-                            Criticism.SKIP,
-                            Criticism.SKIP);
-                } else {
-                    for (StrokeResult s : misorderedStrokes) {
-                        c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.",
-                                Criticism.correctColours(s.knownStrokeIndex, s.drawnStrokeIndex),
-                                Criticism.incorrectColours(s.knownStrokeIndex, s.drawnStrokeIndex));
-                    }
-                }
+				if (misorderedStrokes.size() > 2) {
+					String message = misorderedStrokes.size() == known.strokeCount() ?
+							"Your strokes seem correct, but are drawn in the wrong order." :
+							"Several strokes are drawn correctly, but in the wrong order.";
+					c.add(message,
+							Criticism.SKIP,
+							Criticism.SKIP);
+				} else {
+					for (StrokeResult s : misorderedStrokes) {
+						c.add("Your " + Util.adjectify(s.knownStrokeIndex, drawn.strokeCount()) + " and " + Util.adjectify(s.drawnStrokeIndex, drawn.strokeCount()) + " strokes are correct, except drawn in the wrong order.",
+								Criticism.correctColours(s.knownStrokeIndex, s.drawnStrokeIndex),
+								Criticism.incorrectColours(s.knownStrokeIndex, s.drawnStrokeIndex));
+					}
+				}
 			}
 		}
 
@@ -318,18 +316,18 @@ class SimpleDrawingComparator implements Comparator {
 	}
 
 	static List<StrokeResult> findBestPairings(double[][] matrix){
-        HungarianAlgorithm al = new HungarianAlgorithm(matrix);
-        int[] matches = al.execute();
+		HungarianAlgorithm al = new HungarianAlgorithm(matrix);
+		int[] matches = al.execute();
 		Log.i("nakama", "Assignment results: " + Arrays.toString(matches));
-        List<StrokeResult> l = new ArrayList<>(matches.length);
-        for(int i = 0; i < matrix.length; i++){
+		List<StrokeResult> l = new ArrayList<>(matches.length);
+		for(int i = 0; i < matrix.length; i++){
 			if(matches[i] < 0){
 				// add failing stroke result?
 			} else {
 				l.add(new StrokeResult(i, matches[i], (int) matrix[i][matches[i]]));
 			}
-        }
-        return l;
+		}
+		return l;
 	}
 
 	/**
@@ -344,8 +342,8 @@ class SimpleDrawingComparator implements Comparator {
 		Stroke cpath = this.drawn.get(challengerIndex);
 		if(DEBUG) Log.d("nakama", String.format("%30s:  Base: %6d Drawn: %6d", "Number of points", bpath.pointSize(), cpath.pointSize()));
 
-        if(DEBUG) Log.d("nakama", String.format("Base points: " + Util.join(", ", bpath.points)));
-        if(DEBUG) Log.d("nakama", String.format("Drawn points: " + Util.join(", ", cpath.points)));
+		if(DEBUG) Log.d("nakama", String.format("Base points: " + Util.join(", ", bpath.points)));
+		if(DEBUG) Log.d("nakama", String.format("Drawn points: " + Util.join(", ", cpath.points)));
 
 		Point bstart = bpath.startPoint;
 		Point bend = bpath.endPoint;
