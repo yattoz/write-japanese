@@ -117,13 +117,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected DictionarySet dictionarySet;
     protected LockChecker LockChecker;
 
-    public CharacterStudySet joyouG1, joyouG2, joyouG3, joyouG4, joyouG5, joyouG6; // , joyouSS;
-    public CharacterStudySet hiraganaCharacterSet, katakanaCharacterSet;
-    public List<CharacterStudySet> customSets;
     protected CharacterStudySet currentCharacterSet;
-    protected StoryDataHelper db;
-
     protected LinkedHashMap<String, CharacterStudySet> characterSets = new LinkedHashMap<>();
+
+    protected StoryDataHelper db;
     protected boolean showedEndOfSetDialog = false;
     protected boolean showedStartOfSetDialog = false;
     protected boolean queuedNextCharLoad = false;   // when switching to teaching activity, queue a next char load for onResume
@@ -390,34 +387,24 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     private void initializeCharacterSets(){
         UUID iid = Iid.get(this.getApplicationContext());
-        hiraganaCharacterSet = CharacterSets.hiragana(LockChecker, iid);
-        katakanaCharacterSet = CharacterSets.katakana(LockChecker, iid);
-        joyouG1 = CharacterSets.joyouG1(LockChecker, iid);
-        joyouG2 = CharacterSets.joyouG2(LockChecker, iid);
-        joyouG3 = CharacterSets.joyouG3(LockChecker, iid);
-        joyouG4 = CharacterSets.joyouG4(LockChecker, iid);
-        joyouG5 = CharacterSets.joyouG5(LockChecker, iid);
-        joyouG6 = CharacterSets.joyouG6(LockChecker, iid);
 
-        this.characterSets.put("hiragana", hiraganaCharacterSet);
-        this.characterSets.put("katakana", katakanaCharacterSet);
-        this.characterSets.put("j1", joyouG1);
-        this.characterSets.put("j2", joyouG2);
-        this.characterSets.put("j3", joyouG3);
-        this.characterSets.put("j4", joyouG4);
-        this.characterSets.put("j5", joyouG5);
-        this.characterSets.put("j6", joyouG6);
+        this.characterSets.put("hiragana", CharacterSets.hiragana(LockChecker, iid));
+        this.characterSets.put("katakana", CharacterSets.katakana(LockChecker, iid));
+        this.characterSets.put("j1", CharacterSets.joyouG1(LockChecker, iid));
+        this.characterSets.put("j2", CharacterSets.joyouG2(LockChecker, iid));
+        this.characterSets.put("j3", CharacterSets.joyouG3(LockChecker, iid));
+        this.characterSets.put("j4", CharacterSets.joyouG4(LockChecker, iid));
+        this.characterSets.put("j5", CharacterSets.joyouG5(LockChecker, iid));
+        this.characterSets.put("j6", CharacterSets.joyouG6(LockChecker, iid));
 
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
-        customSets = helper.getSets();
-
-        for(CharacterStudySet c: customSets){
+        for(CharacterStudySet c: helper.getSets()){
             this.characterSets.put(c.pathPrefix, c);
         }
 
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
         if (this.charSetFrag != null) {
-            this.charSetFrag.setCharset(joyouG1);
+            this.charSetFrag.setCharset(characterSets.get("j1"));
         }
     }
 
@@ -1061,28 +1048,28 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         saveCurrentCharacterSet();
 
         if (itemPosition == 0) {
-            this.currentCharacterSet = hiraganaCharacterSet;
+            this.currentCharacterSet = characterSets.get("hiragana");
             //this.correctVocabList.setVisibility(View.GONE);
         } else if (itemPosition == 1) {
-            this.currentCharacterSet = katakanaCharacterSet;
+            this.currentCharacterSet = characterSets.get("katakama");
             //this.correctVocabList.setVisibility(View.GONE);
         } else if (itemPosition == 2) {
-            this.currentCharacterSet = joyouG1;
+            this.currentCharacterSet = characterSets.get("j1");
             //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 3) {
-            this.currentCharacterSet = joyouG2;
+            this.currentCharacterSet = characterSets.get("j2");
             //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 4) {
-            this.currentCharacterSet = joyouG3;
+            this.currentCharacterSet = characterSets.get("j3");
             //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 5) {
-            this.currentCharacterSet = joyouG4;
+            this.currentCharacterSet = characterSets.get("j4");
             //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 6) {
-            this.currentCharacterSet = joyouG5;
+            this.currentCharacterSet = characterSets.get("j5");
             //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 7) {
-            this.currentCharacterSet = joyouG6;
+            this.currentCharacterSet = characterSets.get("j6");
         }
 
             //this.correctVocabList.setVisibility(View.VISIBLE);
@@ -1091,6 +1078,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 //			this.currentCharacterSet = this.joyouSS;
 //        }
 
+        CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
+        List<CharacterStudySet> customSets = helper.getSets();
         if(itemPosition >= 8 &&  itemPosition < 8 + customSets.size()){
             int customSetIndex = itemPosition - 8;
             this.currentCharacterSet = customSets.get(customSetIndex);

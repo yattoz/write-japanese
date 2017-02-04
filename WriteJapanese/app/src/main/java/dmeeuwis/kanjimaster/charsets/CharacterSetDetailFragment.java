@@ -22,6 +22,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.LockChecker;
@@ -69,6 +70,7 @@ public class CharacterSetDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setRetainInstance(true);
 
         if (getArguments().containsKey(CHARSET_ID)) {
             // Load the dummy content specified by the fragment
@@ -214,6 +216,9 @@ public class CharacterSetDetailFragment extends Fragment {
                            selected.set(currentPosition, true);
                            makeColorAnimater(text, Color.WHITE, SELECT_COLOUR);
                        }
+
+                        studySet.allCharactersSet.clear();
+                        studySet.allCharactersSet.addAll(getCharactersAsSet());
                     }
                 });
             }
@@ -240,6 +245,8 @@ public class CharacterSetDetailFragment extends Fragment {
                             }
                             i++;
                         }
+                        studySet.allCharactersSet.clear();
+                        studySet.allCharactersSet.addAll(getCharactersAsSet());
                     }
                 });
 
@@ -259,6 +266,8 @@ public class CharacterSetDetailFragment extends Fragment {
                             }
                             i++;
                         }
+                        studySet.allCharactersSet.clear();
+                        studySet.allCharactersSet.addAll(getCharactersAsSet());
                     }
                 });
             }
@@ -417,6 +426,16 @@ public class CharacterSetDetailFragment extends Fragment {
                 }
             }
             return s.toString();
+        }
+
+        public Set<Character> getCharactersAsSet(){
+            Set s = new HashSet();
+            for(int i = 0; i < selected.length(); i++){
+                if(selected.get(i)){
+                    s.add(asLongString.charAt(i));
+                }
+            }
+            return s;
         }
     }
 }

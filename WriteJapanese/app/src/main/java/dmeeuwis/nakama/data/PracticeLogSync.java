@@ -63,12 +63,6 @@ public class PracticeLogSync {
         e.apply();
     }
 
-    public String findLastDeviceSyncTimestamp(){
-        SharedPreferences prefs = context.getSharedPreferences("device_specific", Context.MODE_PRIVATE);
-        String lastSyncServerTimestamp = prefs.getString(SERVER_SYNC_PREFS_KEY + "_" + Iid.get(context), "2000-01-01 00:00:00 +00");
-
-    }
-
     public void sync() throws IOException {
         URL syncUrl;
         String iid = Iid.get(context).toString();

@@ -102,8 +102,8 @@ public class CharacterStudySet implements Iterable<Character> {
 		this.locked = locked;
         this.iid = iid;
 
-		this.freeCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(freeCharacters)));
-		this.allCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(allCharacters)));
+		this.freeCharactersSet = new LinkedHashSet<>(Util.stringToCharList(freeCharacters));
+		this.allCharactersSet = new LinkedHashSet<>(Util.stringToCharList(allCharacters));
 
 		this.pathPrefix = pathPrefix;
 		this.tracker = new ProgressTracker(this.allCharactersSet);
