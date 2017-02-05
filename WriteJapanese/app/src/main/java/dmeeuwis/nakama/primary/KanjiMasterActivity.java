@@ -375,12 +375,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
+        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
 
 /*        for(CharacterStudySet c: customSets){
             characterSetAdapter.add(new LockableArrayAdapter.CharsetLabel(c.name, c.shortName, c.allCharactersSet.size(), false));
         }
 */
-        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
     }
@@ -751,6 +751,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
         initializeCharacterSets();
+        LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
+        characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
 
         loadCurrentCharacterSet();
         currentCharacterSet.load(this.getApplicationContext());
