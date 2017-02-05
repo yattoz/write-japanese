@@ -368,6 +368,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         initializeCharacterSets();
+        this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
+        if (this.charSetFrag != null) {
+            this.charSetFrag.setCharset(characterSets.get("j1"));
+        }
 
         ActionBar actionBar = getSupportActionBar();
         this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
@@ -377,10 +381,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
         actionBar.setListNavigationCallbacks(characterSetAdapter, this);
 
-/*        for(CharacterStudySet c: customSets){
-            characterSetAdapter.add(new LockableArrayAdapter.CharsetLabel(c.name, c.shortName, c.allCharactersSet.size(), false));
-        }
-*/
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
     }
@@ -400,11 +400,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
         for(CharacterStudySet c: helper.getSets()){
             this.characterSets.put(c.pathPrefix, c);
-        }
-
-        this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
-        if (this.charSetFrag != null) {
-            this.charSetFrag.setCharset(characterSets.get("j1"));
         }
     }
 
