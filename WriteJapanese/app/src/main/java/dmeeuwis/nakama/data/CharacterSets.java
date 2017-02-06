@@ -40,7 +40,7 @@ public class CharacterSets  {
 	}
 
 	static public CharacterStudySet createCustom(UUID iid){
-		return new CharacterStudySet("Custom Set", "Custom", "Your custom character set", UUID.randomUUID().toString(), CharacterStudySet.LockLevel.UNLOCKED, "", "", null, iid, false);
+		return new CharacterStudySet("", "", "", UUID.randomUUID().toString(), CharacterStudySet.LockLevel.UNLOCKED, "", "", null, iid, false);
 	}
 
 	public static CharacterStudySet hiragana(LockChecker LockChecker, UUID iid){ return new CharacterStudySet("Hiragana", "Hiragana", HIRAGANA_DESC, "hiragana", CharacterStudySet.LockLevel.UNLOCKED, Kana.commonHiragana(), "", LockChecker, iid, true); }

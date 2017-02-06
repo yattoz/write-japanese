@@ -12,17 +12,41 @@
         >
 
         <include layout="@layout/characterset_list"/>
+
     </FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_new_charset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/Red"
+        app:backgroundTint="#dc4437"
         android:tint="@color/White"
         app:srcCompat="@android:drawable/ic_input_add"/>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="84dp"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        app:backgroundTint="@color/Gray"
+        android:tint="@color/White"
+        android:visibility="gone"
+        app:srcCompat="@android:drawable/ic_menu_delete" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/Green"
+        android:tint="@color/White"
+        android:visibility="gone"
+        app:srcCompat="@android:drawable/ic_menu_save" />
 
 </FrameLayout>

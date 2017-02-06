@@ -71,5 +71,6 @@
     <string name="title_characterset_list">CharacterSets</string>
     <string name="title_characterset_detail">CharacterSet Detail</string>
     <string name="save">Save</string>
+    <string name="custom_charset_description">Description</string>
 
 </resources>

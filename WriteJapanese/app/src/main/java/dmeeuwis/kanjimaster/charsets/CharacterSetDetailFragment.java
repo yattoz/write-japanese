@@ -3,6 +3,7 @@ package dmeeuwis.kanjimaster.charsets;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,9 +11,11 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -94,6 +97,10 @@ public class CharacterSetDetailFragment extends Fragment {
         super.onAttach(activity);
     }
 
+    public CharacterStudySet cancel(){
+        return studySet;
+    }
+
     public boolean save(){
         String editName = nameEdit.getText().toString();
         String editDesc = descriptionEdit.getText().toString();
@@ -118,18 +125,10 @@ public class CharacterSetDetailFragment extends Fragment {
         return true;
     }
 
-    private void setName(String update){
-        studySet.name = update;
-    }
-
-    private void setDescription(String update){
-        studySet.description = update;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.characterset_detail, container, false);
+        final View rootView = inflater.inflate(R.layout.characterset_detail, container, false);
 
         if (studySet != null) {
 
@@ -138,17 +137,18 @@ public class CharacterSetDetailFragment extends Fragment {
                     CharacterSets.all(
                             new LockCheckerInAppBillingService(getActivity()),
                             Iid.get(getActivity().getApplicationContext()))));
+/*            grid.setOnDragListener(new View.OnDragListener() {
+                @Override
+                public boolean onDrag(View v, DragEvent event) {
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+                    return false;
+                }
+            });
+    */
         }
 
         return rootView;
-    }
-
-    public void setCharacterStudySet(CharacterStudySet characterStudySet) {
-        this.studySet = characterStudySet;
-        grid.setAdapter(new CharacterGridAdapter(
-                CharacterSets.all(
-                        new LockCheckerInAppBillingService(getActivity()),
-                        Iid.get(getActivity().getApplicationContext()))));
     }
 
     public static void makeColorAnimater(final View view, int color1, int color2){

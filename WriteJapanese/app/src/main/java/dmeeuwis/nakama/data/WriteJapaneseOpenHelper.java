@@ -18,7 +18,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 25;
+	private static final int DB_VERSION = 27;
 
     private final String iid;
     private final Context context;
@@ -37,6 +37,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         addTimestampToStories(dbase);
         addDrawingToPracticeLog(dbase);
         addSettingsLog(dbase);
+        addCharacterSets(dbase);
 	}
 
     private void createStoryTables(SQLiteDatabase dbase){
@@ -198,20 +199,8 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             addSettingsLog(dbase);
         }
 
-        if(oldVersion <= 25) {
+        if(oldVersion <= 26) {
             addCharacterSets(dbase);
         }
 	}
-
-    @Override
-    public void onDowngrade(SQLiteDatabase dbase, int oldVersion, int newVersion) {
-        if(BuildConfig.DEBUG){
-            dbase.execSQL("DROP TABLE IF EXISTS kanji_stories");
-            dbase.execSQL("DROP TABLE IF EXISTS charset_goals");
-            dbase.execSQL("DROP TABLE IF EXISTS practice_log");
-            dbase.execSQL("DROP TABLE IF EXISTS settings_log");
-
-            onCreate(dbase);
-        }
-    }
 }

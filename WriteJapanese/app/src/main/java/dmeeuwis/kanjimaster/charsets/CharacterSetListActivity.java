@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.UUID;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.LockChecker;
@@ -44,6 +45,10 @@ public class CharacterSetListActivity extends ActionBarActivity implements LockC
     DictionarySet set;
     LockChecker lockChecker;
 
+    FloatingActionButton fab_new, fab_save, fab_cancel;
+    CharacterStudySet lastCancelled = null;
+    RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +60,8 @@ public class CharacterSetListActivity extends ActionBarActivity implements LockC
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Character Study Sets");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab_new = (FloatingActionButton) findViewById(R.id.fab_new_charset);
+        fab_new.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mTwoPane){
@@ -67,6 +72,10 @@ public class CharacterSetListActivity extends ActionBarActivity implements LockC
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.characterset_detail_container, fragment)
                             .commit();
+
+                    fab_save.setVisibility(View.VISIBLE);
+                    fab_cancel.setVisibility(View.VISIBLE);
+                    fab_new.setVisibility(View.GONE);
                 } else {
                     Intent intent = new Intent(CharacterSetListActivity.this, CharacterSetDetailActivity.class);
                     intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, "create");
@@ -75,9 +84,45 @@ public class CharacterSetListActivity extends ActionBarActivity implements LockC
             }
         });
 
-        View recyclerView = findViewById(R.id.characterset_list);
+        fab_save = (FloatingActionButton) findViewById(R.id.fab_save);
+        fab_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CharacterSetDetailFragment f = (CharacterSetDetailFragment) getSupportFragmentManager().findFragmentById(R.id.characterset_detail_container);
+                if(f.save()) {
+                    getSupportFragmentManager().beginTransaction()
+                            .remove(f)
+                            .commit();
+                    fab_save.setVisibility(View.GONE);
+                    fab_cancel.setVisibility(View.GONE);
+                    fab_new.setVisibility(View.VISIBLE);
+
+                    setupRecyclerView(recyclerView);
+                }
+            }
+        });
+
+        fab_cancel = (FloatingActionButton) findViewById(R.id.fab_cancel);
+        fab_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CharacterSetDetailFragment f = (CharacterSetDetailFragment) getSupportFragmentManager().findFragmentById(R.id.characterset_detail_container);
+                lastCancelled = f.cancel();
+                getSupportFragmentManager().beginTransaction()
+                        .remove(f)
+                        .commit();
+                fab_save.setVisibility(View.GONE);
+                fab_cancel.setVisibility(View.GONE);
+                fab_new.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        fab_cancel = (FloatingActionButton) findViewById(R.id.fab_cancel);
+
+        recyclerView = (RecyclerView) findViewById(R.id.characterset_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        setupRecyclerView(recyclerView);
 
         if (findViewById(R.id.characterset_detail_container) != null) {
             // The detail container view will be present only in the
