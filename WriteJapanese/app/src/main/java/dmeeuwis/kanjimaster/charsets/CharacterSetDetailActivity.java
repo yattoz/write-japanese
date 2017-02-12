@@ -104,4 +104,12 @@ public class CharacterSetDetailActivity extends ActionBarActivity implements Loc
     public LockChecker getLockChecker() {
         return this.lockChecker;
     }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(lockChecker != null){
+            lockChecker.dispose();
+        }
+    }
 }

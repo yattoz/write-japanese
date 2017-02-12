@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.LockCheckerIabHelper;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.util.Util;
@@ -38,6 +39,7 @@ public class PracticeLogSync {
     final public static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
     final public static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
     final private static String SYNC_URL = "https://dmeeuwis.com/write-japanese/progress-sync";
+    final private static boolean DEBUG_NETWORK_SYNC = true;
 
     final Context context;
 
@@ -67,7 +69,11 @@ public class PracticeLogSync {
         URL syncUrl;
         String iid = Iid.get(context).toString();
         try {
-            syncUrl = new URL(SYNC_URL);
+            if(BuildConfig.DEBUG && DEBUG_NETWORK_SYNC){
+                syncUrl = new URL("http://192.168.1.99:8080/write-japanese/progress-sync");
+            } else {
+                syncUrl = new URL(SYNC_URL);
+            }
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -108,6 +114,10 @@ public class PracticeLogSync {
                     "SELECT character, story, timestamp FROM kanji_stories WHERE timestamp > ?",
                     new String[]{lastSyncDeviceTimestamp}, jw);
 
+            queryToJsonArray("character_set_edits", sqlite,
+                    "SELECT id, charset_id, name, description, characters, timestamp as device_timestamp, deleted FROM character_set_edits WHERE timestamp > ? AND install_id = ?",
+                    new String[]{lastSyncDeviceTimestamp, iid}, jw);
+
             jw.endObject();
             jw.close();
 
@@ -140,7 +150,9 @@ public class PracticeLogSync {
                     "SELECT MAX(timestamp) FROM " +
                                 "(SELECT MAX(timestamp) as timestamp FROM practice_log UNION " +
                                  "SELECT MAX(timestamp) as timestamp FROM charset_goals UNION " +
-                                 "SELECT MAX(timestamp) as timestamp FROM kanji_stories)"));
+                                 "SELECT MAX(timestamp) as timestamp FROM kanji_stories UNION " +
+                                 "SELECT MAX(timestamp) as timestamp FROM character_set_edits)"  ));
+
             e.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
             e.apply();
             Log.i("nakama-sync", "Recording device-sync timestamp as " + prefs.getString(DEVICE_SYNC_PREFS_KEY, "MISSED!"));
@@ -221,8 +233,30 @@ public class PracticeLogSync {
                 jr.endObject();
             }
             jr.endArray();
-            jr.endObject();
 
+            jr.nextName();      // "character_set_edits" key
+            jr.beginArray();
+            while (jr.hasNext()) {
+                Map<String, String> values = new HashMap<>();
+                jr.beginObject();
+                while (jr.hasNext()) {
+                    values.put(jr.nextName(), nextStringOrNull(jr));
+                }
+                Log.i("nakama", "Inserting character set edit from record: " + Util.join(values, "=>", ", "));
+
+                try {
+                    CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper(context);
+                    h.recordRemoteEdit( values.get("id"), values.get("charset_id"), values.get("name"), values.get("description"),
+                            values.get("characters"), values.get("install_id"), values.get("timestamp"));
+
+                    Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
+                } catch (SQLiteConstraintException t) {
+                    Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                }
+                jr.endObject();
+            }
+            jr.endArray();
+            jr.endObject();
 
             jr.close();
             rin.close();
@@ -237,7 +271,7 @@ public class PracticeLogSync {
     }
 
     public static void largeLog(String tag, String content) {
-        if (content.length() > 4000) {
+        if (content.length() > 4000 && !BuildConfig.DEBUG) {
             Log.d(tag, content.substring(0, 4000));
             largeLog(tag, content.substring(4000));
         } else {

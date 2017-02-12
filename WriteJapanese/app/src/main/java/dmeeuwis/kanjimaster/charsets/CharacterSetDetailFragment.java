@@ -287,13 +287,10 @@ public class CharacterSetDetailFragment extends Fragment {
             this.selected = new BitSet(asLongString.length());
             this.locked = new BitSet(asLongString.length());
 
-            Log.i("nakama", "CharacterGridAdapter: studySet = " + studySet);
             if(studySet != null){
                 for(char c: studySet.allCharactersSet){
-                    Log.i("nakama", "Setting as selected: " + c + " = " + asLongString.indexOf(c));
                     int index = asLongString.indexOf(c);
                     this.selected.set(index);
-
                 }
             }
 
@@ -306,7 +303,6 @@ public class CharacterSetDetailFragment extends Fragment {
                         allFree.addAll(s.allCharactersSet);
                     }
                 }
-                Log.i("nakama", "Set of all available chars: " + Util.join(", ", allFree));
 
                 for(int i = 0; i < asLongString.length(); i++){
                     if(asLongString.charAt(i) == HEADER_CHAR || asLongString.charAt(i) == METADATA_CHAR){
@@ -339,7 +335,6 @@ public class CharacterSetDetailFragment extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        Log.i("nakama", "OnEditorAction name: " + charSequence);
                         studySet.name = charSequence.toString();
                     }
 
@@ -358,7 +353,6 @@ public class CharacterSetDetailFragment extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        Log.i("nakama", "OnEditorAction description: " + charSequence);
                         studySet.description = charSequence.toString();
                     }
 
