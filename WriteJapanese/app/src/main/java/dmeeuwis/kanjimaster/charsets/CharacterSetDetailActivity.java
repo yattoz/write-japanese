@@ -14,6 +14,7 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
+import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 
 /**
@@ -87,7 +88,9 @@ public class CharacterSetDetailActivity extends ActionBarActivity implements Loc
             if(f != null){
                 boolean saveSuccess = f.save();
                 if(saveSuccess) {
-                    NavUtils.navigateUpTo(this, new Intent(this, CharacterSetListActivity.class));
+                    Intent i = new Intent(this, KanjiMasterActivity.class);
+                    i.putExtra("CHARSET_SWITCH", f.getEditingSet().pathPrefix);
+                    NavUtils.navigateUpTo(this, i);
                     return true;
                 }
 

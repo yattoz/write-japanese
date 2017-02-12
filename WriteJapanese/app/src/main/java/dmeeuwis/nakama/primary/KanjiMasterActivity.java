@@ -751,6 +751,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         ActionBar actionBar = getSupportActionBar();
         actionBar.setListNavigationCallbacks(characterSetAdapter, this);
 
+        String charsetSwitch = getIntent().getStringExtra("CHARSET_SWITCH");
+        if(charsetSwitch != null){
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            Editor ed = prefs.edit();
+            ed.putString(CHAR_SET, charsetSwitch);
+            ed.commit();
+        }
+
         loadCurrentCharacterSet();
         currentCharacterSet.load(this.getApplicationContext());
 

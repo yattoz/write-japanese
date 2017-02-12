@@ -125,6 +125,10 @@ public class CharacterSetDetailFragment extends Fragment {
         return true;
     }
 
+    public CharacterStudySet getEditingSet(){
+        return studySet;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
