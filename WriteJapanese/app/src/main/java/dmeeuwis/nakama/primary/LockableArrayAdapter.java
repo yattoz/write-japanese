@@ -17,7 +17,7 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterStudySet;
 
 public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.CharsetLabel> {
-    private List<CharsetLabel> data;
+    private final List<CharsetLabel> data;
     private final double screenWidthInches;
 
     public static class CharsetLabel {
@@ -65,20 +65,34 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return getCustomView(position, convertView, parent);
+        return getCustomView(position, convertView, parent, false);
     }
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        return getCustomView(position, convertView, parent);
+        return getCustomView(position, convertView, parent, true);
     }
 
-    public View getCustomView(int position, View convertView, ViewGroup parent) {
+    public View getCustomView(int position, View convertView, ViewGroup parent, boolean expanded) {
         View row = convertView;
 
         if (row == null) {
             LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
             row = inflater.inflate(R.layout.locked_list_item_layout, parent, false);
+        }
+
+        TextView textView = ((TextView) row.findViewById(R.id.text));
+        if(expanded){
+            row.setBackgroundColor(getContext().getResources().getColor(R.color.White));
+            textView.setTextColor(getContext().getResources().getColor(R.color.Black));
+        }
+
+        View divider = row.findViewById(R.id.locked_list_item_divider);
+        final int NUMBER_OF_BUILTIN_SETS = 8;
+        if(position == NUMBER_OF_BUILTIN_SETS || position == data.size() - 1){
+            divider.setVisibility(View.VISIBLE);
+        } else {
+            divider.setVisibility(View.GONE);
         }
 
         CharsetLabel d = data.get(position);
@@ -88,12 +102,12 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
         lockIcon.setVisibility(lockIconVisible ? View.VISIBLE : View.INVISIBLE);
         String text;
         String countText = d.length == 0 ? "" : " (" + d.length + ")";
-        if(screenWidthInches > 5.0d) {
+        if(expanded || screenWidthInches > 5.0d) {
             text = d.name + countText;
         } else {
             text = d.shortName + countText;
         }
-        ((TextView) row.findViewById(R.id.text)).setText(text);
+        textView.setText(text);
         return row;
     }
 }
