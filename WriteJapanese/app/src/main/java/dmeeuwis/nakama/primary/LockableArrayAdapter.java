@@ -96,7 +96,7 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
         }
 
         View addButton = row.findViewById(R.id.locked_list_item_add_icon);
-        if(position == data.size()){
+        if(position == data.size()-1){
             addButton.setVisibility(View.VISIBLE);
         } else {
             addButton.setVisibility(View.GONE);
