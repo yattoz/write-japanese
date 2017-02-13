@@ -32,6 +32,17 @@
         android:layout_margin="7dp"
         android:visibility="invisible"
         android:contentDescription="@string/locked_icon_content_description"
-        android:src="@drawable/ic_lock_lock" />
+        android:src="@drawable/ic_lock_gray" />
 
+    <ImageView
+        android:id="@+id/locked_list_item_add_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_vertical"
+        android:layout_margin="7dp"
+        android:visibility="invisible"
+        android:contentDescription="@string/locked_icon_content_description"
+        android:src="@android:drawable/ic_input_add" />
 </RelativeLayout>

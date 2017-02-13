@@ -95,6 +95,14 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
             divider.setVisibility(View.GONE);
         }
 
+        View addButton = row.findViewById(R.id.locked_list_item_add_icon);
+        if(position == data.size()){
+            addButton.setVisibility(View.VISIBLE);
+        } else {
+            addButton.setVisibility(View.GONE);
+        }
+
+
         CharsetLabel d = data.get(position);
         ImageView lockIcon = (ImageView) row.findViewById(R.id.lock);
         lockIcon.getDrawable().setAlpha(255);
