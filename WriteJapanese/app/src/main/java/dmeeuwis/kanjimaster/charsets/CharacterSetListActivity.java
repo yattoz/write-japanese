@@ -279,4 +279,13 @@ public class CharacterSetListActivity extends ActionBarActivity implements LockC
             }
         }
     }
+
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(lockChecker != null){
+            lockChecker.dispose();
+        }
+    }
 }
