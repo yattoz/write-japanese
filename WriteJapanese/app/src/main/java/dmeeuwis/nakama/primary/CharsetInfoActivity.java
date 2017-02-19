@@ -45,7 +45,6 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
 
     @Override
     public void onResume() {
-        DictionarySet dictionarySet = DictionarySet.get(this.getApplicationContext());
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         String charsetName;

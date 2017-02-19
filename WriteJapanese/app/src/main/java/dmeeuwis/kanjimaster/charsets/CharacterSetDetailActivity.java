@@ -25,6 +25,8 @@ import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
  */
 public class CharacterSetDetailActivity extends ActionBarActivity implements LockCheckerHolder {
 
+    public static String CHARSET_SWITCH_BUNDLE_KEY = "CHARSET_SWITCH";
+
     LockChecker lockChecker;
 
     @Override
@@ -89,7 +91,7 @@ public class CharacterSetDetailActivity extends ActionBarActivity implements Loc
                 boolean saveSuccess = f.save();
                 if(saveSuccess) {
                     Intent i = new Intent(this, KanjiMasterActivity.class);
-                    i.putExtra("CHARSET_SWITCH", f.getEditingSet().pathPrefix);
+                    i.putExtra(CHARSET_SWITCH_BUNDLE_KEY, f.getEditingSet().pathPrefix);
                     NavUtils.navigateUpTo(this, i);
                     return true;
                 }

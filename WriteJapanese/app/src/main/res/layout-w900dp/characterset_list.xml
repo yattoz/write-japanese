@@ -23,8 +23,8 @@
                                             xmlns:tools="http://schemas.android.com/tools"
                                             android:layout_width="@dimen/item_width"
                                             android:layout_height="match_parent"
-                                            android:layout_marginLeft="16dp"
-                                            android:layout_marginRight="16dp"
+                                            android:layout_marginLeft="5dp"
+                                            android:layout_marginRight="5dp"
                                             app:layoutManager="LinearLayoutManager"
                                             tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetListActivity"
                                             tools:listitem="@layout/characterset_list_content"/>

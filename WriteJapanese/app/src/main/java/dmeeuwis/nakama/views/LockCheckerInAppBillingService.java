@@ -81,6 +81,11 @@ public class LockCheckerInAppBillingService extends LockChecker {
                     commsExec = Executors.newSingleThreadExecutor();
                 }
 
+                if(commsExec.isTerminated()){
+                    commsExec.shutdown();
+                    commsExec = Executors.newSingleThreadExecutor();
+                }
+
                 while(!delayed.isEmpty()){
                     Runnable r = delayed.poll();
                     if(r != null) {

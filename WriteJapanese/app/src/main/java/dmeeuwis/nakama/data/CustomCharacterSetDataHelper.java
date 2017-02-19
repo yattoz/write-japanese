@@ -44,6 +44,10 @@ public class CustomCharacterSetDataHelper {
         }
     }
 
+    public void unDelete(CharacterStudySet doomed) {
+        recordEdit(doomed.pathPrefix, doomed.name, doomed.description, doomed.charactersAsString());
+    }
+
     public CharacterStudySet get(String id){
         List<CharacterStudySet> customs = getSets();
         for(CharacterStudySet s: customs){

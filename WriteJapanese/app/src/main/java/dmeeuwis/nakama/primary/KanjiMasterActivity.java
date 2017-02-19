@@ -388,6 +388,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     private void initializeCharacterSets(){
         UUID iid = Iid.get(this.getApplicationContext());
 
+        this.characterSets.clear();
         this.characterSets.put("hiragana", CharacterSets.hiragana(LockChecker, iid));
         this.characterSets.put("katakana", CharacterSets.katakana(LockChecker, iid));
         this.characterSets.put("j1", CharacterSets.joyouG1(LockChecker, iid));
@@ -843,6 +844,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem shuffleCheck = menu.findItem(R.id.menu_shuffle);
         if (currentCharacterSet != null) {
+            Log.i("nakama", "Menu prep: shuffle is " + currentCharacterSet.isShuffling());
             shuffleCheck.setChecked(currentCharacterSet.isShuffling());
         }
         MenuItem lockItem = menu.findItem(R.id.menu_lock);
@@ -877,11 +879,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_reset_progress) {
             queryProgressReset();
         } else if (item.getItemId() == R.id.menu_shuffle) {
-            item.setChecked(!item.isChecked());
-
+            boolean currentState = !item.isChecked();
+            item.setChecked(currentState);
+            currentCharacterSet.setShuffle(currentState);
+            Log.i("nakama", "Setting curr charset shuffle to " + item.isChecked());
             for (CharacterStudySet c : characterSets.values()) {
                 Log.i("nakama", "Setting charset " + c.name + " shuffle to " + item.isChecked());
-                c.setShuffle(item.isChecked());
+                c.setShuffle(currentState);
             }
         } else if (item.getItemId() == R.id.menu_share_stories) {
             ShareStoriesDialog.show(this, new Runnable() {
@@ -1050,9 +1054,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
+
+    private int currentNavigationItem = 0;
+
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        Log.i("nakama", "onNavigationItemSelected: " + itemPosition);
+
         saveCurrentCharacterSet();
+        CharacterStudySet prevSet = this.currentCharacterSet;
 
         if (itemPosition == 0) {
             this.currentCharacterSet = characterSets.get("hiragana");
@@ -1083,7 +1093,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 //		} else if(itemPosition == 8){
 //			Toast.makeText(this, "Showing SS", Toast.LENGTH_SHORT);
 //			this.currentCharacterSet = this.joyouSS;
-//        }
+//        }java.lang.IllegalArgumentException: Scrapped or attached views may not be recycled
 
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
         List<CharacterStudySet> customSets = helper.getSets();
@@ -1092,8 +1102,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.currentCharacterSet = customSets.get(customSetIndex);
         }
 
+        if(prevSet != null){
+            this.currentCharacterSet.setShuffle(prevSet.isShuffling());
+        }
+
         if(itemPosition >= 8 + customSets.size()) {
             if (customSets.size() == 0) {
+
+                getSupportActionBar().setSelectedNavigationItem(currentNavigationItem);
+
                 Intent intent = new Intent(this, CharacterSetDetailActivity.class);
                 intent.putExtra(CharacterSetDetailFragment.CHARSET_ID, "create");
                 startActivity(intent);
@@ -1109,7 +1126,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.charSetFrag.setCharset(this.currentCharacterSet);
         }
 
-        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition == 8)) {
+        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition > 8)) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
 
@@ -1117,6 +1134,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         drawPad.clear();
         setUiState(State.DRAWING);
         backgroundLoadTranslations();
+
+        currentNavigationItem = itemPosition;
+
         return true;
     }
 
