@@ -75,7 +75,7 @@ dependencies {
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.shamanland:fab:0.0.6'
     compile 'uk.co.deanwild:flowtextview:2.0.2@aar'
-    compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
+    compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
     compile 'com.android.support:design:25.0.1'
 
     testCompile 'junit:junit:4.12'
