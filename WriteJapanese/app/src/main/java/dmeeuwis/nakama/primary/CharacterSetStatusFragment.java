@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -265,7 +266,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
         progressPieChart = (PieChart)view.findViewById(R.id.charset_progress_chart);
         if(progressPieChart != null){
-            progressPieChart.setDescription("");
+            progressPieChart.setDescription(new Description());
 
             progressPieChart.setDrawHoleEnabled(true);
             progressPieChart.setHoleRadius(50f);
