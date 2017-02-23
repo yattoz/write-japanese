@@ -101,6 +101,8 @@ public class PracticeLogSync {
         try {
             jw.name("prev_sync_timestamp").value(lastSyncServerTimestamp);
 
+            jw.name("app_version").value(BuildConfig.VERSION_CODE);
+
             queryToJsonArray("practice_logs", sqlite,
                     "SELECT id, install_id, character, charset, timestamp, score, drawing " +
                             "FROM practice_log WHERE timestamp > ? AND install_id = ?",
