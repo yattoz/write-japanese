@@ -236,28 +236,31 @@ public class PracticeLogSync {
             }
             jr.endArray();
 
-            jr.nextName();      // "character_set_edits" key
-            jr.beginArray();
-            while (jr.hasNext()) {
-                Map<String, String> values = new HashMap<>();
-                jr.beginObject();
+            if(jr.hasNext()) {
+                jr.nextName();      // "character_set_edits" key
+                jr.beginArray();
                 while (jr.hasNext()) {
-                    values.put(jr.nextName(), nextStringOrNull(jr));
-                }
-                Log.i("nakama", "Inserting character set edit from record: " + Util.join(values, "=>", ", "));
+                    Map<String, String> values = new HashMap<>();
+                    jr.beginObject();
+                    while (jr.hasNext()) {
+                        values.put(jr.nextName(), nextStringOrNull(jr));
+                    }
+                    Log.i("nakama", "Inserting character set edit from record: " + Util.join(values, "=>", ", "));
 
-                try {
-                    CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper(context);
-                    h.recordRemoteEdit( values.get("id"), values.get("charset_id"), values.get("name"), values.get("description"),
-                            values.get("characters"), values.get("install_id"), values.get("timestamp"));
+                    try {
+                        CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper(context);
+                        h.recordRemoteEdit(values.get("id"), values.get("charset_id"), values.get("name"), values.get("description"),
+                                values.get("characters"), values.get("install_id"), values.get("timestamp"));
 
-                    Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
-                } catch (SQLiteConstraintException t) {
-                    Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                        Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
+                    } catch (SQLiteConstraintException t) {
+                        Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                    }
+                    jr.endObject();
                 }
-                jr.endObject();
+                jr.endArray();
             }
-            jr.endArray();
+
             jr.endObject();
 
             jr.close();
