@@ -39,7 +39,7 @@ public class PracticeLogSync {
     final public static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
     final public static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
     final private static String SYNC_URL = "https://dmeeuwis.com/write-japanese/progress-sync";
-    final private static boolean DEBUG_NETWORK_SYNC = true;
+    final private static boolean DEBUG_NETWORK_SYNC = false;
 
     final Context context;
 
