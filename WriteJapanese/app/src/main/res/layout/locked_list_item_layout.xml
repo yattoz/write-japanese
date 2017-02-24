@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:orientation="horizontal">
 
     <View
         android:id="@+id/locked_list_item_divider"
@@ -14,35 +15,30 @@
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_gravity="left|center_vertical"
+        android:paddingRight="32dp"
         android:layout_margin="7dp"
-        android:textSize="14sp"
         android:textColor="@android:color/white"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        />
+        tools:text="Joyou Kanji J1 (123)"
+        android:textSize="14sp" />
 
     <ImageView
         android:id="@+id/lock"
+        android:layout_gravity="right|center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="7dp"
-        android:visibility="invisible"
         android:contentDescription="@string/locked_icon_content_description"
-        android:src="@drawable/ic_lock_gray" />
+        android:src="@drawable/ic_lock_lock"
+        android:visibility="gone"
+        />
 
     <ImageView
         android:id="@+id/locked_list_item_add_icon"
+        android:layout_gravity="right|center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="7dp"
-        android:visibility="invisible"
         android:contentDescription="@string/locked_icon_content_description"
-        android:src="@android:drawable/ic_input_add" />
-</RelativeLayout>
+        android:src="@android:drawable/ic_input_add"
+        android:visibility="gone"
+        />
+</FrameLayout>

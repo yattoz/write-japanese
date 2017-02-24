@@ -81,10 +81,12 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
             row = inflater.inflate(R.layout.locked_list_item_layout, parent, false);
         }
 
+        ImageView lockIcon = (ImageView) row.findViewById(R.id.lock);
         TextView textView = ((TextView) row.findViewById(R.id.text));
         if(expanded){
             row.setBackgroundColor(getContext().getResources().getColor(R.color.White));
             textView.setTextColor(getContext().getResources().getColor(R.color.Black));
+            lockIcon.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_lock_gray));
         }
 
         View divider = row.findViewById(R.id.locked_list_item_divider);
@@ -104,10 +106,9 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
 
 
         CharsetLabel d = data.get(position);
-        ImageView lockIcon = (ImageView) row.findViewById(R.id.lock);
         lockIcon.getDrawable().setAlpha(255);
         boolean lockIconVisible = d.locked;
-        lockIcon.setVisibility(lockIconVisible ? View.VISIBLE : View.INVISIBLE);
+        lockIcon.setVisibility(lockIconVisible ? View.VISIBLE : View.GONE);
         String text;
         String countText = d.length == 0 ? "" : " (" + d.length + ")";
         if(expanded || screenWidthInches > 5.0d) {
