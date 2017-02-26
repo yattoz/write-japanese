@@ -91,7 +91,7 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
 
         View divider = row.findViewById(R.id.locked_list_item_divider);
         final int NUMBER_OF_BUILTIN_SETS = 8;
-        if(position == NUMBER_OF_BUILTIN_SETS || position == data.size() - 1){
+        if(expanded && position == NUMBER_OF_BUILTIN_SETS || position == data.size() - 1){
             divider.setVisibility(View.VISIBLE);
         } else {
             divider.setVisibility(View.GONE);
