@@ -26,6 +26,7 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
 
     CharacterStudySet charset;
     LockChecker lockChecker;
+    boolean justCreated = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,9 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
         charset.load(this.getApplicationContext());
 
         CharacterSetStatusFragment frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_holder);
-        frag.setCharset(charset);
+        frag.setCharset(charset, justCreated ? 200 : 0);
+
+        justCreated = false;
 
         super.onResume();
     }

@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -48,7 +49,8 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
     private enum CharsetColor {
         HIRAGANA(R.color.BlueGrey), KATAKANA(R.color.DarkSlateBlue),
         J1(R.color.DarkCyan), J2(R.color.RoyalBlue), J3(R.color.DarkSlateGray),
-        J4(R.color.IndianRed), J5(R.color.DarkGreen), J6(R.color.BlueGrey2);
+        J4(R.color.IndianRed), J5(R.color.DarkGreen), J6(R.color.BlueGrey2),
+        CUSTOM(R.color.DarkGoldenrod);
 
         final int color;
 
@@ -92,6 +94,10 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
     }
 
     public void updateProgress() {
+        updateProgress(0);
+    }
+
+    private void updateProgress(int animationDelay) {
         Log.i("nakama", "Updating progress UI");
 
         CharacterStudySet.SetProgress sp = charSet.getProgress();
@@ -137,7 +143,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
                 colour_i += 1;
             }
 
-            PieDataSet pieData = new PieDataSet(values, "Study Progress");
+            final PieDataSet pieData = new PieDataSet(values, "Study Progress");
             int[] usedColours = new int[colour_i];
             for(int i = 0; i < colour_i; i++){
                 usedColours[i] = colours[i];
@@ -150,8 +156,14 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
             pieData.setValueTextColor(Color.WHITE);
             //pieData.setValueTypeface(mTfLight);
 
-            progressPieChart.setData(new PieData(pieData));
-            progressPieChart.invalidate();
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    progressPieChart.setData(new PieData(pieData));
+                    progressPieChart.invalidate();
+                }
+            }, animationDelay);
         }
     }
 
@@ -201,6 +213,10 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
     }
 
     public void setCharset(CharacterStudySet charSet) {
+        setCharset(charSet, 0);
+    }
+
+    public void setCharset(CharacterStudySet charSet, int animationDelay) {
         this.charSet = charSet;
 
         if(charLabel == null){
@@ -222,7 +238,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         charLabel.setTextColor(Color.WHITE);
         descLabel.setTextColor(Color.WHITE);
 
-        updateProgress();
+        updateProgress(animationDelay);
 
         notifications.setOnCheckedChangeListener(null);
         updateGoals();
