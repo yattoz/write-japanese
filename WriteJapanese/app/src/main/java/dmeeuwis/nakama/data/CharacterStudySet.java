@@ -278,10 +278,6 @@ public class CharacterStudySet implements Iterable<Character> {
         this.currentChar = next;
 	}
 
-	public boolean isReviewing(){
-		return this.reviewing;
-	}
-
 	public void save(Context context){
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
         cdb.recordGoals(pathPrefix, goalStarted, studyGoal);
@@ -294,7 +290,7 @@ public class CharacterStudySet implements Iterable<Character> {
             this.goalStarted = goals.first;
             this.studyGoal = goals.second;
         }
-        Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.pathPrefix);
+        Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.availableCharactersSet());
         Map<Character, Integer> freshSheet = new LinkedHashMap<>();
 
         for(Character c: this.allCharactersSet){
@@ -313,14 +309,5 @@ public class CharacterStudySet implements Iterable<Character> {
 
 	public void debugMarkAllPassed(){
 		this.tracker.debugMarkAllSuccess();
-	}
-
-	public void saveCustomSet(Context c){
-		if(systemSet){
-			return;
-		}
-
-		CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(c);
-		helper.recordEdit(pathPrefix, name, description, charactersAsString());
 	}
 }

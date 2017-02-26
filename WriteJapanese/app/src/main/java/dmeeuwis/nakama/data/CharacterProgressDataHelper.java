@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
@@ -83,33 +84,41 @@ public class CharacterProgressDataHelper {
         }
     }
 
-    public Map<Character, Integer> getRecordSheetForCharset(String charsetName){
+    public Map<Character, Integer> getRecordSheetForCharset(final Set<Character> validChars){
         long start = System.currentTimeMillis();
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
-        Map<Character, Integer> recordSheet = new HashMap<>();
+        final Map<Character, Integer> recordSheet = new HashMap<>();
         try {
-            List<Map<String, String>> rec = DataHelper.selectRecords(db.getReadableDatabase(),
-                    "SELECT character, score FROM practice_log WHERE charset = ?", charsetName);
-            Log.i("nakama-record", "-----> Found " + rec.size() + " practice logs to read");
-            for(Map<String, String> r: rec) {
-                Character character = r.get("character").charAt(0);
-                Integer score = Integer.parseInt(r.get("score"));
+            DataHelper.applyToResults(
+                new DataHelper.ProcessRow() {
+                    @Override
+                    public void process(Map<String, String> r) {
+                        Character character = r.get("character").charAt(0);
+                        if(!validChars.contains(character)){
+                            return;
+                        }
 
-                Integer sheetScore;
-                if(character.toString().equals("R") && score.intValue() == 0){
-                    // indicates reset progress for all characters
-                    recordSheet.clear();
-                } else {
-                    sheetScore = recordSheet.get(character);
-                    if (sheetScore != null) {
-                        sheetScore = Math.max(0, Math.min(200, sheetScore + score));
-                    } else {
-                        sheetScore = score;
+                        Integer score = Integer.parseInt(r.get("score"));
+
+                        Integer sheetScore;
+                        if(character.toString().equals("R") && score.intValue() == 0){
+                            // indicates reset progress for all characters
+                            recordSheet.clear();
+                        } else {
+                            sheetScore = recordSheet.get(character);
+                            if (sheetScore != null) {
+                                sheetScore = Math.max(0, Math.min(200, sheetScore + score));
+                            } else {
+                                sheetScore = score;
+                            }
+                            recordSheet.put(character, sheetScore);
+                        }
                     }
-                    recordSheet.put(character, sheetScore);
-                }
-            }
+                },
+
+                db.getReadableDatabase(),
+                "SELECT character, score FROM practice_log");
         } finally {
             db.close();
         }
