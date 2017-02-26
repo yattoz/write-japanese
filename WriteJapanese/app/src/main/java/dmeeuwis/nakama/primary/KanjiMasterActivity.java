@@ -848,8 +848,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             shuffleCheck.setChecked(currentCharacterSet.isShuffling());
         }
         MenuItem lockItem = menu.findItem(R.id.menu_lock);
-        //Log.d("nakama", "KanjiMaster.onPrepareOptionsMenus: setting actionbar lock to: " +
-        //  (lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED) + " (" + lockChecker.getPurchaseStatus() + ")");
         lockItem.setVisible(LockChecker.getPurchaseStatus() != LockLevel.UNLOCKED);
 
         MenuItem shareCheck = menu.findItem(R.id.menu_share_stories);
@@ -1126,7 +1124,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.charSetFrag.setCharset(this.currentCharacterSet);
         }
 
-        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition > 8)) {
+        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition >= 8)) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
 
