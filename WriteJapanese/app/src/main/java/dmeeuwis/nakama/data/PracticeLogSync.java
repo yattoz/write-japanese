@@ -213,7 +213,7 @@ public class PracticeLogSync {
 
             jr.nextName();      // "charset_goals" key
             jr.beginArray();
-            while (jr.hasNext()) {
+            if(jr.hasNext()) {
                 Map<String, String> values = new HashMap<>();
                 jr.beginObject();
                 while (jr.hasNext()) {
