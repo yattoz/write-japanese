@@ -4,8 +4,10 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -34,6 +36,7 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.views.AutofitRecyclerView;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
@@ -122,6 +125,12 @@ public class CharacterSetDetailFragment extends Fragment {
         }
 
         new CustomCharacterSetDataHelper(getActivity()).recordEdit(studySet.pathPrefix, editName, editDesc, characters);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(KanjiMasterActivity.CHAR_SET, studySet.pathPrefix);
+        ed.apply();
+
         return true;
     }
 

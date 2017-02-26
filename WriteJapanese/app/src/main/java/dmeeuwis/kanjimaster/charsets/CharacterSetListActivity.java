@@ -2,7 +2,9 @@ package dmeeuwis.kanjimaster.charsets;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -251,6 +253,11 @@ public class CharacterSetListActivity extends ActionBarActivity implements LockC
                         Intent intent = new Intent(context, KanjiMasterActivity.class);
                         context.startActivity(intent);
                     }
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor ed = prefs.edit();
+                    ed.remove(KanjiMasterActivity.CHAR_SET);
+                    ed.apply();
 
                     Snackbar.make(view, "Deleted chracter set '" + doomed.name + "'", Snackbar.LENGTH_INDEFINITE)
                             .setAction("Undo", new View.OnClickListener() {
