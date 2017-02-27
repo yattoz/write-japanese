@@ -18,6 +18,7 @@ import dmeeuwis.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.AndroidInputStreamGenerator;
 import dmeeuwis.nakama.data.AssetFinder;
+import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AnimatedCurveView;
@@ -64,7 +65,7 @@ public class KanjiCheckActivity extends ActionBarActivity {
                 CurveDrawing cv = null;
                 if(position < Kanji.JOUYOU_G1.length()) {
                     try {
-                        cv = af.findGlyphForCharacter("j1", Kanji.JOUYOU_G1.charAt(position));
+                        cv = af.findGlyphForCharacter(CharacterSets.joyouG1(null, null), Kanji.JOUYOU_G1.charAt(position));
                     } catch (IOException e) {
                         Toast.makeText(KanjiCheckActivity.this, "Error finding glyph for " + Kanji.JOUYOU_G1.charAt(position), Toast.LENGTH_SHORT).show();
                     }

@@ -29,7 +29,11 @@ import dmeeuwis.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.Constants;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
+import dmeeuwis.nakama.data.AndroidInputStreamGenerator;
+import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.DictionarySet;
+import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.util.Util;
 
 public class TeachingActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
@@ -107,11 +111,10 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
         Bundle params = getIntent().getExtras();
         Character kanjiIn;
-        String kanjiPath;
         if(params != null && params.size() > 0){
             callingClass = params.getString("parent");
             kanjiIn = params.getChar(Constants.KANJI_PARAM);
-            kanjiPath = params.getString(Constants.KANJI_PATH_PARAM);
+            String kanjiPath = params.getString(Constants.KANJI_PATH_PARAM);
 
             Editor ed = prefs.edit();
             ed.putString("character", kanjiIn.toString());
@@ -129,7 +132,6 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
                 }
             }
             kanjiIn = kanjiInStr.charAt(0);
-            kanjiPath = prefs.getString("path", null);
         }
 
         this.character = kanjiIn.toString();
@@ -143,17 +145,10 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
         }
 
         int unicodeValue = kanjiIn;
-        String path = kanjiPath + "/" + Integer.toHexString(unicodeValue) + ".path";
-        AssetManager assets = getAssets();
         try {
-            InputStream is = assets.open(path);
-            try {
-                currentCharacterSvg = Util.slurp(is).split("\n");
-            } finally {
-                is.close();
-            }
+            currentCharacterSvg = new AssetFinder(new AndroidInputStreamGenerator(getAssets())).findSvgForCharacter(null, kanjiIn);
         } catch (IOException e) {
-            Log.e("nakama", "Error loading path: " + path + " for character " + kanjiIn + " (" + unicodeValue + ")");
+            Log.e("nakama", "Error loading svg: for character " + kanjiIn + " (" + unicodeValue + ")");
             throw new RuntimeException(e);
         }
 

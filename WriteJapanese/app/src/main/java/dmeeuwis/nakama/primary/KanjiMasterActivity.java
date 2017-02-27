@@ -653,40 +653,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
     }
 
-    private String findPathFile(Character character){
-        String path = null;
-        if(this.currentCharacterSet.systemSet) {
-            path = currentCharacterSet.pathPrefix;
-        } else {
-            for(CharacterStudySet c: CharacterSets.all(getLockChecker(), Iid.get(this))){
-                if(c.allCharactersSet.contains(Character.valueOf(character))){
-                    path = c.pathPrefix;
-                    break;
-                }
-            }
-            if(path == null){
-                path = "";      // failure!
-            }
-        }
-        String fullPath = path + "/" + Integer.toHexString(character.charValue()) + ".path";
-        Log.i("nakama", "Found .path file for " + character + " as " + fullPath);
-        return fullPath;
-    }
-
     private void loadDrawDetails(boolean increment) {
         //Log.i("nakama", "loadDrawDetails()");
         Character first = this.currentCharacterSet.currentCharacter();
 
-        String path = findPathFile(this.currentCharacterSet.currentCharacter());
+        String path = AssetFinder.findPathFile(this.currentCharacterSet, this.currentCharacterSet.currentCharacter(), getLockChecker(), Iid.get(this));
 
-        AssetManager assets = getAssets();
         try {
-            InputStream is = assets.open(path);
-            try {
-                this.currentCharacterSvg = Util.slurp(is).split("\n");
-            } finally {
-                is.close();
-            }
+            this.currentCharacterSvg = new AssetFinder(new AndroidInputStreamGenerator(getAssets()))
+                            .findSvgForCharacter(this.currentCharacterSet, this.currentCharacterSet.currentCharacter());
         } catch (IOException e) {
             Log.e("nakama", "Error loading path: " + path + " for character " + first + " (" + currentCharacterSet.currentCharacter().charValue() + ")");
             Toast.makeText(this.getBaseContext(), "Internal Error loading stroke for " + first + "; " + path, Toast.LENGTH_SHORT).show();
@@ -1100,7 +1075,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.currentCharacterSet = customSets.get(customSetIndex);
         }
 
-        if(prevSet != null){
+        if(prevSet != null && this.currentCharacterSet != null){
             this.currentCharacterSet.setShuffle(prevSet.isShuffling());
         }
 
