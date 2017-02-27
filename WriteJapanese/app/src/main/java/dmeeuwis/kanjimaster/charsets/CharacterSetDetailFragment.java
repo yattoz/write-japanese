@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -188,6 +189,7 @@ public class CharacterSetDetailFragment extends Fragment {
         private final BitSet selected;
         public final Map<Integer, String> headers;
         private final BitSet locked;
+        private final Drawable lockIcon;
 
 
         private class MetadataViewHolder extends RecyclerView.ViewHolder {
@@ -203,12 +205,10 @@ public class CharacterSetDetailFragment extends Fragment {
 
         private class CharacterViewHolder extends RecyclerView.ViewHolder {
             public TextView text;
-            public ImageView lock;
 
             CharacterViewHolder(View itemView) {
                 super(itemView);
                 this.text = (TextView)itemView.findViewById(R.id.character_grid_text);
-                this.lock = (ImageView)itemView.findViewById(R.id.character_grid_lock);
 
 
                 this.text.setOnClickListener(new View.OnClickListener() {
@@ -248,16 +248,14 @@ public class CharacterSetDetailFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         int i = getAdapterPosition();
-                        Log.i("nakama", "Header type onClick! " + i);
                         i++;
                         while(i < asLongString.length() && asLongString.charAt(i) != HEADER_CHAR){
-                            Log.i("nakama", "Selecting " + i);
                             if(!locked.get(i) && !selected.get(i)) {
                                 selected.set(i, true);
-                                notifyItemChanged(i);
                             }
                             i++;
                         }
+                        notifyItemRangeChanged(getAdapterPosition(), i-1);
                         studySet.allCharactersSet.clear();
                         studySet.allCharactersSet.addAll(getCharactersAsSet());
                     }
@@ -327,6 +325,7 @@ public class CharacterSetDetailFragment extends Fragment {
                     }
                 }
             }
+            lockIcon = getResources().getDrawable(R.drawable.ic_lock_gray);
         }
 
         @Override
@@ -397,16 +396,12 @@ public class CharacterSetDetailFragment extends Fragment {
                 CharacterViewHolder ch = (CharacterViewHolder) holder;
                 ch.text.setText(String.valueOf(asLongString.charAt(position)));
 
-                if(selected.get(position)){
-                    ch.text.setBackgroundColor(SELECT_COLOUR);
+                if(locked.get(position)) {
+                    ch.text.setBackgroundDrawable(lockIcon);
+                } else if(selected.get(position)){
+                        ch.text.setBackgroundColor(SELECT_COLOUR);
                 } else {
                     ch.text.setBackgroundColor(Color.WHITE);
-                }
-
-                if(locked.get(position)){
-                    ch.lock.setVisibility(View.VISIBLE);
-                } else {
-                    ch.lock.setVisibility(View.GONE);
                 }
             }
         }
