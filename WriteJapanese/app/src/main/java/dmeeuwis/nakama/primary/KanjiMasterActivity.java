@@ -1041,7 +1041,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.currentCharacterSet = characterSets.get("hiragana");
             //this.correctVocabList.setVisibility(View.GONE);
         } else if (itemPosition == 1) {
-            this.currentCharacterSet = characterSets.get("katakama");
+            this.currentCharacterSet = characterSets.get("katakana");
             //this.correctVocabList.setVisibility(View.GONE);
         } else if (itemPosition == 2) {
             this.currentCharacterSet = characterSets.get("j1");
