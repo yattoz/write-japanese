@@ -892,8 +892,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                                     Toast.makeText(KanjiMasterActivity.this, "Sync completed!", Toast.LENGTH_SHORT).show();
                                 }
                             });
-                        } catch (IOException e) {
-                            Log.e("nakama-sync", "Error on menu-option network sync: " + e.getMessage(), e);
+                        } catch (Throwable e) {
+                            UncaughtExceptionLogger.backgroundLogError("Error on menu-option network sync", e, KanjiMasterActivity.this);
                             Handler handler = new Handler(Looper.getMainLooper());
                             handler.post(new Runnable() {
                                 @Override public void run() {

@@ -98,6 +98,8 @@ public class PracticeLogSync {
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase sqlite = db.getReadableDatabase();
+        String jsonResponse = null;
+        String jsonPost = null;
         try {
             jw.name("prev_sync_timestamp").value(lastSyncServerTimestamp);
 
@@ -123,7 +125,7 @@ public class PracticeLogSync {
             jw.endObject();
             jw.close();
 
-            String jsonPost = netWriter.toString();
+            jsonPost = netWriter.toString();
             Log.i("nakama", "Posting JSON sync: " + jsonPost);
 
             OutputStream out = urlConnection.getOutputStream();
@@ -136,7 +138,7 @@ public class PracticeLogSync {
             // stream over all rows in from POST response
             Log.i("nakama", "Received response to JSON sync: " + urlConnection.getResponseMessage() + urlConnection.getResponseMessage());
             InputStream inStream = urlConnection.getInputStream();
-            String jsonResponse = Util.slurp(inStream);
+            jsonResponse = Util.slurp(inStream);
             largeLog("nakama-sync", "Saw progress-sync response JSON: " + jsonResponse);
 
             Reader rin = new InputStreamReader(new ByteArrayInputStream(jsonResponse.getBytes("UTF-8")));
@@ -268,7 +270,13 @@ public class PracticeLogSync {
             inStream.close();
 
             Log.i("nakama-sync", "Sync complete!");
+            throw new RuntimeException("BOOM");
 
+        } catch(Throwable t) {
+            StringBuilder message = new StringBuilder();
+            message.append("Error when parsing sync; request was: " + (jsonPost == null ? "<null>" : jsonPost));
+            message.append("response was: " + (jsonResponse == null ? "<null>" : jsonResponse));
+            throw new RuntimeException(message.toString(), t);
         } finally {
             db.close();
             sqlite.close();
