@@ -270,7 +270,6 @@ public class PracticeLogSync {
             inStream.close();
 
             Log.i("nakama-sync", "Sync complete!");
-            throw new RuntimeException("BOOM");
 
         } catch(Throwable t) {
             StringBuilder message = new StringBuilder();
