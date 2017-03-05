@@ -20,6 +20,7 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 
@@ -86,31 +87,39 @@ public class ReminderManager extends BroadcastReceiver {
     }
 
     public void onReceive(Context context, Intent intent) {
-        Log.i("nakama", "ReminderManager.onReceive: wakeup!");
-        String charset = intent.getStringExtra(INTENT_CHARSET);
+        try {
+            Log.i("nakama", "ReminderManager.onReceive: wakeup!");
+            String charset = intent.getStringExtra(INTENT_CHARSET);
 
-        UUID iid = Iid.get(context.getApplicationContext());
-        Log.i("nakama-remind", "Found iid in reminder notification task as: " + iid);
-        CharacterStudySet set = CharacterSets.fromName(context, charset, null, iid);
-        set.load(context);
-        CharacterStudySet.GoalProgress gp = set.getGoalProgress();
-        int charCount = gp.neededPerDay;
+            UUID iid = Iid.get(context.getApplicationContext());
+            Log.i("nakama-remind", "Found iid in reminder notification task as: " + iid);
+            CharacterStudySet set = CharacterSets.fromName(context, charset, null, iid);
+            set.load(context);
+            CharacterStudySet.GoalProgress gp = set.getGoalProgress();
+            if (set == null) {
+                return;
+            }
 
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-        int id = set.pathPrefix.hashCode();
+            int charCount = gp.neededPerDay;
 
-        // clear any existing notification that user didn't click
-        notificationManager.cancel(id);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            int id = set.pathPrefix.hashCode();
 
-        // add new notification
-        Notification n = getNotification(context, "Study Reminder", "Try for " + charCount + " " + set.name + " characters today!");
-        notificationManager.notify(id, n);
+            // clear any existing notification that user didn't click
+            notificationManager.cancel(id);
 
-        // schedule tomorrow's reminder
-        Calendar now = Calendar.getInstance();
-        now.setTimeInMillis(System.currentTimeMillis());
-        if(gp.goal.after(now)){
-            scheduleRemindersFor(context, set);
+            // add new notification
+            Notification n = getNotification(context, "Study Reminder", "Try for " + charCount + " " + set.name + " characters today!");
+            notificationManager.notify(id, n);
+
+            // schedule tomorrow's reminder
+            Calendar now = Calendar.getInstance();
+            now.setTimeInMillis(System.currentTimeMillis());
+            if (gp.goal.after(now)) {
+                scheduleRemindersFor(context, set);
+            }
+        } catch(Throwable t){
+            UncaughtExceptionLogger.backgroundLogError("Caught error in reminder service onReceive", t, context);
         }
     }
 
