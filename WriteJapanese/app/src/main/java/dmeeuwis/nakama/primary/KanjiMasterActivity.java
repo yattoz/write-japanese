@@ -917,6 +917,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_strictness) {
             // show criticism selection fragment
             showStrictnessDialog();
+        } else if (item.getItemId() == R.id.menu_progression_settings) {
+            // show criticism selection fragment
+            showProgressionSettingsDialog();
         }
 
         if (BuildConfig.DEBUG) {
@@ -979,6 +982,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         return true;
+    }
+
+    private void showProgressionSettingsDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        ProgressSettingsDialog d = new ProgressSettingsDialog();
+        if(!isFinishing()) {
+            d.show(fm, "fragment_progression_settings");
+        }
     }
 
     private void showStrictnessDialog() {

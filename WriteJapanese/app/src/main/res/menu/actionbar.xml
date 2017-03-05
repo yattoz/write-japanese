@@ -34,6 +34,9 @@
         android:title="@string/menu_strictness"/>
 
     <item
+        android:id="@+id/menu_progression_settings"
+        android:title="@string/progression_settings"/>
+    <item
         android:id="@+id/menu_reset_progress"
         android:title="@string/reset_progress_menu_label"/>
     <item
