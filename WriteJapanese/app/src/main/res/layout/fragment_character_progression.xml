@@ -8,95 +8,49 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="" />
+        android:text="Options to control how many characters from a set you study at a time." />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/Gray" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/introduce_new_characters" />
+        android:text="Introduce a new character from the set only when:" />
 
     <Spinner
-        android:id="@+id/when_to_introduce_spinner"
+        android:id="@+id/when_to_introduce_incorrect_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/incorrectly_written_characters_group"
-        android:textStyle="bold" />
+        android:text="and" />
 
-    <LinearLayout
+    <Spinner
+        android:id="@+id/when_to_introduce_reviewing_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="30dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/max_of" />
-
-        <Spinner
-            android:id="@+id/max_incorrect_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="30dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/leave_group_after" />
-
-        <Spinner
-            android:id="@+id/incorrect_group_leave_after_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
+        android:layout_height="1dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@color/Gray" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/reviewing_characters_group"
-        android:textStyle="bold" />
+        android:text="Review correctly drawn characters:" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="30dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/max_of" />
-
-        <Spinner
-            android:id="@+id/max_reviewing_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="30dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/leave_group_after" />
-
-        <Spinner
-            android:id="@+id/reviewing_group_leave_after_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-
+    <Spinner
+        android:id="@+id/when_to_review_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>

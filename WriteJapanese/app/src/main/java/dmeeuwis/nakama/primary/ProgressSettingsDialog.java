@@ -44,29 +44,20 @@ public class ProgressSettingsDialog extends DialogFragment {
         View dialogLayout = inflater.inflate(R.layout.fragment_character_progression, frameView);
 
         {
-            Spinner s = (Spinner) dialogLayout.findViewById(R.id.max_incorrect_spinner);
-            s.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.characters_spinner, android.R.layout.simple_spinner_dropdown_item));
+            Spinner s = (Spinner) dialogLayout.findViewById(R.id.when_to_introduce_incorrect_spinner);
+            s.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_introduce_incorrect_spinner_values, android.R.layout.simple_spinner_dropdown_item));
         }
 
         {
-            Spinner s = (Spinner) dialogLayout.findViewById(R.id.incorrect_group_leave_after_spinner);
-            s.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.leave_after_spinner, android.R.layout.simple_spinner_dropdown_item));
+            Spinner s = (Spinner) dialogLayout.findViewById(R.id.when_to_introduce_reviewing_spinner);
+            s.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_introduce_reviewing_spinner_values, android.R.layout.simple_spinner_dropdown_item));
         }
 
         {
-            Spinner s = (Spinner) dialogLayout.findViewById(R.id.max_reviewing_spinner);
-            s.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.characters_spinner, android.R.layout.simple_spinner_dropdown_item));
+            Spinner s = (Spinner) dialogLayout.findViewById(R.id.when_to_review_spinner);
+            s.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_review_spinner_values, android.R.layout.simple_spinner_dropdown_item));
         }
 
-        {
-            Spinner s = (Spinner) dialogLayout.findViewById(R.id.reviewing_group_leave_after_spinner);
-            s.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.leave_after_spinner, android.R.layout.simple_spinner_dropdown_item));
-        }
-
-        {
-            Spinner s = (Spinner) dialogLayout.findViewById(R.id.when_to_introduce_spinner);
-            s.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_introduce_spinner, android.R.layout.simple_spinner_dropdown_item));
-        }
         // Create the AlertDialog object and return it
         return d;
     }

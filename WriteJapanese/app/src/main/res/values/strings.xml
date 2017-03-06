@@ -72,37 +72,33 @@
     <string name="title_characterset_detail">CharacterSet Detail</string>
     <string name="save">Save</string>
     <string name="custom_charset_description">Description</string>
+
+    <!-- character progression settings dialog -->
     <string name="progression_settings">Progression Settings</string>
-    <string name="leave_group_after">Leave group after</string>
-    <string name="introduce_new_characters">Introduce new characters</string>
-    <string name="max_of">Max Number in Group</string>
-    <string name="reviewing_characters_group">Reviewing Characters Group</string>
-    <string name="incorrectly_written_characters_group">Incorrectly Written Characters Group</string>
 
-    <string-array name="characters_spinner">
-        <item>5 characters</item>
-        <item>10 characters</item>
-        <item>15 characters</item>
-        <item>20 characters</item>
-        <item>30 characters</item>
-        <item>50 characters</item>
-        <item>100 characters</item>
-        <item>200 characters</item>
-        <item>500 characters</item>
-        <item>No limit</item>
+    <string-array name="when_to_introduce_incorrect_spinner_values">
+        <item>5 characters or less are incorrect</item>
+        <item>10 characters or less are incorrect</item>
+        <item>15 characters or less are incorrect</item>
+        <item>20 characters or less are incorrect</item>
+        <item>30 characters or less are incorrect</item>
+        <item>50 characters or less are incorrect</item>
+        <item>100 characters or less are incorrect</item>
     </string-array>
 
-    <string-array name="leave_after_spinner">
-        <item>1 correct draw</item>
-        <item>2 correct draws</item>
-        <item>3 correct draws</item>
-        <item>5 correct draws</item>
-        <item>10 correct draws</item>
+    <string-array name="when_to_introduce_reviewing_spinner_values">
+        <item>5 characters or less are in review</item>
+        <item>10 characters or less are in review</item>
+        <item>15 characters or less are in review</item>
+        <item>20 characters or less are in review</item>
+        <item>30 characters or less are in review</item>
+        <item>50 characters or less are in review</item>
+        <item>100 characters or less are in review</item>
     </string-array>
 
-    <string-array name="when_to_introduce_spinner">
-        <item>If Incorrect group has space</item>
-        <item>Randomly, 10% of the time</item>
-        <item>Randomly, 50% of the time</item>
+    <string-array name="when_to_review_spinner_values">
+        <item>Randomly, 5% of the time</item>
+        <item>Randomly, 15% of the time</item>
+        <item>Randomly, 35% of the time</item>
     </string-array>
 </resources>
