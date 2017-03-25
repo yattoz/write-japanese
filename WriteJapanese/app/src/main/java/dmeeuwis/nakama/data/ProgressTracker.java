@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -15,8 +17,9 @@ import java.util.Set;
 import dmeeuwis.util.Util;
 
 public class ProgressTracker {
-	
-	public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
+    final Random random = new Random();
+
+    public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
 		public static Progress parse(Integer in){
         	if(in == null){
 				return Progress.UNKNOWN;
@@ -32,16 +35,78 @@ public class ProgressTracker {
 	
 	final private Map<Character, Integer> recordSheet;
 
-	public ProgressTracker(Collection<Character> characters){
+	ProgressTracker(Collection<Character> characters){
 		this.recordSheet = new LinkedHashMap<>(characters.size());
 		for(Character c: characters){
 			this.recordSheet.put(c, null);
 		}
 	}
 
-    public ProgressTracker(Map<Character, Integer> recordSheet){
+    ProgressTracker(Map<Character, Integer> recordSheet){
         this.recordSheet = recordSheet;
     }
+
+    public Character nextCharacter(Character currentChar, Set<Character> availSet, boolean shuffling, boolean locked) {
+        double ran = random.nextDouble();
+
+        // failed set =
+        List<Character> failed = charactersMatchingScore(availSet, -200);
+        List<Character> reviewing = charactersMatchingScore(availSet, -100, 0);
+        List<Character> passed = charactersMatchingScore(availSet, 100);
+        List<Character> unknown = charactersMatchingScore(availSet, null);
+
+        // TODO: get from shared prefs or db
+        int maxFailed = 5;
+        int maxReviewing = 10;
+
+        // probs array: failed, reviewing, unknown, passed
+        float[] probs;
+
+        // still learning new chars, but maxed out the reviewing and failed buckets so just review
+        if(failed.size() >= maxFailed && reviewing.size() >= maxReviewing) {
+            Log.i("nakama-progress", "Failed and Review buckets maxed out, reviewing 50/50");
+            probs = new float[]{0.5f, 0.5f, 0.0f, 0.0f};
+
+        // still learning new chars, haven't seen all
+        } else if(unknown.size() > 0) {
+            probs = new float[]{0.35f, 0.30f, 0.35f, 0.0f};
+
+        // have seen all characters, still learning
+        } else if(unknown.size() == 0){
+            probs = new float[] { 0.40f, 0.40f, 0.0f, 0.2f };
+
+        // what situation is this?
+        } else {
+            probs = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
+        }
+
+        availSet.remove(currentChar);
+        Character next = null;
+
+        // mistaken character
+        if(ran <= probs[0]){
+            next = randomMistakenNext(availSet);
+        }
+
+        // reviewing character
+        if(next == null && ran <= probs[0] + probs[1]){
+            next = randomReviewingNext(availSet);
+        }
+
+        //  chance of new character
+        if(next == null && ran <= probs[0] + probs[1] + probs[2]){
+            next = shuffling ?
+                    shuffleNext(availSet) :
+                    standardNext(availSet);
+        }
+
+        if(next == null){
+            next = shuffleNext(availSet);
+        }
+
+        return next;
+    }
+
 
     public CharacterStudySet.SetProgress calculateProgress(){
         int known = 0, reviewing = 0, failed = 0, unknown = 0;
@@ -72,7 +137,7 @@ public class ProgressTracker {
 	}
 	
 
-	public List<Character> charactersNotYetSeen(Set<Character> allowedChars){
+	private List<Character> charactersNotYetSeen(Set<Character> allowedChars){
 		List<Character> matching = new ArrayList<>();
         for(Map.Entry<Character, Integer> c: this.recordSheet.entrySet()){
         	if(c.getValue() == null && allowedChars.contains(c.getKey())){
@@ -92,26 +157,26 @@ public class ProgressTracker {
 		return null;
 	}
 
-	public Character randomMistakenNext(Set<Character> allowedChars){
+	private Character randomMistakenNext(Set<Character> allowedChars){
 		List<Character> matching = charactersMatchingScore(allowedChars, -2);
 		Log.i("nakama-progression", "Characters in mistaken: " + Util.join(", ", matching));
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 
 	
-	public Character randomReviewingNext(Set<Character> allowedChars){
+	private Character randomReviewingNext(Set<Character> allowedChars){
 		List<Character> matching = charactersMatchingScore(allowedChars, -1, 0);
 		Log.i("nakama-progression", "Characters in review: " + Util.join(", ", matching));
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 	
-	public Character randomCorrectNext(Set<Character> allowedChars){
+	private Character randomCorrectNext(Set<Character> allowedChars){
 		List<Character> matching = charactersMatchingScore(allowedChars, 1);
 		Log.i("nakama-progression", "Characters in correct: " + Util.join(", ", matching));
 		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
 	}
 	
-	public Character standardNext(Set<Character> allowedChars){
+	private Character standardNext(Set<Character> allowedChars){
 		
 		// first iterate through the set, one by one
         Character c = firstCharacterMatching(null, allowedChars);
@@ -135,7 +200,7 @@ public class ProgressTracker {
 		return set.toArray(new Character[0])[0];
 	}
 
-    public Character randomNext(Set<Character> allowedChars){
+    private Character randomNext(Set<Character> allowedChars){
         List<Character> matching = charactersMatchingScore(allowedChars, -2, -1, 0, 1);
         if(matching.size() > 0){
             return matching.get((int)(Math.random() * matching.size()));
@@ -144,7 +209,7 @@ public class ProgressTracker {
 		return randomFromSet(allowedChars);
     }
 
-	public Character shuffleNext(Set<Character> allowedChars){
+	private Character shuffleNext(Set<Character> allowedChars){
 		List<Character> matching = charactersNotYetSeen(allowedChars);
 		if(matching.size() > 0){
 			return matching.get((int)(Math.random() * matching.size()));
