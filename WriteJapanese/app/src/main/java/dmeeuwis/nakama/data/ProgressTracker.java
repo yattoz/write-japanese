@@ -44,11 +44,11 @@ public class ProgressTracker {
         this.recordSheet = recordSheet;
     }
 
-	private List<Set<Character>> getSets(){
-		Set<Character> failed = new HashSet<>();
-		Set<Character> reviewing = new HashSet<>();
-		Set<Character> passed = new HashSet<>();
-		Set<Character> unknown = new HashSet<>();
+	private List<Set<Character>> getSets(Set<Character> availSet){
+		Set<Character> failed = new LinkedHashSet<>();
+		Set<Character> reviewing = new LinkedHashSet<>();
+		Set<Character> passed = new LinkedHashSet<>();
+		Set<Character> unknown = new LinkedHashSet<>();
 
 		for(Map.Entry<Character, Progress> score: getAllScores().entrySet()){
 			//Log.i("nakama-progression", "Char log: " + score.getKey() + " => " + score.getValue());
@@ -64,13 +64,14 @@ public class ProgressTracker {
 				Log.e("nakama-progression", "Skipping unknown Progress: " + score.getValue());
 			}
 		}
+
 		return Arrays.asList(failed, reviewing, passed, unknown);
 	}
 
     public Pair<Character, Boolean> nextCharacter(Character currentChar, Set<Character> availSet, boolean shuffling) {
         double ran = random.nextDouble();
 
-		List<Set<Character>> sets = getSets();
+		List<Set<Character>> sets = getSets(availSet);
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
 		Set<Character> passed = sets.get(2);
@@ -86,7 +87,6 @@ public class ProgressTracker {
 
         // TODO: get from shared prefs or db
         int maxFailed = 5;
-        int maxReviewing = 10;
 
         // probs array: failed, reviewing, unknown, passed
         float[] probs;
@@ -113,6 +113,11 @@ public class ProgressTracker {
         }
 
         availSet.remove(currentChar);
+		failed.remove(currentChar);
+		reviewing.remove(currentChar);
+		passed.remove(currentChar);
+		unknown.remove(currentChar);
+
 		Set<Character> chosenOnes = new HashSet<>();
 
         if(ran <= probs[0] && failed.size() > 0){
@@ -120,10 +125,12 @@ public class ProgressTracker {
         } else if(ran <= (probs[0] + probs[1]) && (failed.size() > 0 || reviewing.size() > 0)){
 			chosenOnes.addAll(failed);
 			chosenOnes.addAll(reviewing);
-        } else if(ran <= (probs[0] + probs[1] + probs[2]) && (failed.size() > 0 || reviewing.size() > 0 || unknown.size() > 0)){
-			chosenOnes.addAll(failed);
-			chosenOnes.addAll(reviewing);
-			chosenOnes.addAll(unknown);
+		} else if(ran <= (probs[0] + probs[1] + probs[2]) && unknown.size() > 0){
+			if(shuffling){
+				chosenOnes.addAll(unknown);
+			} else {
+				chosenOnes.add(unknown.toArray(new Character[0])[0]);
+			}
         } else {
 			chosenOnes.addAll(failed);
 			chosenOnes.addAll(reviewing);
@@ -142,8 +149,8 @@ public class ProgressTracker {
 		return Pair.create(n, isReview);
     }
 
-	public boolean isReviewing(Character c){
-		List<Set<Character>> sets = getSets();
+	public boolean isReviewing(Character c, Set<Character> availSet){
+		List<Set<Character>> sets = getSets(availSet);
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
 

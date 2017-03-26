@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -133,14 +132,14 @@ public class FuriganaTextView extends View {
         	this.mainPaint.getTextBounds(f.kanji, 0, f.kanji.length(), bounds);
 			this.maxKanjiHeight = Math.max(maxKanjiHeight, bounds.height());
         	kanjiWidths[i] = bounds.width();
-			Log.d("nakama-furi", "Kanji max height for " + f.kanji + " is " + bounds.height());
+			//Log.d("nakama-furi", "Kanji max height for " + f.kanji + " is " + bounds.height());
 
 			this.indivCharacterPadding[i] = f.equals("?") ? kanjiWidths[i] : 0;
 
 			if(f.furigana != null){
 				this.furiganaPaint.getTextBounds(f.furigana, 0, f.furigana.length(), bounds);
 				this.maxFuriHeight = Math.max(maxFuriHeight, bounds.height());
-				Log.d("nakama-furi", "Furi max height for " + f.furigana + " is " + bounds.height());
+				//Log.d("nakama-furi", "Furi max height for " + f.furigana + " is " + bounds.height());
 				furiWidths[i] = bounds.width();
 			} else {
 				furiWidths[i] = kanjiWidths[i];
@@ -211,7 +210,7 @@ public class FuriganaTextView extends View {
 				fWidth = furiWidths[i];
 				inPartPadding = (partWidth - fWidth) / 2;
 				float furiXStart = currentX + inPartPadding + (indivCharacterPadding[i] / 2);
-				Log.d("nakama-furi", "furiYStart: " + maxKanjiHeight + " + " + maxFuriHeight + " = " + (maxKanjiHeight + maxKanjiHeight));
+				//Log.d("nakama-furi", "furiYStart: " + maxKanjiHeight + " + " + maxFuriHeight + " = " + (maxKanjiHeight + maxKanjiHeight));
 				float furiYStart = maxKanjiHeight + maxFuriHeight + padding + furiGap;
 				canvas.drawText(s.furigana, furiXStart, furiYStart, this.furiganaPaint);
 			}
