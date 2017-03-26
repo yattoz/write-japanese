@@ -37,7 +37,7 @@ public class CharacterStudySet implements Iterable<Character> {
 
 	boolean shuffling = false;
 	Character currentChar;
-	boolean reviewing = false;
+	private boolean reviewing = false;
 	LockLevel locked;
 	public final String pathPrefix;
 
@@ -105,7 +105,6 @@ public class CharacterStudySet implements Iterable<Character> {
 		this.allCharactersSet = new LinkedHashSet<>(Util.stringToCharList(allCharacters));
 
 		this.pathPrefix = pathPrefix;
-		this.tracker = new ProgressTracker(this.allCharactersSet);
 		this.LockChecker = LockChecker;
 	}
 
@@ -143,16 +142,12 @@ public class CharacterStudySet implements Iterable<Character> {
 		return globalLock && localLock;
 	}
 
-	 Set<Character> availableCharactersSet(){
+	public Set<Character> availableCharactersSet(){
 		return locked() ? freeCharactersSet : allCharactersSet;
 	}
 
 	public String charactersAsString(){
 		return Util.join("", allCharactersSet);
-	}
-
-	public String label(){
-		return this.shortName;
 	}
 
 	public boolean passedAllCharacters(){
@@ -210,11 +205,14 @@ public class CharacterStudySet implements Iterable<Character> {
 	public void skipTo(Character character){
 		if(availableCharactersSet().contains(character)){
 			this.currentChar = character;
+			this.reviewing = tracker.isReviewing(character);
 		}
 	}
 
 	public void nextCharacter(){
-        this.currentChar = tracker.nextCharacter(this.currentChar, this.shuffling, this.locked());
+		Pair<Character, Boolean> i = tracker.nextCharacter(this.currentChar, this.availableCharactersSet(), this.shuffling);
+		this.currentChar  = i.first;
+		this.reviewing = i.second;
 	}
 
 	public void save(Context context){
@@ -241,6 +239,11 @@ public class CharacterStudySet implements Iterable<Character> {
         }
 		tracker = new ProgressTracker(freshSheet);
 	}
+
+	public boolean isReviewing() {
+		return reviewing;
+	}
+
 
     public Map<Character, ProgressTracker.Progress> getRecordSheet(){
         return this.tracker.getAllScores();

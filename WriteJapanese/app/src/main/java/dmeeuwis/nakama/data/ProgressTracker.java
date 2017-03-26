@@ -1,6 +1,7 @@
 package dmeeuwis.nakama.data;
 
 import android.util.Log;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,16 +15,20 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.util.Util;
 
 public class ProgressTracker {
     final Random random = new Random();
 
+	final private static int FAIL_COST = -2;
+	final private static int PASS_COST = 1;
+
     public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
 		public static Progress parse(Integer in){
         	if(in == null){
 				return Progress.UNKNOWN;
-			} else if(in <= -200){
+			} else if(in <= -2){
 				return Progress.FAILED;
 			} else if(in <= 0){
 				return Progress.REVIEWING;
@@ -35,25 +40,49 @@ public class ProgressTracker {
 	
 	final private Map<Character, Integer> recordSheet;
 
-	ProgressTracker(Collection<Character> characters){
-		this.recordSheet = new LinkedHashMap<>(characters.size());
-		for(Character c: characters){
-			this.recordSheet.put(c, null);
-		}
-	}
-
     ProgressTracker(Map<Character, Integer> recordSheet){
         this.recordSheet = recordSheet;
     }
 
-    public Character nextCharacter(Character currentChar, Set<Character> availSet, boolean shuffling, boolean locked) {
+	private List<Set<Character>> getSets(){
+		Set<Character> failed = new HashSet<>();
+		Set<Character> reviewing = new HashSet<>();
+		Set<Character> passed = new HashSet<>();
+		Set<Character> unknown = new HashSet<>();
+
+		for(Map.Entry<Character, Progress> score: getAllScores().entrySet()){
+			//Log.i("nakama-progression", "Char log: " + score.getKey() + " => " + score.getValue());
+			if(score.getValue() == Progress.FAILED){
+				failed.add(score.getKey());
+			} else if(score.getValue() == Progress.REVIEWING){
+				reviewing.add(score.getKey());
+			} else if(score.getValue() == Progress.UNKNOWN){
+				unknown.add(score.getKey());
+			} else if(score.getValue() == Progress.PASSED){
+				passed.add(score.getKey());
+			} else {
+				Log.e("nakama-progression", "Skipping unknown Progress: " + score.getValue());
+			}
+		}
+		return Arrays.asList(failed, reviewing, passed, unknown);
+	}
+
+    public Pair<Character, Boolean> nextCharacter(Character currentChar, Set<Character> availSet, boolean shuffling) {
         double ran = random.nextDouble();
 
-        // failed set =
-        List<Character> failed = charactersMatchingScore(availSet, -200);
-        List<Character> reviewing = charactersMatchingScore(availSet, -100, 0);
-        List<Character> passed = charactersMatchingScore(availSet, 100);
-        List<Character> unknown = charactersMatchingScore(availSet, null);
+		List<Set<Character>> sets = getSets();
+		Set<Character> failed = sets.get(0);
+		Set<Character> reviewing = sets.get(1);
+		Set<Character> passed = sets.get(2);
+		Set<Character> unknown = sets.get(3);
+
+		if(BuildConfig.DEBUG) {
+			Log.i("nakama-progression", "Character progression: reviewing sets");
+			Log.i("nakama-progression", "Failed set is: " + Util.join(", ", failed));
+			Log.i("nakama-progression", "Reviewing set is: " + Util.join(", ", reviewing));
+			Log.i("nakama-progression", "Passed set is: " + Util.join(", ", passed));
+			Log.i("nakama-progression", "Unknown set is: " + Util.join(", ", unknown));
+		}
 
         // TODO: get from shared prefs or db
         int maxFailed = 5;
@@ -63,49 +92,69 @@ public class ProgressTracker {
         float[] probs;
 
         // still learning new chars, but maxed out the reviewing and failed buckets so just review
-        if(failed.size() >= maxFailed && reviewing.size() >= maxReviewing) {
+        if(failed.size() >= maxFailed) { // && reviewing.size() >= maxReviewing) {
             Log.i("nakama-progress", "Failed and Review buckets maxed out, reviewing 50/50");
             probs = new float[]{0.5f, 0.5f, 0.0f, 0.0f};
 
         // still learning new chars, haven't seen all
         } else if(unknown.size() > 0) {
+			Log.i("nakama-progress", "Still room in failed and review buckets, chance of new characters");
             probs = new float[]{0.35f, 0.30f, 0.35f, 0.0f};
 
         // have seen all characters, still learning
         } else if(unknown.size() == 0){
+			Log.i("nakama-progress", "Have seen all characters, reviewing 40/40/0/20");
             probs = new float[] { 0.40f, 0.40f, 0.0f, 0.2f };
 
         // what situation is this?
         } else {
+			Log.i("nakama-progress", "Unknown situation, reviewing 25/25/25/25.");
             probs = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
         }
 
         availSet.remove(currentChar);
-        Character next = null;
+		Set<Character> chosenOnes = new HashSet<>();
 
-        // mistaken character
-        if(ran <= probs[0]){
-            next = randomMistakenNext(availSet);
-        }
+        if(ran <= probs[0] && failed.size() > 0){
+			chosenOnes.addAll(failed);
+        } else if(ran <= (probs[0] + probs[1]) && (failed.size() > 0 || reviewing.size() > 0)){
+			chosenOnes.addAll(failed);
+			chosenOnes.addAll(reviewing);
+        } else if(ran <= (probs[0] + probs[1] + probs[2]) && (failed.size() > 0 || reviewing.size() > 0 || unknown.size() > 0)){
+			chosenOnes.addAll(failed);
+			chosenOnes.addAll(reviewing);
+			chosenOnes.addAll(unknown);
+        } else {
+			chosenOnes.addAll(failed);
+			chosenOnes.addAll(reviewing);
+			chosenOnes.addAll(unknown);
+			chosenOnes.addAll(passed);
+		}
 
-        // reviewing character
-        if(next == null && ran <= probs[0] + probs[1]){
-            next = randomReviewingNext(availSet);
-        }
+		Character[] next = chosenOnes.toArray(new Character[0]);
+		Character n = next[(int)(ran * next.length)];
+		boolean isReview = failed.contains(n) || reviewing.contains(n);
 
-        //  chance of new character
-        if(next == null && ran <= probs[0] + probs[1] + probs[2]){
-            next = shuffling ?
-                    shuffleNext(availSet) :
-                    standardNext(availSet);
-        }
-
-        if(next == null){
-            next = shuffleNext(availSet);
-        }
-
-        return next;
+		if(BuildConfig.DEBUG) {
+			Log.i("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));
+			Log.i("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh"));
+		}
+		return Pair.create(n, isReview);
     }
+
+	public boolean isReviewing(Character c){
+		List<Set<Character>> sets = getSets();
+		Set<Character> failed = sets.get(0);
+		Set<Character> reviewing = sets.get(1);
+
+		boolean r = failed.contains(c) || reviewing.contains(c);
+		if(BuildConfig.DEBUG) {
+			Log.i("nakama-progression", "Failed set is: " + Util.join(", ", failed));
+			Log.i("nakama-progression", "Reviewing set is: " + Util.join(", ", reviewing));
+			Log.i("nakama-progression", "Character progression: is " + c + " reviewing? " + r);
+		}
+		return r;
+	}
 
 
     public CharacterStudySet.SetProgress calculateProgress(){
@@ -125,6 +174,7 @@ public class ProgressTracker {
     }
 	
 	private List<Character> charactersMatchingScore(Set<Character> allowedChars, Integer... scores){
+
 		List<Integer> scoresList = Arrays.asList(scores);
 		List<Character> matching = new ArrayList<>();
         for(Map.Entry<Character, Integer> c: this.recordSheet.entrySet()){
@@ -134,93 +184,6 @@ public class ProgressTracker {
 			}
 		}
 		return matching;
-	}
-	
-
-	private List<Character> charactersNotYetSeen(Set<Character> allowedChars){
-		List<Character> matching = new ArrayList<>();
-        for(Map.Entry<Character, Integer> c: this.recordSheet.entrySet()){
-        	if(c.getValue() == null && allowedChars.contains(c.getKey())){
-				matching.add(c.getKey());
-			}
-		}
-		return matching;
-	}
-
-	private Character firstCharacterMatching(Integer score, Set<Character> allowedChars){
-        for(Map.Entry<Character, Integer> c: this.recordSheet.entrySet()){
-        	Integer knownScore = c.getValue();
-        	if(score == knownScore || (score != null && score.equals(knownScore) && allowedChars.contains(c.getKey()))){
-				return c.getKey();
-			}
-		}
-		return null;
-	}
-
-	private Character randomMistakenNext(Set<Character> allowedChars){
-		List<Character> matching = charactersMatchingScore(allowedChars, -2);
-		Log.i("nakama-progression", "Characters in mistaken: " + Util.join(", ", matching));
-		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
-	}
-
-	
-	private Character randomReviewingNext(Set<Character> allowedChars){
-		List<Character> matching = charactersMatchingScore(allowedChars, -1, 0);
-		Log.i("nakama-progression", "Characters in review: " + Util.join(", ", matching));
-		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
-	}
-	
-	private Character randomCorrectNext(Set<Character> allowedChars){
-		List<Character> matching = charactersMatchingScore(allowedChars, 1);
-		Log.i("nakama-progression", "Characters in correct: " + Util.join(", ", matching));
-		return matching.size() == 0 ? null : matching.get((int)(Math.random() * matching.size()));
-	}
-	
-	private Character standardNext(Set<Character> allowedChars){
-		
-		// first iterate through the set, one by one
-        Character c = firstCharacterMatching(null, allowedChars);
-		if(c != null){
-			return c;
-		}
-	
-		// after user has seen (and has some rating) for all chars,  then switch to random.
-        return shuffleNext(allowedChars);
-	}
-
-	private Character randomFromSet(Set<Character> set){
-		int randomTarget = new Random().nextInt(set.size());
-		int i = 0;
-		for(Character o: set) {
-    		if (i == randomTarget) {
-				return o;
-			}
-    		i = i + 1;
-		}
-		return set.toArray(new Character[0])[0];
-	}
-
-    private Character randomNext(Set<Character> allowedChars){
-        List<Character> matching = charactersMatchingScore(allowedChars, -2, -1, 0, 1);
-        if(matching.size() > 0){
-            return matching.get((int)(Math.random() * matching.size()));
-        }
-
-		return randomFromSet(allowedChars);
-    }
-
-	private Character shuffleNext(Set<Character> allowedChars){
-		List<Character> matching = charactersNotYetSeen(allowedChars);
-		if(matching.size() > 0){
-			return matching.get((int)(Math.random() * matching.size()));
-		}
-
-		matching = charactersMatchingScore(allowedChars, -1, -2, 0, 1);
-		if(matching.size() > 0){
-			return matching.get((int)(Math.random() * matching.size()));
-		}
-
-		return randomFromSet(allowedChars);
 	}
 	
 	public boolean passedAllCharacters(Set<Character> allowedChars){
@@ -235,6 +198,7 @@ public class ProgressTracker {
 	}
 
 	public void markSuccess(Character c){
+		Log.i("nakama-progression", "Marking success on char " + c);
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
@@ -242,6 +206,7 @@ public class ProgressTracker {
 	}
 
 	public void markFailure(Character c){
+		Log.i("nakama-progression", "Marking failure on char " + c);
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);

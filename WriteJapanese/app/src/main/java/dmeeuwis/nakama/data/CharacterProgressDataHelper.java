@@ -99,19 +99,20 @@ public class CharacterProgressDataHelper {
                             return;
                         }
 
-                        Integer score = Integer.parseInt(r.get("score"));
+                        Integer scoreRaw = Integer.parseInt(r.get("score"));
+                        Integer score = scoreRaw == 0 ? 0 :
+                                        scoreRaw <  0 ? -1 :
+                                        1;
 
                         Integer sheetScore;
-                        if(character.toString().equals("R") && score.intValue() == 0){
+                        if(character.toString().equals("R") && score == 0){
                             // indicates reset progress for all characters
                             recordSheet.clear();
                         } else {
                             sheetScore = recordSheet.get(character);
-                            if (sheetScore != null) {
-                                sheetScore = Math.max(0, Math.min(200, sheetScore + score));
-                            } else {
-                                sheetScore = score;
-                            }
+                            sheetScore = (sheetScore == null ? 0 : sheetScore);
+                            sheetScore = Math.max(-2, Math.min(2, sheetScore + score));
+
                             recordSheet.put(character, sheetScore);
                         }
                     }

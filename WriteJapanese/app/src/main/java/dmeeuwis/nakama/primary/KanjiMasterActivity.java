@@ -98,6 +98,8 @@ import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 import dmeeuwis.util.Util;
 
+import static dmeeuwis.kanjimaster.R.id.reviewBug;
+
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
@@ -137,6 +139,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected AnimatedCurveView correctKnownView;
     protected KanjiTranslationListAsyncTask vocabAsync;
     protected RecyclerView correctVocabList;
+    protected View reviewBug;
     protected KanjiVocabRecyclerAdapter correctVocabArrayAdapter;
     protected ViewFlipper flipper;
     protected FlipperAnimationListener flipperAnimationListener;
@@ -362,6 +365,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         incorrectCard = findViewById(R.id.incorrectCard);
         charsetCard = findViewById(R.id.charsetInfoCard);
         instructionCard = (ClueCard) findViewById(R.id.clueCard);
+        reviewBug = findViewById(R.id.reviewBug);
         if(correctCard != null){
             correctCard.setTranslationY(-1 * animateSlide);
             incorrectCard.setTranslationY(-1 * animateSlide);
@@ -401,6 +405,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
         for(CharacterStudySet c: helper.getSets()){
             this.characterSets.put(c.pathPrefix, c);
+        }
+
+        for(CharacterStudySet c: this.characterSets.values()){
+            c.load(this);
         }
     }
 
@@ -635,7 +643,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if (increment) {
             currentCharacterSet.nextCharacter();
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
+
         }
+
+        reviewBug.setVisibility(currentCharacterSet.isReviewing() ? View.VISIBLE : View.GONE);
+        Log.i("nakama-progression", "Setting reviewBug visibility to " + currentCharacterSet.isReviewing());
+
         storyButtonUpdate();
         this.loadDrawDetails(increment);
 
@@ -693,6 +706,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String set = prefs.getString(CHAR_SET, "j1");
         this.currentCharacterSet = this.characterSets.get(set);
+
         if (this.currentCharacterSet == null) {
             Log.e("nakama", "Invalid character set: " + set + "; defaulting to j1");
             this.currentCharacterSet = this.characterSets.get("j1");
@@ -732,11 +746,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             Editor ed = prefs.edit();
             ed.putString(CHAR_SET, charsetSwitch);
-            ed.commit();
+            ed.apply();
         }
 
         loadCurrentCharacterSet();
-        currentCharacterSet.load(this.getApplicationContext());
 
         // update tab navigation dropdown to selected character set
         String[] charSetNames = this.characterSets.keySet().toArray(new String[0]);
@@ -1105,7 +1118,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         }
 
-        this.currentCharacterSet.load(this.getApplicationContext());
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(this.currentCharacterSet);
         }
