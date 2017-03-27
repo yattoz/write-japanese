@@ -121,6 +121,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     protected CharacterStudySet currentCharacterSet;
     protected LinkedHashMap<String, CharacterStudySet> characterSets = new LinkedHashMap<>();
+    protected List<CharacterStudySet> customSets = new ArrayList<>();
 
     protected StoryDataHelper db;
     protected boolean showedEndOfSetDialog = false;
@@ -285,7 +286,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             @Override
             public void onClick(View v) {
                 char c = currentCharacterSet.currentCharacter();
-                currentCharacterSet.markCurrentAsUnknown();
+                currentCharacterSet.markCurrentAsUnknown(getApplicationContext());
                 goToTeachingActivity(c);
             }
         });
@@ -371,12 +372,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             incorrectCard.setTranslationY(-1 * animateSlide);
         }
 
-        initializeCharacterSets();
-        this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
-        if (this.charSetFrag != null) {
-            this.charSetFrag.setCharset(characterSets.get("j1"));
-        }
-
         ActionBar actionBar = getSupportActionBar();
         this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
         actionBar.setBackgroundDrawable(this.actionBarBackground);
@@ -392,6 +387,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     private void initializeCharacterSets(){
         UUID iid = Iid.get(this.getApplicationContext());
 
+        this.customSets.clear();
+
         this.characterSets.clear();
         this.characterSets.put("hiragana", CharacterSets.hiragana(LockChecker, iid));
         this.characterSets.put("katakana", CharacterSets.katakana(LockChecker, iid));
@@ -404,11 +401,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
         for(CharacterStudySet c: helper.getSets()){
+            this.customSets.add(c);
             this.characterSets.put(c.pathPrefix, c);
         }
 
         for(CharacterStudySet c: this.characterSets.values()){
             c.load(this);
+            Log.d("nakama", "Loaded character set " + c.pathPrefix);
         }
     }
 
@@ -632,7 +631,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         // TODO: improve this... show a page, give congratulations...?
-        if (increment && currentCharacterSet.locked() && currentCharacterSet.passedAllCharacters()) {
+        if (increment && currentCharacterSet.locked() && currentCharacterSet.passedAllCharacters(getApplicationContext())) {
             if (currentCharacterSet.locked() && LockChecker.getPurchaseStatus() == LockLevel.LOCKED) {
                 raisePurchaseDialog(PurchaseDialog.DialogMessage.END_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
             } else {
@@ -641,7 +640,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         if (increment) {
-            currentCharacterSet.nextCharacter();
+            currentCharacterSet.nextCharacter(getApplicationContext());
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
 
         }
@@ -735,7 +734,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     @Override
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
+
         initializeCharacterSets();
+        this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
+        if (this.charSetFrag != null) {
+            this.charSetFrag.setCharset(characterSets.get("j1"));
+        }
+
         LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
         ActionBar actionBar = getSupportActionBar();
@@ -821,7 +826,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:SyncNow");
             menu.add("DEBUG:ThrowException");
             menu.add("DEBUG:LogBackgroundException");
-            menu.add("DEBUG:MarkAllPassed");
             menu.add("DEBUG:ClearSyncTimestamp");
         }
 
@@ -984,8 +988,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             } else if(item.getTitle().equals("DEBUG:LogBackgroundException")){
                 UncaughtExceptionLogger.backgroundLogError("Practicing background error catching!",
                         new RuntimeException("BOOM!", new RuntimeException("CRASH!", new RuntimeException("THUNK!"))), getApplicationContext());
-            } else if(item.getTitle().equals("DEBUG:MarkAllPassed")){
-                this.currentCharacterSet.debugMarkAllPassed();
             } else if(item.getTitle().equals("DEBUG:ClearSyncTimestamp")){
                 SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                 ed.remove(PracticeLogSync.DEVICE_SYNC_PREFS_KEY);
@@ -1093,7 +1095,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 //        }java.lang.IllegalArgumentException: Scrapped or attached views may not be recycled
 
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
-        List<CharacterStudySet> customSets = helper.getSets();
+
         if(itemPosition >= 8 &&  itemPosition < 8 + customSets.size()){
             int customSetIndex = itemPosition - 8;
             this.currentCharacterSet = customSets.get(customSetIndex);

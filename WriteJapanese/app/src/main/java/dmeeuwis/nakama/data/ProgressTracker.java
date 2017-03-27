@@ -1,14 +1,13 @@
 package dmeeuwis.nakama.data;
 
+import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +19,6 @@ import dmeeuwis.util.Util;
 
 public class ProgressTracker {
     final Random random = new Random();
-
-	final private static int FAIL_COST = -2;
-	final private static int PASS_COST = 1;
 
     public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
 		public static Progress parse(Integer in){
@@ -44,14 +40,13 @@ public class ProgressTracker {
         this.recordSheet = recordSheet;
     }
 
-	private List<Set<Character>> getSets(Set<Character> availSet){
+	private List<Set<Character>> getSets(){
 		Set<Character> failed = new LinkedHashSet<>();
 		Set<Character> reviewing = new LinkedHashSet<>();
 		Set<Character> passed = new LinkedHashSet<>();
 		Set<Character> unknown = new LinkedHashSet<>();
 
 		for(Map.Entry<Character, Progress> score: getAllScores().entrySet()){
-			//Log.i("nakama-progression", "Char log: " + score.getKey() + " => " + score.getValue());
 			if(score.getValue() == Progress.FAILED){
 				failed.add(score.getKey());
 			} else if(score.getValue() == Progress.REVIEWING){
@@ -68,10 +63,11 @@ public class ProgressTracker {
 		return Arrays.asList(failed, reviewing, passed, unknown);
 	}
 
-    public Pair<Character, Boolean> nextCharacter(Character currentChar, Set<Character> availSet, boolean shuffling) {
+    public Pair<Character, Boolean> nextCharacter(Character currentChar, Set<Character> availSet, boolean shuffling,
+												  int introIncorrect, int introReviewing) {
         double ran = random.nextDouble();
 
-		List<Set<Character>> sets = getSets(availSet);
+		List<Set<Character>> sets = getSets();
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
 		Set<Character> passed = sets.get(2);
@@ -85,15 +81,12 @@ public class ProgressTracker {
 			Log.i("nakama-progression", "Unknown set is: " + Util.join(", ", unknown));
 		}
 
-        // TODO: get from shared prefs or db
-        int maxFailed = 5;
-
         // probs array: failed, reviewing, unknown, passed
         float[] probs;
 
         // still learning new chars, but maxed out the reviewing and failed buckets so just review
-        if(failed.size() >= maxFailed) { // && reviewing.size() >= maxReviewing) {
-            Log.i("nakama-progress", "Failed and Review buckets maxed out, reviewing 50/50");
+        if(failed.size() >= introIncorrect || reviewing.size() > introReviewing) {
+            Log.i("nakama-progress", "Failed or Review buckets maxed out, reviewing 50/50");
             probs = new float[]{0.5f, 0.5f, 0.0f, 0.0f};
 
         // still learning new chars, haven't seen all
@@ -150,7 +143,7 @@ public class ProgressTracker {
     }
 
 	public boolean isReviewing(Character c, Set<Character> availSet){
-		List<Set<Character>> sets = getSets(availSet);
+		List<Set<Character>> sets = getSets();
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
 
@@ -193,8 +186,8 @@ public class ProgressTracker {
 		return matching;
 	}
 	
-	public boolean passedAllCharacters(Set<Character> allowedChars){
-		List<Character> passed= charactersMatchingScore(allowedChars, 2);
+	public boolean passedAllCharacters(Set<Character> allowedChars, int advCorrect){
+		List<Character> passed= charactersMatchingScore(allowedChars, advCorrect);
 		return passed.size() == allowedChars.size();
 	}
 	
@@ -204,26 +197,21 @@ public class ProgressTracker {
 		}
 	}
 
-	public void markSuccess(Character c){
+	public void markSuccess(Character c, int advReviewing){
 		Log.i("nakama-progression", "Marking success on char " + c);
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
-		recordSheet.put(c, Math.min(2, score + 1));
+		recordSheet.put(c, Math.min(advReviewing, score + 1));
 	}
 
-	public void markFailure(Character c){
+	public void markFailure(Character c, int advIncorrect){
 		Log.i("nakama-progression", "Marking failure on char " + c);
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
-		recordSheet.put(c, Math.max(-2, score - 2));
-	}
+		recordSheet.put(c, Math.max(-1 * advIncorrect, score - (-1*advIncorrect)));
 
-	public void debugMarkAllSuccess(){
-		for(Character c: this.recordSheet.keySet()){
-			this.recordSheet.put(c, 2);
-		}
 	}
 
 	public Map<Character, Progress> getAllScores(){

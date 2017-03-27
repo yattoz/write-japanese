@@ -1,6 +1,8 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 
@@ -17,6 +19,7 @@ import java.util.UUID;
 
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 import dmeeuwis.util.Util;
 
 /**
@@ -150,14 +153,13 @@ public class CharacterStudySet implements Iterable<Character> {
 		return Util.join("", allCharactersSet);
 	}
 
-	public boolean passedAllCharacters(){
-		return this.tracker.passedAllCharacters(availableCharactersSet());
+	public boolean passedAllCharacters(Context context){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		int advCorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, 2);
+		return this.tracker.passedAllCharacters(availableCharactersSet(), advCorrect);
 	}
 
 	public Character currentCharacter(){
-		if(this.currentChar == null){
-			nextCharacter();
-		}
 		return this.currentChar;
 	}
 
@@ -167,12 +169,15 @@ public class CharacterStudySet implements Iterable<Character> {
 	}
 
 	public void markCurrent(PointDrawing d, boolean pass, Context context){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		int advCorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, 2);
+		int advReviewing = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, 2);
 		Character c = currentCharacter();
 		try {
 			if(pass){
-				this.tracker.markSuccess(c);
+				this.tracker.markSuccess(c, advCorrect);
 			} else {
-				this.tracker.markFailure(c);
+				this.tracker.markFailure(c, advReviewing);
 			}
             CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
             cdb.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
@@ -182,9 +187,11 @@ public class CharacterStudySet implements Iterable<Character> {
 		}
 	}
 
-	public void markCurrentAsUnknown(){
-		this.tracker.markFailure(currentCharacter());
-		nextCharacter();
+	public void markCurrentAsUnknown(Context context){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		int advCorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, 2);
+		this.tracker.markFailure(currentCharacter(), advCorrect);
+		nextCharacter(context);
 	}
 
 	public void setShuffle(boolean isShuffle){
@@ -209,8 +216,14 @@ public class CharacterStudySet implements Iterable<Character> {
 		}
 	}
 
-	public void nextCharacter(){
-		Pair<Character, Boolean> i = tracker.nextCharacter(this.currentChar, this.availableCharactersSet(), this.shuffling);
+	public void nextCharacter(Context context){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		int introIncorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_INCORRECT, 5);
+		int introReviewing = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, 10);
+
+		Pair<Character, Boolean> i = tracker.nextCharacter(this.currentChar, this.availableCharactersSet(), this.shuffling,
+				introIncorrect, introReviewing);
+
 		this.currentChar  = i.first;
 		this.reviewing = i.second;
 	}
@@ -248,8 +261,4 @@ public class CharacterStudySet implements Iterable<Character> {
     public Map<Character, ProgressTracker.Progress> getRecordSheet(){
         return this.tracker.getAllScores();
     }
-
-	public void debugMarkAllPassed(){
-		this.tracker.debugMarkAllSuccess();
-	}
 }

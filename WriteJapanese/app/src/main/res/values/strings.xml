@@ -77,28 +77,46 @@
     <string name="progression_settings">Progression Settings</string>
 
     <string-array name="when_to_introduce_incorrect_spinner_values">
-        <item>5 characters or less are incorrect</item>
-        <item>10 characters or less are incorrect</item>
-        <item>15 characters or less are incorrect</item>
-        <item>20 characters or less are incorrect</item>
-        <item>30 characters or less are incorrect</item>
-        <item>50 characters or less are incorrect</item>
-        <item>100 characters or less are incorrect</item>
+        <item>Less than 5 characters are incorrect</item>
+        <item>Less than 10 characters are incorrect</item>
+        <item>Less than 15 characters are incorrect</item>
+        <item>Less than 20 characters are incorrect</item>
+        <item>Less than 30 characters are incorrect</item>
+        <item>Less than 50 characters are incorrect</item>
+        <item>Less than 100 characters are incorrect</item>
     </string-array>
 
     <string-array name="when_to_introduce_reviewing_spinner_values">
-        <item>5 characters or less are in review</item>
-        <item>10 characters or less are in review</item>
-        <item>15 characters or less are in review</item>
-        <item>20 characters or less are in review</item>
-        <item>30 characters or less are in review</item>
-        <item>50 characters or less are in review</item>
-        <item>100 characters or less are in review</item>
+        <item>Less than 5 characters are in review</item>
+        <item>Less than 10 characters are in review</item>
+        <item>Less than 15 characters are in review</item>
+        <item>Less than 20 characters are in review</item>
+        <item>Less than 30 characters are in review</item>
+        <item>Less than 50 characters are in review</item>
+        <item>Less than 100 characters are in review</item>
     </string-array>
 
     <string-array name="when_to_review_spinner_values">
         <item>Randomly, 5% of the time</item>
         <item>Randomly, 15% of the time</item>
         <item>Randomly, 35% of the time</item>
+    </string-array>
+
+    <string-array name="when_to_advance_from_incorrect">
+        <item>after drawing correctly 1 time</item>
+        <item>after drawing correctly 2 times</item>
+        <item>after drawing correctly 3 times</item>
+        <item>after drawing correctly 4 times</item>
+        <item>after drawing correctly 5 times</item>
+        <item>after drawing correctly 10 times</item>
+    </string-array>
+
+    <string-array name="when_to_advance_from_reviewing">
+        <item>after drawing correctly 1 time</item>
+        <item>after drawing correctly 2 times</item>
+        <item>after drawing correctly 3 times</item>
+        <item>after drawing correctly 4 times</item>
+        <item>after drawing correctly 5 times</item>
+        <item>after drawing correctly 10 times</item>
     </string-array>
 </resources>
