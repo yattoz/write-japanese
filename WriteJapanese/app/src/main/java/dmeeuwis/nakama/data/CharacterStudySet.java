@@ -154,9 +154,7 @@ public class CharacterStudySet implements Iterable<Character> {
 	}
 
 	public boolean passedAllCharacters(Context context){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		int advCorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, 2);
-		return this.tracker.passedAllCharacters(availableCharactersSet(), advCorrect);
+		return this.tracker.passedAllCharacters(availableCharactersSet());
 	}
 
 	public Character currentCharacter(){
@@ -169,15 +167,12 @@ public class CharacterStudySet implements Iterable<Character> {
 	}
 
 	public void markCurrent(PointDrawing d, boolean pass, Context context){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		int advCorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, 2);
-		int advReviewing = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, 2);
 		Character c = currentCharacter();
 		try {
 			if(pass){
-				this.tracker.markSuccess(c, advCorrect);
+				this.tracker.markSuccess(c);
 			} else {
-				this.tracker.markFailure(c, advReviewing);
+				this.tracker.markFailure(c);
 			}
             CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
             cdb.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
@@ -188,9 +183,7 @@ public class CharacterStudySet implements Iterable<Character> {
 	}
 
 	public void markCurrentAsUnknown(Context context){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		int advCorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, 2);
-		this.tracker.markFailure(currentCharacter(), advCorrect);
+		this.tracker.markFailure(currentCharacter());
 		nextCharacter(context);
 	}
 
@@ -234,6 +227,10 @@ public class CharacterStudySet implements Iterable<Character> {
 	}
 
 	public void load(Context context){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		int advanceIncorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, 1);
+		int advanceReviewing = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, 2);
+
         CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
         Pair<GregorianCalendar, GregorianCalendar> goals = cdb.getExistingGoals(pathPrefix);
         if(goals != null) {
@@ -250,7 +247,7 @@ public class CharacterStudySet implements Iterable<Character> {
                 freshSheet.put(c, null);
             }
         }
-		tracker = new ProgressTracker(freshSheet);
+		tracker = new ProgressTracker(freshSheet, advanceIncorrect, advanceReviewing);
 	}
 
 	public boolean isReviewing() {

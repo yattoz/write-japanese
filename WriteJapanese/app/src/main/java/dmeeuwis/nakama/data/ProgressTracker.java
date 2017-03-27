@@ -21,10 +21,10 @@ public class ProgressTracker {
     final Random random = new Random();
 
     public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
-		public static Progress parse(Integer in){
+		public static Progress parse(Integer in, int advanceReviewing){
         	if(in == null){
 				return Progress.UNKNOWN;
-			} else if(in <= -2){
+			} else if(in <= -1 * advanceReviewing){
 				return Progress.FAILED;
 			} else if(in <= 0){
 				return Progress.REVIEWING;
@@ -34,11 +34,15 @@ public class ProgressTracker {
 		}
 	}
 	
-	final private Map<Character, Integer> recordSheet;
+	private final Map<Character, Integer> recordSheet;
+	private final int advanceIncorrect;
+	private final int advanceReview;
 
-    ProgressTracker(Map<Character, Integer> recordSheet){
+	ProgressTracker(Map<Character, Integer> recordSheet, int advanceIncorrect, int advanceReview){
         this.recordSheet = recordSheet;
-    }
+		this.advanceIncorrect = advanceIncorrect;
+		this.advanceReview = advanceReview;
+	}
 
 	private List<Set<Character>> getSets(){
 		Set<Character> failed = new LinkedHashSet<>();
@@ -186,8 +190,8 @@ public class ProgressTracker {
 		return matching;
 	}
 	
-	public boolean passedAllCharacters(Set<Character> allowedChars, int advCorrect){
-		List<Character> passed= charactersMatchingScore(allowedChars, advCorrect);
+	public boolean passedAllCharacters(Set<Character> allowedChars){
+		List<Character> passed= charactersMatchingScore(allowedChars, 1);
 		return passed.size() == allowedChars.size();
 	}
 	
@@ -197,27 +201,25 @@ public class ProgressTracker {
 		}
 	}
 
-	public void markSuccess(Character c, int advReviewing){
+	public void markSuccess(Character c){
 		Log.i("nakama-progression", "Marking success on char " + c);
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
-		recordSheet.put(c, Math.min(advReviewing, score + 1));
+		recordSheet.put(c, Math.min(1, score + 1));
 	}
 
-	public void markFailure(Character c, int advIncorrect){
+	public void markFailure(Character c){
 		Log.i("nakama-progression", "Marking failure on char " + c);
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
-		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
-		recordSheet.put(c, Math.max(-1 * advIncorrect, score - (-1*advIncorrect)));
-
+		recordSheet.put(c, -1 * (advanceIncorrect + advanceReview));
 	}
 
 	public Map<Character, Progress> getAllScores(){
 		Map<Character, Progress> all = new HashMap<>(recordSheet.size());
 		for(Map.Entry<Character, Integer> entry: recordSheet.entrySet()){
-        	all.put(entry.getKey(), Progress.parse(entry.getValue()));
+        	all.put(entry.getKey(), Progress.parse(entry.getValue(), advanceReview));
 		}
 		return all;
 	}
