@@ -205,7 +205,7 @@ public class CharacterStudySet implements Iterable<Character> {
 	public void skipTo(Character character){
 		if(availableCharactersSet().contains(character)){
 			this.currentChar = character;
-			this.reviewing = tracker.isReviewing(character, availableCharactersSet());
+			this.reviewing = tracker.isReviewing(character);
 		}
 	}
 

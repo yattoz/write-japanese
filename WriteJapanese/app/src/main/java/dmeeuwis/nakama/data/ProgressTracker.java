@@ -1,6 +1,5 @@
 package dmeeuwis.nakama.data;
 
-import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
@@ -146,7 +145,7 @@ public class ProgressTracker {
 		return Pair.create(n, isReview);
     }
 
-	public boolean isReviewing(Character c, Set<Character> availSet){
+	public boolean isReviewing(Character c){
 		List<Set<Character>> sets = getSets();
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
