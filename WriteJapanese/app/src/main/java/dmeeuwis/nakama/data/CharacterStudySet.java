@@ -96,7 +96,7 @@ public class CharacterStudySet implements Iterable<Character> {
 		return String.format("%s (%d)", this.name, this.allCharactersSet.size());
 	}
 
-	public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet){
+	CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet){
 		this.name = name;
 		this.shortName = shortName;
         this.description = description;

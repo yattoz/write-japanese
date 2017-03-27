@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.AssetManager;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -40,7 +39,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -96,9 +94,6 @@ import dmeeuwis.nakama.views.StrictnessDialog;
 import dmeeuwis.nakama.views.translations.ClueCard;
 import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
-import dmeeuwis.util.Util;
-
-import static dmeeuwis.kanjimaster.R.id.reviewBug;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
@@ -117,7 +112,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public static final long SYNC_INTERVAL = SYNC_INTERVAL_IN_MINUTES * SECONDS_PER_MINUTE;
 
     protected DictionarySet dictionarySet;
-    protected LockChecker LockChecker;
+    protected LockChecker lockChecker;
 
     protected CharacterStudySet currentCharacterSet;
     protected LinkedHashMap<String, CharacterStudySet> characterSets = new LinkedHashMap<>();
@@ -174,7 +169,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             return;
         }
 
-        LockChecker.handleActivityResult(requestCode, resultCode, data);
+        lockChecker.handleActivityResult(requestCode, resultCode, data);
 
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -188,7 +183,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.PROMPTED, this, false);
 
-        LockChecker = new LockCheckerInAppBillingService(this);
+        lockChecker = new LockCheckerInAppBillingService(this);
+        initializeCharacterSets();
 
         setContentView(R.layout.main);
 
@@ -390,14 +386,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         this.customSets.clear();
 
         this.characterSets.clear();
-        this.characterSets.put("hiragana", CharacterSets.hiragana(LockChecker, iid));
-        this.characterSets.put("katakana", CharacterSets.katakana(LockChecker, iid));
-        this.characterSets.put("j1", CharacterSets.joyouG1(LockChecker, iid));
-        this.characterSets.put("j2", CharacterSets.joyouG2(LockChecker, iid));
-        this.characterSets.put("j3", CharacterSets.joyouG3(LockChecker, iid));
-        this.characterSets.put("j4", CharacterSets.joyouG4(LockChecker, iid));
-        this.characterSets.put("j5", CharacterSets.joyouG5(LockChecker, iid));
-        this.characterSets.put("j6", CharacterSets.joyouG6(LockChecker, iid));
+        this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker, iid));
+        this.characterSets.put("katakana", CharacterSets.katakana(lockChecker, iid));
+        this.characterSets.put("j1", CharacterSets.joyouG1(lockChecker, iid));
+        this.characterSets.put("j2", CharacterSets.joyouG2(lockChecker, iid));
+        this.characterSets.put("j3", CharacterSets.joyouG3(lockChecker, iid));
+        this.characterSets.put("j4", CharacterSets.joyouG4(lockChecker, iid));
+        this.characterSets.put("j5", CharacterSets.joyouG5(lockChecker, iid));
+        this.characterSets.put("j6", CharacterSets.joyouG6(lockChecker, iid));
 
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
         for(CharacterStudySet c: helper.getSets()){
@@ -608,7 +604,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         }
 
-        if (LockChecker.getPurchaseStatus() == LockLevel.LOCKED && (freq == Frequency.ALWAYS || (freq == Frequency.ONCE_PER_SESSION && pd == null))) {
+        if (lockChecker.getPurchaseStatus() == LockLevel.LOCKED && (freq == Frequency.ALWAYS || (freq == Frequency.ONCE_PER_SESSION && pd == null))) {
             try {
                 if (pd == null) {
                     pd = PurchaseDialog.make(message);
@@ -632,7 +628,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         // TODO: improve this... show a page, give congratulations...?
         if (increment && currentCharacterSet.locked() && currentCharacterSet.passedAllCharacters(getApplicationContext())) {
-            if (currentCharacterSet.locked() && LockChecker.getPurchaseStatus() == LockLevel.LOCKED) {
+            if (currentCharacterSet.locked() && lockChecker.getPurchaseStatus() == LockLevel.LOCKED) {
                 raisePurchaseDialog(PurchaseDialog.DialogMessage.END_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
             } else {
                 Toast.makeText(this, "You have completed all the characters in this set!", Toast.LENGTH_LONG).show();
@@ -735,7 +731,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
 
-        initializeCharacterSets();
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(characterSets.get("j1"));
@@ -788,7 +783,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     @Override
     protected void onDestroy() {
         Log.i("nakama", "KanjiMasterActivity.onDestroy");
-        this.LockChecker.dispose();
+        this.lockChecker.dispose();
         if(pd != null && pd.isAdded()){
             //pd.dismiss();
         }
@@ -796,7 +791,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     public LockChecker getLockChecker() {
-        return this.LockChecker;
+        return this.lockChecker;
     }
 
     @Override
@@ -840,7 +835,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             shuffleCheck.setChecked(currentCharacterSet.isShuffling());
         }
         MenuItem lockItem = menu.findItem(R.id.menu_lock);
-        lockItem.setVisible(LockChecker.getPurchaseStatus() != LockLevel.UNLOCKED);
+        lockItem.setVisible(lockChecker.getPurchaseStatus() != LockLevel.UNLOCKED);
 
         MenuItem shareCheck = menu.findItem(R.id.menu_share_stories);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -955,7 +950,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 getLockChecker().coreLock();
                 recreate();
             } else if (item.getTitle().equals("DEBUG:IabConsume")) {
-                LockChecker.startConsume();
+                lockChecker.startConsume();
             } else if (item.getTitle().equals("DEBUG:ResetStorySharing")) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Editor e = prefs.edit();
@@ -1087,14 +1082,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         } else if (itemPosition == 7) {
             this.currentCharacterSet = characterSets.get("j6");
         }
-
-            //this.correctVocabList.setVisibility(View.VISIBLE);
-//		} else if(itemPosition == 8){
-//			Toast.makeText(this, "Showing SS", Toast.LENGTH_SHORT);
-//			this.currentCharacterSet = this.joyouSS;
-//        }java.lang.IllegalArgumentException: Scrapped or attached views may not be recycled
-
-        CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
 
         if(itemPosition >= 8 &&  itemPosition < 8 + customSets.size()){
             int customSetIndex = itemPosition - 8;
