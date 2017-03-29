@@ -237,7 +237,7 @@ public class CharacterStudySet implements Iterable<Character> {
             this.goalStarted = goals.first;
             this.studyGoal = goals.second;
         }
-        Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.availableCharactersSet());
+        Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.availableCharactersSet(), advanceIncorrect + advanceReviewing);
         Map<Character, Integer> freshSheet = new LinkedHashMap<>();
 
         for(Character c: this.allCharactersSet){

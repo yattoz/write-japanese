@@ -20,12 +20,12 @@ public class ProgressTracker {
     final Random random = new Random();
 
     public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
-		public static Progress parse(Integer in, int advanceReviewing){
+		private static Progress parse(Integer in, int advanceReviewing){
         	if(in == null){
 				return Progress.UNKNOWN;
-			} else if(in <= -1 * advanceReviewing){
+			} else if(in < -1 * advanceReviewing){
 				return Progress.FAILED;
-			} else if(in <= 0){
+			} else if(in < 0){
 				return Progress.REVIEWING;
 			} else {
             	return Progress.PASSED;
@@ -68,6 +68,12 @@ public class ProgressTracker {
 
     public Pair<Character, Boolean> nextCharacter(Character currentChar, Set<Character> availSet, boolean shuffling,
 												  int introIncorrect, int introReviewing) {
+
+
+		if(availSet.size() == 1){
+			return Pair.create(availSet.toArray(new Character[0])[0], Boolean.TRUE);
+		}
+
         double ran = random.nextDouble();
 
 		List<Set<Character>> sets = getSets();
@@ -205,7 +211,8 @@ public class ProgressTracker {
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
-		recordSheet.put(c, Math.min(1, score + 1));
+		recordSheet.put(c, Math.min(0, score + 1));
+		Log.d("nakama-progression", "Correct: char " + c + " now has score " + recordSheet.get(c));
 	}
 
 	public void markFailure(Character c){
@@ -213,6 +220,7 @@ public class ProgressTracker {
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		recordSheet.put(c, -1 * (advanceIncorrect + advanceReview));
+		Log.d("nakama-progression", "Incorrect: char " + c + " now has score " + recordSheet.get(c));
 	}
 
 	public Map<Character, Progress> getAllScores(){

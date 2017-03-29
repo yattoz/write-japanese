@@ -84,7 +84,7 @@ public class CharacterProgressDataHelper {
         }
     }
 
-    public Map<Character, Integer> getRecordSheetForCharset(final Set<Character> validChars){
+    public Map<Character, Integer> getRecordSheetForCharset(final Set<Character> validChars, final int advanceIncorrect){
         long start = System.currentTimeMillis();
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
@@ -95,25 +95,26 @@ public class CharacterProgressDataHelper {
                     @Override
                     public void process(Map<String, String> r) {
                         Character character = r.get("character").charAt(0);
-                        if(!validChars.contains(character)){
-                            return;
-                        }
 
-                        Integer scoreRaw = Integer.parseInt(r.get("score"));
-                        Integer score = scoreRaw == 0 ? 0 :
-                                        scoreRaw <  0 ? -1 :
-                                        1;
-
-                        Integer sheetScore;
-                        if(character.toString().equals("R") && score == 0){
+                        if(character.toString().equals("R")){
                             // indicates reset progress for all characters
                             recordSheet.clear();
                         } else {
-                            sheetScore = recordSheet.get(character);
-                            sheetScore = (sheetScore == null ? 0 : sheetScore);
-                            sheetScore = Math.max(-2, Math.min(2, sheetScore + score));
+                            if(!validChars.contains(character)){
+                                return;
+                            }
 
-                            recordSheet.put(character, sheetScore);
+                            Integer score = Integer.parseInt(r.get("score"));
+                            if(score == 100){
+                                Integer sheetScore = recordSheet.get(character);
+                                sheetScore = sheetScore == null ? 0 : sheetScore;
+                                recordSheet.put(character, Math.min(0, 1 + sheetScore));
+                                Log.d("nakama-progression", "Good history puts " + character + " at " + recordSheet.get(character));
+                            } else {
+                                recordSheet.put(character, -1 * advanceIncorrect);
+                                Log.d("nakama-progression", "Bad history puts " + character + " at " + recordSheet.get(character));
+                            }
+
                         }
                     }
                 },
