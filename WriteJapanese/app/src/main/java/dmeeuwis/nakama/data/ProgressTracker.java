@@ -5,6 +5,8 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -66,11 +68,15 @@ public class ProgressTracker {
 		return Arrays.asList(failed, reviewing, passed, unknown);
 	}
 
-    public Pair<Character, Boolean> nextCharacter(Character currentChar, Set<Character> availSet, boolean shuffling,
+    Pair<Character, Boolean> nextCharacter(Set<Character> rawAllChars, Character currentChar, Set<Character> rawAvailSet, boolean shuffling,
 												  int introIncorrect, int introReviewing) {
+
+		LinkedHashSet<Character> allChars = new LinkedHashSet<>(rawAllChars);
+		LinkedHashSet<Character> availSet = new LinkedHashSet<>(rawAvailSet);
 
 
 		if(availSet.size() == 1){
+			Log.i("nakama-progression", "Returning early from nextCharacter, only 1 character in set");
 			return Pair.create(availSet.toArray(new Character[0])[0], Boolean.TRUE);
 		}
 
@@ -131,7 +137,7 @@ public class ProgressTracker {
 			if(shuffling){
 				chosenOnes.addAll(unknown);
 			} else {
-				chosenOnes.add(unknown.toArray(new Character[0])[0]);
+				chosenOnes.add(sortAndReturnFirst(allChars, unknown));
 			}
         } else {
 			chosenOnes.addAll(failed);
@@ -142,7 +148,7 @@ public class ProgressTracker {
 
 		Character[] next = chosenOnes.toArray(new Character[0]);
 		Character n = next[(int)(ran * next.length)];
-		boolean isReview = failed.contains(n) || reviewing.contains(n);
+		boolean isReview = failed.contains(n) || reviewing.contains(n) || passed.contains(n);
 
 		if(BuildConfig.DEBUG) {
 			Log.i("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));
@@ -150,6 +156,31 @@ public class ProgressTracker {
 		}
 		return Pair.create(n, isReview);
     }
+
+	private Character sortAndReturnFirst(Set<Character> allChars, Set<Character> unknown) {
+		final List<Character> chars = new ArrayList<>(allChars);
+		Log.d("nakama-progression", "Sorting allchars: " + Util.join(", ", chars)  + " to order unknown set " + Util.join(", ", unknown));
+
+		final HashMap<Character, Integer> indexed = new HashMap<>(chars.size());
+		for(int i = 0; i < chars.size(); i++){
+			indexed.put(chars.get(i), i);
+		}
+
+
+		List<Character> toSort = new ArrayList<>(unknown);
+		Collections.sort(toSort, new Comparator<Character>() {
+			@Override
+			public int compare(Character o1, Character o2) {
+				Integer i1 = indexed.get(o1);
+				Integer i2 = indexed.get(o2);
+				if(i1 == null && i2 == null) { return 0; }
+				if(i1 == null) { return i2.compareTo(null); }
+				return i1.compareTo(i2);
+			}
+		});
+
+		return toSort.get(0);
+	}
 
 	public boolean isReviewing(Character c){
 		List<Set<Character>> sets = getSets();

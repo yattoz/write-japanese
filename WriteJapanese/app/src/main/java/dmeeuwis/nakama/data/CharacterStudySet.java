@@ -104,8 +104,8 @@ public class CharacterStudySet implements Iterable<Character> {
 		this.locked = locked;
         this.iid = iid;
 
-		this.freeCharactersSet = new LinkedHashSet<>(Util.stringToCharList(freeCharacters));
-		this.allCharactersSet = new LinkedHashSet<>(Util.stringToCharList(allCharacters));
+		this.freeCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(freeCharacters)));
+		this.allCharactersSet = Collections.unmodifiableSet(new LinkedHashSet<>(Util.stringToCharList(allCharacters)));
 
 		this.pathPrefix = pathPrefix;
 		this.LockChecker = LockChecker;
@@ -214,7 +214,7 @@ public class CharacterStudySet implements Iterable<Character> {
 		int introIncorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_INCORRECT, 5);
 		int introReviewing = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, 10);
 
-		Pair<Character, Boolean> i = tracker.nextCharacter(this.currentChar, this.availableCharactersSet(), this.shuffling,
+		Pair<Character, Boolean> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
 				introIncorrect, introReviewing);
 
 		this.currentChar  = i.first;
