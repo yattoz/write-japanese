@@ -146,9 +146,9 @@ public class ProgressTracker {
 			chosenOnes.addAll(passed);
 		}
 
-		Character[] next = chosenOnes.toArray(new Character[0]);
-		Character n = next[(int)(ran * next.length)];
-		boolean isReview = failed.contains(n) || reviewing.contains(n) || passed.contains(n);
+		final Character[] next = chosenOnes.toArray(new Character[0]);
+		final Character n = next[(int)(ran * next.length)];
+		final boolean isReview = failed.contains(n) || reviewing.contains(n) || passed.contains(n);
 
 		if(BuildConfig.DEBUG) {
 			Log.i("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));

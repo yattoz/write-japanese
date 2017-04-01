@@ -641,8 +641,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         }
 
-        reviewBug.setVisibility(currentCharacterSet.isReviewing() ? View.VISIBLE : View.GONE);
         Log.i("nakama-progression", "Setting reviewBug visibility to " + currentCharacterSet.isReviewing());
+        int reviewBugVisibility = currentCharacterSet.isReviewing() ? View.VISIBLE : View.GONE;
+        if(reviewBug != null){
+            reviewBug.setVisibility(reviewBugVisibility);
+        } else {
+            instructionCard.setReviewBugVisibility(reviewBugVisibility);
+        }
 
         storyButtonUpdate();
         this.loadDrawDetails(increment);

@@ -30,6 +30,7 @@ import dmeeuwis.nakama.views.FuriganaTextView;
 
 public class ClueCard extends CardView {
     final static private String SHARED_PREFS_CLUE_TYPE_KEY = "clueType";
+    private View reviewBug;
 
     public enum ClueType { MEANING, READING, TRANSLATION }
 
@@ -111,6 +112,7 @@ public class ClueCard extends CardView {
         this.meaningsLayout = findViewById(R.id.clue_meanings_layout);
         this.instructionsLabel = (TextSwitcher)findViewById(R.id.instructionsLabel);
         this.target = (TextSwitcher)findViewById(R.id.target);
+        this.reviewBug = findViewById(R.id.clue_card_review_bug);
 
         this.readingsLayout = findViewById(R.id.clue_readings_layout);
         this.readingsInstructionLabel = (TextSwitcher)findViewById(R.id.readingsInstructionsLabel);
@@ -395,4 +397,11 @@ public class ClueCard extends CardView {
 
         ed.apply();
     }
+
+    public void setReviewBugVisibility(int reviewBugVisibility) {
+        if(this.reviewBug != null) {
+            this.reviewBug.setVisibility(reviewBugVisibility);
+        }
+    }
+
 }
