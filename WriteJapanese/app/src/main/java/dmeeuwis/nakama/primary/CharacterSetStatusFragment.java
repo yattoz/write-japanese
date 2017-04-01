@@ -114,10 +114,11 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         progressText.setText(Html.fromHtml(
                 String.format("<div style='text-align: center; width: 100%%;'>" +
                               "<span style='color: #2ecc71;'>%5d Passed</span> " +
+                              "<span style='color: #ff0000;'>%5d Incorrect</span> <br />" +
                               "<span style='color: #f1c40f;'>%5d Reviewing</span> " +
                               "<span style='color: gray;'>%5d Unknown</span>" +
                               "</div>",
-                       sp.passed, sp.reviewing + sp.failing, sp.unknown)));
+                       sp.passed, sp.failing, sp.reviewing, sp.unknown)));
 
         if(progressPieChart != null){
             List<PieEntry> values = new ArrayList<>();
@@ -131,8 +132,14 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
                 colour_i += 1;
             }
 
-            if(sp.reviewing + sp.failing > 0) {
-                values.add(new PieEntry(100 * (sp.reviewing + sp.failing) / total,  "Reviewing"));
+            if(sp.failing > 0) {
+                values.add(new PieEntry(100 * sp.failing / total,  "Incorrect"));
+                colours[colour_i] = ColorTemplate.rgb("#ff0000");
+                colour_i += 1;
+            }
+
+            if(sp.reviewing > 0) {
+                values.add(new PieEntry(100 * sp.reviewing / total,  "Reviewing"));
                 colours[colour_i] = ColorTemplate.rgb("#f1c40f");
                 colour_i += 1;
             }
