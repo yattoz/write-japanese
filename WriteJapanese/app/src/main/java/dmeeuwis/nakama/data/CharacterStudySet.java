@@ -9,6 +9,7 @@ import android.util.Pair;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -34,8 +35,8 @@ public class CharacterStudySet implements Iterable<Character> {
 	public String name, shortName, description;
 
 	final public boolean systemSet;
-	final LockChecker LockChecker;
-    ProgressTracker tracker;
+	final private LockChecker LockChecker;
+    private ProgressTracker tracker;
     final UUID iid;
 
 	boolean shuffling = false;
@@ -103,6 +104,7 @@ public class CharacterStudySet implements Iterable<Character> {
 		this.systemSet = systemSet;
 		this.locked = locked;
         this.iid = iid;
+		this.tracker = new ProgressTracker(new HashMap<Character, Integer>(), 2, 2);
 
 		this.freeCharactersSet = new LinkedHashSet<>(Util.stringToCharList(freeCharacters));
 		this.allCharactersSet = new LinkedHashSet<>(Util.stringToCharList(allCharacters));
