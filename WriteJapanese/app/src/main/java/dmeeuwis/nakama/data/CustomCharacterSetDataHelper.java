@@ -21,14 +21,14 @@ public class CustomCharacterSetDataHelper {
     }
 
     public void recordEdit(String id, String name, String desc, String set) {
-        recordRemoteEdit(UUID.randomUUID().toString(), id, name, desc, set, Iid.get(context).toString(), null);
+        recordRemoteEdit(UUID.randomUUID().toString(), id, name, desc, set, Iid.get(context).toString(), null, Boolean.FALSE);
     }
 
-    void recordRemoteEdit(String editId, String charsetId, String name, String desc, String set, String installId, String timestamp) {
+    void recordRemoteEdit(String editId, String charsetId, String name, String desc, String set, String installId, String timestamp, Boolean deleted) {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         try {
-            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp) VALUES(?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))",
-                    new Object[]{editId, charsetId, name, desc, set, installId, timestamp});
+            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP, deleted))",
+                    new Object[]{editId, charsetId, name, desc, set, installId, timestamp, deleted});
         } finally {
             db.close();
         }

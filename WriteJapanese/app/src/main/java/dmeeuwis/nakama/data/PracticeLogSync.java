@@ -66,6 +66,7 @@ public class PracticeLogSync {
     }
 
     public void sync() throws IOException {
+        long startTime = System.currentTimeMillis();
         URL syncUrl;
         String iid = Iid.get(context).toString();
         try {
@@ -252,7 +253,7 @@ public class PracticeLogSync {
                     try {
                         CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper(context);
                         h.recordRemoteEdit(values.get("id"), values.get("charset_id"), values.get("name"), values.get("description"),
-                                values.get("characters"), values.get("install_id"), values.get("timestamp"));
+                                values.get("characters"), values.get("install_id"), values.get("timestamp"), Boolean.parseBoolean(values.get("deleted")));
 
                         Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
                     } catch (SQLiteConstraintException t) {
@@ -275,6 +276,7 @@ public class PracticeLogSync {
             StringBuilder message = new StringBuilder();
             message.append("Error when parsing sync; request was: " + (jsonPost == null ? "<null>" : jsonPost));
             message.append("response was: " + (jsonResponse == null ? "<null>" : jsonResponse));
+            message.append("; time in sync was " + (System.currentTimeMillis() - startTime) + "ms");
             throw new RuntimeException(message.toString(), t);
         } finally {
             db.close();

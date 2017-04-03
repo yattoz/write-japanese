@@ -11,6 +11,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.UUID;
 
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
+
 public class NetworkStorySaveAsyncTask extends AsyncTask<Character, String, Void> {
 
     private final Character c;
@@ -44,7 +46,7 @@ public class NetworkStorySaveAsyncTask extends AsyncTask<Character, String, Void
             }
 
         } catch (Exception e) {
-            Log.d("nakama", e.getLocalizedMessage());
+            UncaughtExceptionLogger.backgroundLogError("Caught exception in background story save", e, null);
         }
         return null;
     }

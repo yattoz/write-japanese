@@ -184,7 +184,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.PROMPTED, this, false);
 
         lockChecker = new LockCheckerInAppBillingService(this);
-        initializeCharacterSets();
 
         setContentView(R.layout.main);
 
@@ -378,6 +377,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+        initializeCharacterSets();
     }
 
     private void initializeCharacterSets(){
@@ -736,6 +737,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
 
+        initializeCharacterSets();
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(characterSets.get("j1"));
