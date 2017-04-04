@@ -382,19 +382,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     private void initializeCharacterSets(){
-        UUID iid = Iid.get(this.getApplicationContext());
-
         this.customSets.clear();
 
         this.characterSets.clear();
-        this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker, iid));
-        this.characterSets.put("katakana", CharacterSets.katakana(lockChecker, iid));
-        this.characterSets.put("j1", CharacterSets.joyouG1(lockChecker, iid));
-        this.characterSets.put("j2", CharacterSets.joyouG2(lockChecker, iid));
-        this.characterSets.put("j3", CharacterSets.joyouG3(lockChecker, iid));
-        this.characterSets.put("j4", CharacterSets.joyouG4(lockChecker, iid));
-        this.characterSets.put("j5", CharacterSets.joyouG5(lockChecker, iid));
-        this.characterSets.put("j6", CharacterSets.joyouG6(lockChecker, iid));
+        this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker, getApplicationContext()));
+        this.characterSets.put("katakana", CharacterSets.katakana(lockChecker, getApplicationContext()));
+        this.characterSets.put("j1", CharacterSets.joyouG1(lockChecker, getApplicationContext()));
+        this.characterSets.put("j2", CharacterSets.joyouG2(lockChecker, getApplicationContext()));
+        this.characterSets.put("j3", CharacterSets.joyouG3(lockChecker, getApplicationContext()));
+        this.characterSets.put("j4", CharacterSets.joyouG4(lockChecker, getApplicationContext()));
+        this.characterSets.put("j5", CharacterSets.joyouG5(lockChecker, getApplicationContext()));
+        this.characterSets.put("j6", CharacterSets.joyouG6(lockChecker, getApplicationContext()));
 
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
         for(CharacterStudySet c: helper.getSets()){
@@ -403,7 +401,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         for(CharacterStudySet c: this.characterSets.values()){
-            c.load(this);
+            c.load();
             Log.d("nakama", "Loaded character set " + c.pathPrefix);
         }
     }
@@ -628,7 +626,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         // TODO: improve this... show a page, give congratulations...?
-        if (increment && currentCharacterSet.locked() && currentCharacterSet.passedAllCharacters(getApplicationContext())) {
+        if (increment && currentCharacterSet.locked() && currentCharacterSet.passedAllCharacters()) {
             if (currentCharacterSet.locked() && lockChecker.getPurchaseStatus() == LockLevel.LOCKED) {
                 raisePurchaseDialog(PurchaseDialog.DialogMessage.END_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
             } else {
@@ -637,7 +635,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         if (increment) {
-            currentCharacterSet.nextCharacter(getApplicationContext());
+            currentCharacterSet.nextCharacter();
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
 
         }
@@ -671,11 +669,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         //Log.i("nakama", "loadDrawDetails()");
         Character first = this.currentCharacterSet.currentCharacter();
 
-        String path = AssetFinder.findPathFile(this.currentCharacterSet, this.currentCharacterSet.currentCharacter(), getLockChecker(), Iid.get(this));
+        String path = AssetFinder.findPathFile(this.currentCharacterSet.currentCharacter());
 
         try {
             this.currentCharacterSvg = new AssetFinder(new AndroidInputStreamGenerator(getAssets()))
-                            .findSvgForCharacter(this.currentCharacterSet, this.currentCharacterSet.currentCharacter());
+                            .findSvgForCharacter(this.currentCharacterSet.currentCharacter());
         } catch (IOException e) {
             Log.e("nakama", "Error loading path: " + path + " for character " + first + " (" + currentCharacterSet.currentCharacter().charValue() + ")");
             Toast.makeText(this.getBaseContext(), "Internal Error loading stroke for " + first + "; " + path, Toast.LENGTH_SHORT).show();
@@ -698,7 +696,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         ed.putString(CHAR_SET_CHAR, Character.toString(this.currentCharacterSet.currentCharacter()));
         ed.apply();
 
-        currentCharacterSet.save(this.getApplicationContext());
+        currentCharacterSet.save();
     }
 
     private void loadCurrentCharacterSet() {
@@ -1036,7 +1034,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 Editor ed = prefs.edit();
                 ed.remove(currentCharacterSet.pathPrefix);
                 ed.apply();
-                currentCharacterSet.progressReset(KanjiMasterActivity.this);
+                currentCharacterSet.progressReset();
                 loadNextCharacter(true);
 
                 dialog.dismiss();

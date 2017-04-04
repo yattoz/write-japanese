@@ -82,7 +82,7 @@ public class SimpleDrawingComparatorTest {
         list.add(toStroke(213, 16, 1074, 24));
         list.add(toStroke(0, 775, 1160, 742));
 
-        String[] in = as.findSvgForCharacter("katakana", 'ニ');
+        String[] in = as.findSvgForCharacter('ニ');
         CurveDrawing known = new CurveDrawing(in);
         Criticism c = s.compare('ニ', PointDrawing.fromPrefilteredPoints(1176, 739, list), known);
 

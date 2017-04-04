@@ -65,7 +65,7 @@ public class KanjiCheckActivity extends ActionBarActivity {
                 CurveDrawing cv = null;
                 if(position < Kanji.JOUYOU_G1.length()) {
                     try {
-                        cv = af.findGlyphForCharacter(CharacterSets.joyouG1(null, null), Kanji.JOUYOU_G1.charAt(position));
+                        cv = af.findGlyphForCharacter(Kanji.JOUYOU_G1.charAt(position));
                     } catch (IOException e) {
                         Toast.makeText(KanjiCheckActivity.this, "Error finding glyph for " + Kanji.JOUYOU_G1.charAt(position), Toast.LENGTH_SHORT).show();
                     }

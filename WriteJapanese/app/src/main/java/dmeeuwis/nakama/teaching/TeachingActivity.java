@@ -146,7 +146,7 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 
         int unicodeValue = kanjiIn;
         try {
-            currentCharacterSvg = new AssetFinder(new AndroidInputStreamGenerator(getAssets())).findSvgForCharacter(null, kanjiIn);
+            currentCharacterSvg = new AssetFinder(new AndroidInputStreamGenerator(getAssets())).findSvgForCharacter(kanjiIn);
         } catch (IOException e) {
             Log.e("nakama", "Error loading svg: for character " + kanjiIn + " (" + unicodeValue + ")");
             throw new RuntimeException(e);

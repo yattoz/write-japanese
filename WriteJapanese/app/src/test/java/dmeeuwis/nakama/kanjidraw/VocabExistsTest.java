@@ -31,12 +31,10 @@ public class VocabExistsTest {
     public void testVocabExistsForAllKanji() throws Exception {
         String path = System.getProperty("user.dir") + "/src/main/assets/";
 
-        KanjiFinder kf;
         {
             File indexFile = new File(path + KANJIDICT_INDEX);
             InputStream index = new FileInputStream(indexFile);
             RandomAccessFile dict = new RandomAccessFile(path + KANJIDICT_FILE, "r");
-            kf = new KanjiFinder(index, indexFile.length(), dict.getChannel(), 0);
         }
 
         RandomAccessFile dict = new RandomAccessFile(path + SMALL_EDICT_FILE, "r");
@@ -44,16 +42,15 @@ public class VocabExistsTest {
         RandomAccessFile locsize = new RandomAccessFile(path + SMALL_EDICT_ID_TO_LOCATION_SIZE, "r");
 
         List<String> failures = new ArrayList<>();
-        UUID iid = UUID.randomUUID();
         CharacterStudySet[] sets = new CharacterStudySet[]{
-                CharacterSets.hiragana(null, iid),
-                CharacterSets.katakana(null, iid),
-                CharacterSets.joyouG1(null, iid),
-                CharacterSets.joyouG2(null, iid),
-                CharacterSets.joyouG3(null, iid),
-                CharacterSets.joyouG4(null, iid),
-                CharacterSets.joyouG5(null, iid),
-                CharacterSets.joyouG6(null, iid)
+                CharacterSets.hiragana(null, null),
+                CharacterSets.katakana(null, null),
+                CharacterSets.joyouG1(null, null),
+                CharacterSets.joyouG2(null, null),
+                CharacterSets.joyouG3(null, null),
+                CharacterSets.joyouG4(null, null),
+                CharacterSets.joyouG5(null, null),
+                CharacterSets.joyouG6(null, null)
         };
 
         for(CharacterStudySet s: sets){

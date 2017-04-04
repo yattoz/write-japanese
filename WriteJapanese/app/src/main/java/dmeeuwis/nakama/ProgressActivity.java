@@ -92,8 +92,8 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         if(lc != null){ lc.dispose(); }
         lc = new LockCheckerInAppBillingService(this);
 
-        charSet = CharacterSets.fromName(this, callingPath, lc, Iid.get(this.getApplicationContext()));
-        charSet.load(this.getApplicationContext());
+        charSet = CharacterSets.fromName(this, callingPath, lc);
+        charSet.load();
         scores = charSet.getRecordSheet();
         characterList = charSet.charactersAsString();
 

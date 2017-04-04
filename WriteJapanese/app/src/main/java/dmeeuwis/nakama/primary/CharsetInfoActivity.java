@@ -61,8 +61,8 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
         }
 
         lockChecker = new LockCheckerInAppBillingService(this);
-        charset = CharacterSets.fromName(this, charsetName, lockChecker, Iid.get(this.getApplicationContext()));
-        charset.load(this.getApplicationContext());
+        charset = CharacterSets.fromName(this.getApplicationContext(), charsetName, lockChecker);
+        charset.load();
 
         CharacterSetStatusFragment frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_holder);
         frag.setCharset(charset, justCreated ? 200 : 0);
@@ -81,7 +81,7 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
 
     @Override
     public void onPause() {
-        charset.save(this.getApplicationContext());
+        charset.save();
         super.onPause();
     }
 

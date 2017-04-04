@@ -71,7 +71,7 @@ public class CustomCharacterSetDataHelper {
                     sets.remove(r.get("charset_id"));
                 } else {
                     CharacterStudySet s = new CharacterStudySet(r.get("name"), r.get("name"), r.get("description"),
-                            r.get("charset_id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, Iid.get(context), false);
+                            r.get("charset_id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, Iid.get(context), false, context);
                     sets.put(r.get("charset_id"), s);
                 }
             }

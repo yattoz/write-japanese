@@ -1,6 +1,8 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 
@@ -13,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 
 public class CharacterProgressDataHelper {
     private final Context context;
@@ -139,4 +142,26 @@ public class CharacterProgressDataHelper {
             return null;
         }
     }
+
+
+    public static class ProgressionSettings {
+        public final int introIncorrect, introReviewing, advanceIncorrect, advanceReviewing;
+
+        public ProgressionSettings(int introIncorrect, int introReviewing, int advanceIncorrect, int advanceReviewing) {
+            this.introIncorrect = introIncorrect;
+            this.introReviewing = introReviewing;
+            this.advanceIncorrect = advanceIncorrect;
+            this.advanceReviewing = advanceReviewing;
+        }
+    }
+
+    public ProgressionSettings getProgressionSettings(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return new ProgressionSettings(
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_INCORRECT, 5),
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, 10),
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, 1),
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, 2));
+    }
+
 }

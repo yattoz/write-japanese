@@ -1,26 +1,21 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 
 import java.text.DateFormat;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
-import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 import dmeeuwis.util.Util;
 
 /**
@@ -28,24 +23,25 @@ import dmeeuwis.util.Util;
  */
 public class CharacterStudySet implements Iterable<Character> {
 
-	public enum LockLevel { NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED }
+    public enum LockLevel {NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED}
 
-	final public Set<Character> freeCharactersSet;
-	final public Set<Character> allCharactersSet;
-	public String name, shortName, description;
+    final public Set<Character> freeCharactersSet;
+    final public Set<Character> allCharactersSet;
+    public String name, shortName, description;
 
-	final public boolean systemSet;
-	final private LockChecker LockChecker;
+    final private CharacterProgressDataHelper dbHelper;
+    final public boolean systemSet;
+    final private LockChecker LockChecker;
     private ProgressTracker tracker;
     final UUID iid;
 
-	boolean shuffling = false;
-	Character currentChar;
-	private boolean reviewing = false;
-	LockLevel locked;
-	public final String pathPrefix;
+    boolean shuffling = false;
+    Character currentChar;
+    private boolean reviewing = false;
+    LockLevel locked;
+    public final String pathPrefix;
 
-	private GregorianCalendar studyGoal, goalStarted;
+    private GregorianCalendar studyGoal, goalStarted;
 
     public static class SetProgress {
         public final int passed;
@@ -53,7 +49,7 @@ public class CharacterStudySet implements Iterable<Character> {
         public final int failing;
         public final int unknown;
 
-        public SetProgress(int passed, int reviewing, int failing, int unknown){
+        public SetProgress(int passed, int reviewing, int failing, int unknown) {
             this.passed = passed;
             this.reviewing = reviewing;
             this.failing = failing;
@@ -61,8 +57,8 @@ public class CharacterStudySet implements Iterable<Character> {
         }
     }
 
-    public static int daysDifference(GregorianCalendar a, GregorianCalendar b){
-        return (int)Math.ceil(Math.abs(a.getTimeInMillis() - b.getTimeInMillis()) / (1000.0 * 60 * 60 * 24));
+    public static int daysDifference(GregorianCalendar a, GregorianCalendar b) {
+        return (int) Math.ceil(Math.abs(a.getTimeInMillis() - b.getTimeInMillis()) / (1000.0 * 60 * 60 * 24));
     }
 
     public static class GoalProgress {
@@ -70,194 +66,194 @@ public class CharacterStudySet implements Iterable<Character> {
         public final int passed, remaining, daysLeft;
         public final int neededPerDay, scheduledPerDay;
 
-        public GoalProgress(GregorianCalendar goalStarted, GregorianCalendar goal, SetProgress s, GregorianCalendar today){
+        public GoalProgress(GregorianCalendar goalStarted, GregorianCalendar goal, SetProgress s, GregorianCalendar today) {
             this.goalStarted = goalStarted;
             this.remaining = s.failing + s.reviewing + s.unknown;
             this.passed = s.passed;
             this.goal = goal;
 
-            if(this.goal.before(today)){
+            if (this.goal.before(today)) {
                 daysLeft = 0;
             } else {
                 daysLeft = Math.max(1, daysDifference(goal, today));
             }
-            this.neededPerDay = (int)Math.ceil(1.0f * remaining / daysLeft);
-            this.scheduledPerDay = (int)Math.ceil((1.0 * s.failing + s.unknown + s.reviewing + s.passed) / daysLeft);
+            this.neededPerDay = (int) Math.ceil(1.0f * remaining / daysLeft);
+            this.scheduledPerDay = (int) Math.ceil((1.0 * s.failing + s.unknown + s.reviewing + s.passed) / daysLeft);
 
             DateFormat df = DateFormat.getDateInstance();
             Log.i("nakama", "Goal Calcs; Start: " + df.format(goalStarted.getTime()) + ", goal: " + df.format(goal.getTime()) + "; remaining: " + remaining + "; daysLeft: " + daysLeft + "; remaining: " + remaining);
         }
     }
 
-	public int length(){
-		return this.allCharactersSet.size();
-	}
+    public int length() {
+        return this.allCharactersSet.size();
+    }
 
-	public String toString(){
-		return String.format("%s (%d)", this.name, this.allCharactersSet.size());
-	}
+    public String toString() {
+        return String.format("%s (%d)", this.name, this.allCharactersSet.size());
+    }
 
-	CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet){
-		this.name = name;
-		this.shortName = shortName;
+
+    public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet, Context context) {
+        this(name, shortName, description, pathPrefix, locked, allCharacters, freeCharacters, LockChecker, iid, systemSet, new CharacterProgressDataHelper(context, iid));
+    }
+
+    public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet, CharacterProgressDataHelper db) {
+        this.dbHelper = db;
+        this.name = name;
+        this.shortName = shortName;
         this.description = description;
-		this.systemSet = systemSet;
-		this.locked = locked;
+        this.systemSet = systemSet;
+        this.locked = locked;
         this.iid = iid;
-		this.tracker = new ProgressTracker(new HashMap<Character, Integer>(), 2, 2);
+        this.tracker = new ProgressTracker(new HashMap<Character, Integer>(), 2, 2);
 
-		this.freeCharactersSet = new LinkedHashSet<>(Util.stringToCharList(freeCharacters));
-		this.allCharactersSet = new LinkedHashSet<>(Util.stringToCharList(allCharacters));
+        this.freeCharactersSet = new LinkedHashSet<>(Util.stringToCharList(freeCharacters));
+        this.allCharactersSet = new LinkedHashSet<>(Util.stringToCharList(allCharacters));
 
-		this.pathPrefix = pathPrefix;
-		this.LockChecker = LockChecker;
-	}
+        this.pathPrefix = pathPrefix;
+        this.LockChecker = LockChecker;
+    }
 
 
-    public boolean hasStudyGoal(){
+    public boolean hasStudyGoal() {
         return this.studyGoal != null;
     }
 
-    public void setStudyGoal(GregorianCalendar g){
+    public void setStudyGoal(GregorianCalendar g) {
         this.studyGoal = g;
         this.goalStarted = new GregorianCalendar();
     }
 
-    public void clearStudyGoal(){
+    public void clearStudyGoal() {
         this.studyGoal = null;
         this.goalStarted = null;
     }
 
-    public GoalProgress getGoalProgress(){
-        if(this.studyGoal == null){ return null; }
+    public GoalProgress getGoalProgress() {
+        if (this.studyGoal == null) {
+            return null;
+        }
         SetProgress s = this.getProgress();
         return new GoalProgress(this.goalStarted, this.studyGoal, s, new GregorianCalendar());
     }
 
 
-    public SetProgress getProgress(){
+    public SetProgress getProgress() {
         return this.tracker.calculateProgress();
     }
 
-	public boolean locked(){
-        if(LockChecker == null){ return false; }
-		boolean globalLock = LockChecker.getPurchaseStatus() == LockLevel.LOCKED;
-		boolean localLock = this.locked == LockLevel.LOCKED;
-		// Log.d("nakama", "CharacterStudySet: globalLock: " + globalLock + "; localLock: " + localLock + " => " + (globalLock && localLock));
-		return globalLock && localLock;
-	}
+    public boolean locked() {
+        if (LockChecker == null) {
+            return false;
+        }
+        boolean globalLock = LockChecker.getPurchaseStatus() == LockLevel.LOCKED;
+        boolean localLock = this.locked == LockLevel.LOCKED;
+        // Log.d("nakama", "CharacterStudySet: globalLock: " + globalLock + "; localLock: " + localLock + " => " + (globalLock && localLock));
+        return globalLock && localLock;
+    }
 
-	public Set<Character> availableCharactersSet(){
-		return locked() ? freeCharactersSet : allCharactersSet;
-	}
+    public Set<Character> availableCharactersSet() {
+        return locked() ? freeCharactersSet : allCharactersSet;
+    }
 
-	public String charactersAsString(){
-		return Util.join("", allCharactersSet);
-	}
+    public String charactersAsString() {
+        return Util.join("", allCharactersSet);
+    }
 
-	public boolean passedAllCharacters(Context context){
-		return this.tracker.passedAllCharacters(availableCharactersSet());
-	}
+    public boolean passedAllCharacters() {
+        return this.tracker.passedAllCharacters(availableCharactersSet());
+    }
 
-	public Character currentCharacter(){
-		return this.currentChar;
-	}
+    public Character currentCharacter() {
+        return this.currentChar;
+    }
 
-	@Override
-	public Iterator<Character> iterator() {
-		return (availableCharactersSet()).iterator();
-	}
+    @Override
+    public Iterator<Character> iterator() {
+        return (availableCharactersSet()).iterator();
+    }
 
-	public void markCurrent(PointDrawing d, boolean pass, Context context){
-		Character c = currentCharacter();
-		try {
-			if(pass){
-				this.tracker.markSuccess(c);
-			} else {
-				this.tracker.markFailure(c);
-			}
-            CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
-            cdb.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
-		} catch(Throwable t){
-			Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
-			throw new RuntimeException(t);
-		}
-	}
+    public void markCurrent(PointDrawing d, boolean pass) {
+        Character c = currentCharacter();
+        try {
+            if (pass) {
+                this.tracker.markSuccess(c);
+            } else {
+                this.tracker.markFailure(c);
+            }
+            dbHelper.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
+        } catch (Throwable t) {
+            Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
+            throw new RuntimeException(t);
+        }
+    }
 
-	public void markCurrentAsUnknown(Context context){
-		this.tracker.markFailure(currentCharacter());
-		nextCharacter(context);
-	}
+    public void markCurrentAsUnknown(Context context) {
+        this.tracker.markFailure(currentCharacter());
+        nextCharacter();
+    }
 
-	public void setShuffle(boolean isShuffle){
-		this.shuffling = isShuffle;
-	}
+    public void setShuffle(boolean isShuffle) {
+        this.shuffling = isShuffle;
+    }
 
-	public boolean isShuffling(){
-		return this.shuffling;
-	}
+    public boolean isShuffling() {
+        return this.shuffling;
+    }
 
-	public void progressReset(Context context){
-		this.tracker.progressReset();
+    public void progressReset() {
+        this.tracker.progressReset();
+        dbHelper.clearProgress(pathPrefix);
+    }
 
-        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
-        cdb.clearProgress(pathPrefix);
-	}
+    public void skipTo(Character character) {
+        if (availableCharactersSet().contains(character)) {
+            this.currentChar = character;
+            this.reviewing = tracker.isReviewing(character);
+        }
+    }
 
-	public void skipTo(Character character){
-		if(availableCharactersSet().contains(character)){
-			this.currentChar = character;
-			this.reviewing = tracker.isReviewing(character);
-		}
-	}
+    public void nextCharacter() {
+        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+        Pair<Character, Boolean> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
+                p.introIncorrect, p.introReviewing);
 
-	public void nextCharacter(Context context){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		int introIncorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_INCORRECT, 5);
-		int introReviewing = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, 10);
+        this.currentChar = i.first;
+        this.reviewing = i.second;
+    }
 
-		Pair<Character, Boolean> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
-				introIncorrect, introReviewing);
+    public void save() {
+        dbHelper.recordGoals(pathPrefix, goalStarted, studyGoal);
+    }
 
-		this.currentChar  = i.first;
-		this.reviewing = i.second;
-	}
+    public void load() {
+        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
 
-	public void save(Context context){
-        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
-        cdb.recordGoals(pathPrefix, goalStarted, studyGoal);
-	}
-
-	public void load(Context context){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		int advanceIncorrect = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, 1);
-		int advanceReviewing = prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, 2);
-
-        CharacterProgressDataHelper cdb = new CharacterProgressDataHelper(context, iid);
-        Pair<GregorianCalendar, GregorianCalendar> goals = cdb.getExistingGoals(pathPrefix);
-        if(goals != null) {
+        Pair<GregorianCalendar, GregorianCalendar> goals = dbHelper.getExistingGoals(pathPrefix);
+        if (goals != null) {
             this.goalStarted = goals.first;
             this.studyGoal = goals.second;
         }
-        Map<Character, Integer> existing = cdb.getRecordSheetForCharset(this.availableCharactersSet(), advanceIncorrect + advanceReviewing);
+        Map<Character, Integer> existing = dbHelper.getRecordSheetForCharset(this.availableCharactersSet(), p.advanceIncorrect + p.advanceReviewing);
         Map<Character, Integer> freshSheet = new LinkedHashMap<>();
 
-        for(Character c: this.allCharactersSet){
-            if(existing.containsKey(c)){
+        for (Character c : this.allCharactersSet) {
+            if (existing.containsKey(c)) {
                 freshSheet.put(c, existing.get(c));
             } else {
                 freshSheet.put(c, null);
             }
         }
-		tracker = new ProgressTracker(freshSheet, advanceIncorrect, advanceReviewing);
-	}
+        tracker = new ProgressTracker(freshSheet, p.advanceIncorrect, p.advanceReviewing);
+    }
 
-	public boolean isReviewing() {
-		return reviewing;
-	}
+    public boolean isReviewing() {
+        return reviewing;
+    }
 
 
-    public Map<Character, ProgressTracker.Progress> getRecordSheet(){
+    public Map<Character, ProgressTracker.Progress> getRecordSheet() {
         return this.tracker.getAllScores();
     }
 }

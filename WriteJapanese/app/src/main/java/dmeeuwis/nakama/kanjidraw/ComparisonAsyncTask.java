@@ -46,7 +46,7 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
     @Override
     protected void onPostExecute(Criticism criticism) {
         try {
-            currentCharacterSet.markCurrent(drawn, criticism.pass, appContext);
+            currentCharacterSet.markCurrent(drawn, criticism.pass);
         } catch(SQLiteFullException e){
             Toast.makeText(appContext, "Could not record progress: disk is full.", Toast.LENGTH_SHORT).show();
         }

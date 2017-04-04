@@ -297,7 +297,7 @@ public class DrawingComparator implements Comparator {
 			if(!c.pass && Kana.isHiragana(target) && target != 'も'){
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
 				DrawingComparator pc = new DrawingComparator(assetFinder);
-				if(pc.compare(katakanaVersion, this.drawn, assetFinder.findGlyphForCharacter(katakanaSet, katakanaVersion), Recursion.DISALLOW).pass){
+				if(pc.compare(katakanaVersion, this.drawn, assetFinder.findGlyphForCharacter(katakanaVersion), Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
 					specific.add("You drew the katakana " + katakanaVersion + " instead of the hiragana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;
@@ -305,7 +305,7 @@ public class DrawingComparator implements Comparator {
 			} else if(!c.pass && Kana.isKatakana(target) && target != 'モ'){
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
 				DrawingComparator pc = new DrawingComparator(assetFinder);
-				if(pc.compare(hiraganaVersion, this.drawn, assetFinder.findGlyphForCharacter(hiraganaSet, hiraganaVersion), Recursion.DISALLOW).pass){
+				if(pc.compare(hiraganaVersion, this.drawn, assetFinder.findGlyphForCharacter(hiraganaVersion), Recursion.DISALLOW).pass){
 					Criticism specific = new Criticism();
 					specific.add("You drew the hiragana " + hiraganaVersion + " instead of the katakana " + target + ".", Criticism.SKIP, Criticism.SKIP);
 					return specific;

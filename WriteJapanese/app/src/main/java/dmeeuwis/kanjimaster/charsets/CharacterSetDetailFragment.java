@@ -88,9 +88,9 @@ public class CharacterSetDetailFragment extends Fragment {
             // for small devices, this fragment gets loaded into a otherwise-empty activity, and "create"
             // is passed as id. On large layouts, this fragment is beside the list, and setCharacterStudySet is called instead
             if(name.equals("create")){
-                studySet = CharacterSets.createCustom(Iid.get(getActivity().getApplicationContext()));
+                studySet = CharacterSets.createCustom(getActivity().getApplicationContext());
             } else {
-                studySet = CharacterSets.fromName(getActivity(), name, new LockCheckerInAppBillingService(getActivity()), Iid.get(getActivity().getApplicationContext()));
+                studySet = CharacterSets.fromName(getActivity(), name, new LockCheckerInAppBillingService(getActivity()));
             }
         }
     }
@@ -150,7 +150,7 @@ public class CharacterSetDetailFragment extends Fragment {
             grid.setAdapter(new CharacterGridAdapter(
                     CharacterSets.all(
                             new LockCheckerInAppBillingService(getActivity()),
-                            Iid.get(getActivity().getApplicationContext()))));
+                            getActivity().getApplicationContext())));
 /*            grid.setOnDragListener(new View.OnDragListener() {
                 @Override
                 public boolean onDrag(View v, DragEvent event) {
