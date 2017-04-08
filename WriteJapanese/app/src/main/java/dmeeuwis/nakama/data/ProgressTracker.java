@@ -39,10 +39,15 @@ public class ProgressTracker {
 	private final int advanceIncorrect;
 	private final int advanceReview;
 
-	ProgressTracker(Map<Character, Integer> recordSheet, int advanceIncorrect, int advanceReview){
+	ProgressTracker(Map<Character, Integer> recordSheet, Set<Character> allChars, int advanceIncorrect, int advanceReview){
         this.recordSheet = recordSheet;
 		this.advanceIncorrect = advanceIncorrect;
 		this.advanceReview = advanceReview;
+
+        if(recordSheet.size() != allChars.size()){
+            throw new RuntimeException("Error: input to ProgressTracker has record sheet size " +
+                    recordSheet.size() + " but allchars size " + allChars.size());
+        }
 	}
 
 	private List<Set<Character>> getSets(){

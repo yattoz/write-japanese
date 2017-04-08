@@ -18,6 +18,11 @@ import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 
 public class CharacterProgressDataHelper {
+    public final static int DEFAULT_INTRO_INCORRECT = 5;
+    public final static int DEFAULT_INTRO_REVIEWING = 10;
+    public final static int DEFAULT_ADV_INCORRECT = 1;
+    public final static int DEFAULT_ADV_REVIEWING = 2;
+
     private final Context context;
     private final UUID iid;
 
@@ -158,10 +163,9 @@ public class CharacterProgressDataHelper {
     public ProgressionSettings getProgressionSettings(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return new ProgressionSettings(
-            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_INCORRECT, 5),
-            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, 10),
-            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, 1),
-            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, 2));
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_INCORRECT, DEFAULT_INTRO_INCORRECT),
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, DEFAULT_INTRO_REVIEWING),
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, DEFAULT_ADV_INCORRECT),
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, DEFAULT_ADV_REVIEWING));
     }
-
 }

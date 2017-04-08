@@ -106,13 +106,19 @@ public class CharacterStudySet implements Iterable<Character> {
         this.systemSet = systemSet;
         this.locked = locked;
         this.iid = iid;
-        this.tracker = new ProgressTracker(new HashMap<Character, Integer>(), 2, 2);
 
         this.freeCharactersSet = new LinkedHashSet<>(Util.stringToCharList(freeCharacters));
         this.allCharactersSet = new LinkedHashSet<>(Util.stringToCharList(allCharacters));
 
         this.pathPrefix = pathPrefix;
         this.LockChecker = LockChecker;
+
+        Map<Character, Integer> freshSheet = new HashMap<>();
+        for(Character c: allCharactersSet){
+            freshSheet.put(c, null);
+        }
+        this.tracker = new ProgressTracker(freshSheet, allCharactersSet, 2, 2);
+
     }
 
 
@@ -245,7 +251,7 @@ public class CharacterStudySet implements Iterable<Character> {
                 freshSheet.put(c, null);
             }
         }
-        tracker = new ProgressTracker(freshSheet, p.advanceIncorrect, p.advanceReviewing);
+        tracker = new ProgressTracker(freshSheet, allCharactersSet, p.advanceIncorrect, p.advanceReviewing);
     }
 
     public boolean isReviewing() {
