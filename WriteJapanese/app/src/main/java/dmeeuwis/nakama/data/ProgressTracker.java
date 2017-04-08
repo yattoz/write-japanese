@@ -56,7 +56,9 @@ public class ProgressTracker {
 		Set<Character> passed = new LinkedHashSet<>();
 		Set<Character> unknown = new LinkedHashSet<>();
 
-		for(Map.Entry<Character, Progress> score: getAllScores().entrySet()){
+
+        Map<Character, Progress> allScores = getAllScores();
+		for(Map.Entry<Character, Progress> score: allScores.entrySet()){
 			if(score.getValue() == Progress.FAILED){
 				failed.add(score.getKey());
 			} else if(score.getValue() == Progress.REVIEWING){

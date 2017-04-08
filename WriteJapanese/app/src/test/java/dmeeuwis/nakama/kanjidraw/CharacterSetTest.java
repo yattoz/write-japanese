@@ -64,9 +64,13 @@ public class CharacterSetTest {
         Set<Character> failed = new HashSet<>();
         while(failed.size() != CharacterProgressDataHelper.DEFAULT_INTRO_INCORRECT){
             c.markCurrent(null, false);
-            c.nextCharacter();
             failed.add(c.currentCharacter());
+            System.out.println("Marking character " + c.currentCharacter() + " as failed");
+
+            c.nextCharacter();
         }
+        System.out.println("Failed.size is " + failed.size() + ", vs INTRO_INCORRECT " + CharacterProgressDataHelper.DEFAULT_INTRO_INCORRECT);
+        System.out.println("Failed is: " + Util.join(", ", failed));
 
         for(int i = 0; i < 100; i++){
             c.nextCharacter();
