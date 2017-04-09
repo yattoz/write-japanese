@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="fill_parent"
-             android:layout_height="fill_parent"
-             android:background="#e5e5e5">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawingFrame"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#e5e5e5">
 
     <dmeeuwis.nakama.views.DrawView
         android:id="@+id/drawPad"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         app:gridPaddingLeft="240dp"
-        app:gridPaddingTop="100dp"/>
+        app:gridPaddingTop="100dp" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -24,37 +25,45 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
             android:clickable="true"
-            android:elevation="300dp"
-            />
+            android:elevation="300dp" />
     </FrameLayout>
 
-    <dmeeuwis.nakama.views.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/remindStoryButton"
-        android:layout_width="92dp"
-        android:layout_height="92dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:layout_marginBottom="104dp"
         android:layout_marginLeft="280dp"
         android:layout_marginStart="120dp"
         android:elevation="@dimen/elevation_high"
-        />
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_story"
+        app:backgroundTint="@color/DarkTurquoise"
+        app:fabSize="normal" />
 
-    <dmeeuwis.nakama.views.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/teachButton"
-        android:layout_width="92dp"
-        android:layout_height="92dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:layout_marginLeft="280dp"
         android:layout_marginStart="120dp"
-        android:elevation="@dimen/elevation_low"/>
+        android:elevation="@dimen/elevation_low"
+        android:src="@drawable/ic_question_mark"
+        app:backgroundTint="@color/Blue"
+        app:fabSize="normal" />
 
 
-    <dmeeuwis.nakama.views.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/finishedButton"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
         android:layout_gravity="bottom|end"
-        android:elevation="@dimen/elevation_low"/>
+        android:elevation="@dimen/elevation_low"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_right_arrow"
+        app:backgroundTint="@color/DarkGreen" />
 
 
     <!-- Incorrect view screen -->
@@ -62,8 +71,7 @@
         android:id="@+id/incorrectCard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        >
+        android:layout_gravity="center">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -76,8 +84,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:clickable="true"
-                >
+                android:clickable="true">
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -86,18 +93,18 @@
                     android:background="#FFA20D1B"
                     android:padding="6dp"
                     android:text="Drawn"
-                    android:textColor="#FFFFFF"/>
+                    android:textColor="#FFFFFF" />
 
                 <dmeeuwis.nakama.views.AnimatedCurveView
                     android:id="@+id/animatedDrawnReplay"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="40dp"/>
+                    android:layout_marginTop="40dp" />
             </android.support.v7.widget.CardView>
 
             <View
                 android:layout_width="20dp"
-                android:layout_height="0dp"/>
+                android:layout_height="0dp" />
 
             <!-- Correct -->
 
@@ -105,8 +112,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:clickable="true"
-                >
+                android:clickable="true">
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -115,26 +121,25 @@
                     android:background="#FF1BA20D"
                     android:padding="6dp"
                     android:text="Correct"
-                    android:textColor="#FFFFFF"/>
+                    android:textColor="#FFFFFF" />
 
                 <dmeeuwis.nakama.views.AnimatedCurveView
                     android:id="@+id/animatedKnownReplay"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="40dp"/>
+                    android:layout_marginTop="40dp" />
             </android.support.v7.widget.CardView>
 
             <View
                 android:layout_width="20dp"
-                android:layout_height="0dp"/>
+                android:layout_height="0dp" />
             <!-- Advice -->
 
             <android.support.v7.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:clickable="true"
-                >
+                android:clickable="true">
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -142,31 +147,36 @@
                     android:background="#449def"
                     android:padding="6dp"
                     android:text="Advice"
-                    android:textColor="#FFFFFF"/>
+                    android:textColor="#FFFFFF" />
 
                 <ListView
                     android:id="@+id/criticism"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_marginTop="40dp"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1" />
             </android.support.v7.widget.CardView>
         </LinearLayout>
 
 
-        <dmeeuwis.nakama.views.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_gravity="bottom|start"
-            android:elevation="@dimen/elevation_low"/>
+            android:elevation="@dimen/elevation_low"
+            android:src="@drawable/ic_question_mark"
+            app:backgroundTint="@color/Blue" />
 
-        <dmeeuwis.nakama.views.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/nextButton"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_gravity="bottom|end"
-            android:elevation="@dimen/elevation_low"/>
+            android:elevation="@dimen/elevation_low"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_right_arrow"
+            app:backgroundTint="@color/DarkGreen" />
     </FrameLayout>
 
 
@@ -197,8 +207,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_margin="5dp"
-                    android:layout_marginTop="36sp"
-                    />
+                    android:layout_marginTop="36sp" />
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -206,7 +215,7 @@
                     android:background="#FF1BA20D"
                     android:padding="6dp"
                     android:text="Correct"
-                    android:textColor="#FFFFFF"/>
+                    android:textColor="#FFFFFF" />
 
             </android.support.v7.widget.CardView>
 
@@ -214,16 +223,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:layout_weight="1"
-                >
+                android:layout_weight="1">
 
                 <dmeeuwis.nakama.views.AnimatedCurveView
                     android:id="@+id/correctDrawnView"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_margin="5dp"
-                    android:layout_marginTop="36sp"
-                    />
+                    android:layout_marginTop="36sp" />
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -231,7 +238,7 @@
                     android:background="#FF1BA20D"
                     android:padding="6dp"
                     android:text="Drawn"
-                    android:textColor="#FFFFFF"/>
+                    android:textColor="#FFFFFF" />
 
             </android.support.v7.widget.CardView>
         </LinearLayout>
@@ -246,21 +253,26 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:divider="@android:color/transparent"
-                android:dividerHeight="10.0sp"/>
+                android:dividerHeight="10.0sp" />
 
-            <dmeeuwis.nakama.views.FloatingActionButton
+            <android.support.design.widget.FloatingActionButton
                 android:id="@id/correctNextButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:layout_gravity="bottom|end"
-                android:elevation="@dimen/elevation_low"/>
+                android:layout_marginBottom="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginRight="12dp"
+                android:elevation="@dimen/elevation_low"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_right_arrow"
+                app:backgroundTint="@color/DarkGreen" />
         </FrameLayout>
     </LinearLayout>
 
     <ScrollView
         android:layout_width="240dp"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -272,27 +284,25 @@
                 android:id="@+id/charsetInfoCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                >
+                android:layout_margin="5dp">
 
                 <fragment
                     android:id="@+id/charSetInfoFragment"
                     class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    />
+                    android:layout_height="wrap_content" />
             </android.support.v7.widget.CardView>
 
             <!-- 5dp margin on bottom side of charsetInfoCard seems to get cutt off, so correct for that-->
             <View
                 android:layout_width="match_parent"
-                android:layout_height="5dp"/>
+                android:layout_height="5dp" />
         </LinearLayout>
     </ScrollView>
 
     <View
         android:id="@+id/maskView"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent" />
 
 </FrameLayout>

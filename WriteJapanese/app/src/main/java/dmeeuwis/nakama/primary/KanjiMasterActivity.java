@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -86,7 +87,6 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
-import dmeeuwis.nakama.views.FloatingActionButton;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
@@ -210,9 +210,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         correctDrawnView = (AnimatedCurveView) findViewById(R.id.correctDrawnView);
 
         doneButton = (FloatingActionButton) findViewById(R.id.finishedButton);
-        doneButton.hideInstantly();
-        doneButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
-        doneButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
+//        doneButton.hideInstantly();
+//        doneButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
+//        doneButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -265,8 +265,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         db = new StoryDataHelper(getApplicationContext());
         remindStoryButton = (FloatingActionButton) findViewById(R.id.remindStoryButton);
-        remindStoryButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkTurquoise));
-        remindStoryButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_story));
+//        remindStoryButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkTurquoise));
+//        remindStoryButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_story));
         remindStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,8 +275,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         });
 
         teachMeButton = (FloatingActionButton) findViewById(R.id.teachButton);
-        teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
-        teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_question_mark));
+//        teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
+//        teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_question_mark));
         teachMeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -306,17 +306,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         FloatingActionButton next = (FloatingActionButton) findViewById(R.id.nextButton);
         next.setOnClickListener(nextButtonListener);
-        next.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
-        next.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
 
         final FloatingActionButton correctNext = (FloatingActionButton) findViewById(R.id.correctNextButton);
-        correctNext.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
-        correctNext.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
         correctNext.setOnClickListener(nextButtonListener);
 
         final FloatingActionButton practiceButton = (FloatingActionButton) findViewById(R.id.practiceButton);
-        practiceButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
-        practiceButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_learning));
         practiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -333,9 +327,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             @Override
             public void onStroke(List<Point> stroke) {
                 if (drawPad.getStrokeCount() == 1) {
-                    doneButton.showFloatingActionButton();
-                    teachMeButton.hideFloatingActionButton();
-                    remindStoryButton.hideFloatingActionButton();
+                    doneButton.show();
+                    teachMeButton.hide();
+                    remindStoryButton.hide();
                 }
             }
         });
@@ -343,13 +337,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         drawPad.setOnClearListener(new DrawView.OnClearListener() {
             @Override
             public void onClear() {
-                if (teachMeButton.isHidden()) {
-                    teachMeButton.showFloatingActionButton();
+                if (!teachMeButton.isShown()){
+                    teachMeButton.show();
                 }
                 storyButtonUpdate();
 
-                if (!doneButton.isHidden())
-                    doneButton.hideFloatingActionButton();
+                if (doneButton.isShown()) {
+                    doneButton.hide();
+                }
             }
         });
 
@@ -531,7 +526,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             if(incorrectCard.getY() >= 0) slideOut(incorrectCard);
 
             slideIn(instructionCard, charsetCard);
-            teachMeButton.showFloatingActionButton();
+            teachMeButton.show();
 
             currentState = State.DRAWING;
 
@@ -543,7 +538,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
             slideIn(correctCard);
             slideOut(instructionCard, charsetCard);
-            doneButton.hideFloatingActionButton();
+            doneButton.hide();
 
             currentState = State.CORRECT_ANSWER;
 
@@ -553,7 +548,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
             slideIn(incorrectCard);
             slideOut(instructionCard, charsetCard);
-            doneButton.hideFloatingActionButton();
+            doneButton.hide();
 
             correctAnimation.startAnimation(200);
             playbackAnimation.startAnimation(200);
@@ -659,9 +654,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     private void storyButtonUpdate() {
         String story = db.getStory(currentCharacterSet.currentCharacter());
         if (story != null && !story.trim().equals("")) {
-            remindStoryButton.showFloatingActionButton();
+            remindStoryButton.show();
         } else {
-            remindStoryButton.hideFloatingActionButton();
+            remindStoryButton.hide();
         }
     }
 
@@ -769,6 +764,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         queuedNextCharLoad = false;
 
         instructionCard.onResume(getApplicationContext());
+        UpdateNotifier.updateNotifier(this, findViewById(R.id.drawingFrame));
 
         super.onResume();
     }
@@ -827,6 +823,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:ThrowException");
             menu.add("DEBUG:LogBackgroundException");
             menu.add("DEBUG:ClearSyncTimestamp");
+            menu.add("DEBUG:ClearUpdateNotification");
         }
 
         return true;
@@ -993,6 +990,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 ed.remove(PracticeLogSync.DEVICE_SYNC_PREFS_KEY);
                 ed.remove(PracticeLogSync.SERVER_SYNC_PREFS_KEY);
                 ed.apply();
+            } else if (item.getTitle().equals("DEBUG:ClearUpdateNotification")) {
+                UpdateNotifier.debugClearNotified(this);
             }
         }
 

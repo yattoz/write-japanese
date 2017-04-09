@@ -13,7 +13,8 @@
 
         <!-- Drawing frame, where users test their might. -->
 
-        <FrameLayout
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/drawingFrame"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
 
@@ -33,23 +34,31 @@
                 />
 
 
-            <dmeeuwis.nakama.views.FloatingActionButton
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/remindStoryButton"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fabSize="normal"
                 android:layout_gravity="bottom|start"
                 android:layout_marginLeft="86dp"
                 android:layout_marginStart="86dp"
                 android:layout_marginBottom="10dp"
+                app:backgroundTint="@color/DarkTurquoise"
+                android:src="@drawable/ic_story"
+                android:scaleType="fitXY"
                 android:elevation="@dimen/elevation_low"
 
                 />
 
 
-            <dmeeuwis.nakama.views.FloatingActionButton
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/teachButton"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fabSize="normal"
+                android:src="@drawable/ic_question_mark"
+                app:backgroundTint="@color/Blue"
+                android:scaleType="fitXY"
                 android:layout_gravity="bottom|start"
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
@@ -57,11 +66,17 @@
                 android:elevation="@dimen/elevation_low"/>
 
 
-            <dmeeuwis.nakama.views.FloatingActionButton
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/finishedButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:scaleType="centerInside"
+                app:backgroundTint="@color/DarkGreen"
                 android:layout_gravity="bottom|end"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_right_arrow"
                 android:elevation="@dimen/elevation_low"/>
 
             <ImageView
@@ -73,7 +88,7 @@
                 android:src="@drawable/review_bug"
                 android:visibility="gone"/>
 
-        </FrameLayout>
+        </android.support.design.widget.CoordinatorLayout>
 
         <!-- Incorrect view screen -->
         <FrameLayout
@@ -164,18 +179,29 @@
             </LinearLayout>
 
 
-            <dmeeuwis.nakama.views.FloatingActionButton
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/practiceButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:layout_gravity="bottom|start"
+                android:src="@drawable/ic_question_mark"
+                app:backgroundTint="@color/Blue"
+                android:layout_marginLeft="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
                 android:elevation="@dimen/elevation_low"/>
 
-            <dmeeuwis.nakama.views.FloatingActionButton
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/nextButton"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:layout_gravity="bottom|end"
+                android:src="@drawable/ic_right_arrow"
+                android:scaleType="centerInside"
+                app:backgroundTint="@color/DarkGreen"
+                android:layout_marginRight="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
                 android:elevation="@dimen/elevation_low"/>
         </FrameLayout>
 
@@ -254,11 +280,17 @@
                     android:dividerHeight="10.0sp"
                     android:paddingBottom="85dp"/>
 
-                <dmeeuwis.nakama.views.FloatingActionButton
+                <android.support.design.widget.FloatingActionButton
                     android:id="@id/correctNextButton"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
                     android:layout_gravity="bottom|end"
+                    app:backgroundTint="@color/DarkGreen"
+                    android:src="@drawable/ic_right_arrow"
+                    android:scaleType="centerInside"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="12dp"
                     android:elevation="@dimen/elevation_low"/>
             </FrameLayout>
         </LinearLayout>

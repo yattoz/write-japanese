@@ -15,6 +15,7 @@
     <!-- Drawing frame, where users test their might. -->
 
     <FrameLayout
+        android:id="@+id/drawingFrame"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
@@ -27,29 +28,37 @@
             android:clickable="true"
             android:elevation="300dp" />
 
-        <dmeeuwis.nakama.views.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/remindStoryButton"
-            android:layout_width="92dp"
-            android:layout_height="92dp"
-            android:layout_gravity="bottom|left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="normal"
+            app:backgroundTint="@color/DarkTurquoise"
+            android:layout_gravity="bottom|start|left"
             android:layout_marginBottom="300dp"
             android:layout_marginLeft="10dp"
             android:elevation="@dimen/elevation_high" />
 
-        <dmeeuwis.nakama.views.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/teachButton"
-            android:layout_width="92dp"
-            android:layout_height="92dp"
-            android:layout_gravity="bottom|left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fabSize="normal"
+            android:src="@drawable/ic_question_mark"
+            app:backgroundTint="@color/Blue"
+            android:layout_gravity="bottom|start|left"
             android:layout_marginBottom="200dp"
             android:layout_marginLeft="10dp"
             android:elevation="@dimen/elevation_low" />
 
 
-        <dmeeuwis.nakama.views.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/finishedButton"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:scaleType="centerInside"
+            app:backgroundTint="@color/DarkGreen"
+            android:src="@drawable/ic_right_arrow"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="200dp"
             android:layout_marginRight="10dp"
@@ -171,19 +180,24 @@
         </LinearLayout>
 
 
-        <dmeeuwis.nakama.views.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_gravity="bottom|start"
+            android:src="@drawable/ic_question_mark"
+            app:backgroundTint="@color/Blue"
             android:elevation="@dimen/elevation_low"
             android:tag="slideDown" />
 
-        <dmeeuwis.nakama.views.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/nextButton"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_right_arrow"
+            android:scaleType="centerInside"
+            app:backgroundTint="@color/DarkGreen"
             android:elevation="@dimen/elevation_low"
             android:tag="slideDown" />
     </FrameLayout>
@@ -268,11 +282,14 @@
 
         </LinearLayout>
 
-        <dmeeuwis.nakama.views.FloatingActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@id/correctNextButton"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_gravity="bottom|end"
+            app:backgroundTint="@color/DarkGreen"
+            android:src="@drawable/ic_right_arrow"
+            android:scaleType="centerInside"
             android:elevation="@dimen/elevation_low" />
 
     </FrameLayout>
