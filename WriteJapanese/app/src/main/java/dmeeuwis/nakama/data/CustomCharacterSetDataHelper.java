@@ -27,7 +27,8 @@ public class CustomCharacterSetDataHelper {
     void recordRemoteEdit(String editId, String charsetId, String name, String desc, String set, String installId, String timestamp, Boolean deleted) {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         try {
-            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP, deleted))",
+            db.getWritableDatabase().execSQL(
+                    "INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), ?)",
                     new Object[]{editId, charsetId, name, desc, set, installId, timestamp, deleted});
         } finally {
             db.close();
@@ -37,7 +38,8 @@ public class CustomCharacterSetDataHelper {
     public void delete(CharacterStudySet c){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         try {
-            db.getWritableDatabase().execSQL("INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)",
+            db.getWritableDatabase().execSQL(
+                    "INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)",
                     new Object[]{ UUID.randomUUID().toString(), c.pathPrefix, c.name, c.description, c.charactersAsString(), Iid.get(context).toString(), Boolean.TRUE});
         } finally {
             db.close();

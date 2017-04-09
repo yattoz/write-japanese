@@ -117,10 +117,8 @@ public class CharacterProgressDataHelper {
                                 Integer sheetScore = recordSheet.get(character);
                                 sheetScore = sheetScore == null ? 0 : sheetScore;
                                 recordSheet.put(character, Math.min(0, 1 + sheetScore));
-                                Log.d("nakama-progression", "Good history puts " + character + " at " + recordSheet.get(character));
                             } else {
                                 recordSheet.put(character, -1 * advanceIncorrect);
-                                Log.d("nakama-progression", "Bad history puts " + character + " at " + recordSheet.get(character));
                             }
 
                         }

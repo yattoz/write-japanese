@@ -259,7 +259,7 @@ public class CharacterSetListActivity extends ActionBarActivity implements LockC
                     ed.remove(KanjiMasterActivity.CHAR_SET);
                     ed.apply();
 
-                    Snackbar.make(view, "Deleted chracter set '" + doomed.name + "'", Snackbar.LENGTH_INDEFINITE)
+                    Snackbar.make(view, "Deleted character set '" + doomed.name + "'", Snackbar.LENGTH_INDEFINITE)
                             .setAction("Undo", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -267,6 +267,7 @@ public class CharacterSetListActivity extends ActionBarActivity implements LockC
                                     h.unDelete(doomed);
                                     sets.clear();
                                     sets.addAll(h.getSets());
+                                    SimpleItemRecyclerViewAdapter.this.notifyDataSetChanged();
 
                                 }
                             })

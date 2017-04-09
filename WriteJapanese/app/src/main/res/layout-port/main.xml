@@ -75,6 +75,7 @@
                 android:layout_marginBottom="12dp"
                 android:layout_marginEnd="12dp"
                 android:layout_marginRight="12dp"
+                android:visibility="invisible"
                 android:text="@string/finished_drawing_button" />
 
             <ImageView
@@ -182,6 +183,9 @@
                 android:layout_gravity="bottom|start"
                 android:src="@drawable/ic_question_mark"
                 nakama:backgroundTint="@color/Blue"
+                android:layout_marginLeft="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
                 android:elevation="@dimen/elevation_low" />
 
             <android.support.design.widget.FloatingActionButton
@@ -191,6 +195,9 @@
                 android:layout_gravity="bottom|end"
                 android:src="@drawable/ic_right_arrow"
                 android:scaleType="centerInside"
+                android:layout_marginRight="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
                 nakama:backgroundTint="@color/DarkGreen"
                 android:elevation="@dimen/elevation_low" />
         </FrameLayout>
@@ -224,6 +231,9 @@
                 nakama:backgroundTint="@color/DarkGreen"
                 android:src="@drawable/ic_right_arrow"
                 android:scaleType="centerInside"
+                android:layout_marginBottom="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginRight="12dp"
                 android:elevation="@dimen/elevation_low" />
         </FrameLayout>
     </dmeeuwis.nakama.primary.SafeViewFlipper>

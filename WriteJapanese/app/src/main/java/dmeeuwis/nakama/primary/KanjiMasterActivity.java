@@ -210,12 +210,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         correctDrawnView = (AnimatedCurveView) findViewById(R.id.correctDrawnView);
 
         doneButton = (FloatingActionButton) findViewById(R.id.finishedButton);
-//        doneButton.hideInstantly();
-//        doneButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkGreen));
-//        doneButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_right_arrow));
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                Log.d("nakama", "Finished button clicked");
+                doneButton.hide();
                 if (drawPad.getStrokeCount() == 0) {
                     return;
                 }
@@ -265,8 +264,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         db = new StoryDataHelper(getApplicationContext());
         remindStoryButton = (FloatingActionButton) findViewById(R.id.remindStoryButton);
-//        remindStoryButton.setFloatingActionButtonColor(getResources().getColor(R.color.DarkTurquoise));
-//        remindStoryButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_story));
         remindStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,8 +272,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         });
 
         teachMeButton = (FloatingActionButton) findViewById(R.id.teachButton);
-//        teachMeButton.setFloatingActionButtonColor(getResources().getColor(R.color.Blue));
-//        teachMeButton.setFloatingActionButtonDrawable(getResources().getDrawable(R.drawable.ic_question_mark));
         teachMeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -293,9 +288,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         criticismArrayAdapter = new ArrayAdapter<>(this, R.layout.critique_list_item, R.id.critique_label, new ArrayList<String>(0));
         criticism.setAdapter(criticismArrayAdapter);
 
+        FloatingActionButton next = (FloatingActionButton) findViewById(R.id.nextButton);
         View.OnClickListener nextButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                Log.i("nakama", "nextButton Clicked!");
                 drawPad.clear();
                 setUiState(State.DRAWING);
                 loadNextCharacter(true);
@@ -304,7 +301,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         };
 
-        FloatingActionButton next = (FloatingActionButton) findViewById(R.id.nextButton);
         next.setOnClickListener(nextButtonListener);
 
         final FloatingActionButton correctNext = (FloatingActionButton) findViewById(R.id.correctNextButton);

@@ -18,7 +18,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	private static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 27;
+	private static final int DB_VERSION = 28;
 
     private final String iid;
     private final Context context;
