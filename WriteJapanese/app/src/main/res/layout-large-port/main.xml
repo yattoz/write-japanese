@@ -30,9 +30,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/remindStoryButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fabSize="normal"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
             app:backgroundTint="@color/DarkTurquoise"
             android:layout_gravity="bottom|start|left"
             android:layout_marginBottom="300dp"
@@ -41,9 +40,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/teachButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fabSize="normal"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
             android:src="@drawable/ic_question_mark"
             app:backgroundTint="@color/Blue"
             android:layout_gravity="bottom|start|left"
@@ -54,8 +52,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/finishedButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
             android:scaleType="centerInside"
             app:backgroundTint="@color/DarkGreen"
             android:src="@drawable/ic_right_arrow"
@@ -182,18 +180,20 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
             android:layout_gravity="bottom|start"
             android:src="@drawable/ic_question_mark"
             app:backgroundTint="@color/Blue"
             android:elevation="@dimen/elevation_low"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="12dp"
             android:tag="slideDown" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/nextButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
             android:layout_gravity="bottom|end"
             android:src="@drawable/ic_right_arrow"
             android:scaleType="centerInside"
@@ -287,8 +287,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@id/correctNextButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
             android:layout_gravity="bottom|end"
             app:backgroundTint="@color/DarkGreen"
             android:src="@drawable/ic_right_arrow"
