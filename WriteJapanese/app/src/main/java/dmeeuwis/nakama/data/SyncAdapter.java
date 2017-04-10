@@ -37,6 +37,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             PracticeLogSync sync = new PracticeLogSync(context);
             sync.sync();
+        } catch (IOException e){
+            Log.i("nakama", "Ignoring IOException during background sync");
         } catch (Throwable e){
             UncaughtExceptionLogger.backgroundLogError("Error during background sync", e, getContext());
         }

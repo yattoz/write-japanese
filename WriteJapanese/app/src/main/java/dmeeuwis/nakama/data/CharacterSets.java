@@ -23,6 +23,10 @@ public class CharacterSets  {
     private static final String G6_DESCRIPTION = "The sixth level of 'regular use kanji' (常用漢字). Learned by Japanese schoolchildren in their sixth year of school, at around 10 years of age.";
 
 	static public CharacterStudySet fromName(Context ctx, String name, LockChecker LockChecker){
+        if(name == null) {
+            return joyouG1(LockChecker, ctx);
+        }
+
 		if(name.equals("hiragana")){ return hiragana(LockChecker, ctx); }
 		else if(name.equals("katakana")){ return katakana(LockChecker, ctx); }
 		else if(name.equals("j1")){ return joyouG1(LockChecker, ctx); }

@@ -30,10 +30,10 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/remindStoryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="82dp"
+        android:layout_height="82dp"
         android:layout_gravity="bottom|start"
-        android:layout_marginBottom="104dp"
+        android:layout_marginBottom="116dp"
         android:layout_marginLeft="280dp"
         android:layout_marginStart="120dp"
         android:elevation="@dimen/elevation_high"
@@ -44,11 +44,12 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/teachButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="82dp"
+        android:layout_height="82dp"
         android:layout_gravity="bottom|start"
         android:layout_marginLeft="280dp"
         android:layout_marginStart="120dp"
+        android:layout_marginBottom="12dp"
         android:elevation="@dimen/elevation_low"
         android:src="@drawable/ic_question_mark"
         app:backgroundTint="@color/Blue"
@@ -57,12 +58,16 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/finishedButton"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="82dp"
+        android:layout_height="82dp"
         android:layout_gravity="bottom|end"
         android:elevation="@dimen/elevation_low"
         android:scaleType="centerInside"
         android:src="@drawable/ic_right_arrow"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:visibility="invisible"
         app:backgroundTint="@color/DarkGreen" />
 
 
@@ -161,17 +166,20 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
             android:layout_gravity="bottom|start"
             android:elevation="@dimen/elevation_low"
+            android:layout_marginBottom="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
             android:src="@drawable/ic_question_mark"
             app:backgroundTint="@color/Blue" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/nextButton"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="82dp"
+            android:layout_height="82dp"
             android:layout_marginBottom="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginRight="12dp"
@@ -260,8 +268,8 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@id/correctNextButton"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="82dp"
+                android:layout_height="82dp"
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="12dp"
                 android:layout_marginEnd="12dp"
