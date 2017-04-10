@@ -198,6 +198,9 @@
             android:src="@drawable/ic_right_arrow"
             android:scaleType="centerInside"
             app:backgroundTint="@color/DarkGreen"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
             android:elevation="@dimen/elevation_low"
             android:tag="slideDown" />
     </FrameLayout>
