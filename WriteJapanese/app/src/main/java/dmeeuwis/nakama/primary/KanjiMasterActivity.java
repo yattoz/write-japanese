@@ -599,7 +599,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 if (pd == null) {
                     pd = PurchaseDialog.make(message);
                 }
-                pd.show(this.getSupportFragmentManager(), "purchase");
+
+                if(!pd.isAdded()) {
+                    pd.show(this.getSupportFragmentManager(), "purchase");
+                }
             } catch (Throwable t) {
                 Log.e("nakama", "Caught fragment error when trying to show PurchaseDialog.", t);
             }
