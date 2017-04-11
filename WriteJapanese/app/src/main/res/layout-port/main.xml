@@ -50,18 +50,16 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/teachButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                nakama:fabSize="normal"
-                android:elevation="@dimen/elevation_low"
-                android:src="@drawable/ic_question_mark"
-                nakama:backgroundTint="@color/Blue"
-                android:scaleType="fitXY"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:layout_gravity="bottom|start"
-                android:layout_marginBottom="12dp"
-                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_question_mark"
+                android:scaleType="fitXY"
+                nakama:backgroundTint="@color/Blue"
                 android:layout_marginLeft="12dp"
-                android:text="@string/teach_me_button" />
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="@dimen/elevation_low" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/finishedButton"
