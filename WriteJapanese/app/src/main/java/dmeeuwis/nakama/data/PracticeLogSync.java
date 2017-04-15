@@ -56,7 +56,7 @@ public class PracticeLogSync {
             prefs = PreferenceManager.getDefaultSharedPreferences(context);
         }
 
-        public InputStream sendPost(String jsonPost) throws IOException {
+        public InputStream sendPost(String jsonPost) throws Exception {
             URL syncUrl;
 
             try {
