@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import dmeeuwis.Kana;
@@ -898,11 +899,23 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                     @Override
                     public void run() {
                         try {
-                            new PracticeLogSync(KanjiMasterActivity.this).sync();
+                            Map<String, Integer> counts = new PracticeLogSync(KanjiMasterActivity.this).sync();
+                            StringBuffer message = new StringBuffer("Sync completed!");
+                            if(counts.get("practiceLogs") != null){
+                                message.append(" " + counts.get("practiceLogs") + " practice logs. ");
+                            }
+                            if(counts.get("charsetEdits") != null){
+                                message.append(" " + counts.get("charsetEdits") + " character set edits. ");
+                            }
+                            if(counts.get("charsetGoals") != null){
+                                message.append(" " + counts.get("charsetGoals") + " character set goals.");
+                            }
+                            final String m = message.toString();
+
                             Handler handler = new Handler(Looper.getMainLooper());
                             handler.post(new Runnable() {
                                 @Override public void run() {
-                                    Toast.makeText(KanjiMasterActivity.this, "Sync completed!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(KanjiMasterActivity.this, m, Toast.LENGTH_SHORT).show();
                                 }
                             });
                         } catch (Throwable e) {

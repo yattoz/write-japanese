@@ -30,8 +30,8 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/remindStoryButton"
-        android:layout_width="82dp"
-        android:layout_height="82dp"
+        android:layout_width="@dimen/fab_custom_size"
+        android:layout_height="@dimen/fab_custom_size"
         android:layout_gravity="bottom|start"
         android:layout_marginBottom="116dp"
         android:layout_marginLeft="280dp"
@@ -44,8 +44,8 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/teachButton"
-        android:layout_width="82dp"
-        android:layout_height="82dp"
+        android:layout_width="@dimen/fab_custom_size"
+        android:layout_height="@dimen/fab_custom_size"
         android:layout_gravity="bottom|start"
         android:layout_marginLeft="280dp"
         android:layout_marginStart="120dp"
@@ -58,8 +58,8 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/finishedButton"
-        android:layout_width="82dp"
-        android:layout_height="82dp"
+        android:layout_width="@dimen/fab_custom_size"
+        android:layout_height="@dimen/fab_custom_size"
         android:layout_gravity="bottom|end"
         android:elevation="@dimen/elevation_low"
         android:scaleType="centerInside"
@@ -166,8 +166,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|start"
             android:elevation="@dimen/elevation_low"
             android:layout_marginBottom="12dp"
@@ -178,8 +178,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/nextButton"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
             android:layout_marginBottom="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginRight="12dp"
@@ -268,8 +268,8 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@id/correctNextButton"
-                android:layout_width="82dp"
-                android:layout_height="82dp"
+                android:layout_width="@dimen/fab_custom_size"
+                android:layout_height="@dimen/fab_custom_size"
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="12dp"
                 android:layout_marginEnd="12dp"

@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,54 +42,115 @@ public class PracticeLogSync {
     final private static String SYNC_URL = "https://dmeeuwis.com/write-japanese/progress-sync";
     final private static boolean DEBUG_NETWORK_SYNC = false;
 
+    final ExternalDependencies extDeps;
     final Context context;
 
+    public static class ExternalDependencies {
+        private final Context context;
+        private final WriteJapaneseOpenHelper db;
+        private final SharedPreferences prefs;
+
+        public ExternalDependencies(Context c){
+            context = c;
+            db = new WriteJapaneseOpenHelper(c);
+            prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        }
+
+        public InputStream sendPost(String jsonPost) throws IOException {
+            URL syncUrl;
+
+            try {
+                if(BuildConfig.DEBUG && DEBUG_NETWORK_SYNC){
+                    syncUrl = new URL("http://192.168.1.99:8080/write-japanese/progress-sync");
+                } else {
+                    syncUrl = new URL(SYNC_URL);
+                }
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+
+            HttpURLConnection urlConnection = (HttpURLConnection) syncUrl.openConnection();
+            urlConnection.setDoOutput(true);
+            urlConnection.setDoInput(true);
+            try {
+                urlConnection.setRequestMethod("POST");
+            } catch(ProtocolException e){
+                throw new RuntimeException(e);  // really?
+            }
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            OutputStream out = urlConnection.getOutputStream();
+            try {
+                out.write(jsonPost.getBytes("UTF-8"));
+            } finally {
+                out.close();
+            }
+
+            // stream over all rows in from POST response
+            Log.i("nakama", "Received response to JSON sync: " + urlConnection.getResponseMessage() + urlConnection.getResponseMessage());
+            return urlConnection.getInputStream();
+        }
+
+
+    }
+
     public PracticeLogSync(Context c) {
+        this.extDeps = new ExternalDependencies(c);
         this.context = c;
     }
 
-    public void debugPrintLog(){
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
-        SQLiteDatabase sqlite = db.getReadableDatabase();
-
-        List<Map<String, String>> all = DataHelper.selectRecords(sqlite, "SELECT * FROM practice_log");
-        for(Map<String, String> r: all){
-            Log.i("nakama-sync", new JSONObject(r).toString());
-        }
+    public PracticeLogSync(ExternalDependencies extDeps, Context c) {
+        this.extDeps = extDeps;
+        this.context = c;
     }
 
     public void clearSync(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(extDeps.context);
         SharedPreferences.Editor e = prefs.edit();
         e.putString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
         e.putString(DEVICE_SYNC_PREFS_KEY, "0");
         e.apply();
     }
 
-    public void sync() throws IOException {
-        long startTime = System.currentTimeMillis();
-        URL syncUrl;
-        String iid = Iid.get(context).toString();
+    public String maxTimestamp(WriteJapaneseOpenHelper db){
+        SQLiteDatabase d = db.getReadableDatabase();
         try {
-            if(BuildConfig.DEBUG && DEBUG_NETWORK_SYNC){
-                syncUrl = new URL("http://192.168.1.99:8080/write-japanese/progress-sync");
-            } else {
-                syncUrl = new URL(SYNC_URL);
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            return DataHelper.selectString(d,
+                    "SELECT MAX(timestamp) FROM " +
+                            "(SELECT MAX(timestamp) as timestamp FROM practice_log UNION " +
+                            "SELECT MAX(timestamp) as timestamp FROM charset_goals UNION " +
+                            "SELECT MAX(timestamp) as timestamp FROM kanji_stories UNION " +
+                            "SELECT MAX(timestamp) as timestamp FROM character_set_edits)"  );
+        } finally {
+            d.close();
         }
+    }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String lastSyncServerTimestamp = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
-        String lastSyncDeviceTimestamp = prefs.getString(DEVICE_SYNC_PREFS_KEY, "0");
+    public void debugPrintLog(){
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
+        SQLiteDatabase sqlite = db.getReadableDatabase();
+
+        try {
+            for(Map<String, String> r:DataHelper.selectRecords(sqlite, "SELECT * FROM practice_log")){
+                Log.i("nakama-sync", new JSONObject(r).toString());
+            }
+        } finally {
+            sqlite.close();
+        }
+    }
+
+    public Map<String, Integer> sync() throws IOException {
+        long startTime = System.currentTimeMillis();
+        String iid = Iid.get(extDeps.context).toString();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(extDeps.context);
+        String lastSyncServerTimestamp1 = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
+        String lastSyncDeviceTimestamp1 = prefs.getString(DEVICE_SYNC_PREFS_KEY, "0");
+        Log.i("nakama-sync", "Doing sync with last-server-sync: " + lastSyncServerTimestamp1 + "; last device sync: " + lastSyncDeviceTimestamp1);
+
+        Map<String, Object> syncDetails = Util.makeObjectMap(SERVER_SYNC_PREFS_KEY, lastSyncServerTimestamp1, DEVICE_SYNC_PREFS_KEY, lastSyncDeviceTimestamp1);
+        String lastSyncServerTimestamp = (String)syncDetails.get(SERVER_SYNC_PREFS_KEY);
+        String lastSyncDeviceTimestamp = (String)syncDetails.get(DEVICE_SYNC_PREFS_KEY);
         Log.i("nakama-sync", "Doing sync with last-server-sync: " + lastSyncServerTimestamp + "; last device sync: " + lastSyncDeviceTimestamp);
-
-        HttpURLConnection urlConnection = (HttpURLConnection) syncUrl.openConnection();
-        urlConnection.setDoOutput(true);
-        urlConnection.setDoInput(true);
-        urlConnection.setRequestMethod("POST");
-        urlConnection.setRequestProperty("Content-Type", "application/json");
 
         Writer netWriter = new StringWriter();
         JsonWriter jw = new JsonWriter(netWriter);
@@ -129,16 +191,8 @@ public class PracticeLogSync {
             jsonPost = netWriter.toString();
             Log.i("nakama", "Posting JSON sync: " + jsonPost);
 
-            OutputStream out = urlConnection.getOutputStream();
-            try {
-                out.write(jsonPost.getBytes("UTF-8"));
-            } finally {
-                out.close();
-            }
+            InputStream inStream = extDeps.sendPost(jsonPost);
 
-            // stream over all rows in from POST response
-            Log.i("nakama", "Received response to JSON sync: " + urlConnection.getResponseMessage() + urlConnection.getResponseMessage());
-            InputStream inStream = urlConnection.getInputStream();
             jsonResponse = Util.slurp(inStream);
             largeLog("nakama-sync", "Saw progress-sync response JSON: " + jsonResponse);
 
@@ -150,18 +204,12 @@ public class PracticeLogSync {
             String syncTimestampValue = jr.nextString();
             Log.i("nakama-sync", "Saw JSON response object sync values: " + syncTimestampName + " = " + syncTimestampValue);
 
-            SharedPreferences.Editor e = prefs.edit();
-            e.putString(DEVICE_SYNC_PREFS_KEY, DataHelper.selectString(sqlite,
-                    "SELECT MAX(timestamp) FROM " +
-                                "(SELECT MAX(timestamp) as timestamp FROM practice_log UNION " +
-                                 "SELECT MAX(timestamp) as timestamp FROM charset_goals UNION " +
-                                 "SELECT MAX(timestamp) as timestamp FROM kanji_stories UNION " +
-                                 "SELECT MAX(timestamp) as timestamp FROM character_set_edits)"  ));
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putString(DEVICE_SYNC_PREFS_KEY, maxTimestamp(db));
+            ed.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
+            ed.apply();
 
-            e.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
-            e.apply();
-            Log.i("nakama-sync", "Recording device-sync timestamp as " + prefs.getString(DEVICE_SYNC_PREFS_KEY, "MISSED!"));
-
+            int practiceLogCount = 0;
             String n = jr.nextName();      // "practice_logs" key
             Log.i("nakama-sync", "Expecting practice_logs... saw " + n);
             jr.beginArray();
@@ -181,6 +229,7 @@ public class PracticeLogSync {
                             values.get("charset"), values.get("character"), values.get("score"),
                             values.get("device_timestamp"), values.get("drawing")};
                     Log.i("nakama-sync", "Inserting remote log: " + Util.join(", ", insert));
+                    practiceLogCount++;
                     DataHelper.selectRecord(sqlite, "INSERT INTO practice_log(id, install_id, charset, character, score, timestamp, drawing) VALUES(?, ?, ?, ?, ?, ?, ?)", (Object[])insert);
                 } catch (SQLiteConstraintException t) {
                     Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
@@ -189,6 +238,7 @@ public class PracticeLogSync {
             }
             jr.endArray();
 
+            int kanjiStoriesCount = 0;
             jr.nextName();      // "kanji_stories" key
             jr.beginArray();
             while (jr.hasNext()) {
@@ -214,6 +264,7 @@ public class PracticeLogSync {
             }
             jr.endArray();
 
+            int charsetGoalsCount = 0;
             jr.nextName();      // "charset_goals" key
             jr.beginArray();
             if(jr.hasNext()) {
@@ -230,6 +281,7 @@ public class PracticeLogSync {
 
                     DataHelper.selectRecord(sqlite, "INSERT OR IGNORE INTO charset_goals(goal, goal_start, charset, timestamp) VALUES(?, ?, ?, ?)",
                         (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("device_timestamp")}));
+                    charsetGoalsCount++;
 
                     Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
                 } catch (SQLiteConstraintException t) {
@@ -239,6 +291,7 @@ public class PracticeLogSync {
             }
             jr.endArray();
 
+            int charsetEditCount = 0;
             if(jr.hasNext()) {
                 jr.nextName();      // "character_set_edits" key
                 jr.beginArray();
@@ -254,6 +307,7 @@ public class PracticeLogSync {
                         CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper(context);
                         h.recordRemoteEdit(values.get("id"), values.get("charset_id"), values.get("name"), values.get("description"),
                                 values.get("characters"), values.get("install_id"), values.get("timestamp"), Boolean.parseBoolean(values.get("deleted")));
+                        charsetEditCount++;
 
                         Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
                     } catch (SQLiteConstraintException t) {
@@ -271,6 +325,7 @@ public class PracticeLogSync {
             inStream.close();
 
             Log.i("nakama-sync", "Sync complete!");
+            return Util.makeCountMap("practiceLogs", practiceLogCount, "charsetGoals", charsetGoalsCount, "charsetEdits", charsetEditCount);
 
         } catch(Throwable t) {
             StringBuilder message = new StringBuilder();

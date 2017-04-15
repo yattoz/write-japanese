@@ -30,8 +30,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/remindStoryButton"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
             app:backgroundTint="@color/DarkTurquoise"
             android:layout_gravity="bottom|start|left"
             android:layout_marginBottom="300dp"
@@ -40,8 +40,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/teachButton"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
             android:src="@drawable/ic_question_mark"
             app:backgroundTint="@color/Blue"
             android:layout_gravity="bottom|start|left"
@@ -52,8 +52,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/finishedButton"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
             android:scaleType="centerInside"
             app:backgroundTint="@color/DarkGreen"
             android:src="@drawable/ic_right_arrow"
@@ -180,8 +180,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|start"
             android:src="@drawable/ic_question_mark"
             app:backgroundTint="@color/Blue"
@@ -192,8 +192,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/nextButton"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|end"
             android:src="@drawable/ic_right_arrow"
             android:scaleType="centerInside"
@@ -287,8 +287,8 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@id/correctNextButton"
-            android:layout_width="82dp"
-            android:layout_height="82dp"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|end"
             app:backgroundTint="@color/DarkGreen"
             android:src="@drawable/ic_right_arrow"
