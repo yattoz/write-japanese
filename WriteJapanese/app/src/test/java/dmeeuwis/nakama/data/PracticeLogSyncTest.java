@@ -26,39 +26,49 @@ import static junit.framework.Assert.assertEquals;
 @Config(constants = BuildConfig.class)
 public class PracticeLogSyncTest {
 
-    private WriteJapaneseOpenHelper helper;
     private Context ctx;
+
+    private static class TestDependencies extends PracticeLogSync.ExternalDependencies {
+        private final String file;
+        public TestDependencies(Context ctx, String jsonFile){
+            super(ctx);
+            this.file = jsonFile;
+        }
+        @Override
+        public InputStream sendPost(String jsonPost) throws Exception {
+            return new StringInputStream(readXMLToString(file));
+        }
+    }
+
 
     @Before
     public void setUp() throws Exception {
         Activity activity = Robolectric.buildActivity(KanjiMasterActivity.class).create().resume().get();
         ctx = activity.getApplicationContext();
         ctx.deleteDatabase(WriteJapaneseOpenHelper.DB_NAME);
-        helper = new WriteJapaneseOpenHelper(ctx);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-//        helper.close();
     }
 
     @Test
-    public void testSyncIn() throws IOException {
-
-        PracticeLogSync.ExternalDependencies ep = new PracticeLogSync.ExternalDependencies(ctx){
-            @Override
-            public InputStream sendPost(String jsonPost) throws Exception {
-                return new StringInputStream(readXMLToString());
-            }
-        };
-
-        PracticeLogSync sync = new PracticeLogSync(ep, ctx);
+    public void testEmptySync() throws IOException {
+        PracticeLogSync sync = new PracticeLogSync(new TestDependencies(ctx, "empty_sync.json"), ctx);
         sync.sync();
-
     }
 
-    public String readXMLToString() throws Exception {
-        java.net.URL url = PracticeLogSyncTest.class.getResource("charset_sync_data.json");
+    @Test
+    public void testEmptySyncBeforeCharsetEdits() throws IOException {
+        PracticeLogSync sync = new PracticeLogSync(new TestDependencies(ctx, "empty_sync_no_charset_edits.json"), ctx);
+        sync.sync();
+    }
+
+    // test practice logs sync
+
+    // test charset goals edit sync
+
+    // test charset edits sync
+
+
+    public static String readXMLToString(String filename) throws Exception {
+        java.net.URL url = PracticeLogSyncTest.class.getResource(filename);
         if(url == null){ throw new RuntimeException("Cannot get test resource data"); }
         File f = new File(url.toURI());
         if(!f.exists()){ throw new RuntimeException("Can't find test data: " + f); };

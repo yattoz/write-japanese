@@ -47,13 +47,9 @@ public class PracticeLogSync {
 
     public static class ExternalDependencies {
         private final Context context;
-        private final WriteJapaneseOpenHelper db;
-        private final SharedPreferences prefs;
 
         public ExternalDependencies(Context c){
             context = c;
-            db = new WriteJapaneseOpenHelper(c);
-            prefs = PreferenceManager.getDefaultSharedPreferences(context);
         }
 
         public InputStream sendPost(String jsonPost) throws Exception {
@@ -211,6 +207,9 @@ public class PracticeLogSync {
 
             int practiceLogCount = 0;
             String n = jr.nextName();      // "practice_logs" key
+            if(!"practice_logs".equals(n)){
+                throw new RuntimeException("Expected 'practice_logs' but saw " + n);
+            }
             Log.i("nakama-sync", "Expecting practice_logs... saw " + n);
             jr.beginArray();
             while (jr.hasNext()) {
