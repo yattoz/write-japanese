@@ -36,7 +36,7 @@ public class PracticeLogSyncTest {
         }
         @Override
         public InputStream sendPost(String jsonPost) throws Exception {
-            return new StringInputStream(readXMLToString(file));
+            return new StringInputStream(readTestData(file));
         }
     }
 
@@ -67,7 +67,7 @@ public class PracticeLogSyncTest {
     // test charset edits sync
 
 
-    public static String readXMLToString(String filename) throws Exception {
+    public static String readTestData(String filename) throws Exception {
         java.net.URL url = PracticeLogSyncTest.class.getResource(filename);
         if(url == null){ throw new RuntimeException("Cannot get test resource data"); }
         File f = new File(url.toURI());
