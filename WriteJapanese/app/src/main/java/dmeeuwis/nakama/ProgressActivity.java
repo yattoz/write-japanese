@@ -29,7 +29,9 @@ import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.ProgressTracker.Progress;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
@@ -85,10 +87,15 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         super.onResume();
 
         Bundle params = getIntent().getExtras();
+		if(params == null) {
+			UncaughtExceptionLogger.backgroundLogError("Saw null intent in ProgressActivity! Will send back to main activity.", new NullPointerException(), this);
+			startActivity(new Intent(this, KanjiMasterActivity.class));
+			return;
+		}
+
         callingClass = params.getString("parent");
         callingPath = params.getString(Constants.KANJI_PATH_PARAM);
 
-        DictionarySet dictSet = new DictionarySet(this.getApplicationContext());
         if(lc != null){ lc.dispose(); }
         lc = new LockCheckerInAppBillingService(this);
 
@@ -274,7 +281,8 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
     }
 
     @Override protected void onNewIntent(Intent intent){
-        Log.i("nakama", "ProgressActivity lifecycle onNewIntent");
+		Log.i("nakama", "ProgressActivity lifecycle onNewIntent");
+		super.onNewIntent(intent);
         this.setIntent(intent);
     }
 }
