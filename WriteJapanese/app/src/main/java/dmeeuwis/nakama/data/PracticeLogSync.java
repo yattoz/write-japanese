@@ -155,10 +155,11 @@ public class PracticeLogSync {
         jw.name("install_id").value(iid);
         jw.name("level").value(LockCheckerIabHelper.getPurchaseStatus(prefs).toString());
 
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
-        SQLiteDatabase sqlite = db.getReadableDatabase();
         String jsonResponse = null;
         String jsonPost = null;
+
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
+        SQLiteDatabase sqlite = db.getWritableDatabase();
         try {
             jw.name("prev_sync_timestamp").value(lastSyncServerTimestamp);
 
@@ -199,11 +200,6 @@ public class PracticeLogSync {
             String syncTimestampName = jr.nextName();
             String syncTimestampValue = jr.nextString();
             Log.i("nakama-sync", "Saw JSON response object sync values: " + syncTimestampName + " = " + syncTimestampValue);
-
-            SharedPreferences.Editor ed = prefs.edit();
-            ed.putString(DEVICE_SYNC_PREFS_KEY, maxTimestamp(db));
-            ed.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
-            ed.apply();
 
             int practiceLogCount = 0;
             String n = jr.nextName();      // "practice_logs" key
@@ -323,7 +319,13 @@ public class PracticeLogSync {
             rin.close();
             inStream.close();
 
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putString(DEVICE_SYNC_PREFS_KEY, maxTimestamp(db));
+            ed.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
+            ed.apply();
+
             Log.i("nakama-sync", "Sync complete!");
+
             return Util.makeCountMap("practiceLogs", practiceLogCount, "charsetGoals", charsetGoalsCount, "charsetEdits", charsetEditCount);
 
         } catch(Throwable t) {
@@ -333,8 +335,8 @@ public class PracticeLogSync {
             message.append("; time in sync was " + (System.currentTimeMillis() - startTime) + "ms");
             throw new RuntimeException(message.toString(), t);
         } finally {
-            db.close();
             sqlite.close();
+            db.close();
         }
     }
 
