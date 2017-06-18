@@ -5,11 +5,17 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.util.Log;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
+import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.indexer.Querier;
 import dmeeuwis.indexer.QuerierFileInputStream;
@@ -18,24 +24,11 @@ public class DictionarySet {
 
 	public static final String KANJIDICT_FILE = "kanjidic.utf8.awb";
 	public static final String KANJIDICT_INDEX = "kanjidic.index.awb";
-	public static final String SMALL_EDICT_FILE = "dict.ichi1.subbed.indexed.awb";
-	public static final String SMALL_SEARCH_HASH_TO_EDICT_ID = "index.ichi1.searchHashToEdictId.awb";
-	public static final String SMALL_EDICT_ID_TO_LOCATION_SIZE = "index.ichi1.edictIdToLocationSize.awb";
-	
+
 	private KanjiFinder kanjiFinder;
-	public final Querier querier;
-	
+
 	final AssetManager asm;
 
-	final AssetFileDescriptor dictionaryFileFd;
-	final FileInputStream dictionaryFileStream;
-	
-	final AssetFileDescriptor searchHashToEdictIdFd;
-	final FileInputStream searchHashToEdictIdStream;
-	
-	final AssetFileDescriptor edictIdToLocationSizeFd;
-	final FileInputStream edictIdToLocationSizeStream;
-	
 	final AssetFileDescriptor kanjiDictFd;
 	final FileInputStream kanjiDictStream;
 	final FileChannel kanjiDictCh;
@@ -57,21 +50,6 @@ public class DictionarySet {
 	   	asm = context.getAssets();
         
 		try {
-	    	dictionaryFileFd = asm.openFd(SMALL_EDICT_FILE);
-	    	dictionaryFileStream = dictionaryFileFd.createInputStream();
-			long dictionaryFileOffset = dictionaryFileFd.getStartOffset();
-
-	    	searchHashToEdictIdFd = asm.openFd(SMALL_SEARCH_HASH_TO_EDICT_ID);
-	    	searchHashToEdictIdStream = searchHashToEdictIdFd.createInputStream();
-			long searchHashToEdictIdOffset = searchHashToEdictIdFd.getStartOffset();
-
-	    	edictIdToLocationSizeFd = asm.openFd(SMALL_EDICT_ID_TO_LOCATION_SIZE);
-	    	edictIdToLocationSizeStream = edictIdToLocationSizeFd.createInputStream();
-			long edictIdToLocationSizeOffset = edictIdToLocationSizeFd.getStartOffset();
-			long edictIdToLocationSizeByteLength = edictIdToLocationSizeFd.getLength();
-
-	    	querier = new QuerierFileInputStream(searchHashToEdictIdStream, searchHashToEdictIdOffset, edictIdToLocationSizeStream, edictIdToLocationSizeOffset, edictIdToLocationSizeByteLength,  dictionaryFileStream, dictionaryFileOffset);
-	
 			kanjiDictFd = asm.openFd(KANJIDICT_FILE);
 			kanjiDictStream = this.kanjiDictFd.createInputStream();
 			kanjiDictCh = kanjiDictStream.getChannel();
@@ -97,17 +75,23 @@ public class DictionarySet {
 		} 
 		return kanjiFinder;
 	}
-	
+
+	public List<Translation> loadTranslations(Character kanji, int limit) throws IOException, XmlPullParserException {
+		String filename = Integer.toHexString(((Character)kanji).charValue());
+		InputStream in = asm.open("char_vocab/" + filename + "_trans.xml");
+		final List<Translation> collect = new ArrayList<>();
+		TranslationsFromXml.PublishTranslation p = new TranslationsFromXml.PublishTranslation() {
+			@Override
+			public void publish(Translation t) {
+				collect.add(t);
+			}
+		};
+		TranslationsFromXml t = new TranslationsFromXml();
+		t.load(in, p, limit);
+		return collect;
+	}
+
 	public void close(){
-		safeClose(dictionaryFileStream);
-		safeClose(dictionaryFileFd);
-		
-		safeClose(searchHashToEdictIdStream);
-		safeClose(searchHashToEdictIdFd);
-		
-		safeClose(edictIdToLocationSizeStream);
-		safeClose(edictIdToLocationSizeFd);
-		
 		safeClose(kanjiDictStream);
 		safeClose(kanjiDictFd);
         safeClose(kanjiDictCh);

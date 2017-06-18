@@ -42,7 +42,7 @@ import dmeeuwis.nakama.views.NetworkStoriesAsyncTask;
 import dmeeuwis.nakama.views.NetworkStorySaveAsyncTask;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.TallGridView;
-import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
+import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 
 public class TeachingCombinedStoryInfoFragment extends Fragment {
@@ -58,7 +58,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     private EditText storyEditor;
     private CardView combinedStoriesCard;
 
-    private KanjiTranslationListAsyncTask searchTask;
+    private CharacterTranslationListAsyncTask searchTask;
     private NetworkStoriesAsyncTask networkStoriesAsyncTask;
     private OnFragmentInteractionListener mListener;
 
@@ -150,7 +150,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
             final DictionarySet dictionarySet = new DictionarySet(getActivity());
             Kanji k = dictionarySet.kanjiFinder().find(this.character);
 
-            KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation(){
+            CharacterTranslationListAsyncTask.AddTranslation adder = new CharacterTranslationListAsyncTask.AddTranslation(){
                 public void add(Translation t){
                     Activity parent = getActivity();
                     if(parent == null){
@@ -162,7 +162,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
             };
 
             if(searchTask == null){
-                this.searchTask = new KanjiTranslationListAsyncTask(adder, getActivity().getApplicationContext(), character);
+                this.searchTask = new CharacterTranslationListAsyncTask(adder, getActivity().getApplicationContext(), character);
                 this.searchTask.execute();
             }
 

@@ -17,15 +17,15 @@ import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
-import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
-import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask.AddTranslation;
+import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
+import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask.AddTranslation;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 
 public class TeachingInfoFragment extends Fragment {
 
     float engTextSize;
 
-	private KanjiTranslationListAsyncTask searchTask;
+	private CharacterTranslationListAsyncTask searchTask;
 
     @Override
     public void onResume(){
@@ -63,7 +63,7 @@ public class TeachingInfoFragment extends Fragment {
             }
         };
 
-        this.searchTask = new KanjiTranslationListAsyncTask(adder, getActivity().getApplicationContext(), character);
+        this.searchTask = new CharacterTranslationListAsyncTask(adder, getActivity().getApplicationContext(), character);
         this.searchTask.execute();
 
         startAnimation();

@@ -92,8 +92,8 @@ import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.StrictnessDialog;
+import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.ClueCard;
-import dmeeuwis.nakama.views.translations.KanjiTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
@@ -134,7 +134,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected AnimatedCurveView playbackAnimation;
     protected AnimatedCurveView correctDrawnView;
     protected AnimatedCurveView correctKnownView;
-    protected KanjiTranslationListAsyncTask vocabAsync;
+    protected CharacterTranslationListAsyncTask vocabAsync;
     protected RecyclerView correctVocabList;
     protected View reviewBug;
     protected KanjiVocabRecyclerAdapter correctVocabArrayAdapter;
@@ -425,7 +425,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             correctVocabArrayAdapter.removeReadingsHeader();
             correctVocabArrayAdapter.removeMeaningsHeader();
         }
-        KanjiTranslationListAsyncTask.AddTranslation adder = new KanjiTranslationListAsyncTask.AddTranslation() {
+        CharacterTranslationListAsyncTask.AddTranslation adder = new CharacterTranslationListAsyncTask.AddTranslation() {
             public void add(Translation t) {
                 correctVocabArrayAdapter.add(t);
             }
@@ -434,7 +434,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if (vocabAsync != null) {
             vocabAsync.cancel(true);
         }
-        vocabAsync = new KanjiTranslationListAsyncTask(adder, getApplicationContext(), currentCharacterSet.currentCharacter());
+        vocabAsync = new CharacterTranslationListAsyncTask(adder, getApplicationContext(), currentCharacterSet.currentCharacter());
         vocabAsync.execute();
     }
 

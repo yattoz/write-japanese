@@ -273,6 +273,22 @@ public class LockCheckerInAppBillingService extends LockChecker {
                 ArrayList<String>  purchaseDataList = ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
                 //ArrayList<String>  signatureList = ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
                 //String continuationToken = ownedItems.getString("INAPP_CONTINUATION_TOKEN");
+
+                // saw null pointer exceptions when using ownedSkus.size coming from a certain ip with device of
+                // 'unknown: Full Android on Emulator'. Special investigation block here to try to see what's going on.
+                if(ownedSkus == null || purchaseDataList == null){
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("getPurchases bundle did not contain expected contents on 0 response code. Bundle contained: ");
+                    for(String k: ownedItems.keySet()){
+                        sb.append(k);
+                        sb.append(" = ");
+                        sb.append(ownedItems.get(k));
+                        sb.append("; ");
+                    }
+                    UncaughtExceptionLogger.backgroundLogError(sb.toString(), new RuntimeException(), parent);
+                    return;
+                }
+
                 Log.d("nakama-iiab", "Found " + ownedSkus.size() + " past purchases.");
 
                 for (int i = 0; i < purchaseDataList.size(); ++i) {
@@ -291,6 +307,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
                 Log.d("nakama-iiab", "Unknown response code for past purchases: " + response);
             }
         } catch (JSONException e) {
+            UncaughtExceptionLogger.backgroundLogError("Error parsing JSON response from Google Play", e, parent);
             toast("Error parsing JSON response from Google Play");
         } catch (RemoteException e) {
             badConnection = true;

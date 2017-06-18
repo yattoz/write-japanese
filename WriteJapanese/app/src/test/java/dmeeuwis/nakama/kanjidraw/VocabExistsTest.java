@@ -10,12 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import dmeeuwis.Kana;
+import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.indexer.Querier;
 import dmeeuwis.indexer.QuerierRandomAccessFile;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.TranslationsFromXml;
 
 import static org.junit.Assert.assertTrue;
 
@@ -23,43 +26,44 @@ public class VocabExistsTest {
     public static final String KANJIDICT_FILE = "kanjidic.utf8.awb";
     public static final String KANJIDICT_INDEX = "kanjidic.index.awb";
 
-    public static final String SMALL_EDICT_FILE = "dict.ichi1.subbed.indexed.awb";
-    public static final String SMALL_SEARCH_HASH_TO_EDICT_ID = "index.ichi1.searchHashToEdictId.awb";
-    public static final String SMALL_EDICT_ID_TO_LOCATION_SIZE = "index.ichi1.edictIdToLocationSize.awb";
 
     @Test
     public void testVocabExistsForAllKanji() throws Exception {
-        String path = System.getProperty("user.dir") + "/src/main/assets/";
-
-        {
-            File indexFile = new File(path + KANJIDICT_INDEX);
-            InputStream index = new FileInputStream(indexFile);
-            RandomAccessFile dict = new RandomAccessFile(path + KANJIDICT_FILE, "r");
-        }
-
-        RandomAccessFile dict = new RandomAccessFile(path + SMALL_EDICT_FILE, "r");
-        RandomAccessFile hashToEdictId = new RandomAccessFile(path + SMALL_SEARCH_HASH_TO_EDICT_ID, "r");
-        RandomAccessFile locsize = new RandomAccessFile(path + SMALL_EDICT_ID_TO_LOCATION_SIZE, "r");
+        String path = System.getProperty("user.dir") + "/app/src/main/assets/char_vocab/";
 
         List<String> failures = new ArrayList<>();
-        CharacterStudySet[] sets = new CharacterStudySet[]{
-                CharacterSets.hiragana(null, null),
-                CharacterSets.katakana(null, null),
-                CharacterSets.joyouG1(null, null),
-                CharacterSets.joyouG2(null, null),
-                CharacterSets.joyouG3(null, null),
-                CharacterSets.joyouG4(null, null),
-                CharacterSets.joyouG5(null, null),
-                CharacterSets.joyouG6(null, null)
+        String[] sets = new String[]{
+                Kana.commonHiragana(),
+                Kana.commonKatakana(),
+                Kanji.JOUYOU_G1,
+                Kanji.JOUYOU_G2,
+                Kanji.JOUYOU_G3,
+                Kanji.JOUYOU_G4,
+                Kanji.JOUYOU_G5,
+                Kanji.JOUYOU_G6,
         };
 
-        for(CharacterStudySet s: sets){
-            for(Character c: s.allCharactersSet){
-                Querier q = new QuerierRandomAccessFile(hashToEdictId, locsize, dict);
-                List<Translation> t = q.singleCharacterSearch(1, 0, c);
-                boolean success = t != null && t.size() > 0;
+        for(String s: sets){
+            for(Character c: s.toCharArray()){
+
+                String filename = Integer.toHexString((c).charValue()) + "_trans.xml";
+                FileInputStream fin = new FileInputStream(path + filename);
+
+                TranslationsFromXml t = new TranslationsFromXml();
+
+                final List<Translation> collect = new ArrayList<>();
+                TranslationsFromXml.PublishTranslation p = new TranslationsFromXml.PublishTranslation() {
+                    @Override
+                    public void publish(Translation t) {
+                       collect.add(t);
+                    }
+                };
+
+                t.load(fin, p);
+
+                boolean success = collect.size() > 0;
                 if(!success){
-                    failures.add(s.pathPrefix + " " + c + " has no translations.");
+                    failures.add(c + " has no translations.");
                 }
             }
         }

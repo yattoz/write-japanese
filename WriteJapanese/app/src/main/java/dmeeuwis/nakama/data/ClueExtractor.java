@@ -73,11 +73,11 @@ public class ClueExtractor {
     public Translation translationsClue(Character currentCharacter, int index) {
         index = index % MAX_TRANSLATIONS;
         try {
-            List<Translation> t = set.querier.singleCharacterSearch(1, index, currentCharacter);
-            if(t.size() == 0){
+            List<Translation> t = set.loadTranslations(currentCharacter, MAX_TRANSLATIONS);
+            if(index >= t.size()){
                 return null;
             }
-            return t.get(0);
+            return t.get(index);
         } catch (IOException|XmlPullParserException e) {
             return null;
         }
