@@ -13,6 +13,7 @@ import android.widget.TextView;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.primary.KanjiMasterActivity;
 
 public class CreditsActivity extends ActionBarActivity {
 
@@ -28,9 +29,14 @@ public class CreditsActivity extends ActionBarActivity {
 		
     	ActionBar actionBar = this.getSupportActionBar();
     	actionBar.setDisplayHomeAsUpEnabled(true);
-    	
-    	Bundle params = getIntent().getExtras();
-    	callingClass = params.getString("parent");
+
+		Intent intent = getIntent();
+		if(intent != null) {
+			Bundle params = getIntent().getExtras();
+			if (params != null) {
+				callingClass = params.getString("parent");
+			}
+		}
 
 		TextView thanks = (TextView)findViewById(R.id.text_space);
 		thanks.setClickable(true);
@@ -49,7 +55,12 @@ public class CreditsActivity extends ActionBarActivity {
 	
 		if(item.getItemId() == android.R.id.home){
 			try {
-				Intent backUp = new Intent(this, Class.forName(callingClass));
+				Intent backUp;
+				if(callingClass != null) {
+					backUp = new Intent(this, Class.forName(callingClass));
+				} else {
+					backUp = new Intent(this, KanjiMasterActivity.class);
+				}
 				startActivity(backUp);
 			} catch (ClassNotFoundException e) {
 				Log.e("nakama", "ClassNotFoundException while returning to parent. callingClass is " + callingClass, e);

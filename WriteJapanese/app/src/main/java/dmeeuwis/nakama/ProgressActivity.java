@@ -21,6 +21,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,11 +87,17 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
     @Override public void onResume(){
         super.onResume();
 
-        Bundle params = getIntent().getExtras();
-		if(params == null) {
-			UncaughtExceptionLogger.backgroundLogError("Saw null intent in ProgressActivity! Will send back to main activity.", new NullPointerException(), this);
+		Bundle params;
+		Intent intent = getIntent();
+		if(intent == null) {
 			startActivity(new Intent(this, KanjiMasterActivity.class));
 			return;
+		} else {
+			params = getIntent().getExtras();
+			if (params == null) {
+				startActivity(new Intent(this, KanjiMasterActivity.class));
+				return;
+			}
 		}
 
         callingClass = params.getString("parent");
