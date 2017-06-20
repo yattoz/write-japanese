@@ -18,11 +18,11 @@ public class SingleBarChart extends View {
 	static private final int DEFAULT_HEIGHT = 100;
 	static private final int PADDING = 5;
 	
-	private BarChartEntry[] entries;
-	private Rect[] entryRects;
-	private Rect[] entryBorderRects;
-	private Paint[] entryPaints;
-	private Paint[] entryBorderPaints;
+	private BarChartEntry[] entries = new BarChartEntry[0];
+	private Rect[] entryRects = new Rect[0];
+	private Rect[] entryBorderRects = new Rect[0];
+	private Paint[] entryPaints = new Paint[0];
+	private Paint[] entryBorderPaints = new Paint[0];
 	
 	private Paint textPaint;
 	
