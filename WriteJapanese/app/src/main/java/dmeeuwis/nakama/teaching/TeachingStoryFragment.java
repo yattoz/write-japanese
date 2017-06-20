@@ -190,7 +190,9 @@ public class TeachingStoryFragment extends Fragment {
     }
 
     public void clear(){
-        this.kanim.clear();
+        if(this.kanim != null){
+            this.kanim.clear();
+        }
     }
 
     public void startAnimation(){
