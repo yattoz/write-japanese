@@ -262,7 +262,7 @@ public class PracticeLogSync {
             int charsetGoalsCount = 0;
             jr.nextName();      // "charset_goals" key
             jr.beginArray();
-            if(jr.hasNext()) {
+            while(jr.hasNext()) {
                 Map<String, String> values = new HashMap<>();
                 jr.beginObject();
                 while (jr.hasNext()) {
@@ -343,11 +343,10 @@ public class PracticeLogSync {
     public static void largeLog(String tag, String content) {
         if (content.length() > 4000 && !BuildConfig.DEBUG) {
             Log.d(tag, content.substring(0, 4000));
-            largeLog(tag, content.substring(4000));
         } else {
             Log.d(tag, content);
         }
-}
+    }
 
     private void queryToJsonArray(String name, SQLiteDatabase sqlite, String sql, String[] args, JsonWriter jw) throws IOException {
         Log.i("nakama-sync", sql + ": " + Util.join(", ", args));

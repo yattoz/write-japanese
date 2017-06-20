@@ -60,6 +60,12 @@ public class PracticeLogSyncTest {
         sync.sync();
     }
 
+    @Test
+    public void testMultipleCharsetGoalBug() throws IOException {
+        PracticeLogSync sync = new PracticeLogSync(new TestDependencies(ctx, "multiple_charset_goals_sync.json"), ctx);
+        sync.sync();
+    }
+
     // test practice logs sync
 
     // test charset goals edit sync

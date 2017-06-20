@@ -1,0 +1,20 @@
+{
+    "server_sync_timestamp":"2017-04-15 04:48:29.634 Z",
+    "practice_logs":[],
+    "kanji_stories":[],
+    "charset_goals":[
+        {
+            "goal": "2018-08-05",
+            "goal_start": "2018-01-01",
+            "charset": "hiragana",
+            "device_timestamp": "2017-02-01 01:23:45"
+        },
+        {
+            "goal": "2017-03-31",
+            "goal_start": "2017-02-18",
+            "charset": "j1",
+            "device_timestamp": "2017-06-20 04:52:42"
+        }
+    ],
+    "character_set_edits":[]
+}
