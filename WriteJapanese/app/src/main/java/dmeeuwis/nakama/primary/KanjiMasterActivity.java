@@ -74,6 +74,7 @@ import dmeeuwis.nakama.data.ClueExtractor;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
+import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
@@ -136,7 +137,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected AnimatedCurveView correctKnownView;
     protected CharacterTranslationListAsyncTask vocabAsync;
     protected RecyclerView correctVocabList;
-    protected View reviewBug;
+    protected View reviewBug, srsBug;
     protected KanjiVocabRecyclerAdapter correctVocabArrayAdapter;
     protected ViewFlipper flipper;
     protected FlipperAnimationListener flipperAnimationListener;
@@ -358,6 +359,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             correctCard.setTranslationY(-1 * animateSlide);
             incorrectCard.setTranslationY(-1 * animateSlide);
         }
+
+        srsBug = findViewById(R.id.srsBug);
 
         ActionBar actionBar = getSupportActionBar();
         this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
@@ -635,13 +638,26 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
         }
 
-        Log.i("nakama-progression", "Setting reviewBug visibility to " + currentCharacterSet.isReviewing());
-        int reviewBugVisibility = currentCharacterSet.isReviewing() ? View.VISIBLE : View.GONE;
-        if(reviewBug != null){
-            reviewBug.setVisibility(reviewBugVisibility);
-        } else {
-            instructionCard.setReviewBugVisibility(reviewBugVisibility);
+        {
+            Log.i("nakama-progression", "Setting reviewBug visibility to " + currentCharacterSet.isReviewing());
+            int reviewBugVisibility = currentCharacterSet.isReviewing() == ProgressTracker.StudyType.REVIEW ? View.VISIBLE : View.GONE;
+            if (reviewBug != null) {
+                reviewBug.setVisibility(reviewBugVisibility);
+            } else {
+                instructionCard.setReviewBugVisibility(reviewBugVisibility);
+            }
         }
+
+        {
+            Log.i("nakama-progression", "Setting srsBug visibility to " + currentCharacterSet.isReviewing());
+            int srsBugVisibility = currentCharacterSet.isReviewing() == ProgressTracker.StudyType.SRS ? View.VISIBLE : View.GONE;
+            if (srsBug != null) {
+                srsBug.setVisibility(srsBugVisibility);
+            } else {
+                instructionCard.setSRSBugVisibility(srsBugVisibility);
+            }
+        }
+
 
         storyButtonUpdate();
         this.loadDrawDetails(increment);

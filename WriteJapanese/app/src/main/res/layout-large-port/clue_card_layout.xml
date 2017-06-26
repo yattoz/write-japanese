@@ -123,4 +123,12 @@
         android:elevation="@dimen/elevation_high"
         android:src="@drawable/review_bug"
         android:visibility="gone" />
+    <ImageView
+        android:id="@+id/clue_card_srs_bug"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:contentDescription="@string/reviewing_content_description"
+        android:elevation="@dimen/elevation_high"
+        android:src="@drawable/srs_bug"
+        android:visibility="gone" />
 </merge>

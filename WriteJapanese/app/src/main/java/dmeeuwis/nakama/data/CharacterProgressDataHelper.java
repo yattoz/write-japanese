@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.UUID;
 
@@ -92,11 +93,11 @@ public class CharacterProgressDataHelper {
         }
     }
 
-    public Map<Character, Integer> getRecordSheetForCharset(final Set<Character> validChars, final int advanceIncorrect){
+    public void getRecordSheetForCharset(final Set<Character> validChars, final ProgressTracker pt){
         long start = System.currentTimeMillis();
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
-        final Map<Character, Integer> recordSheet = new HashMap<>();
+
         try {
             DataHelper.applyToResults(
                 new DataHelper.ProcessRow() {
@@ -106,19 +107,18 @@ public class CharacterProgressDataHelper {
 
                         if(character.toString().equals("R")){
                             // indicates reset progress for all characters
-                            recordSheet.clear();
+                            pt.progressReset();
                         } else {
                             if(!validChars.contains(character)){
                                 return;
                             }
 
+
                             Integer score = Integer.parseInt(r.get("score"));
                             if(score == 100){
-                                Integer sheetScore = recordSheet.get(character);
-                                sheetScore = sheetScore == null ? 0 : sheetScore;
-                                recordSheet.put(character, Math.min(0, 1 + sheetScore));
+                                pt.markSuccess(character);
                             } else {
-                                recordSheet.put(character, -1 * advanceIncorrect);
+                                pt.markFailure(character);
                             }
 
                         }
@@ -131,8 +131,7 @@ public class CharacterProgressDataHelper {
             db.close();
         }
 
-        Log.i("nakama-progress", "Time to load record sheet: " + (System.currentTimeMillis() - start) + "ms");
-        return recordSheet;
+        Log.i("nakama-progress", "Time to load progress tracker: " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private static GregorianCalendar parseCalendarString(String in){

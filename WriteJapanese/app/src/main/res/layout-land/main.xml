@@ -87,6 +87,15 @@
                 android:src="@drawable/review_bug"
                 android:visibility="gone"/>
 
+            <ImageView
+                android:id="@+id/srsBug"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="@string/reviewing_content_description"
+                android:elevation="@dimen/elevation_high"
+                android:src="@drawable/srs_bug"
+                android:visibility="gone"/>
+
         </android.support.design.widget.CoordinatorLayout>
 
         <!-- Incorrect view screen -->

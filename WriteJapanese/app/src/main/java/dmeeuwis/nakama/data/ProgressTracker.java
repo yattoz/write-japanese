@@ -3,15 +3,22 @@ package dmeeuwis.nakama.data;
 import android.util.Log;
 import android.util.Pair;
 
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.Period;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
 
@@ -36,18 +43,85 @@ public class ProgressTracker {
 	}
 	
 	private final Map<Character, Integer> recordSheet;
+	private final PriorityQueue<SRSEntry> srsQueue;
+
 	private final int advanceIncorrect;
 	private final int advanceReview;
 
-	ProgressTracker(Map<Character, Integer> recordSheet, Set<Character> allChars, int advanceIncorrect, int advanceReview){
-        this.recordSheet = recordSheet;
+	public static class SRSEntry {
+		final Character character;
+		final LocalDateTime nextPractice;
+
+		private SRSEntry(Character character, LocalDateTime nextPractice) {
+			this.character = character;
+			this.nextPractice = nextPractice;
+		}
+	}
+
+	private final Period[] SRSTable = new Period[] {
+		Period.ofDays(1),
+		Period.ofDays(3),
+		Period.ofDays(7),
+		Period.ofDays(14)
+	};
+
+	private void addToSRSQueue(Character character, int score, LocalDateTime timestamp){
+		if(score < 2){
+			return;
+		}
+
+		// remove any existing entries
+		removeSRSQueue(character);
+
+		// schedule next
+		Period delay = SRSTable[score - 2];
+		LocalDateTime nextDate = timestamp.plus(delay);
+		srsQueue.add(new SRSEntry(character, nextDate));
+	}
+
+	private boolean findInSRSQueue(Character c, LocalDateTime forTime){
+		Iterator<SRSEntry> it = srsQueue.iterator();
+		while(it.hasNext()){
+			SRSEntry e = it.next();
+			if(e.character.equals(c) && (e.nextPractice.isBefore(forTime) || e.nextPractice.isEqual(forTime))){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void removeSRSQueue(Character c){
+		Iterator<SRSEntry> it = srsQueue.iterator();
+		while(it.hasNext()){
+			SRSEntry e = it.next();
+			if(e.character.equals(c)){
+				srsQueue.remove(e);
+				break;
+			}
+		}
+	}
+
+	private static class SRSEntryComparator implements Comparator<SRSEntry> {
+		@Override
+		public int compare(SRSEntry o1, SRSEntry o2) {
+			return o1.nextPractice.compareTo(o2.nextPractice);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj != null && obj.getClass().equals(this.getClass());
+		}
+	}
+
+	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview){
+        this.recordSheet = new HashMap<>();
+		for(Character c: allChars){
+			recordSheet.put(c, null);
+		}
 		this.advanceIncorrect = advanceIncorrect;
 		this.advanceReview = advanceReview;
 
-        if(recordSheet.size() != allChars.size()){
-            throw new RuntimeException("Error: input to ProgressTracker has record sheet size " +
-                    recordSheet.size() + " but allchars size " + allChars.size());
-        }
+		srsQueue = new PriorityQueue<>(20, new SRSEntryComparator());
 	}
 
 	private List<Set<Character>> getSets(){
@@ -75,16 +149,23 @@ public class ProgressTracker {
 		return Arrays.asList(failed, reviewing, passed, unknown);
 	}
 
-    Pair<Character, Boolean> nextCharacter(Set<Character> rawAllChars, Character currentChar, Set<Character> rawAvailSet, boolean shuffling,
+	public enum StudyType { NEW_CHAR, REVIEW, SRS }
+
+    Pair<Character, StudyType> nextCharacter(Set<Character> rawAllChars, Character currentChar, Set<Character> rawAvailSet, boolean shuffling,
 												  int introIncorrect, int introReviewing) {
 
 		LinkedHashSet<Character> allChars = new LinkedHashSet<>(rawAllChars);
 		LinkedHashSet<Character> availSet = new LinkedHashSet<>(rawAvailSet);
 
+		SRSEntry soonestEntry = srsQueue.peek();
+		LocalDateTime today = LocalDateTime.now();
+		if(soonestEntry != null && (soonestEntry.nextPractice.isBefore(today) || soonestEntry.nextPractice.isEqual(today))){
+			return Pair.create(srsQueue.poll().character, StudyType.SRS);
+		}
 
 		if(availSet.size() == 1){
 			Log.i("nakama-progression", "Returning early from nextCharacter, only 1 character in set");
-			return Pair.create(availSet.toArray(new Character[0])[0], Boolean.TRUE);
+			return Pair.create(availSet.toArray(new Character[0])[0], StudyType.REVIEW);
 		}
 
         double ran = random.nextDouble();
@@ -161,7 +242,7 @@ public class ProgressTracker {
 			Log.i("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));
 			Log.i("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh"));
 		}
-		return Pair.create(n, isReview);
+		return Pair.create(n, isReview ? StudyType.REVIEW : StudyType.NEW_CHAR);
     }
 
 	private Character sortAndReturnFirst(Set<Character> allChars, Set<Character> unknown) {
@@ -189,7 +270,10 @@ public class ProgressTracker {
 		return toSort.get(0);
 	}
 
-	public boolean isReviewing(Character c){
+	public StudyType isReviewing(Character c){
+		if(findInSRSQueue(c, LocalDateTime.now())){
+			return StudyType.SRS;
+		}
 		List<Set<Character>> sets = getSets();
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
@@ -200,7 +284,7 @@ public class ProgressTracker {
 			Log.i("nakama-progression", "Reviewing set is: " + Util.join(", ", reviewing));
 			Log.i("nakama-progression", "Character progression: is " + c + " reviewing? " + r);
 		}
-		return r;
+		return r ? StudyType.REVIEW : StudyType.NEW_CHAR;
 	}
 
 
@@ -242,6 +326,7 @@ public class ProgressTracker {
 		for(Character c: this.recordSheet.keySet()){
 			this.recordSheet.put(c, null);
 		}
+		srsQueue.clear();
 	}
 
 	public void markSuccess(Character c){
@@ -250,6 +335,7 @@ public class ProgressTracker {
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
 		recordSheet.put(c, Math.min(0, score + 1));
+		addToSRSQueue(c, score + 1, LocalDateTime.now());
 		Log.d("nakama-progression", "Correct: char " + c + " now has score " + recordSheet.get(c));
 	}
 

@@ -35,10 +35,11 @@ public class CharacterStudySet implements Iterable<Character> {
     private ProgressTracker tracker;
     final UUID iid;
 
-    boolean shuffling = false;
-    Character currentChar;
-    private boolean reviewing = false;
-    LockLevel locked;
+    private boolean shuffling = false;
+    private Character currentChar;
+    private ProgressTracker.StudyType reviewing = ProgressTracker.StudyType.NEW_CHAR;
+    private LockLevel locked;
+
     public final String pathPrefix;
 
     private GregorianCalendar studyGoal, goalStarted;
@@ -49,7 +50,7 @@ public class CharacterStudySet implements Iterable<Character> {
         public final int failing;
         public final int unknown;
 
-        public SetProgress(int passed, int reviewing, int failing, int unknown) {
+        SetProgress(int passed, int reviewing, int failing, int unknown) {
             this.passed = passed;
             this.reviewing = reviewing;
             this.failing = failing;
@@ -57,7 +58,7 @@ public class CharacterStudySet implements Iterable<Character> {
         }
     }
 
-    public static int daysDifference(GregorianCalendar a, GregorianCalendar b) {
+    private static int daysDifference(GregorianCalendar a, GregorianCalendar b) {
         return (int) Math.ceil(Math.abs(a.getTimeInMillis() - b.getTimeInMillis()) / (1000.0 * 60 * 60 * 24));
     }
 
@@ -113,12 +114,8 @@ public class CharacterStudySet implements Iterable<Character> {
         this.pathPrefix = pathPrefix;
         this.LockChecker = LockChecker;
 
-        Map<Character, Integer> freshSheet = new HashMap<>();
-        for(Character c: allCharactersSet){
-            freshSheet.put(c, null);
-        }
-        this.tracker = new ProgressTracker(freshSheet, allCharactersSet, 2, 2);
-
+        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing);
     }
 
 
@@ -222,7 +219,7 @@ public class CharacterStudySet implements Iterable<Character> {
 
     public void nextCharacter() {
         CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
-        Pair<Character, Boolean> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
+        Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
                 p.introIncorrect, p.introReviewing);
 
         this.currentChar = i.first;
@@ -241,20 +238,13 @@ public class CharacterStudySet implements Iterable<Character> {
             this.goalStarted = goals.first;
             this.studyGoal = goals.second;
         }
-        Map<Character, Integer> existing = dbHelper.getRecordSheetForCharset(this.availableCharactersSet(), p.advanceIncorrect + p.advanceReviewing);
-        Map<Character, Integer> freshSheet = new LinkedHashMap<>();
 
-        for (Character c : this.allCharactersSet) {
-            if (existing.containsKey(c)) {
-                freshSheet.put(c, existing.get(c));
-            } else {
-                freshSheet.put(c, null);
-            }
-        }
-        tracker = new ProgressTracker(freshSheet, allCharactersSet, p.advanceIncorrect, p.advanceReviewing);
+        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing);
+
+        dbHelper.getRecordSheetForCharset(this.availableCharactersSet(), tracker);
     }
 
-    public boolean isReviewing() {
+    public ProgressTracker.StudyType isReviewing() {
         return reviewing;
     }
 
