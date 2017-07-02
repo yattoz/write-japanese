@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
+import org.threeten.bp.LocalDateTime;
+
 import java.text.DateFormat;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import java.util.UUID;
 
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
+import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.util.Util;
 
 /**
@@ -177,11 +180,12 @@ public class CharacterStudySet implements Iterable<Character> {
         return (availableCharactersSet()).iterator();
     }
 
-    public void markCurrent(PointDrawing d, boolean pass) {
+    public boolean markCurrent(PointDrawing d, boolean pass) {
         Character c = currentCharacter();
+        boolean enteredSRS = false;
         try {
             if (pass) {
-                this.tracker.markSuccess(c);
+                enteredSRS = this.tracker.markSuccess(c, LocalDateTime.now());
             } else {
                 this.tracker.markFailure(c);
             }
@@ -190,6 +194,7 @@ public class CharacterStudySet implements Iterable<Character> {
             Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
             throw new RuntimeException(t);
         }
+        return enteredSRS;
     }
 
     public void markCurrentAsUnknown(Context context) {
@@ -232,7 +237,6 @@ public class CharacterStudySet implements Iterable<Character> {
 
     public void load() {
         CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
-
         Pair<GregorianCalendar, GregorianCalendar> goals = dbHelper.getExistingGoals(pathPrefix);
         if (goals != null) {
             this.goalStarted = goals.first;
@@ -240,7 +244,6 @@ public class CharacterStudySet implements Iterable<Character> {
         }
 
         tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing);
-
         dbHelper.getRecordSheetForCharset(this.availableCharactersSet(), tracker);
     }
 
@@ -252,4 +255,9 @@ public class CharacterStudySet implements Iterable<Character> {
     public Map<Character, ProgressTracker.Progress> getRecordSheet() {
         return this.tracker.getAllScores();
     }
+
+    public void debugSrsQueuePrint(Context ctx) {
+        tracker.debugSrsQueuePrint(ctx);
+    }
+
 }

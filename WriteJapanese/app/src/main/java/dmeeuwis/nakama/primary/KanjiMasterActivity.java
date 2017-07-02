@@ -649,9 +649,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         {
-            Log.i("nakama-progression", "Setting srsBug visibility to " + currentCharacterSet.isReviewing());
             int srsBugVisibility = currentCharacterSet.isReviewing() == ProgressTracker.StudyType.SRS ? View.VISIBLE : View.GONE;
+            Log.i("nakama-progression", "Setting srsBug visibility to " + (srsBugVisibility == View.VISIBLE));
             if (srsBug != null) {
+                //if(BuildConfig.DEBUG && srsBugVisibility == View.VISIBLE) { Toast.makeText(this, "SRS Repetition!", Toast.LENGTH_LONG).show(); }
                 srsBug.setVisibility(srsBugVisibility);
             } else {
                 instructionCard.setSRSBugVisibility(srsBugVisibility);
@@ -959,6 +960,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_strictness) {
             // show criticism selection fragment
             showStrictnessDialog();
+        } else if (item.getItemId() == R.id.menu_srs){
+            currentCharacterSet.debugSrsQueuePrint(this);
+
         } else if (item.getItemId() == R.id.menu_progression_settings) {
             // show criticism selection fragment
             showProgressionSettingsDialog();
@@ -981,6 +985,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 recreate();
             } else if (item.getTitle().equals("DEBUG:IabConsume")) {
                 lockChecker.startConsume();
+
             } else if (item.getTitle().equals("DEBUG:ResetStorySharing")) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Editor e = prefs.edit();

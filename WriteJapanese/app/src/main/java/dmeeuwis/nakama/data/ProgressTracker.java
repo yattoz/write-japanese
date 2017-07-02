@@ -1,9 +1,10 @@
 package dmeeuwis.nakama.data;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
-import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.Period;
@@ -28,7 +29,7 @@ import dmeeuwis.util.Util;
 public class ProgressTracker {
     final Random random = new Random();
 
-    public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
+	public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
 		private static Progress parse(Integer in, int advanceReviewing){
         	if(in == null){
 				return Progress.UNKNOWN;
@@ -50,9 +51,9 @@ public class ProgressTracker {
 
 	public static class SRSEntry {
 		final Character character;
-		final LocalDateTime nextPractice;
+		final LocalDate nextPractice;
 
-		private SRSEntry(Character character, LocalDateTime nextPractice) {
+		private SRSEntry(Character character, LocalDate nextPractice) {
 			this.character = character;
 			this.nextPractice = nextPractice;
 		}
@@ -65,21 +66,28 @@ public class ProgressTracker {
 		Period.ofDays(14)
 	};
 
-	private void addToSRSQueue(Character character, int score, LocalDateTime timestamp){
-		if(score < 2){
-			return;
+	private boolean addToSRSQueue(Character character, int score, LocalDateTime timestamp){
+		if(score < 0){
+			Log.d("nakama", "Char " + character + " has score " + score + ", NOT adding to SRS");
+			return false;
 		}
 
 		// remove any existing entries
 		removeSRSQueue(character);
 
 		// schedule next
-		Period delay = SRSTable[score - 2];
-		LocalDateTime nextDate = timestamp.plus(delay);
+		Period delay = SRSTable[score];
+		LocalDate nextDate = timestamp.plus(delay).toLocalDate();
 		srsQueue.add(new SRSEntry(character, nextDate));
+
+		if(BuildConfig.DEBUG) {
+			Log.d("nakama", "Char " + character + " has score " + score + ", YES adding to SRS with delay " + SRSTable[score] + " to: " + nextDate);
+		}
+
+		return true;
 	}
 
-	private boolean findInSRSQueue(Character c, LocalDateTime forTime){
+	private boolean findInSRSQueue(Character c, LocalDate forTime){
 		Iterator<SRSEntry> it = srsQueue.iterator();
 		while(it.hasNext()){
 			SRSEntry e = it.next();
@@ -158,7 +166,7 @@ public class ProgressTracker {
 		LinkedHashSet<Character> availSet = new LinkedHashSet<>(rawAvailSet);
 
 		SRSEntry soonestEntry = srsQueue.peek();
-		LocalDateTime today = LocalDateTime.now();
+		LocalDate today = LocalDate.now();
 		if(soonestEntry != null && (soonestEntry.nextPractice.isBefore(today) || soonestEntry.nextPractice.isEqual(today))){
 			return Pair.create(srsQueue.poll().character, StudyType.SRS);
 		}
@@ -271,7 +279,7 @@ public class ProgressTracker {
 	}
 
 	public StudyType isReviewing(Character c){
-		if(findInSRSQueue(c, LocalDateTime.now())){
+		if(findInSRSQueue(c, LocalDate.now())){
 			return StudyType.SRS;
 		}
 		List<Set<Character>> sets = getSets();
@@ -329,14 +337,15 @@ public class ProgressTracker {
 		srsQueue.clear();
 	}
 
-	public void markSuccess(Character c){
+	public boolean markSuccess(Character c, LocalDateTime time){
 		Log.i("nakama-progression", "Marking success on char " + c);
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
 		recordSheet.put(c, Math.min(0, score + 1));
-		addToSRSQueue(c, score + 1, LocalDateTime.now());
+		boolean addedToSrs = addToSRSQueue(c, score + 1, time);
 		Log.d("nakama-progression", "Correct: char " + c + " now has score " + recordSheet.get(c));
+		return addedToSrs;
 	}
 
 	public void markFailure(Character c){
@@ -357,5 +366,23 @@ public class ProgressTracker {
 
 	public String toString(){
 		return "[ProgressTracker: " + Util.join(", ", this.recordSheet.keySet()) + "]";
+	}
+
+	public void debugSrsQueuePrint(Context ctx) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Queue length: " + srsQueue.size());
+		SRSEntry[] entries = srsQueue.toArray(new SRSEntry[0]);
+		Arrays.sort(entries, new SRSEntryComparator());
+		for(SRSEntry s: entries){
+			sb.append(s.character + ": " + s.nextPractice + "\n");
+		}
+
+		AlertDialog a = new AlertDialog.Builder(ctx).create();
+		a.setMessage(sb.toString());
+		a.show();
+	}
+
+	public Integer debugPeekCharacterScore(Character c){
+		return this.recordSheet.get(c);
 	}
 }

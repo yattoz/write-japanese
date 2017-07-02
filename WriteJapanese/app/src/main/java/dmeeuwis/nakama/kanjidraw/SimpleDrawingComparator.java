@@ -33,9 +33,6 @@ class SimpleDrawingComparator implements Comparator {
 
 	private static final boolean DEBUG = BuildConfig.DEBUG && true;
 
-	static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
-	static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
-
 	char target;
 	PointDrawing known;
 	PointDrawing drawn;

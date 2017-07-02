@@ -6,6 +6,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
 
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -26,6 +30,7 @@ public class CharacterProgressDataHelper {
 
     private final Context context;
     private final UUID iid;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public CharacterProgressDataHelper(Context c, UUID iid){
         this.context = c;
@@ -113,20 +118,22 @@ public class CharacterProgressDataHelper {
                                 return;
                             }
 
-
                             Integer score = Integer.parseInt(r.get("score"));
+                            String timestampStr = r.get("timestamp");
                             if(score == 100){
-                                pt.markSuccess(character);
+                                LocalDateTime t = LocalDateTime.parse(timestampStr, formatter);
+                                pt.markSuccess(character, t);
+                                Log.d("nakama-progress", "Loaded PASS result for " + character + "; currently at " + pt.debugPeekCharacterScore(character));
                             } else {
                                 pt.markFailure(character);
+                                Log.d("nakama-progress", "Loaded FAIL result for " + character + "; currently at " + pt.debugPeekCharacterScore(character));
                             }
-
                         }
                     }
                 },
 
                 db.getReadableDatabase(),
-                "SELECT character, score FROM practice_log");
+                "SELECT character, score, timestamp FROM practice_log");
         } finally {
             db.close();
         }

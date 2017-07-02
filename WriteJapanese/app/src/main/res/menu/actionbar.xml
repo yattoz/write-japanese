@@ -43,6 +43,9 @@
         android:id="@+id/menu_network_sync"
         android:title="@string/menu_network_string_message"/>
     <item
+        android:id="@+id/menu_srs"
+        android:title="@string/srs_schedule_menu"/>
+    <item
         android:id="@+id/menu_release_notes"
         android:title="@string/release_notes_menu"/>
     <item

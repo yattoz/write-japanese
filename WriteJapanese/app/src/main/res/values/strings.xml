@@ -75,6 +75,7 @@
 
     <!-- character progression settings dialog -->
     <string name="progression_settings">Progression Settings</string>
+    <string name="srs_schedule_menu">View SRS Schedule</string>
 
     <string-array name="when_to_introduce_incorrect_spinner_values">
         <item>Less than 5 characters are incorrect</item>
