@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
+import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.text.DateFormat;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -258,6 +260,10 @@ public class CharacterStudySet implements Iterable<Character> {
 
     public void debugSrsQueuePrint(Context ctx) {
         tracker.debugSrsQueuePrint(ctx);
+    }
+
+    public Map<LocalDate, List<Character>> getSrsSchedule(){
+        return tracker.getSrsSchedule();
     }
 
 }

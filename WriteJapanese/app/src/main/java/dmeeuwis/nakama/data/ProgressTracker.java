@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,9 @@ public class ProgressTracker {
 		Period.ofDays(1),
 		Period.ofDays(3),
 		Period.ofDays(7),
-		Period.ofDays(14)
+		Period.ofDays(14),
+        Period.ofDays(30),
+        Period.ofDays(120)
 	};
 
 	private boolean addToSRSQueue(Character character, int score, LocalDateTime timestamp){
@@ -367,6 +370,21 @@ public class ProgressTracker {
 	public String toString(){
 		return "[ProgressTracker: " + Util.join(", ", this.recordSheet.keySet()) + "]";
 	}
+
+    public Map<LocalDate, List<Character>> getSrsSchedule() {
+        Map<LocalDate, List<Character>> out = new LinkedHashMap<>();
+        SRSEntry[] entries = srsQueue.toArray(new SRSEntry[0]);
+        Arrays.sort(entries, new SRSEntryComparator());
+        for(SRSEntry s: entries){
+            List<Character> list = out.get(s.nextPractice);
+            if(list == null){
+                list = new ArrayList<>();
+                out.put(s.nextPractice, list);
+            }
+            list.add(s.character);
+        }
+        return out;
+    }
 
 	public void debugSrsQueuePrint(Context ctx) {
 		StringBuilder sb = new StringBuilder();

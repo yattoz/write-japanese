@@ -39,6 +39,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import org.threeten.bp.LocalDate;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -75,6 +77,7 @@ import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.ProgressTracker;
+import dmeeuwis.nakama.data.SRSScheduleHtmlGenerator;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
@@ -961,7 +964,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             // show criticism selection fragment
             showStrictnessDialog();
         } else if (item.getItemId() == R.id.menu_srs){
-            currentCharacterSet.debugSrsQueuePrint(this);
+            Map<LocalDate, List<Character>> schedule = currentCharacterSet.getSrsSchedule();
+            SRSScheduleHtmlGenerator.displayScheduleDialog(this, schedule);
 
         } else if (item.getItemId() == R.id.menu_progression_settings) {
             // show criticism selection fragment
