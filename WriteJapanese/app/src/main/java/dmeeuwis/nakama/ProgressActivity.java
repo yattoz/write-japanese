@@ -3,7 +3,6 @@ package dmeeuwis.nakama;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -21,19 +20,16 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
-import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.ProgressTracker.Progress;
-import dmeeuwis.nakama.data.UncaughtExceptionLogger;
-import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.teaching.TeachingActivity;
+import dmeeuwis.nakama.views.AppColors;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.SingleBarChart;
@@ -55,22 +51,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	GridView characterGrid;
 	CharacterGridAdapter gridAdapter;
     SingleBarChart chart;
-	
-	static final int PASSED_BORDER = Color.parseColor("#bf9b30");
-	static final int PASSED_COLOR = Color.parseColor("#ffcf40");
 
-    static final int TIMED_REVIEW_BORDER = Color.parseColor("#006C02");
-    static final int TIMED_REVIEW_COLOR = Color.parseColor("#A0DAFFDD");
-
-	static final int TRAINING_BORDER = Color.parseColor("#3743FF");
-	static final int TRAINING_COLOR = Color.parseColor("#A0D3D6FF");
-	
-	static final int FAILED_BORDER = Color.parseColor("#B70000");
-	static final int FAILED_COLOR = Color.parseColor("#A0FFD3DB");
-	
-	static final int UNKNOWN_BORDER = Color.parseColor("#585555");
-	static final int UNKNOWN_COLOR = Color.parseColor("#A0E2E2E2");
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -148,20 +129,20 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
                 "; training=" + trainingCount + "; failed=" + failedCount + "; unknwon=" + unknownCount);
 
         chart.setPercents(
-                new BarChartEntry((int)(100*(float)passedCount / characterList.length()), PASSED_BORDER, PASSED_COLOR, "Passed"),
-                new BarChartEntry((int)(100*(float)timedReviewCount / characterList.length()), TIMED_REVIEW_BORDER, TIMED_REVIEW_COLOR, "Timed Review"),
-                new BarChartEntry((int)(100*(float)trainingCount / characterList.length()), TRAINING_BORDER, TRAINING_COLOR, "Reviewing"),
-                new BarChartEntry((int)(100*(float)failedCount / characterList.length()), FAILED_BORDER, FAILED_COLOR, "Failed"),
-                new BarChartEntry((int)(100*(float)unknownCount / characterList.length()), UNKNOWN_BORDER, UNKNOWN_COLOR, "Untested")
+                new BarChartEntry((int)(100*(float)passedCount / characterList.length()), AppColors.PASSED_BORDER, AppColors.PASSED_COLOR, "Passed"),
+                new BarChartEntry((int)(100*(float)timedReviewCount / characterList.length()), AppColors.TIMED_REVIEW_BORDER, AppColors.TIMED_REVIEW_COLOR, "Timed Review"),
+                new BarChartEntry((int)(100*(float)trainingCount / characterList.length()), AppColors.TRAINING_BORDER, AppColors.TRAINING_COLOR, "Reviewing"),
+                new BarChartEntry((int)(100*(float)failedCount / characterList.length()), AppColors.FAILED_BORDER, AppColors.FAILED_COLOR, "Failed"),
+                new BarChartEntry((int)(100*(float)unknownCount / characterList.length()), AppColors.UNKNOWN_BORDER, AppColors.UNKNOWN_COLOR, "Untested")
         );
 
         TextView chartLegend = (TextView)findViewById(R.id.chartLegend);
         chartLegend.setText(Html.fromHtml(
-                "<font color='" + PASSED_BORDER + "'>Passed</font> " +
-                "<font color='" + TIMED_REVIEW_BORDER + "'>Timed Review</font> " +
-                "<font color='" + TRAINING_BORDER + "'>Reviewing</font> " +
-                "<font color='" + FAILED_BORDER + "'>Failed</font> " +
-                "<font color='" + UNKNOWN_BORDER + "'>Untested</font>"));
+                "<font color='" + AppColors.PASSED_BORDER + "'>Passed</font> " +
+                "<font color='" + AppColors.TIMED_REVIEW_BORDER + "'>Timed Review</font> " +
+                "<font color='" + AppColors.TRAINING_BORDER + "'>Reviewing</font> " +
+                "<font color='" + AppColors.FAILED_BORDER + "'>Failed</font> " +
+                "<font color='" + AppColors.UNKNOWN_BORDER + "'>Untested</font>"));
     }
 
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -240,11 +221,16 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 				bg.setAlpha(50);
 			} else {
             	if(score == Progress.FAILED){
-            		tv.setBackgroundColor(FAILED_COLOR);
+            		tv.setBackgroundColor(AppColors.FAILED_COLOR);
+
+				} else if (score == Progress.TIMED_REVIEW){
+					tv.setBackgroundColor(AppColors.TIMED_REVIEW_COLOR);
+
             	} else if (score == Progress.REVIEWING){
-            		tv.setBackgroundColor(TRAINING_COLOR);
+            		tv.setBackgroundColor(AppColors.TRAINING_COLOR);
+
             	} else if(score == Progress.PASSED) {
-            		tv.setBackgroundColor(PASSED_COLOR);
+            		tv.setBackgroundColor(AppColors.PASSED_COLOR);
             	}  else {
             		tv.setBackgroundColor(0xa0ffffff);
                    }

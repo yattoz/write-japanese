@@ -40,6 +40,7 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.ReminderManager;
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.views.AppColors;
 
 /**
  * Shows information and overall user progress on a particular character set.
@@ -113,40 +114,51 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
         progressText.setText(Html.fromHtml(
                 String.format("<div style='text-align: center; width: 100%%;'>" +
-                              "<span style='color: #2ecc71;'>%5d Passed</span> " +
-                              "<span style='color: #ff0000;'>%5d Incorrect</span> <br />" +
-                              "<span style='color: #f1c40f;'>%5d Reviewing</span> " +
-                              "<span style='color: gray;'>%5d Unknown</span>" +
+                              "<span style='color: %s;'>%5d Unknown</span>" +
+                              "<span style='color: %s;'>%5d Incorrect</span> <br />" +
+                              "<span style='color: %s;'>%5d Reviewing</span> " +
+                              "<span style='color: %s;'>%5d Timed Reviewing</span> " +
+                              "<span style='color: %s;'>%5d Completed</span> " +
                               "</div>",
-                       sp.passed, sp.failing, sp.reviewing, sp.unknown)));
+                        AppColors.UNKNOWN_BORDER_HEX, sp.unknown,
+                        AppColors.FAILED_BORDER_HEX, sp.failing,
+                        AppColors.TRAINING_COLOR_HEX, sp.reviewing,
+                        AppColors.TIMED_REVIEW_BORDER_HEX, sp.timedReviewing,
+                        AppColors.PASSED_BORDER_HEX, sp.passed)));
 
         if(progressPieChart != null){
             List<PieEntry> values = new ArrayList<>();
             int[] colours = new int[4];
             int colour_i = 0;
-            float total = sp.failing + sp.passed + sp.reviewing + sp.unknown;
+            float total = sp.failing + sp.passed + sp.reviewing + sp.timedReviewing + sp.unknown;
 
             if(sp.passed > 0) {
-                values.add(new PieEntry(100 * sp.passed / total, "Passed"));
-                colours[colour_i] = ColorTemplate.rgb("#2ecc71");
+                values.add(new PieEntry(100 * sp.passed / total, "Completed"));
+                colours[colour_i] = ColorTemplate.rgb(AppColors.PASSED_BORDER_HEX);
                 colour_i += 1;
             }
 
             if(sp.failing > 0) {
                 values.add(new PieEntry(100 * sp.failing / total,  "Incorrect"));
-                colours[colour_i] = ColorTemplate.rgb("#ff0000");
+                colours[colour_i] = ColorTemplate.rgb(AppColors.FAILED_BORDER_HEX);
                 colour_i += 1;
             }
 
             if(sp.reviewing > 0) {
                 values.add(new PieEntry(100 * sp.reviewing / total,  "Reviewing"));
-                colours[colour_i] = ColorTemplate.rgb("#f1c40f");
+                colours[colour_i] = ColorTemplate.rgb(AppColors.TRAINING_BORDER_HEX);
+                colour_i += 1;
+            }
+
+            if(sp.timedReviewing > 0) {
+                values.add(new PieEntry(100 * sp.timedReviewing / total,  "Timed Review"));
+                colours[colour_i] = ColorTemplate.rgb(AppColors.TIMED_REVIEW_BORDER_HEX);
                 colour_i += 1;
             }
 
             if(sp.unknown > 0){
                 values.add(new PieEntry(100 * sp.unknown / total, "Untested"));
-                colours[colour_i] = Color.GRAY;
+                colours[colour_i] = ColorTemplate.rgb(AppColors.UNKNOWN_BORDER_HEX);
                 colour_i += 1;
             }
 

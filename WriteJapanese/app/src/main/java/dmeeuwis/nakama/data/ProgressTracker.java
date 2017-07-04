@@ -73,7 +73,9 @@ public class ProgressTracker {
 
 	private SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp){
 		if(score < 0){
-			Log.d("nakama", "Char " + character + " has score " + score + ", NOT adding to SRS");
+			if(BuildConfig.DEBUG) {
+				Log.d("nakama", "Char " + character + " has score " + score + ", NOT adding to SRS");
+			}
 			return null;
 		}
 
@@ -141,6 +143,7 @@ public class ProgressTracker {
 	private List<Set<Character>> getSets(){
 		Set<Character> failed = new LinkedHashSet<>();
 		Set<Character> reviewing = new LinkedHashSet<>();
+		Set<Character> timedReviewing = new LinkedHashSet<>();
 		Set<Character> passed = new LinkedHashSet<>();
 		Set<Character> unknown = new LinkedHashSet<>();
 
@@ -151,6 +154,8 @@ public class ProgressTracker {
 				failed.add(score.getKey());
 			} else if(score.getValue() == Progress.REVIEWING){
 				reviewing.add(score.getKey());
+			} else if(score.getValue() == Progress.TIMED_REVIEW){
+				timedReviewing.add(score.getKey());
 			} else if(score.getValue() == Progress.UNKNOWN){
 				unknown.add(score.getKey());
 			} else if(score.getValue() == Progress.PASSED){
@@ -160,7 +165,7 @@ public class ProgressTracker {
 			}
 		}
 
-		return Arrays.asList(failed, reviewing, passed, unknown);
+		return Arrays.asList(failed, reviewing, timedReviewing, passed, unknown);
 	}
 
 	public enum StudyType { NEW_CHAR, REVIEW, SRS }
@@ -303,10 +308,12 @@ public class ProgressTracker {
 
 
     public CharacterStudySet.SetProgress calculateProgress(){
-        int known = 0, reviewing = 0, failed = 0, unknown = 0;
+        int known = 0, reviewing = 0, timedReviewing = 0, failed = 0, unknown = 0;
         for(Map.Entry<Character, Progress> c: getAllScores().entrySet()){
             if(c.getValue() == Progress.FAILED){
                 failed++;
+			} else if(c.getValue() == Progress.TIMED_REVIEW){
+				timedReviewing++;
             } else if(c.getValue() == Progress.REVIEWING){
                 reviewing++;
             } else if(c.getValue() == Progress.PASSED){
@@ -315,7 +322,7 @@ public class ProgressTracker {
                 unknown++;
             }
         }
-        return new CharacterStudySet.SetProgress(known, reviewing, failed, unknown);
+        return new CharacterStudySet.SetProgress(known, reviewing, timedReviewing, failed, unknown);
     }
 	
 	private List<Character> charactersMatchingScore(Set<Character> allowedChars, Integer... scores){
@@ -344,22 +351,24 @@ public class ProgressTracker {
 	}
 
 	public SRSEntry markSuccess(Character c, LocalDateTime time){
-		Log.i("nakama-progression", "Marking success on char " + c);
-		if(!recordSheet.containsKey(c))
-			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
+		//Log.i("nakama-progression", "Marking success on char " + c);
+		if(!recordSheet.containsKey(c)) {
+			return null;
+		}
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
 		recordSheet.put(c, Math.min(0, score + 1));
 		SRSEntry addedToSrs = addToSRSQueue(c, score + 1, time);
-		Log.d("nakama-progression", "Correct: char " + c + " now has score " + recordSheet.get(c));
+		//Log.d("nakama-progression", "Correct: char " + c + " now has score " + recordSheet.get(c));
 		return addedToSrs;
 	}
 
 	public void markFailure(Character c){
-		Log.i("nakama-progression", "Marking failure on char " + c);
-		if(!recordSheet.containsKey(c))
-			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
+		//Log.i("nakama-progression", "Marking failure on char " + c);
+		if(!recordSheet.containsKey(c)) {
+			return;
+		}
 		recordSheet.put(c, -1 * (advanceIncorrect + advanceReview));
-		Log.d("nakama-progression", "Incorrect: char " + c + " now has score " + recordSheet.get(c));
+		//Log.d("nakama-progression", "Incorrect: char " + c + " now has score " + recordSheet.get(c));
 	}
 
 	public Map<Character, Progress> getAllScores(){

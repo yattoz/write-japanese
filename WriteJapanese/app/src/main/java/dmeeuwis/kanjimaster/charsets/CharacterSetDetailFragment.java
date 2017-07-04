@@ -61,7 +61,6 @@ public class CharacterSetDetailFragment extends Fragment {
 
     private CharacterStudySet studySet;
     private AutofitRecyclerView grid;
-    private LockChecker lockChecker;
 
     private TextView nameEdit, descriptionEdit;
 
@@ -93,12 +92,6 @@ public class CharacterSetDetailFragment extends Fragment {
                 studySet = CharacterSets.fromName(getActivity(), name, new LockCheckerInAppBillingService(getActivity()));
             }
         }
-    }
-
-    @Override
-    public void onAttach(Activity activity){
-        this.lockChecker = ((LockCheckerHolder)activity).getLockChecker();
-        super.onAttach(activity);
     }
 
     public CharacterStudySet cancel(){
@@ -151,15 +144,6 @@ public class CharacterSetDetailFragment extends Fragment {
                     CharacterSets.all(
                             new LockCheckerInAppBillingService(getActivity()),
                             getActivity().getApplicationContext())));
-/*            grid.setOnDragListener(new View.OnDragListener() {
-                @Override
-                public boolean onDrag(View v, DragEvent event) {
-                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
-                    return false;
-                }
-            });
-    */
         }
 
         return rootView;

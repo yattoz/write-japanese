@@ -49,12 +49,14 @@ public class CharacterStudySet implements Iterable<Character> {
     public static class SetProgress {
         public final int passed;
         public final int reviewing;
+        public final int timedReviewing;
         public final int failing;
         public final int unknown;
 
-        SetProgress(int passed, int reviewing, int failing, int unknown) {
+        SetProgress(int passed, int reviewing, int timedReviewing, int failing, int unknown) {
             this.passed = passed;
             this.reviewing = reviewing;
+            this.timedReviewing = timedReviewing;
             this.failing = failing;
             this.unknown = unknown;
         }

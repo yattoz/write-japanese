@@ -119,10 +119,10 @@ public class CharacterProgressDataHelper {
                             if(score == 100){
                                 LocalDateTime t = LocalDateTime.parse(timestampStr, formatter);
                                 pt.markSuccess(character, t);
-                                Log.d("nakama-progress", "Loaded PASS result for " + character + "; currently at " + pt.debugPeekCharacterScore(character));
+                                //Log.d("nakama-progress", "Loaded PASS result for " + character + "; currently at " + pt.debugPeekCharacterScore(character));
                             } else {
                                 pt.markFailure(character);
-                                Log.d("nakama-progress", "Loaded FAIL result for " + character + "; currently at " + pt.debugPeekCharacterScore(character));
+                                //Log.d("nakama-progress", "Loaded FAIL result for " + character + "; currently at " + pt.debugPeekCharacterScore(character));
                             }
                         }
                     }

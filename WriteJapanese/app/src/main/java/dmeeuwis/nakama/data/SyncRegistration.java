@@ -21,6 +21,8 @@ public class SyncRegistration {
     public static final String HAVE_ASKED_ABOUT_SYNC_KEY = "ASKED_SYNC";
     public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
 
+
+
     public enum RegisterRequest {
         REQUESTED("Do you want to enable progress sync among all Android devices authenticated with your Google account?"),
         PROMPTED( "Do you want to enable progress sync among all Android devices authenticated with your Google account?");
