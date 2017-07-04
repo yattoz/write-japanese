@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Translation;
@@ -232,7 +231,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                         new AssetFinder(is));
 
                 ComparisonAsyncTask comp = new ComparisonAsyncTask(getApplicationContext(), comparator, currentCharacterSet, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
-                    public void run(Criticism critique) {
+                    public void run(Criticism critique, ProgressTracker.SRSEntry entry) {
 
                         if (critique.pass) {
 
@@ -245,6 +244,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                                 Log.i("nakama", "Setting challenger/drawing in layouts");
                                 correctKnownView.setDrawing(known, AnimatedCurveView.DrawTime.STATIC, critique.knownPaintInstructions);
                                 correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
+                            }
+
+                            if(entry != null){
+                                correctVocabArrayAdapter.addNextSrsHeader(entry);
                             }
 
 

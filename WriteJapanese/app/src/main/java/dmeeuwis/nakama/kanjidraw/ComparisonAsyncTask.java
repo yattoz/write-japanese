@@ -8,12 +8,13 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
 public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
     public interface OnCriticismDone {
-        void run(Criticism c);
+        void run(Criticism c, ProgressTracker.SRSEntry entry);
     }
 
     private Context appContext;
@@ -44,13 +45,14 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
     @Override
     protected void onPostExecute(Criticism criticism) {
+        ProgressTracker.SRSEntry entry = null;
         try {
-            currentCharacterSet.markCurrent(drawn, criticism.pass);
+            entry = currentCharacterSet.markCurrent(drawn, criticism.pass);
         } catch(SQLiteFullException e){
             Toast.makeText(appContext, "Could not record progress: disk is full.", Toast.LENGTH_SHORT).show();
             UncaughtExceptionLogger.backgroundLogError("Could not record progress: disk is full", e, appContext);
         }
 
-        onDone.run(criticism);
+        onDone.run(criticism, entry);
     }
 }

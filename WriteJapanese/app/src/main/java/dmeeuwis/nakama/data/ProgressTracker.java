@@ -51,8 +51,8 @@ public class ProgressTracker {
 	private final int advanceReview;
 
 	public static class SRSEntry {
-		final Character character;
-		final LocalDate nextPractice;
+		public final Character character;
+		public final LocalDate nextPractice;
 
 		private SRSEntry(Character character, LocalDate nextPractice) {
 			this.character = character;
@@ -69,10 +69,10 @@ public class ProgressTracker {
         Period.ofDays(120)
 	};
 
-	private boolean addToSRSQueue(Character character, int score, LocalDateTime timestamp){
+	private SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp){
 		if(score < 0){
 			Log.d("nakama", "Char " + character + " has score " + score + ", NOT adding to SRS");
-			return false;
+			return null;
 		}
 
 		// remove any existing entries
@@ -81,13 +81,14 @@ public class ProgressTracker {
 		// schedule next
 		Period delay = SRSTable[score];
 		LocalDate nextDate = timestamp.plus(delay).toLocalDate();
-		srsQueue.add(new SRSEntry(character, nextDate));
+		SRSEntry entry = new SRSEntry(character, nextDate);
+		srsQueue.add(entry);
 
 		if(BuildConfig.DEBUG) {
 			Log.d("nakama", "Char " + character + " has score " + score + ", YES adding to SRS with delay " + SRSTable[score] + " to: " + nextDate);
 		}
 
-		return true;
+		return entry;
 	}
 
 	private boolean findInSRSQueue(Character c, LocalDate forTime){
@@ -340,13 +341,13 @@ public class ProgressTracker {
 		srsQueue.clear();
 	}
 
-	public boolean markSuccess(Character c, LocalDateTime time){
+	public SRSEntry markSuccess(Character c, LocalDateTime time){
 		Log.i("nakama-progression", "Marking success on char " + c);
 		if(!recordSheet.containsKey(c))
 			throw new IllegalArgumentException("Character " + c + " is not in dataset. Recordsheet is " + Util.join(", ", recordSheet.keySet()));
 		int score = recordSheet.get(c) == null ? 0 : recordSheet.get(c);
 		recordSheet.put(c, Math.min(0, score + 1));
-		boolean addedToSrs = addToSRSQueue(c, score + 1, time);
+		SRSEntry addedToSrs = addToSRSQueue(c, score + 1, time);
 		Log.d("nakama-progression", "Correct: char " + c + " now has score " + recordSheet.get(c));
 		return addedToSrs;
 	}

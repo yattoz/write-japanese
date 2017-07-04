@@ -182,9 +182,9 @@ public class CharacterStudySet implements Iterable<Character> {
         return (availableCharactersSet()).iterator();
     }
 
-    public boolean markCurrent(PointDrawing d, boolean pass) {
+    public ProgressTracker.SRSEntry markCurrent(PointDrawing d, boolean pass) {
         Character c = currentCharacter();
-        boolean enteredSRS = false;
+        ProgressTracker.SRSEntry enteredSRS = null;
         try {
             if (pass) {
                 enteredSRS = this.tracker.markSuccess(c, LocalDateTime.now());

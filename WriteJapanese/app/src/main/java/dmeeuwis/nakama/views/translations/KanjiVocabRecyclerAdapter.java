@@ -18,6 +18,7 @@ import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
@@ -41,8 +42,11 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     private final static int CHARACTER_HEADER = 2;
     private final static int MEANINGS_HEADER = 3;
     private final static int READINGS_HEADER = 4;
+    private final static int SRS_HEADER = 5;
 
     private List<Integer> headers = new ArrayList<>(3);
+    private ProgressTracker.SRSEntry srsNextPractice;
+
 
     public KanjiVocabRecyclerAdapter(Activity context, KanjiFinder kanjiFinder) {
         super();
@@ -125,6 +129,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         headers.clear();
         if(drawnCharacter != null){ headers.add(DRAWN_CORRECTLY_HEADER); }
         if(character != null){ headers.add(CHARACTER_HEADER); }
+        if(srsNextPractice != null){ headers.add(SRS_HEADER); }
         if(meanings != null){ headers.add(MEANINGS_HEADER); }
         if(onyomi != null){ headers.add(READINGS_HEADER); }
     }
@@ -168,6 +173,11 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             } else {
                 holder.kunyomi.setVisibility(View.GONE);
             }
+        } else if(h instanceof SrsNextPracticeViewHolder){
+            SrsNextPracticeViewHolder holder = (SrsNextPracticeViewHolder) h;
+            String dateText = srsNextPractice.nextPractice.toString();
+            holder.nextSrsTextView.setText("Next scheduled timed review: " + dateText);
+            Log.d("nakama-srs", "Setting SRS text header to " + dateText);
         }
     }
 
@@ -228,8 +238,21 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         } else if (viewType == READINGS_HEADER){
             View view = inflater.inflate(R.layout.translation_readings_row, parent, false);
             return new ShowCharacterDetailsViewHolder(view);
+        } else if (viewType == SRS_HEADER){
+            View view = inflater.inflate(R.layout.srs_next_row, parent, false);
+            return new SrsNextPracticeViewHolder(view);
         } else {
             return null;
         }
+    }
+
+    public void addNextSrsHeader(ProgressTracker.SRSEntry entry) {
+        Log.i("nakama", "addNextSrsHeader called!");
+        if(entry == null){
+            throw new IllegalArgumentException("known and drawn must be non-null");
+        }
+        this.srsNextPractice = entry;
+        recalculateHeaders();
+        this.notifyDataSetChanged();
     }
 }
