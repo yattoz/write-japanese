@@ -9,9 +9,7 @@ import org.threeten.bp.LocalDateTime;
 
 import java.text.DateFormat;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +18,6 @@ import java.util.UUID;
 
 import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
-import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.util.Util;
 
 /**
@@ -246,7 +243,7 @@ public class CharacterStudySet implements Iterable<Character> {
         }
 
         tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing);
-        dbHelper.getRecordSheetForCharset(this.availableCharactersSet(), tracker);
+        dbHelper.loadProgressTrackerFromDB(tracker);
     }
 
     public ProgressTracker.StudyType isReviewing() {
@@ -256,10 +253,6 @@ public class CharacterStudySet implements Iterable<Character> {
 
     public Map<Character, ProgressTracker.Progress> getRecordSheet() {
         return this.tracker.getAllScores();
-    }
-
-    public void debugSrsQueuePrint(Context ctx) {
-        tracker.debugSrsQueuePrint(ctx);
     }
 
     public Map<LocalDate, List<Character>> getSrsSchedule(){

@@ -98,7 +98,7 @@ public class CharacterProgressDataHelper {
         }
     }
 
-    public void getRecordSheetForCharset(final Set<Character> validChars, final ProgressTracker pt){
+    public void loadProgressTrackerFromDB(final ProgressTracker pt){
         long start = System.currentTimeMillis();
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
@@ -114,10 +114,6 @@ public class CharacterProgressDataHelper {
                             // indicates reset progress for all characters
                             pt.progressReset();
                         } else {
-                            if(!validChars.contains(character)){
-                                return;
-                            }
-
                             Integer score = Integer.parseInt(r.get("score"));
                             String timestampStr = r.get("timestamp");
                             if(score == 100){

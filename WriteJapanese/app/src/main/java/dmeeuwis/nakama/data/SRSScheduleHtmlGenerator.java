@@ -13,8 +13,8 @@ import java.util.Map;
 public class SRSScheduleHtmlGenerator {
 
     public final static String MESSAGE = "Write Japanese's Spaced Repitition System (SRS) repeats correctly " +
-            "drawn characters after a scheduled time delay. With each correct resposne, the delay time is increased. " +
-            "Based on your previous practice sessions, here is the current SRS schedule: ";
+            "drawn characters after a scheduled time delay. With each correct response, the delay time is increased. " +
+            "Based on your previous practice sessions, here is your current, customized review schedule: ";
 
     public static void displayScheduleDialog(Context ctx, Map<LocalDate, List<Character>> schedule){
         AlertDialog.Builder b = new AlertDialog.Builder(ctx);

@@ -30,7 +30,7 @@ import dmeeuwis.util.Util;
 public class ProgressTracker {
     final Random random = new Random();
 
-	public enum Progress { FAILED, REVIEWING, PASSED, UNKNOWN;
+	public enum Progress { FAILED, REVIEWING, TIMED_REVIEW, PASSED, UNKNOWN;
 		private static Progress parse(Integer in, int advanceReviewing){
         	if(in == null){
 				return Progress.UNKNOWN;
@@ -38,7 +38,9 @@ public class ProgressTracker {
 				return Progress.FAILED;
 			} else if(in < 0){
 				return Progress.REVIEWING;
-			} else {
+            } else if(in < 5){
+                return Progress.TIMED_REVIEW;
+            } else {
             	return Progress.PASSED;
 			}
 		}
@@ -386,20 +388,6 @@ public class ProgressTracker {
         }
         return out;
     }
-
-	public void debugSrsQueuePrint(Context ctx) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Queue length: " + srsQueue.size());
-		SRSEntry[] entries = srsQueue.toArray(new SRSEntry[0]);
-		Arrays.sort(entries, new SRSEntryComparator());
-		for(SRSEntry s: entries){
-			sb.append(s.character + ": " + s.nextPractice + "\n");
-		}
-
-		AlertDialog a = new AlertDialog.Builder(ctx).create();
-		a.setMessage(sb.toString());
-		a.show();
-	}
 
 	public Integer debugPeekCharacterScore(Character c){
 		return this.recordSheet.get(c);

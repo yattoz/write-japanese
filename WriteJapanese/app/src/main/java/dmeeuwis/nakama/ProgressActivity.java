@@ -56,9 +56,12 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	CharacterGridAdapter gridAdapter;
     SingleBarChart chart;
 	
-	static final int PASSED_BORDER = Color.parseColor("#006C02");
-	static final int PASSED_COLOR = Color.parseColor("#A0DAFFDD");
-	
+	static final int PASSED_BORDER = Color.parseColor("#bf9b30");
+	static final int PASSED_COLOR = Color.parseColor("#ffcf40");
+
+    static final int TIMED_REVIEW_BORDER = Color.parseColor("#006C02");
+    static final int TIMED_REVIEW_COLOR = Color.parseColor("#A0DAFFDD");
+
 	static final int TRAINING_BORDER = Color.parseColor("#3743FF");
 	static final int TRAINING_COLOR = Color.parseColor("#A0D3D6FF");
 	
@@ -126,7 +129,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gridFontSizeDp , res.getDisplayMetrics()); // 12 * 2 = 24 padding
         characterGrid.setColumnWidth((int)px);
 
-        int passedCount = 0, trainingCount = 0, failedCount = 0;
+        int passedCount = 0, trainingCount = 0, failedCount = 0, timedReviewCount = 0;
         for(Map.Entry<Character, Progress> s: scores.entrySet()){
             Progress r = s.getValue();
             //Log.i("nakama-progress", "Progress entry: " + s.getKey() + " has progress " + s.getValue());
@@ -134,6 +137,8 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
                 passedCount++;
             } else if(r == Progress.REVIEWING){
                 trainingCount++;
+            } else if(r == Progress.TIMED_REVIEW){
+                timedReviewCount++;
             } else if(r == Progress.FAILED){
                 failedCount++;
             }
@@ -142,7 +147,9 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         Log.d("nakama", "Counted progress: scores has " + scores.size() + " entries; passed=" + passedCount +
                 "; training=" + trainingCount + "; failed=" + failedCount + "; unknwon=" + unknownCount);
 
-        chart.setPercents(new BarChartEntry((int)(100*(float)passedCount / characterList.length()), PASSED_BORDER, PASSED_COLOR, "Passed"),
+        chart.setPercents(
+                new BarChartEntry((int)(100*(float)passedCount / characterList.length()), PASSED_BORDER, PASSED_COLOR, "Passed"),
+                new BarChartEntry((int)(100*(float)timedReviewCount / characterList.length()), TIMED_REVIEW_BORDER, TIMED_REVIEW_COLOR, "Timed Review"),
                 new BarChartEntry((int)(100*(float)trainingCount / characterList.length()), TRAINING_BORDER, TRAINING_COLOR, "Reviewing"),
                 new BarChartEntry((int)(100*(float)failedCount / characterList.length()), FAILED_BORDER, FAILED_COLOR, "Failed"),
                 new BarChartEntry((int)(100*(float)unknownCount / characterList.length()), UNKNOWN_BORDER, UNKNOWN_COLOR, "Untested")
@@ -151,9 +158,10 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         TextView chartLegend = (TextView)findViewById(R.id.chartLegend);
         chartLegend.setText(Html.fromHtml(
                 "<font color='" + PASSED_BORDER + "'>Passed</font> " +
-                        "<font color='" + TRAINING_BORDER + "'>Reviewing</font> " +
-                        "<font color='" + FAILED_BORDER + "'>Failed</font> " +
-                        "<font color='" + UNKNOWN_BORDER + "'>Untested</font>"));
+                "<font color='" + TIMED_REVIEW_BORDER + "'>Timed Review</font> " +
+                "<font color='" + TRAINING_BORDER + "'>Reviewing</font> " +
+                "<font color='" + FAILED_BORDER + "'>Failed</font> " +
+                "<font color='" + UNKNOWN_BORDER + "'>Untested</font>"));
     }
 
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
