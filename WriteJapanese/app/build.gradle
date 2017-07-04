@@ -18,7 +18,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 118
-        versionName "12.0"
+        versionName "13.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
