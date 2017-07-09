@@ -156,7 +156,7 @@ public class ProgressTracker {
 				reviewing.add(score.getKey());
 			} else if(score.getValue() == Progress.TIMED_REVIEW){
 				timedReviewing.add(score.getKey());
-			} else if(score.getValue() == Progress.UNKNOWN){
+			} else if(score.getValue() == Progress.UNKNOWN || score.getValue() == null){
 				unknown.add(score.getKey());
 			} else if(score.getValue() == Progress.PASSED){
 				passed.add(score.getKey());
@@ -192,13 +192,15 @@ public class ProgressTracker {
 		List<Set<Character>> sets = getSets();
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
-		Set<Character> passed = sets.get(2);
-		Set<Character> unknown = sets.get(3);
+		Set<Character> timedReview = sets.get(2);
+		Set<Character> passed = sets.get(3);
+		Set<Character> unknown = sets.get(4);
 
 		if(BuildConfig.DEBUG) {
 			Log.i("nakama-progression", "Character progression: reviewing sets");
 			Log.i("nakama-progression", "Failed set is: " + Util.join(", ", failed));
 			Log.i("nakama-progression", "Reviewing set is: " + Util.join(", ", reviewing));
+			Log.i("nakama-progression", "Timed Reviewing set is: " + Util.join(", ", timedReview));
 			Log.i("nakama-progression", "Passed set is: " + Util.join(", ", passed));
 			Log.i("nakama-progression", "Unknown set is: " + Util.join(", ", unknown));
 		}
@@ -209,28 +211,29 @@ public class ProgressTracker {
         // still learning new chars, but maxed out the reviewing and failed buckets so just review
         if(failed.size() >= introIncorrect || reviewing.size() > introReviewing) {
             Log.i("nakama-progress", "Failed or Review buckets maxed out, reviewing 50/50");
-            probs = new float[]{0.5f, 0.5f, 0.0f, 0.0f};
+            probs = new float[]{0.5f, 0.5f, 0.0f, 0.0f, 0.0f};
 
         // still learning new chars, haven't seen all
         } else if(unknown.size() > 0) {
 			Log.i("nakama-progress", "Still room in failed and review buckets, chance of new characters");
-            probs = new float[]{0.35f, 0.30f, 0.35f, 0.0f};
+            probs = new float[]{0.35f, 0.30f, 0.0f, 0.35f, 0.0f};
 
         // have seen all characters, still learning
         } else if(unknown.size() == 0){
 			Log.i("nakama-progress", "Have seen all characters, reviewing 40/40/0/20");
-            probs = new float[] { 0.40f, 0.40f, 0.0f, 0.2f };
+            probs = new float[] { 0.30f, 0.30f, 0.2f, 0.0f, 0.2f };
 
         // what situation is this?
         } else {
 			Log.i("nakama-progress", "Unknown situation, reviewing 25/25/25/25.");
-            probs = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
+            probs = new float[] { 0.25f, 0.25f, 0.0f, 0.25f, 0.25f };
         }
 
         availSet.remove(currentChar);
 		failed.remove(currentChar);
 		reviewing.remove(currentChar);
 		passed.remove(currentChar);
+		timedReview.remove(currentChar);
 		unknown.remove(currentChar);
 
 		Set<Character> chosenOnes = new HashSet<>();
@@ -249,6 +252,7 @@ public class ProgressTracker {
         } else {
 			chosenOnes.addAll(failed);
 			chosenOnes.addAll(reviewing);
+			chosenOnes.addAll(timedReview);
 			chosenOnes.addAll(unknown);
 			chosenOnes.addAll(passed);
 		}
