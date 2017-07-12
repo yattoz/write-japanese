@@ -143,6 +143,7 @@
     <orderEntry type="library" exported="" scope="TEST" name="shadow-api-3.3.2" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="maven-project-2.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="robolectric-junit-3.3.2" level="project" />
+    <orderEntry type="library" exported="" name="material-intro-screen-0.0.5" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="plexus-container-default-1.0-alpha-9-stable-1" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-25.2.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="robolectric-utils-3.3.2" level="project" />

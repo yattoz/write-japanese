@@ -888,6 +888,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             startActivity(creditsIntent);
         } else if (item.getItemId() == R.id.menu_reset_progress) {
             queryProgressReset();
+        } else if (item.getItemId() == R.id.menu_view_tutorial) {
+            if(BuildConfig.DEBUG) {
+                Intent i = new Intent(this, IntroActivity.class);
+                startActivity(i);
+            } else {
+                Toast.makeText(this, "Placeholder in beta version, coming soon!", Toast.LENGTH_SHORT).show();
+            }
+
         } else if (item.getItemId() == R.id.menu_shuffle) {
             boolean currentState = !item.isChecked();
             item.setChecked(currentState);

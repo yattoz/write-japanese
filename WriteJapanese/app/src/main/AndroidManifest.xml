@@ -137,6 +137,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dmeeuwis.kanjimaster.charsets.CharacterSetListActivity"/>
         </activity>
+
+        <activity
+         android:name="dmeeuwis.nakama.primary.IntroActivity"
+         android:theme="@style/Theme.Intro" />
     </application>
 
 </manifest>

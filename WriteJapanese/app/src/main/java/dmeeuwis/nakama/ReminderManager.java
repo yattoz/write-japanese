@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -128,6 +129,11 @@ public class ReminderManager extends BroadcastReceiver {
         builder.setContentTitle(title);
         builder.setContentText(message);
         builder.setAutoCancel(true);
+
+        if(Build.VERSION.SDK_INT >= 21) {
+            builder.setVisibility(Notification.VISIBILITY_PUBLIC);
+        }
+
         builder.setSmallIcon(R.drawable.ic_language_white);
         Intent intent = new Intent(context, KanjiMasterActivity.class);
         PendingIntent pi = PendingIntent.getActivity(context, PendingIntent.FLAG_ONE_SHOT, intent, 0);
