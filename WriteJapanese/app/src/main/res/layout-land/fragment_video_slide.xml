@@ -11,7 +11,7 @@
     android:fitsSystemWindows="false"
     android:padding="16dp">
 
-    <ImageView
+    <VideoView
         android:id="@+id/video_slide"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
