@@ -35,7 +35,7 @@ public class ClueExtractor {
     public String[] meaningsClues(Character currentCharacter) {
         if(Kana.isKana(currentCharacter)){
             if(currentCharacter.equals('を')){
-                return new String[] { "o (particle)" };
+                return new String[] { "wo (particle)" };
             }
             return new String[] { Kana.kana2Romaji(String.valueOf(currentCharacter)) };
         }
