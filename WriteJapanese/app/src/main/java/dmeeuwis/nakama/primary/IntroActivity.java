@@ -16,15 +16,15 @@ public class IntroActivity extends MaterialIntroActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+/*
         addSlide(VideoSlideFragment.createInstance(R.color.intro_blue, R.color.LightBlue, R.raw.correct_draw,
                 "Welcome to Write Japanese",
-                "Learn to draw the Japanese writing systems: Hiragana, Katakana, and the Kanji.\n\nWrite Japanese uses a time-based repetition (aka. spaced repetition system) to manage your learning. It helps you study the right characters, when you need to."
+                "Learn to draw the Japanese writing systems: Hiragana, Katakana, and the Kanji.\n\nDraw the character indicated in the instruction card. You can choose to be prompted based on character meaning, readings, or vocab examples.\n\nPress the 'back' button while drawing to undo a mistaken stroke."
         ));
 
         addSlide(VideoSlideFragment.createInstance(R.color.intro_teal, R.color.LightBlue, R.raw.correct_draw,
-                "Draw the Character",
-                "Draw the character indicated in the instruction card. You can choose to be prompted based on character meaning, readings, or vocab examples."
+                "Timed Repetition",
+                "Write Japanese uses a time-based repetition (aka. spaced repetition system) to manage your learning. It helps you study the right characters, when you need to."
         ));
 
         addSlide(VideoSlideFragment.createInstance(R.color.intro_green, R.color.LightBlue, R.raw.correct_draw,
@@ -55,5 +55,6 @@ public class IntroActivity extends MaterialIntroActivity {
                 .title("Good luck!")
                 .description("Good luck with your studies in Japanese!")
                 .build());
+    */
     }
 }

@@ -28,7 +28,7 @@ import dmeeuwis.nakama.primary.KanjiMasterActivity;
 public class ReminderManager extends BroadcastReceiver {
 
     private static final String INTENT_CHARSET = "charset";
-    private static final boolean DEBUG_REMINDERS = false;
+    private static final boolean DEBUG_REMINDERS = true;
 
     private static Intent makeIntent(Context c, CharacterStudySet charset){
         Intent intent = new Intent(c, ReminderManager.class);
@@ -89,19 +89,32 @@ public class ReminderManager extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         try {
-            Log.i("nakama", "ReminderManager.onReceive: wakeup!");
-            String charset = intent.getStringExtra(INTENT_CHARSET);
-
             UUID iid = Iid.get(context.getApplicationContext());
-            Log.i("nakama-remind", "Found iid in reminder notification task as: " + iid);
-            CharacterStudySet set = CharacterSets.fromName(context, charset, null);
-            set.load();
-            CharacterStudySet.GoalProgress gp = set.getGoalProgress();
-            if (set == null) {
-                return;
-            }
 
-            int charCount = gp.neededPerDay;
+            Log.i("nakama", "ReminderManager.onReceive: wakeup!");
+
+
+            // iterate over all study goals, see if any for today
+
+
+
+            // iterate over all charsets, see if any SRS for today
+
+
+            // if any hits from either, generate single joint message
+
+
+            String charsetGoalString = "";
+            if(charset != null) {
+                Log.i("nakama-remind", "Found iid in reminder notification task as: " + iid);
+                CharacterStudySet set = CharacterSets.fromName(context, charset, null);
+                set.load();
+                CharacterStudySet.GoalProgress gp = set.getGoalProgress();
+
+                int charCount = gp.neededPerDay;
+
+                charsetGoalString = "Try to introduce " + charCount + " " + set.name + " characters today!";
+            }
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             int id = set.pathPrefix.hashCode();
@@ -110,7 +123,7 @@ public class ReminderManager extends BroadcastReceiver {
             notificationManager.cancel(id);
 
             // add new notification
-            Notification n = getNotification(context, "Study Reminder", "Try for " + charCount + " " + set.name + " characters today!");
+            Notification n = getNotification(context, "Study Reminder", charsetGoalString);
             notificationManager.notify(id, n);
 
             // schedule tomorrow's reminder

@@ -42,7 +42,9 @@
 
     <item
         android:id="@+id/menu_view_tutorial"
-        android:title="@string/view_intro_tutorial"/>
+        android:title="@string/view_intro_tutorial"
+        android:visible="false"
+        />
 
     <item
         android:id="@+id/menu_network_sync"

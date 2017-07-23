@@ -19,7 +19,7 @@ public class UpdateNotifier {
         String notified = shared.getString(LAST_VERSION_NOTIFIED_KEY, "");
 
         if(!BuildConfig.VERSION_NAME.equalsIgnoreCase(notified)){
-            Snackbar snack = Snackbar.make(view, "Application updated to " + BuildConfig.VERSION_NAME + "!", Snackbar.LENGTH_LONG);
+            Snackbar snack = Snackbar.make(view, "Application updated to " + BuildConfig.VERSION_NAME + "!", Snackbar.LENGTH_LONG * 2);
             snack.setAction("View Release Notes", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

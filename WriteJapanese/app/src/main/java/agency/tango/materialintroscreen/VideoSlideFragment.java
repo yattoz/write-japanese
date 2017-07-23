@@ -77,9 +77,9 @@ public class VideoSlideFragment extends SlideFragment {
         titleTextView.setText(title);
         descriptionTextView.setText(description);
 
-        String path = "android.resource://" + getContext().getPackageName() + "/" + dmeeuwis.kanjimaster.R.raw.correct_draw;
-        imageView.setVideoURI(Uri.parse(path));
-        imageView.start();
+//        String path = "android.resource://" + getContext().getPackageName() + "/" + dmeeuwis.kanjimaster.R.raw.correct_draw;
+//        imageView.setVideoURI(Uri.parse(path));
+//        imageView.start();
     }
 
 
