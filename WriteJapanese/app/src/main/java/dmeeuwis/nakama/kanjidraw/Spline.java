@@ -6,7 +6,7 @@ public class Spline extends ParameterizedEquation {
 	public final List<ParameterizedEquation> eqns;
 	private final float[] shares;		// % of total arc length each eqn takes. Sums to 1.
 	private final float[] lengths;		// arclength of each eqns.
-	private final float totalLength;	// summed arclength of all eqns.
+	private final float totalLength;	// summed arclength of standardSets eqns.
 	
 	public Spline(List<ParameterizedEquation> eqns){
 		this.eqns = eqns;

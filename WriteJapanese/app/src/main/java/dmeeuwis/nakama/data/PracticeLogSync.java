@@ -81,7 +81,7 @@ public class PracticeLogSync {
                 out.close();
             }
 
-            // stream over all rows in from POST response
+            // stream over standardSets rows in from POST response
             Log.i("nakama", "Received response to JSON sync: " + urlConnection.getResponseMessage() + urlConnection.getResponseMessage());
             return urlConnection.getInputStream();
         }
@@ -352,7 +352,7 @@ public class PracticeLogSync {
         Log.i("nakama-sync", sql + ": " + Util.join(", ", args));
         Cursor c = sqlite.rawQuery(sql, args);
         try {
-            // stream over all rows since that time
+            // stream over standardSets rows since that time
             jw.name(name);
             jw.beginArray();
             while (c.moveToNext()) {

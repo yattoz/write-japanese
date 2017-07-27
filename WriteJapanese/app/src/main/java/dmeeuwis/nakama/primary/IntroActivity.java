@@ -39,7 +39,7 @@ public class IntroActivity extends MaterialIntroActivity {
                 .backgroundColor(R.color.intro_teal)
                 .buttonsColor(R.color.LightBlue)
                 .title("Across your devices")
-                .description("To sync your progress across all your devices - or save your progress if you lose your device - click the below button to enable cross device sync.\n\nYou may be prompted to select a Google account.")
+                .description("To sync your progress across standardSets your devices - or save your progress if you lose your device - click the below button to enable cross device sync.\n\nYou may be prompted to select a Google account.")
                 .possiblePermissions(new String[] { Manifest.permission.ACCOUNT_MANAGER } )
                 .build(),
                 new MessageButtonBehaviour(new View.OnClickListener() {

@@ -58,7 +58,7 @@ public class CharacterSets  {
 	public static CharacterStudySet joyouG6(LockChecker lc, Context context){ return new CharacterStudySet("Joyou Kanji 6", "Kanji J6", G6_DESCRIPTION, "j6", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G6, "至捨推針割疑層模訳欲", lc, Iid.get(context), true, context); }
 
 
-    public static CharacterStudySet[] all(LockChecker lc, Context context) {
+    public static CharacterStudySet[] standardSets(LockChecker lc, Context context) {
         return new CharacterStudySet[]{
                 hiragana(lc, context),
                 katakana(lc, context),

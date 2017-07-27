@@ -303,10 +303,10 @@ public final class Rect implements Parcelable {
         bottom -= dy;
     }
     /**
-     * Insets the rectangle on all sides specified by the dimensions of the {@code insets}
+     * Insets the rectangle on standardSets sides specified by the dimensions of the {@code insets}
      * rectangle.
      * @hide
-     * @param insets The rectangle specifying the insets on all side.
+     * @param insets The rectangle specifying the insets on standardSets side.
      */
     public void inset(Rect insets) {
         left += insets.left;
@@ -315,7 +315,7 @@ public final class Rect implements Parcelable {
         bottom -= insets.bottom;
     }
     /**
-     * Insets the rectangle on all sides specified by the insets.
+     * Insets the rectangle on standardSets sides specified by the insets.
      * @hide
      * @param left The amount to add from the rectangle's left
      * @param top The amount to add from the rectangle's top

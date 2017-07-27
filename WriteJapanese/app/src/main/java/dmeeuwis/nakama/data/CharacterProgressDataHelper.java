@@ -111,7 +111,7 @@ public class CharacterProgressDataHelper {
                         Character character = r.get("character").charAt(0);
 
                         if(character.toString().equals("R")){
-                            // indicates reset progress for all characters
+                            // indicates reset progress for standardSets characters
                             pt.progressReset();
                         } else {
                             Integer score = Integer.parseInt(r.get("score"));

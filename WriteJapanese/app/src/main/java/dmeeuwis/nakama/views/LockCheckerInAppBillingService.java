@@ -245,7 +245,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
                 toast("Error parsing JSON response from Google Play");
                 return true;
             }
-            toast("Thank you, your purchase completed! You have full access to all features of Write Japanese. Good luck in your studies!");
+            toast("Thank you, your purchase completed! You have full access to standardSets features of Write Japanese. Good luck in your studies!");
             parent.recreate();
         } else if(resultCode == Activity.RESULT_CANCELED){
             Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase cancelled");

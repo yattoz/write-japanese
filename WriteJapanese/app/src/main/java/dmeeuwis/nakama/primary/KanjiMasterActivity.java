@@ -93,6 +93,7 @@ import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
+import dmeeuwis.nakama.views.SRSDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.StrictnessDialog;
 import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
@@ -380,6 +381,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
         initializeCharacterSets();
+
+        ReminderManager.scheduleRemindersFor(getApplicationContext());
     }
 
     private void initializeCharacterSets(){
@@ -634,7 +637,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             if (currentCharacterSet.locked() && lockChecker.getPurchaseStatus() == LockLevel.LOCKED) {
                 raisePurchaseDialog(PurchaseDialog.DialogMessage.END_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
             } else {
-                Toast.makeText(this, "You have completed all the characters in this set!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "You have completed standardSets the characters in this set!", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -789,6 +792,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         instructionCard.onResume(getApplicationContext());
         UpdateNotifier.updateNotifier(this, findViewById(R.id.drawingFrame));
 
+        SRSDialog.show(getBaseContext(), false);
+
         super.onResume();
     }
 
@@ -836,8 +841,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:Unlock");
             menu.add("DEBUG:IabConsume");
             menu.add("DEBUG:ResetStorySharing");
-            menu.add("DEBUG:Notify");
-            menu.add("DEBUG:ClearAllNotify");
             menu.add("DEBUG:Register");
             menu.add("DEBUG:ClearSharedPrefs");
             menu.add("DEBUG:ClearSync");
@@ -1006,14 +1009,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 Editor e = prefs.edit();
                 e.putString(TeachingStoryFragment.STORY_SHARING_KEY, null);
                 e.apply();
-            } else if (item.getTitle().equals("DEBUG:Notify")) {
-                ReminderManager.scheduleRemindersFor(this.getApplicationContext(), currentCharacterSet);
-            } else if (item.getTitle().equals("DEBUG:ClearAllNotify")) {
-                ReminderManager.clearAllReminders(this);
             } else if (item.getTitle().equals("DEBUG:ClearSync")) {
                 new PracticeLogSync(KanjiMasterActivity.this).clearSync();
             } else if (item.getTitle().equals("DEBUG:ClearSharedPrefs")) {
-                Log.i("nakama", "DEBUG clearing all shared prefs");
+                Log.i("nakama", "DEBUG clearing standardSets shared prefs");
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Editor e = prefs.edit();
                 e.clear();

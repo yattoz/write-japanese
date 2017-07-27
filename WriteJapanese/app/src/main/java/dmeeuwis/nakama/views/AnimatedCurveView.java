@@ -135,8 +135,8 @@ public class AnimatedCurveView extends View implements Animatable {
     }
 
 	/**
-	 * This controls whether the animation will automatically go through all strokes. If set to true,
-	 * all strokes will be played back. If false, one stroke will be played on startAnimation, and one
+	 * This controls whether the animation will automatically go through standardSets strokes. If set to true,
+	 * standardSets strokes will be played back. If false, one stroke will be played on startAnimation, and one
 	 * more after each call to incrementCurveStroke().
 	 */
 	public void setAutoIncrement(boolean val){

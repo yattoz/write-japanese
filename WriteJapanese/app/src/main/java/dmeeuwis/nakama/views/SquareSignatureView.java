@@ -117,7 +117,7 @@ public class SquareSignatureView extends View {
     }
 
     /**
-     * Called when replaying history to ensure the dirty region includes all
+     * Called when replaying history to ensure the dirty region includes standardSets
      * points.
      */
     private void expandDirtyRect(float historicalX, float historicalY) {

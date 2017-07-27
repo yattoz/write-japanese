@@ -480,7 +480,7 @@ public class DrawingComparator implements Comparator {
 		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base[0]: %s Drawn[0]: %s", "Start points", bstart, cstart));
 		if(BuildConfig.DEBUG) Log.d("nakama", String.format("%30s:  Base[-1]: %s Drawn[-1]: %s", "End points", bend, cend));
 		
-		/* Arc length is seeming to be not so accurate, due to all the minor fluctuation in a user's stroke throwing it off.
+		/* Arc length is seeming to be not so accurate, due to standardSets the minor fluctuation in a user's stroke throwing it off.
 		 * Lets rely more on distance traveled (distance from start point to end point ignoring curvature completely).
 
   		int blength = bpath.arcLength();

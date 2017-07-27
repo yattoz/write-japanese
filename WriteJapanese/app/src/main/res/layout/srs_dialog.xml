@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="After writing a character correctly a few times, it will be re-quized occasionally based on a timed review system (often called 'spaced repetition system', or 'SRS'. "
+        />
+
+    <CheckBox
+        android:id="@+id/srs_dialog_show_notifications_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Notification When Reviews Are Due "/>
+
+    <CheckBox
+        android:id="@+id/srs_dialog_across_charsets_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Allow Review Across Character Sets"/>
+
+</LinearLayout>

@@ -24,8 +24,8 @@ public class SyncRegistration {
 
 
     public enum RegisterRequest {
-        REQUESTED("Do you want to enable progress sync among all Android devices authenticated with your Google account?"),
-        PROMPTED( "Do you want to enable progress sync among all Android devices authenticated with your Google account?");
+        REQUESTED("Do you want to enable progress sync among standardSets Android devices authenticated with your Google account?"),
+        PROMPTED( "Do you want to enable progress sync among standardSets Android devices authenticated with your Google account?");
 
         final String message;
         RegisterRequest(String message) {

@@ -100,7 +100,7 @@ public class PathCalculator {
 	
 	public final static List<Intersection> findIntersections(List<Stroke> paths){
 		
-		// construct bounding boxes for all
+		// construct bounding boxes for standardSets
 		Rect[] boundingBoxes = new Rect[paths.size()];
 		for(int i = 0; i < paths.size(); i++){
 			boundingBoxes[i] = paths.get(i).findBoundingBox();

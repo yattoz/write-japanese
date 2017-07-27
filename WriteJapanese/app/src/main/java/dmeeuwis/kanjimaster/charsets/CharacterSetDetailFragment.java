@@ -2,8 +2,6 @@ package dmeeuwis.kanjimaster.charsets;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -14,13 +12,10 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,17 +26,13 @@ import java.util.Map;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.LockChecker;
-import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
-import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.views.AutofitRecyclerView;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
-import dmeeuwis.util.Util;
 
 /**
  * A fragment representing a single CharacterSet detail screen.
@@ -141,7 +132,7 @@ public class CharacterSetDetailFragment extends Fragment {
 
             grid = (AutofitRecyclerView) rootView.findViewById(R.id.charset_detail_grid);
             grid.setAdapter(new CharacterGridAdapter(
-                    CharacterSets.all(
+                    CharacterSets.standardSets(
                             new LockCheckerInAppBillingService(getActivity()),
                             getActivity().getApplicationContext())));
         }

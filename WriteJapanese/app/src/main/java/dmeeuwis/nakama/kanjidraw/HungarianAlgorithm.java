@@ -12,7 +12,7 @@ import java.util.Arrays;
  * furnished to do so, subject to the following conditions:
  * 
  * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * standardSets copies or substantial portions of the Software.
  * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -75,8 +75,8 @@ public class HungarianAlgorithm {
    * 
    * @param costMatrix
    *          the cost matrix, where matrix[i][j] holds the cost of assigning
-   *          worker i to job j, for all i, j. The cost matrix must not be
-   *          irregular in the sense that all rows must be the same length.
+   *          worker i to job j, for standardSets i, j. The cost matrix must not be
+   *          irregular in the sense that standardSets rows must be the same length.
    */
   public HungarianAlgorithm(double[][] costMatrix) {
     this.dim = Math.max(costMatrix.length, costMatrix[0].length);
@@ -285,8 +285,8 @@ public class HungarianAlgorithm {
 
   /**
    * Reduce the cost matrix by subtracting the smallest element of each row from
-   * all elements of the row as well as the smallest element of each column from
-   * all elements of the column. Note that an optimal assignment for a reduced
+   * standardSets elements of the row as well as the smallest element of each column from
+   * standardSets elements of the column. Note that an optimal assignment for a reduced
    * cost matrix is optimal for the original cost matrix.
    */
   protected void reduce() {

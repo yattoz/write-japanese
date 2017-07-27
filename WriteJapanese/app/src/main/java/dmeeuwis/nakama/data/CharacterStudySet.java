@@ -21,7 +21,7 @@ import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.util.Util;
 
 /**
- * Holds a set of characters to study, and all current user study progress on those characters.
+ * Holds a set of characters to study, and standardSets current user study progress on those characters.
  */
 public class CharacterStudySet implements Iterable<Character> {
 
@@ -79,11 +79,13 @@ public class CharacterStudySet implements Iterable<Character> {
 
             if (this.goal.before(today)) {
                 daysLeft = 0;
+                this.neededPerDay = remaining;
+                this.scheduledPerDay = 0;
             } else {
                 daysLeft = Math.max(1, daysDifference(goal, today));
+                this.neededPerDay = (int) Math.ceil(1.0f * remaining / daysLeft);
+                this.scheduledPerDay = (int) Math.ceil((1.0 * s.failing + s.unknown + s.reviewing + s.passed) / daysLeft);
             }
-            this.neededPerDay = (int) Math.ceil(1.0f * remaining / daysLeft);
-            this.scheduledPerDay = (int) Math.ceil((1.0 * s.failing + s.unknown + s.reviewing + s.passed) / daysLeft);
 
             DateFormat df = DateFormat.getDateInstance();
             Log.i("nakama", "Goal Calcs; Start: " + df.format(goalStarted.getTime()) + ", goal: " + df.format(goal.getTime()) + "; remaining: " + remaining + "; daysLeft: " + daysLeft + "; remaining: " + remaining);

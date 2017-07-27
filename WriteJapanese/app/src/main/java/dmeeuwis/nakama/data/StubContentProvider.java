@@ -7,7 +7,7 @@ import android.net.Uri;
 
 /*
  * Define an implementation of ContentProvider that stubs out
- * all methods
+ * standardSets methods
  */
 public class StubContentProvider extends ContentProvider {
     /*

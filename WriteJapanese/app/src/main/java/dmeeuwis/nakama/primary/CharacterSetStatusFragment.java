@@ -3,11 +3,15 @@ package dmeeuwis.nakama.primary;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.SharedPreferencesCompat;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +43,7 @@ import java.util.Locale;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.ReminderManager;
+import dmeeuwis.nakama.data.CharacterProgressDataHelper;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.views.AppColors;
 
@@ -217,8 +222,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
             goalAbsentArea.setVisibility(View.GONE);
             goalPresentArea.setVisibility(View.VISIBLE);
 
-            notifications.setChecked(
-                    ReminderManager.reminderExists(this.getActivity().getApplicationContext(), this.charSet));
+            notifications.setChecked(checkIfReminderExists(getActivity().getApplicationContext(), this.charSet));
 
         } else {
             goalAbsentArea.setVisibility(View.VISIBLE);
@@ -339,15 +343,33 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         Log.i("nakama", "onCheckedChanged listener fired; checked is " + isChecked);
         if (isChecked) {
-            ReminderManager.scheduleRemindersFor(
-                    CharacterSetStatusFragment.this.getActivity().getApplicationContext(),
-                    CharacterSetStatusFragment.this.charSet);
+            scheduleReminder(charSet);
         } else {
-            ReminderManager.clearReminders(
-                    CharacterSetStatusFragment.this.getActivity().getApplicationContext(),
-                    CharacterSetStatusFragment.this.charSet);
-
+            descheduleReminder(charSet);
         }
+    }
+
+    private void scheduleReminder(CharacterStudySet charSet){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putBoolean(prefName(charSet), true);
+        ed.apply();
+    }
+
+    private void descheduleReminder(CharacterStudySet set){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putBoolean(prefName(charSet), false);
+        ed.apply();
+    }
+
+    public static boolean checkIfReminderExists(Context context, CharacterStudySet charSet) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(prefName(charSet), false);
+    }
+
+    private static String prefName(CharacterStudySet set){
+        return "remind_" + set.pathPrefix;
     }
 
     @Override

@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.widget.GridView;
 
 /**
- * A gridview that will show all of its rows (up to some arbitrary max height).
+ * A gridview that will show standardSets of its rows (up to some arbitrary max height).
  */
 public class TallGridView extends GridView {
     public TallGridView(Context context) {

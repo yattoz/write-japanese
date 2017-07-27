@@ -50,7 +50,7 @@ public class CharacterSetTest {
             charsSeen.add(c.currentCharacter());
         }
 
-        assertEquals("Progressed through all characters", testChars.length(), charsSeen.size());
+        assertEquals("Progressed through standardSets characters", testChars.length(), charsSeen.size());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class CharacterSetTest {
             count++;
         }
 
-        assertEquals("Progressed through all characters even after some incorrects", testChars.length(), charsSeen.size());
+        assertEquals("Progressed through standardSets characters even after some incorrects", testChars.length(), charsSeen.size());
     }
 }
 

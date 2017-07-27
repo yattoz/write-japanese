@@ -19,7 +19,7 @@ import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 
 /**
- * On small devices, holds the CharacterSetStatusFragment all by itself.
+ * On small devices, holds the CharacterSetStatusFragment standardSets by itself.
  */
 public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPickListener, OnFragmentInteractionListener {
     private final String CHARSET_SAVED_INSTANCE = "charset";

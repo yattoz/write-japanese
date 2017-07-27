@@ -213,14 +213,14 @@ public class ProgressTracker {
             Log.i("nakama-progress", "Failed or Review buckets maxed out, reviewing 50/50");
             probs = new float[]{0.5f, 0.5f, 0.0f, 0.0f, 0.0f};
 
-        // still learning new chars, haven't seen all
+        // still learning new chars, haven't seen standardSets
         } else if(unknown.size() > 0) {
 			Log.i("nakama-progress", "Still room in failed and review buckets, chance of new characters");
             probs = new float[]{0.35f, 0.30f, 0.0f, 0.35f, 0.0f};
 
-        // have seen all characters, still learning
+        // have seen standardSets characters, still learning
         } else if(unknown.size() == 0){
-			Log.i("nakama-progress", "Have seen all characters, reviewing 40/40/0/20");
+			Log.i("nakama-progress", "Have seen standardSets characters, reviewing 40/40/0/20");
             probs = new float[] { 0.30f, 0.30f, 0.2f, 0.0f, 0.2f };
 
         // what situation is this?

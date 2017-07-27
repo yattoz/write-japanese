@@ -116,7 +116,7 @@ interface IInAppBillingService {
     /**
      * Returns the current SKUs owned by the user of the type and package name specified along with
      * purchase information and a signature of the data to be validated.
-     * This will return all SKUs that have been purchased in V3 and managed items purchased using
+     * This will return standardSets SKUs that have been purchased in V3 and managed items purchased using
      * V1 and V2 that have not been consumed.
      * @param apiVersion billing API version that the app is using
      * @param packageName package name of the calling app
@@ -141,7 +141,7 @@ interface IInAppBillingService {
 
     /**
      * Consume the last purchase of the given SKU. This will result in this item being removed
-     * from all subsequent responses to getPurchases() and allow re-purchase of this item.
+     * from standardSets subsequent responses to getPurchases() and allow re-purchase of this item.
      * @param apiVersion billing API version that the app is using
      * @param packageName package name of the calling app
      * @param purchaseToken token in the purchase information JSON that identifies the purchase
