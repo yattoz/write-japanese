@@ -1,21 +1,24 @@
 package dmeeuwis.nakama.primary;
 
-import android.Manifest;
 import android.os.Bundle;
-import android.view.View;
 
+import agency.tango.materialintroscreen.CheckboxSlideFragment;
 import agency.tango.materialintroscreen.MaterialIntroActivity;
-import agency.tango.materialintroscreen.MessageButtonBehaviour;
-import agency.tango.materialintroscreen.SlideFragmentBuilder;
-import agency.tango.materialintroscreen.VideoSlideFragment;
 import dmeeuwis.kanjimaster.R;
-
 
 public class IntroActivity extends MaterialIntroActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        addSlide(CheckboxSlideFragment.createInstance(R.color.intro_blue, R.color.LightBlue, android.R.drawable.ic_lock_idle_alarm,
+                "Spaced Repetition (SRS)",
+                "Once written correctly, characters will be repeated at increasing timed intervals, across many days. This time repetition is often known as a 'spaced repetition system' (SRS).",
+                "Used Spaced Repetition", "use_spaced_repetition",
+                "Show Notifications when characters are due for review", "use_srs_notifications",
+                "Review characters even across sets, when due for SRS", "use_srs_across_sets"
+        ));
 /*
         addSlide(VideoSlideFragment.createInstance(R.color.intro_blue, R.color.LightBlue, R.raw.correct_draw,
                 "Welcome to Write Japanese",

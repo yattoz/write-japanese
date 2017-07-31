@@ -792,8 +792,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         instructionCard.onResume(getApplicationContext());
         UpdateNotifier.updateNotifier(this, findViewById(R.id.drawingFrame));
 
-        SRSDialog.show(getBaseContext(), false);
-
         super.onResume();
     }
 
