@@ -8,7 +8,6 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     android:layout_marginTop="16dp"
-    android:background="@android:color/transparent"
     android:clipToPadding="false"
     android:fitsSystemWindows="false"
     android:gravity="center"
@@ -48,22 +47,29 @@
         app:layout_parallaxFactor="0.2"
         tools:text="Lorem ipsum dolor sit amet, consectetur, adipisci velit, …" />
 
-    <CheckBox
-        android:id="@+id/fragment_check1"
+    <LinearLayout
+        app:layout_parallaxFactor="0.2"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Use timed repetition (SRS)"/>
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/fragment_check1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Use timed repetition (SRS)"/>
 
-    <CheckBox
-        android:id="@+id/fragment_check2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Show OS Notifications"/>
+        <CheckBox
+            android:id="@+id/fragment_check2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_parallaxFactor="0.2"
+            tools:text="Show OS Notifications"/>
 
-    <CheckBox
-        android:id="@+id/fragment_check3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Show characters from other character sets when review is due"/>
-
+        <CheckBox
+            android:id="@+id/fragment_check3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_parallaxFactor="0.2"
+            tools:text="Show characters from other character sets when review is due"/>
+    </LinearLayout>
 </agency.tango.materialintroscreen.parallax.ParallaxLinearLayout>

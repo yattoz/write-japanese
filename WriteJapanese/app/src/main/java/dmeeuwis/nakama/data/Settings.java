@@ -8,9 +8,22 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.primary.IntroActivity;
 
 public class Settings {
     public static Map<String, String> settingsCache = new ConcurrentHashMap<>();
+
+    public static boolean getSRSEnabled(Context ctx) {
+        return getBooleanSetting(ctx, IntroActivity.USE_SRS_SETTING_NAME, true);
+    }
+
+    public static boolean getSRSNotifications(Context ctx) {
+        return getBooleanSetting(ctx, IntroActivity.SRS_NOTIFICATION_SETTING_NAME, true);
+    }
+
+    public static boolean getSRSAcrossSets(Context ctx) {
+        return getBooleanSetting(ctx, IntroActivity.SRS_ACROSS_SETS, true);
+    }
 
     public enum Strictness { CASUAL, CASUAL_ORDERED, STRICT }
     public enum ClueType { MEANING, VOCAB }
@@ -40,7 +53,15 @@ public class Settings {
         return ClueType.valueOf(getSetting("clue_type", ClueType.MEANING.toString(), appContext));
     }
 
-    private static String getSetting(String key, String defaultValue, Context appContext){
+    public static void setBooleanSetting(Context appContext, String name, boolean value){
+        setSetting(name, Boolean.toString(value), appContext);
+    }
+
+    public static Boolean getBooleanSetting(Context appContext, String name, boolean def){
+        return Boolean.parseBoolean(getSetting(name, Boolean.toString(def), appContext));
+    }
+
+    public static String getSetting(String key, String defaultValue, Context appContext){
         WriteJapaneseOpenHelper dbh = new WriteJapaneseOpenHelper(appContext);
         try {
             SQLiteDatabase db = dbh.getReadableDatabase();

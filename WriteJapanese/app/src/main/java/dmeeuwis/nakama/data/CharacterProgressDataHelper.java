@@ -109,10 +109,12 @@ public class CharacterProgressDataHelper {
                     @Override
                     public void process(Map<String, String> r) {
                         Character character = r.get("character").charAt(0);
+                        String set = r.get("charset");
 
                         if(character.toString().equals("R")){
                             // indicates reset progress for standardSets characters
-                            pt.progressReset();
+                            pt.progressReset(set);
+
                         } else {
                             Integer score = Integer.parseInt(r.get("score"));
                             String timestampStr = r.get("timestamp");

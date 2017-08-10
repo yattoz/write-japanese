@@ -121,7 +121,6 @@ public class CharacterStudySet implements Iterable<Character> {
         this.LockChecker = LockChecker;
 
         CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
-        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing);
     }
 
 
@@ -214,7 +213,7 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public void progressReset() {
-        this.tracker.progressReset();
+        this.tracker.progressReset(shortName);
         dbHelper.clearProgress(pathPrefix);
     }
 
@@ -238,7 +237,7 @@ public class CharacterStudySet implements Iterable<Character> {
         dbHelper.recordGoals(pathPrefix, goalStarted, studyGoal);
     }
 
-    public void load() {
+    public void load(Context ctx) {
         CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
         Pair<GregorianCalendar, GregorianCalendar> goals = dbHelper.getExistingGoals(pathPrefix);
         if (goals != null) {
@@ -246,7 +245,9 @@ public class CharacterStudySet implements Iterable<Character> {
             this.studyGoal = goals.second;
         }
 
-        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing);
+        tracker = new ProgressTracker(allCharactersSet, shortName, p.advanceIncorrect, p.advanceReviewing,
+                Settings.getSRSEnabled(ctx),
+                Settings.getSRSAcrossSets(ctx));
         dbHelper.loadProgressTrackerFromDB(tracker);
     }
 

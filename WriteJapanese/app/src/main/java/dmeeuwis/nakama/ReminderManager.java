@@ -80,7 +80,7 @@ public class ReminderManager extends BroadcastReceiver {
             allSets.addAll(standardSets);
 
             for(CharacterStudySet set: allSets){
-                set.load();
+                set.load(context);
             }
 
             // look for any srs hits

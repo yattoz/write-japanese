@@ -1,7 +1,9 @@
 package agency.tango.materialintroscreen;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -14,6 +16,7 @@ import android.widget.VideoView;
 
 import dmeeuwis.kanjimaster.*;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.Settings;
 
 public class CheckboxSlideFragment extends SlideFragment {
 
@@ -21,7 +24,7 @@ public class CheckboxSlideFragment extends SlideFragment {
     private static final String BUTTONS_COLOR = "buttons_color";
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
-    private static final String VIDEO = "video";
+    private static final String IMAGE = "image";
     private static final String CHECKTEXT_1 = "checktext_1";
     private static final String CHECKTEXT_2 = "checktext_2";
     private static final String CHECKTEXT_3 = "checktext_3";
@@ -34,6 +37,8 @@ public class CheckboxSlideFragment extends SlideFragment {
     private int image;
     private String title;
     private String description;
+
+    private View background;
 
     private TextView titleTextView;
     private TextView descriptionTextView;
@@ -54,16 +59,16 @@ public class CheckboxSlideFragment extends SlideFragment {
         Bundle bundle = new Bundle();
         bundle.putInt(BACKGROUND_COLOR, backgroundColor);
         bundle.putInt(BUTTONS_COLOR, buttonsColor);
-        bundle.putInt(VIDEO, videoResource);
+        bundle.putInt(IMAGE, videoResource);
         bundle.putString(TITLE, title);
         bundle.putString(DESCRIPTION, description);
 
         bundle.putString(CHECKTEXT_1, text1);
         bundle.putString(CHECK_PROP1, property1);
         bundle.putString(CHECKTEXT_2, text2);
-        bundle.putString(CHECK_PROP1, property2);
+        bundle.putString(CHECK_PROP2, property2);
         bundle.putString(CHECKTEXT_3, text3);
-        bundle.putString(CHECK_PROP1, property3);
+        bundle.putString(CHECK_PROP3, property3);
 
         slideFragment.setArguments(bundle);
         return slideFragment;
@@ -79,6 +84,7 @@ public class CheckboxSlideFragment extends SlideFragment {
         check1 = (CheckBox) view.findViewById(R.id.fragment_check1);
         check2 = (CheckBox) view.findViewById(R.id.fragment_check2);
         check3 = (CheckBox) view.findViewById(R.id.fragment_check3);
+        background = view.findViewById(R.id.slide_background);
         initializeView();
         return view;
     }
@@ -87,7 +93,7 @@ public class CheckboxSlideFragment extends SlideFragment {
         Bundle bundle = getArguments();
         backgroundColor = bundle.getInt(BACKGROUND_COLOR);
         buttonsColor = bundle.getInt(BUTTONS_COLOR);
-        image = bundle.getInt(VIDEO, 0);
+        image = bundle.getInt(IMAGE, 0);
         title = bundle.getString(TITLE);
         description = bundle.getString(DESCRIPTION);
 
@@ -102,17 +108,73 @@ public class CheckboxSlideFragment extends SlideFragment {
         updateViewWithValues();
     }
 
+    private void setPref(String pref, boolean value){
+        Settings.setBooleanSetting(getContext().getApplicationContext(), pref, value);
+    }
+
     private void updateViewWithValues() {
+        //background.setBackgroundColor(backgroundColor | 0xFF000000);
+        background.setBackgroundColor(backgroundColor);
         titleTextView.setText(title);
         descriptionTextView.setText(description);
 
-        imageView.setImageURI();
+        String path = "android.resource://" + getContext().getPackageName() + "/" + image;
+        imageView.setImageURI(Uri.parse(path));
 
-//        String path = "android.resource://" + getContext().getPackageName() + "/" + dmeeuwis.kanjimaster.R.raw.correct_draw;
-//        imageView.setVideoURI(Uri.parse(path));
-//        imageView.start();
+        if(check1Text != null && check1Prop != null) {
+            check1.setText(check1Text);
+            check1.setChecked(Settings.getBooleanSetting(getContext().getApplicationContext(), check1Prop, true));
+            check1.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    boolean checked = ((CheckBox)v).isChecked();
+                    setPref(check1Prop, ((CheckBox)v).isChecked());
+
+                    if(!checked) {
+                        setPref(check2Prop, false);
+                        check2.setChecked(false);
+                        check2.setEnabled(false);
+
+                        setPref(check3Prop, false);
+                        check3.setChecked(false);
+                        check3.setEnabled(false);
+
+                    } else {
+                        check2.setEnabled(true);
+                        setPref(check2Prop, true);
+
+                        check3.setEnabled(true);
+                        setPref(check3Prop, true);
+                    }
+                }
+            });
+        } else {
+            check1.setVisibility(View.GONE);
+        }
+
+        if(check2Text != null && check2Prop != null) {
+            check2.setText(check2Text);
+            check2.setChecked(Settings.getBooleanSetting(getContext().getApplicationContext(), check2Prop, true));
+            check2.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    setPref(check2Prop, ((CheckBox)v).isChecked());
+                }
+            });
+        } else {
+            check2.setVisibility(View.GONE);
+        }
+
+        if(check3Text != null && check3Prop != null) {
+            check3.setText(check3Text);
+            check3.setChecked(Settings.getBooleanSetting(getContext().getApplicationContext(), check3Prop, true));
+            check3.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    setPref(check3Prop, ((CheckBox)v).isChecked());
+                }
+            });
+        } else {
+            check3.setVisibility(View.GONE);
+        }
     }
-
 
     public int backgroundColor() {
         return backgroundColor;

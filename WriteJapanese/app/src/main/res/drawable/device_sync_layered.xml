@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_phone_android_white" android:left="0dp" android:right="90dp" />
+    <item android:drawable="@drawable/ic_tablet_android_white" android:left="30dp" android:right="30dp" />
+    <item android:drawable="@drawable/ic_laptop_chromebook_white" android:left="90dp" android:right="0dp" android:top="10dp" android:bottom="10dp" />
+</layer-list>

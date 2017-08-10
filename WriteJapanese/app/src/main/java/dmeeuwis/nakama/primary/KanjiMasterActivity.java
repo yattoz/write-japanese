@@ -405,7 +405,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
 
         for(CharacterStudySet c: this.characterSets.values()){
-            c.load();
+            c.load(this.getApplicationContext());
             Log.d("nakama", "Loaded character set " + c.pathPrefix);
         }
     }
@@ -840,6 +840,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:IabConsume");
             menu.add("DEBUG:ResetStorySharing");
             menu.add("DEBUG:Register");
+            menu.add("DEBUG:ClearRegisteredAccount");
             menu.add("DEBUG:ClearSharedPrefs");
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
@@ -1019,6 +1020,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
             } else if(item.getTitle().equals("DEBUG:Register")){
                 SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, this, true);
+            } else if(item.getTitle().equals("DEBUG:ClearRegisteredAccount")){
+                SyncRegistration.clearAccount(this);
             } else if(item.getTitle().equals("DEBUG:SyncNow")){
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);

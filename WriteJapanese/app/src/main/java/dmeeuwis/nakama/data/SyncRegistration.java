@@ -21,11 +21,17 @@ public class SyncRegistration {
     public static final String HAVE_ASKED_ABOUT_SYNC_KEY = "ASKED_SYNC";
     public static final String AUTHCODE_SHARED_PREF_KEY = "authcode";
 
+    public static void clearAccount(KanjiMasterActivity activity) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
+        SharedPreferences.Editor ed = pref.edit();
+        ed.remove(HAVE_ASKED_ABOUT_SYNC_KEY);
+        ed.remove(AUTHCODE_SHARED_PREF_KEY);
+    }
 
 
     public enum RegisterRequest {
-        REQUESTED("Do you want to enable progress sync among standardSets Android devices authenticated with your Google account?"),
-        PROMPTED( "Do you want to enable progress sync among standardSets Android devices authenticated with your Google account?");
+        REQUESTED("Do you want to enable progress sync among all Android devices authenticated with your Google account?"),
+        PROMPTED( "Do you want to enable progress sync among all Android devices authenticated with your Google account?");
 
         final String message;
         RegisterRequest(String message) {

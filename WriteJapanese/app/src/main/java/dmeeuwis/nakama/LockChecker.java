@@ -19,7 +19,7 @@ public abstract class LockChecker {
 
 	private static final String PREFS_KEY = "unlockKey";
 
-	private final Activity parentActivity;
+	public final Activity parentActivity;
 
 	abstract public void runPurchase();
 	abstract public void startConsume();

@@ -62,7 +62,7 @@ public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPick
 
         lockChecker = new LockCheckerInAppBillingService(this);
         charset = CharacterSets.fromName(this.getApplicationContext(), charsetName, lockChecker);
-        charset.load();
+        charset.load(getApplicationContext());
 
         CharacterSetStatusFragment frag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charset_holder);
         frag.setCharset(charset, justCreated ? 200 : 0);
