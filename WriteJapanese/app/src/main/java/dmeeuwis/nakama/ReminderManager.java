@@ -19,17 +19,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
+import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 import dmeeuwis.nakama.primary.CharacterSetStatusFragment;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
+import dmeeuwis.util.Util;
 
 public class ReminderManager extends BroadcastReceiver {
 
@@ -71,6 +75,7 @@ public class ReminderManager extends BroadcastReceiver {
             boolean goalNotices = false;
 
 
+            // load the data for all notifications
             CustomCharacterSetDataHelper customHelper = new CustomCharacterSetDataHelper(context);
             List<CharacterStudySet> customSets = customHelper.getSets();
             List<CharacterStudySet> standardSets = Arrays.asList(CharacterSets.standardSets(null, context));
@@ -79,24 +84,27 @@ public class ReminderManager extends BroadcastReceiver {
             allSets.addAll(customSets);
             allSets.addAll(standardSets);
 
-            for(CharacterStudySet set: allSets){
+            for (CharacterStudySet set : allSets) {
                 set.load(context);
             }
 
-            // look for any srs hits
-            int hits = 0;
-            LocalDate now = LocalDate.now();
-            for(CharacterStudySet set: allSets){
-                Map<LocalDate, List<Character>> i = set.getSrsSchedule();
-                for(LocalDate d: i.keySet()){
-                    if(d.isBefore(now) || d.equals(now)){
-                        hits += i.get(d).size();
+            if(Settings.getSRSEnabled(context) && Settings.getSRSNotifications(context)) {
+                // look for any srs hits
+                Set<Character> hits = new HashSet<>();
+                LocalDate now = LocalDate.now();
+                for (CharacterStudySet set : allSets) {
+                    Map<LocalDate, List<Character>> i = set.getSrsSchedule();
+                    for (LocalDate d : i.keySet()) {
+                        if (d.isBefore(now) || d.equals(now)) {
+                            Log.d("nakama-remind", "Adding " + i.get(d).size() + " characters for " + d + ": " + Util.join(", ", i.get(d)));
+                            hits.addAll(i.get(d));
+                        }
                     }
                 }
-            }
-            if(hits > 0){
-                srsNotices = true;
-                notificationMessage.append(hits + " timed review characters for today! ");
+                if (hits.size() > 0) {
+                    srsNotices = true;
+                    notificationMessage.append(hits.size() + " timed review characters for today! ");
+                }
             }
 
             // iterate over character set study goals, see if any for today
@@ -148,6 +156,7 @@ public class ReminderManager extends BroadcastReceiver {
 
             // schedule tomorrow's possible reminder
             scheduleRemindersFor(context);
+
         } catch(Throwable t){
             UncaughtExceptionLogger.backgroundLogError("Caught error in reminder service onReceive", t, context);
         }

@@ -33,6 +33,10 @@ public class ProgressTracker {
 	private final String setName;
 	private final boolean useSRS;
 
+	public void srsReset() {
+		srsQueue.clear();
+	}
+
 	public enum Progress { FAILED, REVIEWING, TIMED_REVIEW, PASSED, UNKNOWN;
 		private static Progress parse(Integer in, int advanceReviewing){
         	if(in == null){
@@ -77,9 +81,9 @@ public class ProgressTracker {
 
 	private SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp){
 		if(score < 0){
-			if(BuildConfig.DEBUG) {
-				Log.d("nakama", "Char " + character + " has score " + score + ", NOT adding to SRS");
-			}
+			//if(BuildConfig.DEBUG) {
+			//	Log.d("nakama", "Char " + character + " has score " + score + ", NOT adding to SRS");
+			//}
 			return null;
 		}
 
@@ -92,9 +96,9 @@ public class ProgressTracker {
 		SRSEntry entry = new SRSEntry(character, nextDate);
 		srsQueue.add(entry);
 
-		if(BuildConfig.DEBUG) {
-			Log.d("nakama", "Char " + character + " has score " + score + ", YES adding to SRS with delay " + SRSTable[score] + " to: " + nextDate);
-		}
+		//if(BuildConfig.DEBUG) {
+		//	Log.d("nakama", "Char " + character + " has score " + score + ", YES adding to SRS with delay " + SRSTable[score] + " to: " + nextDate);
+		//}
 
 		return entry;
 	}
@@ -357,15 +361,15 @@ public class ProgressTracker {
 		return passed.size() == allowedChars.size();
 	}
 	
-	public void progressReset(String setName){
-		if(!this.setName.equals(setName)) {
-			return;
-		}
+	public void progressReset(Context ctx, String setName){
+		CharacterSets.fromName(ctx, setName, null);
 
 		for(Character c: this.recordSheet.keySet()){
-			this.recordSheet.put(c, null);
+			if(this.recordSheet.containsKey(c)) {
+				this.recordSheet.put(c, null);
+			}
+			removeSRSQueue(c);
 		}
-		srsQueue.clear();
 	}
 
 	public SRSEntry markSuccess(Character c, LocalDateTime time){

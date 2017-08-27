@@ -26,6 +26,7 @@ public class SyncRegistration {
         SharedPreferences.Editor ed = pref.edit();
         ed.remove(HAVE_ASKED_ABOUT_SYNC_KEY);
         ed.remove(AUTHCODE_SHARED_PREF_KEY);
+        ed.apply();
     }
 
 
@@ -45,7 +46,7 @@ public class SyncRegistration {
         return auth != null;
     }
 
-    public static void registerAccount(final RegisterRequest request, final Activity activity, final boolean force) {
+/*    public static void registerAccount(final RegisterRequest request, final Activity activity, final boolean force) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(activity.getApplicationContext());
         String auth = pref.getString(AUTHCODE_SHARED_PREF_KEY, null);
 
@@ -92,7 +93,7 @@ public class SyncRegistration {
             }
         }
     }
-
+*/
     static public void onAccountSelection(Activity activity, int requestCode, int resultCode, Intent data){
         Log.i("nakama-auth", "Got activity result for request account pick!");
 
@@ -129,6 +130,8 @@ public class SyncRegistration {
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(AUTHCODE_SHARED_PREF_KEY, authcode);
         ed.apply();
+        Toast.makeText(activity, "Registered!", Toast.LENGTH_LONG).show();
+        activity.finish();
     }
 
     public static final boolean DEBUG_SYNC = false;

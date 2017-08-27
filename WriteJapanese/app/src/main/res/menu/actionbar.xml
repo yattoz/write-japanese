@@ -41,10 +41,15 @@
         android:title="@string/reset_progress_menu_label"/>
 
     <item
-        android:id="@+id/menu_view_tutorial"
-        android:title="@string/view_intro_tutorial"
+        android:id="@+id/menu_srs_settings"
+        android:title="@string/srs_settings_menu_item"
         />
-
+<!--
+    <item
+        android:id="@+id/menu_sync_settings"
+        android:title="@string/sync_settings"
+        />
+-->
     <item
         android:id="@+id/menu_network_sync"
         android:title="@string/menu_network_string_message"/>

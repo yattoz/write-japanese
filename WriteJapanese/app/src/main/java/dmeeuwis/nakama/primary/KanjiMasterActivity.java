@@ -27,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -77,6 +78,7 @@ import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.data.SRSScheduleHtmlGenerator;
+import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
@@ -93,7 +95,6 @@ import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
-import dmeeuwis.nakama.views.SRSDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.StrictnessDialog;
 import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
@@ -167,15 +168,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("nakama", "onActivityResult(" + requestCode + "," + resultCode + "," + data);
-
-        if(requestCode == SyncRegistration.REQUEST_CODE_PICK_ACCOUNT) {
-            SyncRegistration.onAccountSelection(this, requestCode, resultCode, data);
-            return;
-        }
+        Log.d("nakama", "KanjiMasterActivity.onActivityResult(" + requestCode + "," + resultCode + "," + data);
 
         lockChecker.handleActivityResult(requestCode, resultCode, data);
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -185,8 +180,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         super.onCreate(savedInstanceState);
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
-
-        SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.PROMPTED, this, false);
 
         lockChecker = new LockCheckerInAppBillingService(this);
 
@@ -792,6 +785,16 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         instructionCard.onResume(getApplicationContext());
         UpdateNotifier.updateNotifier(this, findViewById(R.id.drawingFrame));
 
+
+        Boolean srsEnabled = Settings.getSRSEnabled(getApplicationContext());
+        boolean srsAsked = srsEnabled != null;
+        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
+
+        Log.i("nakama", "srsEnabled=" + srsEnabled + "; syncStatus=" + syncStatus);
+        if(!srsAsked || !syncStatus.asked){
+            startActivity(new Intent(this, IntroActivity.class));
+        }
+
         super.onResume();
     }
 
@@ -839,9 +842,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:Unlock");
             menu.add("DEBUG:IabConsume");
             menu.add("DEBUG:ResetStorySharing");
-            menu.add("DEBUG:Register");
             menu.add("DEBUG:ClearRegisteredAccount");
             menu.add("DEBUG:ClearSharedPrefs");
+            menu.add("DEBUG:ClearSyncSettings");
+            menu.add("DEBUG:ClearSRSSettings");
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
             menu.add("DEBUG:SyncNow");
@@ -890,14 +894,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             startActivity(creditsIntent);
         } else if (item.getItemId() == R.id.menu_reset_progress) {
             queryProgressReset();
-        } else if (item.getItemId() == R.id.menu_view_tutorial) {
-            if(BuildConfig.DEBUG) {
-                Intent i = new Intent(this, IntroActivity.class);
-                startActivity(i);
-            } else {
-                Toast.makeText(this, "Placeholder in beta version, coming soon!", Toast.LENGTH_SHORT).show();
-            }
 
+        } else if (item.getItemId() == R.id.menu_srs_settings) {
+            Intent i = new Intent(this, IntroActivity.class);
+            i.putExtra(IntroActivity.REQUEST_SRS_SETTINGS, true);
+            startActivity(i);
+
+/*        } else if (item.getItemId() == R.id.menu_sync_settings) {
+            Intent i = new Intent(this, IntroActivity.class);
+            i.putExtra(IntroActivity.REQUEST_SYNC_SETTINGS, true);
+            startActivity(i);
+*/
         } else if (item.getItemId() == R.id.menu_shuffle) {
             boolean currentState = !item.isChecked();
             item.setChecked(currentState);
@@ -926,7 +933,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
         } else if (item.getItemId() == R.id.menu_network_sync) {
             if(!SyncRegistration.checkIsRegistered(KanjiMasterActivity.this)) {
-                SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, KanjiMasterActivity.this, true);
+                Intent i = new Intent(this, IntroActivity.class);
+                i.putExtra(IntroActivity.REQUEST_SYNC_SETTINGS, true);
+                startActivity(i);
             } else {
                 new Thread() {
                     @Override
@@ -1008,6 +1017,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 Editor e = prefs.edit();
                 e.putString(TeachingStoryFragment.STORY_SHARING_KEY, null);
                 e.apply();
+
+            } else if (item.getTitle().equals("DEBUG:ClearSyncSettings")) {
+                Settings.clearCrossDeviceSync(getApplicationContext());
+
+            } else if (item.getTitle().equals("DEBUG:ClearSRSSettings")) {
+                Settings.clearSRSSettings(getApplicationContext());
+
             } else if (item.getTitle().equals("DEBUG:ClearSync")) {
                 new PracticeLogSync(KanjiMasterActivity.this).clearSync();
             } else if (item.getTitle().equals("DEBUG:ClearSharedPrefs")) {
@@ -1018,8 +1034,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 e.apply();
             } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
                 new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
-            } else if(item.getTitle().equals("DEBUG:Register")){
-                SyncRegistration.registerAccount(SyncRegistration.RegisterRequest.REQUESTED, this, true);
             } else if(item.getTitle().equals("DEBUG:ClearRegisteredAccount")){
                 SyncRegistration.clearAccount(this);
             } else if(item.getTitle().equals("DEBUG:SyncNow")){
@@ -1081,7 +1095,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 Editor ed = prefs.edit();
                 ed.remove(currentCharacterSet.pathPrefix);
                 ed.apply();
-                currentCharacterSet.progressReset();
+                currentCharacterSet.progressReset(getApplicationContext());
                 loadNextCharacter(true);
 
                 dialog.dismiss();

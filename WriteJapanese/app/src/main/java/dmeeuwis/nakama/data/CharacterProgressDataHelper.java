@@ -111,10 +111,13 @@ public class CharacterProgressDataHelper {
                         Character character = r.get("character").charAt(0);
                         String set = r.get("charset");
 
-                        if(character.toString().equals("R")){
+                        if(character.toString().equals("R")) {
                             // indicates reset progress for standardSets characters
-                            pt.progressReset(set);
+                            pt.progressReset(context, set);
 
+//                        } else if(character.toString().equals("S")){
+//                            // indicates reset progress for srs sets (maybe only on first srs install?)
+//                            pt.srsReset();
                         } else {
                             Integer score = Integer.parseInt(r.get("score"));
                             String timestampStr = r.get("timestamp");

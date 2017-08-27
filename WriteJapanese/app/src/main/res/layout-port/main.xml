@@ -38,7 +38,7 @@
                 android:layout_width="@dimen/fab_custom_size"
                 android:layout_height="@dimen/fab_custom_size"
                 android:layout_gravity="bottom|start"
-                android:layout_marginBottom="84dp"
+                android:layout_marginBottom="94dp"
                 android:layout_marginStart="12dp"
                 android:layout_marginLeft="12dp"
                 android:elevation="@dimen/elevation_low"

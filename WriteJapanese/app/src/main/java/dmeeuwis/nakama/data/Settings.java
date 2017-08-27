@@ -1,7 +1,10 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
+import android.util.Pair;
 
 import java.util.Map;
 import java.util.UUID;
@@ -11,18 +14,59 @@ import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.primary.IntroActivity;
 
 public class Settings {
-    public static Map<String, String> settingsCache = new ConcurrentHashMap<>();
-
-    public static boolean getSRSEnabled(Context ctx) {
-        return getBooleanSetting(ctx, IntroActivity.USE_SRS_SETTING_NAME, true);
+    public static Boolean getSRSEnabled(Context ctx) {
+        return getBooleanSetting(ctx, IntroActivity.USE_SRS_SETTING_NAME, null);
     }
 
-    public static boolean getSRSNotifications(Context ctx) {
-        return getBooleanSetting(ctx, IntroActivity.SRS_NOTIFICATION_SETTING_NAME, true);
+    public static Boolean getSRSNotifications(Context ctx) {
+        return getBooleanSetting(ctx, IntroActivity.SRS_NOTIFICATION_SETTING_NAME, null);
     }
 
-    public static boolean getSRSAcrossSets(Context ctx) {
-        return getBooleanSetting(ctx, IntroActivity.SRS_ACROSS_SETS, true);
+    public static Boolean getSRSAcrossSets(Context ctx) {
+        return getBooleanSetting(ctx, IntroActivity.SRS_ACROSS_SETS, null);
+    }
+
+    public static void setCrossDeviceSyncAsked(Context applicationContext) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putBoolean(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY, true);
+        ed.apply();
+    }
+
+
+    public static void clearCrossDeviceSync(Context applicationContext) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.remove(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY);
+        ed.remove(SyncRegistration.AUTHCODE_SHARED_PREF_KEY);
+        ed.apply();
+    }
+
+
+    public static void clearSRSSettings(Context applicationContext) {
+        Settings.setSetting(IntroActivity.USE_SRS_SETTING_NAME, "clear", applicationContext);
+        Settings.setSetting(IntroActivity.SRS_ACROSS_SETS, "clear", applicationContext);
+    }
+
+    public static class SyncStatus {
+        public final boolean asked;
+        public final String authcode;
+
+        SyncStatus(boolean asked, String authcode){
+            this.asked = asked;
+            this.authcode = authcode;
+        }
+
+        public String toString(){
+            return String.format("[SyncStatus asked=%b authcode=%s]", asked, authcode);
+        }
+    }
+
+    public static SyncStatus getCrossDeviceSyncEnabled(Context applicationContext) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        Boolean asked = prefs.getBoolean(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY, false);
+        String authcode = prefs.getString(SyncRegistration.AUTHCODE_SHARED_PREF_KEY, null);
+        return new SyncStatus(asked, authcode);
     }
 
     public enum Strictness { CASUAL, CASUAL_ORDERED, STRICT }
@@ -53,12 +97,19 @@ public class Settings {
         return ClueType.valueOf(getSetting("clue_type", ClueType.MEANING.toString(), appContext));
     }
 
-    public static void setBooleanSetting(Context appContext, String name, boolean value){
-        setSetting(name, Boolean.toString(value), appContext);
+    public static void setBooleanSetting(Context appContext, String name, Boolean value){
+        setSetting(name, value == null ? null : Boolean.toString(value), appContext);
     }
 
-    public static Boolean getBooleanSetting(Context appContext, String name, boolean def){
-        return Boolean.parseBoolean(getSetting(name, Boolean.toString(def), appContext));
+    public static Boolean getBooleanSetting(Context appContext, String name, Boolean def){
+        String s = getSetting(name, def == null ? null : Boolean.toString(def), appContext);
+        if("clear".equals(s)){
+            return null;
+        }
+        if(s != null){
+            return Boolean.parseBoolean(s);
+        }
+        return null;
     }
 
     public static String getSetting(String key, String defaultValue, Context appContext){

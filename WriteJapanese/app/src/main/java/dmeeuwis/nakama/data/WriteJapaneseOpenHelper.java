@@ -18,7 +18,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 28;
+	private static final int DB_VERSION = 31;
 
     private final String iid;
     private final Context context;
@@ -169,6 +169,17 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         }
     }
 
+    private void addSRSInitialTombstone(SQLiteDatabase sqlite) {
+        Log.d("nakama-db", "Adding initial srs tombstone");
+
+        try {
+            sqlite.execSQL("INSERT INTO practice_log (id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)",
+                    new Object[]{UUID.randomUUID().toString(), Iid.get(context), "S", "all", 0 } );
+        } catch (SQLiteException e) {
+            UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception writing srs tombstone", e, context);
+        }
+    }
+
 
 	@Override
 	public void onUpgrade(SQLiteDatabase dbase, int oldVersion, int newVersion) {
@@ -202,5 +213,10 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         if(oldVersion <= 26) {
             addCharacterSets(dbase);
         }
+
+        if(oldVersion <= 30) {
+            addSRSInitialTombstone(dbase);
+        }
 	}
+
 }

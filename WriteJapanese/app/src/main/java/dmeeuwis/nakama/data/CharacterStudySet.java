@@ -212,8 +212,8 @@ public class CharacterStudySet implements Iterable<Character> {
         return this.shuffling;
     }
 
-    public void progressReset() {
-        this.tracker.progressReset(shortName);
+    public void progressReset(Context context) {
+        this.tracker.progressReset(context, shortName);
         dbHelper.clearProgress(pathPrefix);
     }
 
@@ -245,9 +245,16 @@ public class CharacterStudySet implements Iterable<Character> {
             this.studyGoal = goals.second;
         }
 
-        tracker = new ProgressTracker(allCharactersSet, shortName, p.advanceIncorrect, p.advanceReviewing,
-                Settings.getSRSEnabled(ctx),
-                Settings.getSRSAcrossSets(ctx));
+        Boolean srsEnabled = Settings.getSRSEnabled(ctx);
+        Boolean srsAcrossSets = Settings.getSRSAcrossSets(ctx);
+
+        // these 2 should only happen on first view, and then the IntroActivity should spring up
+        // before the user can interact with this charset anyways.
+        if(srsEnabled == null){ srsEnabled = true; }
+        if(srsAcrossSets == null){ srsAcrossSets = true; }
+
+
+        tracker = new ProgressTracker(allCharactersSet, shortName, p.advanceIncorrect, p.advanceReviewing, srsEnabled, srsAcrossSets);
         dbHelper.loadProgressTrackerFromDB(tracker);
     }
 

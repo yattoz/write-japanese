@@ -1,8 +1,9 @@
 package dmeeuwis.nakama.primary;
 
-import android.Manifest;
 import android.accounts.AccountManager;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import agency.tango.materialintroscreen.CheckboxSlideFragment;
@@ -10,6 +11,7 @@ import agency.tango.materialintroscreen.MaterialIntroActivity;
 import agency.tango.materialintroscreen.MessageButtonBehaviour;
 import agency.tango.materialintroscreen.SlideFragmentBuilder;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.SyncRegistration;
 
 public class IntroActivity extends MaterialIntroActivity {
@@ -18,36 +20,91 @@ public class IntroActivity extends MaterialIntroActivity {
     public final static String SRS_NOTIFICATION_SETTING_NAME = "use_srs_notifications";
     public final static String SRS_ACROSS_SETS = "use_srs_across_sets";
 
+    public final static String REQUEST_SRS_SETTINGS = "settings_srs";
+    public final static String REQUEST_SYNC_SETTINGS = "settings_sync";
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("nakama", "IntroActivity.onActivityResult(" + requestCode + "," + resultCode + "," + data);
+
+        if(requestCode == SyncRegistration.REQUEST_CODE_PICK_ACCOUNT) {
+            SyncRegistration.onAccountSelection(this, requestCode, resultCode, data);
+            return;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addSlide(CheckboxSlideFragment.createInstance(R.color.intro_teal, R.color.intro_blue, R.drawable.ic_calendar2,
-                "Spaced Repetition (SRS)",
-                "Once written correctly, characters will be repeated at increasing timed intervals, across many days. This time repetition is often known as a 'spaced repetition system' (SRS). The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
-                "Use Spaced Repetition", USE_SRS_SETTING_NAME,
-                "Notify when characters are due for review", SRS_NOTIFICATION_SETTING_NAME,
-                "Allow SRS repetitions to display even while studying in a different character set", SRS_ACROSS_SETS
-        ));
+        int slidesShown = 0;
 
-        addSlide(new SlideFragmentBuilder()
-                        .backgroundColor(R.color.intro_teal)
-                        .image(R.drawable.device_sync_layered)
-                        .buttonsColor(R.color.intro_blue)
-                        .title("Across your devices")
-                        .description("To sync your progress across all your Android devices - or save your progress if you lose your device - click the below button to enable cross device sync.\n\nYou may be prompted to select which Google account to sync across.")
-                        .build(),
-                new MessageButtonBehaviour(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivityForResult(
-                                AccountManager.newChooseAccountIntent(
-                                        null, null, new String[]{"com.google"}, false, null, null, null, null),
-                                SyncRegistration.REQUEST_CODE_PICK_ACCOUNT);
-                        return;
-                    }
-                }, "Choose Account for Sync"));
+        Intent intent = getIntent();
 
+        // show SRS screen if not yet shown, or if specifically requested
+        boolean srsNotYetShow = Settings.getBooleanSetting(getApplicationContext(), USE_SRS_SETTING_NAME, null) == null;
+        boolean srsRequested = intent != null && intent.getBooleanExtra(REQUEST_SRS_SETTINGS, false);
+
+        if(srsNotYetShow || srsRequested){
+            addSlide(CheckboxSlideFragment.createInstance(R.color.intro_teal, R.color.intro_blue, R.drawable.ic_calendar2,
+                    "Spaced Repetition (SRS)",
+                    "Once written correctly, characters will be repeated at increasing timed intervals, across many days. This time repetition is often known as a 'spaced repetition system' (SRS). The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
+                    "Use Spaced Repetition", USE_SRS_SETTING_NAME,
+                    "Show OS Notifications when characters are due for review", SRS_NOTIFICATION_SETTING_NAME,
+                    "Allow SRS repetitions to display even while studying in a different character set", SRS_ACROSS_SETS
+            ));
+            slidesShown++;
+
+            // on first view, set defaults
+            if(srsNotYetShow) {
+                Settings.setBooleanSetting(getApplicationContext(), USE_SRS_SETTING_NAME, true);
+                Settings.setBooleanSetting(getApplicationContext(), SRS_NOTIFICATION_SETTING_NAME, true);
+                Settings.setBooleanSetting(getApplicationContext(), SRS_ACROSS_SETS, true);
+            }
+        }
+
+        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
+        boolean syncRequested = intent != null && intent.getBooleanExtra(REQUEST_SYNC_SETTINGS, false);
+
+        if(!syncStatus.asked || syncRequested) {
+            addSlide(new SlideFragmentBuilder()
+                            .backgroundColor(R.color.intro_teal)
+                            .image(R.drawable.device_sync_layered)
+                            .buttonsColor(R.color.intro_blue)
+                            .title("Across your devices")
+                            .description("To sync your progress across all your Android devices - or save your progress if you lose your device - click the below button to enable cross device sync.\n\nYou may be prompted to select which Google account to sync across.")
+                            .build(),
+                    new MessageButtonBehaviour(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivityForResult(
+                                    AccountManager.newChooseAccountIntent(
+                                            null, null, new String[]{"com.google"}, false, null, null, null, null),
+                                    SyncRegistration.REQUEST_CODE_PICK_ACCOUNT);
+                            return;
+                        }
+                    }, "Choose Account for Sync"));
+
+
+            Settings.setCrossDeviceSyncAsked(getApplicationContext());
+            slidesShown++;
+        }
+
+        if(slidesShown == 0){
+            // fake to satisfy library
+            // should never happen?
+            addSlide(new SlideFragmentBuilder()
+                    .backgroundColor(R.color.intro_green)
+                    .buttonsColor(R.color.LightBlue)
+                    .title("Good luck!")
+                    .description("Good luck with your studies in Japanese!")
+                    .build());
+
+        }
 /*
         addSlide(VideoSlideFragment.createInstance(R.color.intro_blue, R.color.LightBlue, R.raw.correct_draw,
                 "Welcome to Write Japanese",
