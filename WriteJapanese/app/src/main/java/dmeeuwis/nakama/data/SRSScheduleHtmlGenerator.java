@@ -12,9 +12,9 @@ import java.util.Map;
 
 public class SRSScheduleHtmlGenerator {
 
-    public final static String MESSAGE = "Write Japanese's Spaced Repetition Schedule system repeats correctly " +
+    public final static String MESSAGE = "SRS repeats correctly " +
             "drawn characters after a scheduled time delay. With each correct response, the delay time is increased. " +
-            "Based on your previous practice sessions, here is your current, customized review schedule: ";
+            "From your previous practice, here is your customized review schedule: ";
 
     public static void displayScheduleDialog(Context ctx, Map<LocalDate, List<Character>> schedule){
         AlertDialog.Builder b = new AlertDialog.Builder(ctx);
@@ -33,6 +33,11 @@ public class SRSScheduleHtmlGenerator {
 
     public static String generateHtml(Map<LocalDate, List<Character>> schedule){
         StringBuilder sb = new StringBuilder();
+
+        if(schedule.size() == 0){
+            sb.append("<p>No reviews currently scheduled - as you correctly draw characters, they will begin to appear here with increasing timed delays.</p>");
+            return sb.toString();
+        }
 
         sb.append("<h1>Spaced Repitition Schedule</h1>");
         sb.append("<p>" + MESSAGE + "</p>");

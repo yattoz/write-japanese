@@ -41,14 +41,14 @@ public class ProgressTracker {
 			this.forceResetCode = forceResetCode;
 		}
 
-		private static Progress parse(Integer in, int advanceReviewing){
+		private static Progress parse(Integer in, int advanceReviewing, boolean srsEnabled){
         	if(in == null){
 				return Progress.UNKNOWN;
 			} else if(in < -1 * advanceReviewing){
 				return Progress.FAILED;
 			} else if(in < 0){
 				return Progress.REVIEWING;
-            } else if(in < MAX_SCORE){
+            } else if(in < MAX_SCORE && srsEnabled){
                 return Progress.TIMED_REVIEW;
             } else {
             	return Progress.PASSED;
@@ -430,7 +430,7 @@ public class ProgressTracker {
 	public Map<Character, Progress> getAllScores(){
 		Map<Character, Progress> all = new HashMap<>(recordSheet.size());
 		for(Map.Entry<Character, Integer> entry: recordSheet.entrySet()){
-        	all.put(entry.getKey(), Progress.parse(entry.getValue(), advanceReview));
+        	all.put(entry.getKey(), Progress.parse(entry.getValue(), advanceReview, useSRS));
 		}
 		return all;
 	}
