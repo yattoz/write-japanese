@@ -176,17 +176,8 @@ public class TeachingActivity extends ActionBarActivity implements ViewPager.OnP
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if(item.getItemId() == android.R.id.home){
-			try {
-				Intent backUp = new Intent(this, Class.forName(callingClass));
-				startActivity(backUp);
-			} catch (ClassNotFoundException e) {
-				Log.e("nakama", "ClassNotFoundException while returning to parent. callingClass is " + callingClass, e);
-				return false;
-			} catch (Throwable t) {
-				Log.e("nakama", "Throwable while returning to parent. callingClass is " + callingClass, t);
-				return false;
-			}
-			return true;
+            finish();
+            return true;
 		}
 		
 		return super.onOptionsItemSelected(item);
