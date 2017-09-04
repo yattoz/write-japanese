@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.PopupMenu;
 import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
@@ -19,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Map;
 import java.util.Set;
@@ -146,17 +148,52 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
     }
 
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Character selected = chars[position];
+		final Character selected = chars[position];
 
 		if(charSet.availableCharactersSet().contains(selected)){
-			Intent teachIntent = new Intent(this, TeachingActivity.class);
-			Bundle passParams = new Bundle();
-			passParams.putString("parent", callingClass);
-			passParams.putChar(Constants.KANJI_PARAM, selected);
-			passParams.putString(Constants.KANJI_PATH_PARAM, callingPath);
-			Log.d("nakama", "ProgressActivity: passing path " + callingPath + " to TeachingActivity.");
-			teachIntent.putExtras(passParams);
-			startActivity(teachIntent);
+
+
+			PopupMenu popup = new PopupMenu(this, view);
+            //Inflating the Popup using xml file
+            popup.getMenuInflater().inflate(R.menu.activity_progress_popup_menu, popup.getMenu());
+
+            //registering popup with OnMenuItemClickListener
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+				public boolean onMenuItemClick(MenuItem item) {
+
+					if(item.getItemId() == R.id.popup_set_failed_progress) {
+						charSet.resetTo(selected, Progress.FAILED);
+						gridAdapter.updateScores(charSet.getRecordSheet());
+
+					} else if(item.getItemId() == R.id.popup_set_reviewing_progress) {
+						charSet.resetTo(selected, Progress.REVIEWING);
+						gridAdapter.updateScores(charSet.getRecordSheet());
+
+					} else if(item.getItemId() == R.id.popup_set_timed_reviewing_progress) {
+						charSet.resetTo(selected, Progress.TIMED_REVIEW);
+						gridAdapter.updateScores(charSet.getRecordSheet());
+
+					} else if(item.getItemId() == R.id.popup_set_known) {
+						charSet.resetTo(selected, Progress.PASSED);
+						gridAdapter.updateScores(charSet.getRecordSheet());
+
+					} else if(item.getItemId() == R.id.popup_see_study_screen) {
+						Intent teachIntent = new Intent(ProgressActivity.this, TeachingActivity.class);
+						Bundle passParams = new Bundle();
+						passParams.putString("parent", callingClass);
+						passParams.putChar(Constants.KANJI_PARAM, selected);
+						passParams.putString(Constants.KANJI_PATH_PARAM, callingPath);
+						Log.d("nakama", "ProgressActivity: passing path " + callingPath + " to TeachingActivity.");
+						teachIntent.putExtras(passParams);
+						startActivity(teachIntent);
+					}
+					return true;
+				}
+            });
+
+            popup.show();//showing popup menu
+
+
 		} else {
 			PurchaseDialog pd = PurchaseDialog.make(PurchaseDialog.DialogMessage.LOCKED_CHARACTER);
 			pd.show(this.getSupportFragmentManager(), "purchase");
@@ -174,7 +211,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 	    final private String characterList;
 	    final private Set<Character> unlockedCharacterList;
 	    final private GridView.LayoutParams params = new GridView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final private Map<Character, Progress> scores;
+        private Map<Character, Progress> scores;
 	    final private int textSize = 48;
         final private char[] chars;
 
@@ -187,6 +224,11 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
 
 	        Log.d("nakama", "Making CharacterGridAdapter: characterList size is " + this.characterList.length() + " vs unlocked set size " + this.unlockedCharacterList.size());
 	    }
+
+	    public void updateScores(Map<Character, Progress> newScores){
+			this.scores = newScores;
+			notifyDataSetChanged();
+		}
 
 	    public int getCount() {
 	        return characterList.length();

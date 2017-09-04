@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+ <item
+        android:id="@+id/popup_set_failed_progress"
+        android:title="Set Progress to 'Failed'"/>
+
+    <item
+        android:id="@+id/popup_set_reviewing_progress"
+        android:title="Set Progress to 'Reviewing'"/>
+
+    <item
+        android:id="@+id/popup_set_timed_reviewing_progress"
+        android:title="Set Progress to 'Timed Review'"/>
+
+    <item
+        android:id="@+id/popup_set_known"
+        android:title="Set Progress to 'Known'"/>
+
+    <item
+        android:id="@+id/popup_see_study_screen"
+        android:title="See Character Study Page"/>
+</menu>

@@ -34,7 +34,13 @@ public class ProgressTracker {
 	private final String setName;
 	private final boolean useSRS;
 
-	public enum Progress { FAILED, REVIEWING, TIMED_REVIEW, PASSED, UNKNOWN;
+	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
+		public final int forceResetCode;
+
+		Progress(int forceResetCode){
+			this.forceResetCode = forceResetCode;
+		}
+
 		private static Progress parse(Integer in, int advanceReviewing){
         	if(in == null){
 				return Progress.UNKNOWN;
@@ -47,6 +53,7 @@ public class ProgressTracker {
             } else {
             	return Progress.PASSED;
 			}
+
 		}
 	}
 	
@@ -415,7 +422,7 @@ public class ProgressTracker {
 		if(!recordSheet.containsKey(c)) {
 			return;
 		}
-		recordSheet.put(c, -1 * (advanceIncorrect + advanceReview));
+		recordSheet.put(c, failScore());
 
 		removeSRSQueue(c);
 	}
@@ -450,4 +457,39 @@ public class ProgressTracker {
 	public Integer debugPeekCharacterScore(Character c){
 		return this.recordSheet.get(c);
 	}
+
+	private int failScore(){
+		return  -1 * (advanceIncorrect + advanceReview);
+	}
+
+	private int reviewScore(){
+		return  -1 * (advanceReview);
+	}
+
+	private int timedReviewScore(){
+		return  0;
+	}
+
+	private Integer unknownScore(){
+		return null;
+	}
+
+	private int knownScore(){
+		return  MAX_SCORE;
+	}
+
+	public void resetTo(Character character, Progress progress) {
+		if(progress == Progress.FAILED) {
+			recordSheet.put(character, failScore());
+		} else if(progress == Progress.REVIEWING){
+            recordSheet.put(character, reviewScore());
+		} else if(progress == Progress.TIMED_REVIEW){
+			recordSheet.put(character, timedReviewScore());
+		} else if(progress == Progress.UNKNOWN) {
+			recordSheet.put(character, unknownScore());
+		} else if(progress == Progress.PASSED) {
+			recordSheet.put(character, knownScore());
+		}
+	}
+
 }

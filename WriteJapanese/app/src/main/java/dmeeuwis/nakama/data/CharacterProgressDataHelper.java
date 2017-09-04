@@ -60,9 +60,11 @@ public class CharacterProgressDataHelper {
     }
     
     public void recordPractice(String charset, String character, PointDrawing d, int score){
-        String serialized = d.serialize();
+        String serialized = null;
+        if(d != null){
+            serialized = d.serialize();
+        }
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
-        //Log.i("nakama-record", "Recording practice: " + charset + "; " + character + "; " + score + "; drawing: " + serialized);
         try {
             db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, score, drawing) VALUES(?, ?, ?, ?, ?, ?)",
                     new String[]{UUID.randomUUID().toString(), iid.toString(), character, charset, Integer.toString(score), serialized });
@@ -135,11 +137,31 @@ public class CharacterProgressDataHelper {
                                 // indicates reset progress for srs sets (maybe only on first srs install?)
                                 pt.srsReset(set);
                                 //Log.d("nakama-progress", "Loaded SRS RESET for set " + set);
+
+
                             } else {
                                 Integer score = Integer.parseInt(r.get("score"));
                                 if (score == 100) {
                                     pt.markSuccess(character, t);
                                     //Log.d("nakama-progress", "Loaded PASS result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
+
+                                } else if (score == ProgressTracker.Progress.FAILED.forceResetCode) {
+                                    // indicates reset progress to failed for a single character
+                                    pt.resetTo(character, ProgressTracker.Progress.FAILED);
+
+                                } else if (score == ProgressTracker.Progress.REVIEWING.forceResetCode){
+                                    // indicates reset progress to timed review for a single character
+                                    pt.resetTo(character, ProgressTracker.Progress.REVIEWING);
+
+                                } else if (score == ProgressTracker.Progress.TIMED_REVIEW.forceResetCode){
+                                    // indicates reset progress to timed review for a single character
+                                    pt.resetTo(character, ProgressTracker.Progress.TIMED_REVIEW);
+
+                                } else if (score == ProgressTracker.Progress.PASSED.forceResetCode){
+                                    // indicates reset progress to passed for a single character
+                                    pt.resetTo(character, ProgressTracker.Progress.PASSED);
+
+
                                 } else {
                                     pt.markFailure(character);
                                     //Log.d("nakama-progress", "Loaded FAIL result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
@@ -167,6 +189,10 @@ public class CharacterProgressDataHelper {
             Log.d("nakama", "ERROR: caught parse error on parseCalendarString, input: " + in, e);
             return null;
         }
+    }
+
+    public void resetTo(String charsetId, String character, ProgressTracker.Progress progress) {
+        recordPractice(charsetId, character, null, progress.forceResetCode);
     }
 
 

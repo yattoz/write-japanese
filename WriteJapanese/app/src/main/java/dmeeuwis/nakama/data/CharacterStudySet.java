@@ -134,6 +134,13 @@ public class CharacterStudySet implements Iterable<Character> {
         this.goalStarted = new GregorianCalendar();
     }
 
+
+    public void resetTo(Character selected, ProgressTracker.Progress progress) {
+        this.dbHelper.resetTo(this.pathPrefix, selected.toString(), progress);
+        this.tracker.resetTo(selected, progress);
+    }
+
+
     public void clearStudyGoal() {
         this.studyGoal = null;
         this.goalStarted = null;
