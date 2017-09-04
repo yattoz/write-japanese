@@ -8,6 +8,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -242,7 +243,9 @@ public class CharacterStudySet implements Iterable<Character> {
         dbHelper.recordGoals(pathPrefix, goalStarted, studyGoal);
     }
 
-    public void load(Context ctx) {
+    public enum LoadProgress { LOAD_SET_PROGRESS, NO_LOAD_SET_PROGRESS };
+
+    public ProgressTracker load(Context ctx, LoadProgress loadProgress) {
         CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
         Pair<GregorianCalendar, GregorianCalendar> goals = dbHelper.getExistingGoals(pathPrefix);
         if (goals != null) {
@@ -260,7 +263,12 @@ public class CharacterStudySet implements Iterable<Character> {
 
 
         tracker = new ProgressTracker(allCharactersSet, shortName, p.advanceIncorrect, p.advanceReviewing, srsEnabled, srsAcrossSets);
-        dbHelper.loadProgressTrackerFromDB(tracker);
+
+        if(loadProgress == LoadProgress.LOAD_SET_PROGRESS) {
+            dbHelper.loadProgressTrackerFromDB(Arrays.asList(tracker));
+        }
+
+        return tracker;
     }
 
     public ProgressTracker.StudyType isReviewing() {

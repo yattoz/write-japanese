@@ -26,12 +26,15 @@ import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.data.CharacterProgressDataHelper;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
+import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 import dmeeuwis.nakama.primary.CharacterSetStatusFragment;
+import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.util.Util;
 
@@ -84,9 +87,12 @@ public class ReminderManager extends BroadcastReceiver {
             allSets.addAll(customSets);
             allSets.addAll(standardSets);
 
+            List<ProgressTracker> trackers = new ArrayList<>();
             for (CharacterStudySet set : allSets) {
-                set.load(context);
+                trackers.add(set.load(context, CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
             }
+            new CharacterProgressDataHelper(context, Iid.get(context))
+                    .loadProgressTrackerFromDB(trackers);
 
             if(Settings.getSRSEnabled(context) && Settings.getSRSNotifications(context)) {
                 // look for any srs hits

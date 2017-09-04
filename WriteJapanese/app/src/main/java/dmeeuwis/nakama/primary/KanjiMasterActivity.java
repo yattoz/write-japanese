@@ -69,6 +69,7 @@ import dmeeuwis.nakama.SpenDrawActivity;
 import dmeeuwis.nakama.TestDrawActivity;
 import dmeeuwis.nakama.data.AndroidInputStreamGenerator;
 import dmeeuwis.nakama.data.AssetFinder;
+import dmeeuwis.nakama.data.CharacterProgressDataHelper;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
@@ -122,7 +123,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     protected CharacterStudySet currentCharacterSet;
     protected LinkedHashMap<String, CharacterStudySet> characterSets = new LinkedHashMap<>();
-    protected List<CharacterStudySet> customSets = new ArrayList<>();
+    protected List<CharacterStudySet> customSets = null;
 
     protected StoryDataHelper db;
     protected boolean showedEndOfSetDialog = false;
@@ -379,8 +380,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     private void initializeCharacterSets(){
-        this.customSets.clear();
+        if(this.customSets != null){
+            return;
+        }
+        long start = System.currentTimeMillis();
 
+        this.customSets = new ArrayList<>();
         this.characterSets.clear();
         this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker, getApplicationContext()));
         this.characterSets.put("katakana", CharacterSets.katakana(lockChecker, getApplicationContext()));
@@ -397,9 +402,18 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.characterSets.put(c.pathPrefix, c);
         }
 
+        List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
         for(CharacterStudySet c: this.characterSets.values()){
-            c.load(this.getApplicationContext());
-            Log.d("nakama", "Loaded character set " + c.pathPrefix);
+            trackers.add(c.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
+        }
+        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
+                .loadProgressTrackerFromDB(trackers);
+
+
+        long startup = System.currentTimeMillis() - start;
+        Log.d("nakama-progress", "Total across-set charset progress init took " + startup + "ms");
+        if(startup > 500){
+            UncaughtExceptionLogger.backgroundLogError("Long startup detected: " + startup + "ms to load practice log", new RuntimeException(), this);
         }
     }
 

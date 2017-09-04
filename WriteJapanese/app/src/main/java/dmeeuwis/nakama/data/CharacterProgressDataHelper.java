@@ -109,7 +109,7 @@ public class CharacterProgressDataHelper {
         }
     }
 
-    public void loadProgressTrackerFromDB(final ProgressTracker pt){
+    public void loadProgressTrackerFromDB(final List<ProgressTracker> allPts){
         long start = System.currentTimeMillis();
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
@@ -124,23 +124,26 @@ public class CharacterProgressDataHelper {
                         String timestampStr = r.get("timestamp");
                         LocalDateTime t = LocalDateTime.parse(timestampStr, formatter);
 
-                        if(character.toString().equals("R")) {
-                            // indicates reset progress for standardSets characters
-                            pt.progressReset(context, set);
-                            //Log.d("nakama-progress", "Loaded PROGRESS RESET for set " + set);
+                        for(ProgressTracker pt: allPts) {
 
-                        } else if(character.toString().equals("S")){
-                            // indicates reset progress for srs sets (maybe only on first srs install?)
-                            pt.srsReset(set);
-                            //Log.d("nakama-progress", "Loaded SRS RESET for set " + set);
-                        } else {
-                            Integer score = Integer.parseInt(r.get("score"));
-                            if(score == 100){
-                                pt.markSuccess(character, t);
-                                //Log.d("nakama-progress", "Loaded PASS result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
+                            if (character.toString().equals("R")) {
+                                // indicates reset progress for standardSets characters
+                                pt.progressReset(context, set);
+                                //Log.d("nakama-progress", "Loaded PROGRESS RESET for set " + set);
+
+                            } else if (character.toString().equals("S")) {
+                                // indicates reset progress for srs sets (maybe only on first srs install?)
+                                pt.srsReset(set);
+                                //Log.d("nakama-progress", "Loaded SRS RESET for set " + set);
                             } else {
-                                pt.markFailure(character);
-                                //Log.d("nakama-progress", "Loaded FAIL result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
+                                Integer score = Integer.parseInt(r.get("score"));
+                                if (score == 100) {
+                                    pt.markSuccess(character, t);
+                                    //Log.d("nakama-progress", "Loaded PASS result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
+                                } else {
+                                    pt.markFailure(character);
+                                    //Log.d("nakama-progress", "Loaded FAIL result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
+                                }
                             }
                         }
                     }

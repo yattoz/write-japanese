@@ -65,7 +65,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         chart = (SingleBarChart)this.findViewById(R.id.barChart);
 
     	
-		Log.i("nakama", "ProgressActivity oncreate finished.");
+		Log.i("nakama", "ProgressActivity onCreate finished.");
 	}
 
     @Override public void onResume(){
@@ -91,7 +91,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         lc = new LockCheckerInAppBillingService(this);
 
         charSet = CharacterSets.fromName(this, callingPath, lc);
-        charSet.load(this.getApplicationContext());
+        charSet.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS);
         scores = charSet.getRecordSheet();
         characterList = charSet.charactersAsString();
 
@@ -113,7 +113,7 @@ public class ProgressActivity extends ActionBarActivity implements OnItemClickLi
         int passedCount = 0, trainingCount = 0, failedCount = 0, timedReviewCount = 0;
         for(Map.Entry<Character, Progress> s: scores.entrySet()){
             Progress r = s.getValue();
-            Log.i("nakama-progress", "Progress entry: " + s.getKey() + " has progress " + s.getValue());
+            //Log.i("nakama-progress", "Progress entry: " + s.getKey() + " has progress " + s.getValue());
             if(r == Progress.PASSED){
                 passedCount++;
             } else if(r == Progress.REVIEWING){
