@@ -1,6 +1,5 @@
 package dmeeuwis.nakama.data;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
@@ -25,17 +24,15 @@ import java.util.Random;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.util.Util;
 
 public class ProgressTracker {
+
+	final static public int MAX_SCORE = 4;
+
     final Random random = new Random();
 	private final String setName;
 	private final boolean useSRS;
-
-	public void srsReset() {
-		srsQueue.clear();
-	}
 
 	public enum Progress { FAILED, REVIEWING, TIMED_REVIEW, PASSED, UNKNOWN;
 		private static Progress parse(Integer in, int advanceReviewing){
@@ -45,7 +42,7 @@ public class ProgressTracker {
 				return Progress.FAILED;
 			} else if(in < 0){
 				return Progress.REVIEWING;
-            } else if(in < 5){
+            } else if(in < MAX_SCORE){
                 return Progress.TIMED_REVIEW;
             } else {
             	return Progress.PASSED;
@@ -81,9 +78,6 @@ public class ProgressTracker {
 
 	private SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp){
 		if(score < 0){
-			//if(BuildConfig.DEBUG) {
-			//	Log.d("nakama", "Char " + character + " has score " + score + ", NOT adding to SRS");
-			//}
 			return null;
 		}
 
@@ -95,10 +89,6 @@ public class ProgressTracker {
 		LocalDate nextDate = timestamp.plus(delay).toLocalDate();
 		SRSEntry entry = new SRSEntry(character, nextDate);
 		srsQueue.add(entry);
-
-		//if(BuildConfig.DEBUG) {
-		//	Log.d("nakama", "Char " + character + " has score " + score + ", YES adding to SRS with delay " + SRSTable[score] + " to: " + nextDate);
-		//}
 
 		return entry;
 	}
@@ -362,7 +352,11 @@ public class ProgressTracker {
 	}
 	
 	public void progressReset(Context ctx, String setName){
-		CharacterSets.fromName(ctx, setName, null);
+		try {
+			CharacterSets.fromName(ctx, setName, null);
+		} catch(Throwable t){
+			Log.e("nakama", "Error resetting progress on " + setName, t);
+		}
 
 		for(Character c: this.recordSheet.keySet()){
 			if(this.recordSheet.containsKey(c)) {
@@ -372,8 +366,32 @@ public class ProgressTracker {
 		}
 	}
 
+	public void srsReset(String setId) {
+		List<Character> charsToReset = new ArrayList<>(srsQueue.size());
+		for(SRSEntry o: srsQueue){
+			charsToReset.add(o.character);
+		}
+
+		for(Character c: charsToReset){
+			overrideFullCompleted(c);
+		}
+	}
+
+	public void overrideFullCompleted(Character c){
+		boolean charInCurrentSet = recordSheet.containsKey(c);
+		Map<Character, Integer> scoreSheetToUse;
+		if(charInCurrentSet){
+			scoreSheetToUse = recordSheet;
+		} else {
+			scoreSheetToUse = othersRecordSheet;
+		}
+		int score = MAX_SCORE;
+		scoreSheetToUse.put(c, score);
+
+		removeSRSQueue(c);
+	}
+
 	public SRSEntry markSuccess(Character c, LocalDateTime time){
-		//Log.i("nakama-progression", "Marking success on char " + c);
 		boolean charInCurrentSet = recordSheet.containsKey(c);
 		Map<Character, Integer> scoreSheetToUse;
 		if(charInCurrentSet){
@@ -382,10 +400,11 @@ public class ProgressTracker {
 			scoreSheetToUse = othersRecordSheet;
 		}
 		int score = scoreSheetToUse.get(c) == null ? 0 : scoreSheetToUse.get(c);
-		scoreSheetToUse.put(c, Math.min(0, score + 1));
+		int newScore = Math.min(MAX_SCORE, score + 1);
+		scoreSheetToUse.put(c, Math.min(0, newScore));
 
 		if(charInCurrentSet || useSRSAcrossSets) {
-			SRSEntry addedToSrs = addToSRSQueue(c, score + 1, time);
+			SRSEntry addedToSrs = addToSRSQueue(c, newScore, time);
 			return addedToSrs;
 		}
 
@@ -393,14 +412,12 @@ public class ProgressTracker {
 	}
 
 	public void markFailure(Character c){
-		//Log.i("nakama-progression", "Marking failure on char " + c);
 		if(!recordSheet.containsKey(c)) {
 			return;
 		}
 		recordSheet.put(c, -1 * (advanceIncorrect + advanceReview));
 
 		removeSRSQueue(c);
-		//Log.d("nakama-progression", "Incorrect: char " + c + " now has score " + recordSheet.get(c));
 	}
 
 	public Map<Character, Progress> getAllScores(){

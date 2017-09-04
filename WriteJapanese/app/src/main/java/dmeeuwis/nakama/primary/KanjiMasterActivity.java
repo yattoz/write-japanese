@@ -846,6 +846,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:ClearSharedPrefs");
             menu.add("DEBUG:ClearSyncSettings");
             menu.add("DEBUG:ClearSRSSettings");
+            menu.add("DEBUG:SRSPassCurrentSet");
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
             menu.add("DEBUG:SyncNow");
@@ -1023,6 +1024,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
             } else if (item.getTitle().equals("DEBUG:ClearSRSSettings")) {
                 Settings.clearSRSSettings(getApplicationContext());
+            } else if (item.getTitle().equals("DEBUG:SRSPassCurrentSet")) {
+                currentCharacterSet.srsForcePassAll();
 
             } else if (item.getTitle().equals("DEBUG:ClearSync")) {
                 new PracticeLogSync(KanjiMasterActivity.this).clearSync();

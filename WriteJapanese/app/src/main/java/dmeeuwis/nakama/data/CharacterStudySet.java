@@ -71,7 +71,7 @@ public class CharacterStudySet implements Iterable<Character> {
         public final int passed, remaining, daysLeft;
         public final int neededPerDay, scheduledPerDay;
 
-        public GoalProgress(GregorianCalendar goalStarted, GregorianCalendar goal, SetProgress s, GregorianCalendar today) {
+        GoalProgress(GregorianCalendar goalStarted, GregorianCalendar goal, SetProgress s, GregorianCalendar today) {
             this.goalStarted = goalStarted;
             this.remaining = s.failing + s.reviewing + s.unknown;
             this.passed = s.passed;
@@ -215,6 +215,11 @@ public class CharacterStudySet implements Iterable<Character> {
     public void progressReset(Context context) {
         this.tracker.progressReset(context, shortName);
         dbHelper.clearProgress(pathPrefix);
+    }
+
+    public void srsForcePassAll() {
+        this.dbHelper.srsReset(pathPrefix);
+        this.tracker.srsReset(pathPrefix);
     }
 
     public void skipTo(Character character) {

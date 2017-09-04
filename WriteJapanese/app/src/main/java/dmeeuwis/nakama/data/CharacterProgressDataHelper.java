@@ -36,7 +36,18 @@ public class CharacterProgressDataHelper {
         this.context = c;
         this.iid = iid;
     }
-    
+
+    public void srsReset(String charSet){
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        try {
+            // 0 to indicate reset progress? Am I being silly...?
+            db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)",
+                    new String[]{ UUID.randomUUID().toString(), iid.toString(), "S", charSet, "0" });
+        } finally {
+            db.close();
+        }
+    }
+
     public void clearProgress(String charSet){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
@@ -110,31 +121,33 @@ public class CharacterProgressDataHelper {
                     public void process(Map<String, String> r) {
                         Character character = r.get("character").charAt(0);
                         String set = r.get("charset");
+                        String timestampStr = r.get("timestamp");
+                        LocalDateTime t = LocalDateTime.parse(timestampStr, formatter);
 
                         if(character.toString().equals("R")) {
                             // indicates reset progress for standardSets characters
                             pt.progressReset(context, set);
+                            //Log.d("nakama-progress", "Loaded PROGRESS RESET for set " + set);
 
-//                        } else if(character.toString().equals("S")){
-//                            // indicates reset progress for srs sets (maybe only on first srs install?)
-//                            pt.srsReset();
+                        } else if(character.toString().equals("S")){
+                            // indicates reset progress for srs sets (maybe only on first srs install?)
+                            pt.srsReset(set);
+                            //Log.d("nakama-progress", "Loaded SRS RESET for set " + set);
                         } else {
                             Integer score = Integer.parseInt(r.get("score"));
-                            String timestampStr = r.get("timestamp");
                             if(score == 100){
-                                LocalDateTime t = LocalDateTime.parse(timestampStr, formatter);
                                 pt.markSuccess(character, t);
-                                //Log.d("nakama-progress", "Loaded PASS result for " + character + "; currently at " + pt.debugPeekCharacterScore(character));
+                                //Log.d("nakama-progress", "Loaded PASS result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
                             } else {
                                 pt.markFailure(character);
-                                //Log.d("nakama-progress", "Loaded FAIL result for " + character + "; currently at " + pt.debugPeekCharacterScore(character));
+                                //Log.d("nakama-progress", "Loaded FAIL result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
                             }
                         }
                     }
                 },
 
                 db.getReadableDatabase(),
-                "SELECT character, score, timestamp FROM practice_log");
+                "SELECT character, charset, score, timestamp FROM practice_log");
         } finally {
             db.close();
         }

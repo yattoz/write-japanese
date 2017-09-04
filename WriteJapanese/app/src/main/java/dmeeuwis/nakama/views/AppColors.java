@@ -3,14 +3,14 @@ package dmeeuwis.nakama.views;
 import android.graphics.Color;
 
 public class AppColors {
-    public static final String PASSED_COLOR_HEX = "#ffcf40";
+    public static final String PASSED_COLOR_HEX = "#A0DAFFDD"; //"#F0D53F";
     public static final int PASSED_COLOR = Color.parseColor(PASSED_COLOR_HEX);
-    public static final String PASSED_BORDER_HEX = "#bf9b30";
+    public static final String PASSED_BORDER_HEX = "#006C02"; // "#FFF262";
     public static final int PASSED_BORDER = Color.parseColor(PASSED_BORDER_HEX);
 
-    public static final String TIMED_REVIEW_COLOR_HEX = "#A0DAFFDD";
+    public static final String TIMED_REVIEW_COLOR_HEX = "#A4E0FF";
     public static final int TIMED_REVIEW_COLOR = Color.parseColor(TIMED_REVIEW_COLOR_HEX);
-    public static final String TIMED_REVIEW_BORDER_HEX = "#006C02";
+    public static final String TIMED_REVIEW_BORDER_HEX = "#1B81B4";
     public static final int TIMED_REVIEW_BORDER = Color.parseColor(TIMED_REVIEW_BORDER_HEX);
 
     public static final String TRAINING_COLOR_HEX = "#A0D3D6FF";
