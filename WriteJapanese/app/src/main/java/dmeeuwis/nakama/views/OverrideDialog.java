@@ -28,7 +28,6 @@ public class OverrideDialog extends DialogFragment {
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Toast.makeText(getActivity(), "Override denied!", Toast.LENGTH_LONG).show();
                     }
                 });
         // Create the AlertDialog object and return it
