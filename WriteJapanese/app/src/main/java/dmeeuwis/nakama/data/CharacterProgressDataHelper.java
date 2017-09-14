@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.primary.ProgressSettingsDialog;
@@ -115,12 +116,15 @@ public class CharacterProgressDataHelper {
         long start = System.currentTimeMillis();
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        final AtomicLong count = new AtomicLong(0);
 
         try {
             DataHelper.applyToResults(
                 new DataHelper.ProcessRow() {
                     @Override
                     public void process(Map<String, String> r) {
+                        count.incrementAndGet();
+
                         Character character = r.get("character").charAt(0);
                         String set = r.get("charset");
                         String timestampStr = r.get("timestamp");
@@ -177,7 +181,7 @@ public class CharacterProgressDataHelper {
             db.close();
         }
 
-        Log.i("nakama-progress", "Time to load progress tracker: " + (System.currentTimeMillis() - start) + "ms");
+        Log.i("nakama-progress", "Time to load progress tracker: " + (System.currentTimeMillis() - start) + "ms; counted " + count.get() + " records.");
     }
 
     private static GregorianCalendar parseCalendarString(String in){

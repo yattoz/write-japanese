@@ -359,16 +359,8 @@ public class ProgressTracker {
 	}
 	
 	public void progressReset(Context ctx, String setName){
-		try {
-			CharacterSets.fromName(ctx, setName, null);
-		} catch(Throwable t){
-			Log.e("nakama", "Error resetting progress on " + setName, t);
-		}
-
 		for(Character c: this.recordSheet.keySet()){
-			if(this.recordSheet.containsKey(c)) {
-				this.recordSheet.put(c, null);
-			}
+			this.recordSheet.put(c, null);
 			removeSRSQueue(c);
 		}
 	}
