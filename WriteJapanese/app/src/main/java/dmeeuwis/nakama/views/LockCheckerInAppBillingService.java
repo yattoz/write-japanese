@@ -277,6 +277,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
                 // saw null pointer exceptions when using ownedSkus.size coming from a certain ip with device of
                 // 'unknown: Full Android on Emulator'. Special investigation block here to try to see what's going on.
                 if(ownedSkus == null || purchaseDataList == null){
+
                     StringBuilder sb = new StringBuilder();
                     sb.append("getPurchases bundle did not contain expected contents on 0 response code. Bundle contained: ");
                     for(String k: ownedItems.keySet()){

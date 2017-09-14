@@ -27,7 +27,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -95,6 +94,7 @@ import dmeeuwis.nakama.views.Animatable;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
+import dmeeuwis.nakama.views.OverrideDialog;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.ShareStoriesDialog;
 import dmeeuwis.nakama.views.StrictnessDialog;
@@ -150,7 +150,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected ViewFlipper flipper;
     protected FlipperAnimationListener flipperAnimationListener;
     protected View maskView;
-    protected FloatingActionButton remindStoryButton, doneButton, undoStrokeButton, teachMeButton;
+    protected FloatingActionButton overrideButton, remindStoryButton, doneButton, undoStrokeButton, teachMeButton;
     protected ListView criticism;           // TODO: to RecyclerView
     protected ArrayAdapter<String> criticismArrayAdapter;
     protected ColorDrawable actionBarBackground;
@@ -300,6 +300,19 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 goToTeachingActivity(c);
             }
         });
+
+
+        overrideButton = (FloatingActionButton) findViewById(R.id.overrideButton);
+        overrideButton.setOnClickListener(
+                new View.OnClickListener() {
+                     @Override
+                     public void onClick(View v) {
+                         OverrideDialog od = OverrideDialog.make();
+                         if(!od.isAdded()) {
+                             od.show(KanjiMasterActivity.this.getSupportFragmentManager(), "override");
+                         }
+                     }
+                 });
 
         correctAnimation = (AnimatedCurveView) findViewById(R.id.animatedKnownReplay);
         playbackAnimation = (AnimatedCurveView) findViewById(R.id.animatedDrawnReplay);

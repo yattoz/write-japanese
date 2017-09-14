@@ -187,6 +187,17 @@
             </android.support.v7.widget.CardView>
         </LinearLayout>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/overrideButton"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
+            android:layout_gravity="bottom|start"
+            android:src="@drawable/ic_question_mark"
+            app:backgroundTint="@color/DarkRed"
+            android:elevation="@dimen/elevation_low"
+            android:layout_marginBottom="92dp"
+            android:layout_marginLeft="12dp"
+            android:tag="slideDown" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
