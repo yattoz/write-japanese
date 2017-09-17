@@ -14,7 +14,7 @@ import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
     public interface OnCriticismDone {
-        void run(Criticism c, ProgressTracker.SRSEntry entry);
+        void run(Criticism c, ProgressTracker.Result entry);
     }
 
     private Context appContext;
@@ -45,7 +45,7 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
     @Override
     protected void onPostExecute(Criticism criticism) {
-        ProgressTracker.SRSEntry entry = null;
+        ProgressTracker.Result entry = null;
         try {
             entry = currentCharacterSet.markCurrent(drawn, criticism.pass);
         } catch(SQLiteFullException e){

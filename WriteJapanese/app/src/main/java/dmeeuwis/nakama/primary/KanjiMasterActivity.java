@@ -222,11 +222,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 final CurveDrawing known = new CurveDrawing(currentCharacterSvg);
 
                 AndroidInputStreamGenerator is = new AndroidInputStreamGenerator(KanjiMasterActivity.this.getAssets());
-                Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(),
-                        new AssetFinder(is));
+                Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(), new AssetFinder(is));
 
                 ComparisonAsyncTask comp = new ComparisonAsyncTask(getApplicationContext(), comparator, currentCharacterSet, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
-                    public void run(Criticism critique, ProgressTracker.SRSEntry entry) {
+                    public void run(Criticism critique, ProgressTracker.Result entry) {
 
                         if (critique.pass) {
 
@@ -241,8 +240,8 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                                 correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
                             }
 
-                            if(entry != null){
-                                correctVocabArrayAdapter.addNextSrsHeader(entry);
+                            if(entry.srs != null){
+                                correctVocabArrayAdapter.addNextSrsHeader(entry.srs);
                             }
 
 
@@ -257,6 +256,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                             }
 
                             setUiState(State.REVIEWING);
+                        }
+
+                        if(BuildConfig.DEBUG && entry != null){
+                            Toast.makeText(KanjiMasterActivity.this, "New character score became " + entry.score, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

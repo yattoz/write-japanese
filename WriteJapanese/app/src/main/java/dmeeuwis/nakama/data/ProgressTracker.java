@@ -31,7 +31,6 @@ public class ProgressTracker {
 	final static public int MAX_SCORE = 4;
 
     final Random random = new Random();
-	private final String setName;
 	private final boolean useSRS;
 
 	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
@@ -64,6 +63,16 @@ public class ProgressTracker {
 
 	private final int advanceIncorrect;
 	private final int advanceReview;
+
+	public static class Result {
+		public final int score;
+		public final SRSEntry srs;
+
+		public Result(int score, SRSEntry srs) {
+			this.score = score;
+			this.srs = srs;
+		}
+	}
 
 	public static class SRSEntry {
 		public final Character character;
@@ -281,13 +290,12 @@ public class ProgressTracker {
 
 	private Character sortAndReturnFirst(Set<Character> allChars, Set<Character> unknown) {
 		final List<Character> chars = new ArrayList<>(allChars);
-		Log.d("nakama-progression", "Sorting allchars: " + Util.join(", ", chars)  + " to order unknown set " + Util.join(", ", unknown));
+		//Log.d("nakama-progression", "Sorting allchars: " + Util.join(", ", chars)  + " to order unknown set " + Util.join(", ", unknown));
 
 		final HashMap<Character, Integer> indexed = new HashMap<>(chars.size());
 		for(int i = 0; i < chars.size(); i++){
 			indexed.put(chars.get(i), i);
 		}
-
 
 		List<Character> toSort = new ArrayList<>(unknown);
 		Collections.sort(toSort, new Comparator<Character>() {
@@ -390,7 +398,7 @@ public class ProgressTracker {
 		removeSRSQueue(c);
 	}
 
-	public SRSEntry markSuccess(Character c, LocalDateTime time){
+	public Result markSuccess(Character c, LocalDateTime time){
 		boolean charInCurrentSet = recordSheet.containsKey(c);
 		Map<Character, Integer> scoreSheetToUse;
 		if(charInCurrentSet){
@@ -404,19 +412,20 @@ public class ProgressTracker {
 
 		if(charInCurrentSet || useSRSAcrossSets) {
 			SRSEntry addedToSrs = addToSRSQueue(c, newScore, time);
-			return addedToSrs;
+			return new Result(newScore, addedToSrs);
 		}
 
-		return null;
+		return new Result(newScore, null);
 	}
 
-	public void markFailure(Character c){
+	public Result markFailure(Character c){
 		if(!recordSheet.containsKey(c)) {
-			return;
+			return null;
 		}
 		recordSheet.put(c, failScore());
-
 		removeSRSQueue(c);
+
+		return new Result(failScore(), null);
 	}
 
 	public Map<Character, Progress> getAllScores(){

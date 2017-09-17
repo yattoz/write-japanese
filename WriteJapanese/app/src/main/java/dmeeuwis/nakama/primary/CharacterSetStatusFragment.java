@@ -133,7 +133,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
         if(progressPieChart != null){
             List<PieEntry> values = new ArrayList<>();
-            int[] colours = new int[4];
+            int[] colours = new int[5];
             int colour_i = 0;
             float total = sp.failing + sp.passed + sp.reviewing + sp.timedReviewing + sp.unknown;
 

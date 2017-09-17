@@ -190,21 +190,21 @@ public class CharacterStudySet implements Iterable<Character> {
         return (availableCharactersSet()).iterator();
     }
 
-    public ProgressTracker.SRSEntry markCurrent(PointDrawing d, boolean pass) {
+    public ProgressTracker.Result markCurrent(PointDrawing d, boolean pass) {
         Character c = currentCharacter();
-        ProgressTracker.SRSEntry enteredSRS = null;
+        ProgressTracker.Result result;
         try {
             if (pass) {
-                enteredSRS = this.tracker.markSuccess(c, LocalDateTime.now());
+                result = this.tracker.markSuccess(c, LocalDateTime.now());
             } else {
-                this.tracker.markFailure(c);
+                result = this.tracker.markFailure(c);
             }
             dbHelper.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
         } catch (Throwable t) {
             Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
             throw new RuntimeException(t);
         }
-        return enteredSRS;
+        return result;
     }
 
     public void markCurrentAsUnknown(Context context) {
