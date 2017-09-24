@@ -23,6 +23,7 @@ import java.util.List;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Translation;
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.ClueExtractor;
 import dmeeuwis.nakama.views.FuriganaSwitcher;
@@ -30,6 +31,9 @@ import dmeeuwis.nakama.views.FuriganaTextView;
 
 public class ClueCard extends CardView {
     final static private String SHARED_PREFS_CLUE_TYPE_KEY = "clueType";
+
+    final static private boolean DEBUG = BuildConfig.DEBUG && false;
+
     private View reviewBug, srsBug;
 
     public enum ClueType { MEANING, READING, TRANSLATION }
@@ -297,6 +301,10 @@ public class ClueCard extends CardView {
     }
 
     public void setCurrentCharacter(ClueExtractor clueExtractor, Character currentCharacter, boolean immediate) {
+        if(this.currentCharacter != null && this.currentCharacter.equals(currentCharacter)){
+            return;
+        }
+
         this.currentCharacter = currentCharacter;
         this.clueExtractor = clueExtractor;
 
@@ -307,7 +315,7 @@ public class ClueCard extends CardView {
 
         // =============== meanings =====================
         String[] meaningClues = clueExtractor.meaningsClues(currentCharacter);
-        Log.i("nakama-clue", "Setting meanings to " + TextUtils.join(", ", meaningClues));
+        if(DEBUG) Log.d("nakama-clue", "Setting meanings to " + TextUtils.join(", ", meaningClues));
         if (meaningsLayout.getVisibility() == View.VISIBLE && meaningClues.length > 1) {
             otherMeaningsButton.setVisibility(View.VISIBLE);
         } else {
@@ -332,7 +340,7 @@ public class ClueCard extends CardView {
 
         // =============== readings =====================
         String[] readingsClues = clueExtractor.readingClues(currentCharacter);
-        Log.i("nakama-clue", "Setting readings to " + TextUtils.join(", ", readingsClues));
+        if(DEBUG)Log.d("nakama-clue", "Setting readings to " + TextUtils.join(", ", readingsClues));
         if(readingsLayout.getVisibility() == View.VISIBLE && readingsClues.length > 1){
             otherReadingsButton.setVisibility(View.VISIBLE);
         } else {
@@ -361,7 +369,7 @@ public class ClueCard extends CardView {
     private void updateToTranslation(int i, boolean immediate){
         Translation t = clueExtractor.translationsClue(currentCharacter, i);
         if(t != null){
-            Log.i("nakama-clue", "Updating " + i + "-th translation to: " + t.toKanjiString());
+            if(DEBUG) Log.d("nakama-clue", "Updating " + i + "-th translation to: " + t.toKanjiString());
             if(immediate) {
                 translationTarget.setCurrentTranslationQuiz(t, currentCharacter, clueExtractor.getDictionarySet().kanjiFinder());
             } else {
@@ -373,7 +381,7 @@ public class ClueCard extends CardView {
             setTextImmediate(translationEnglish, immediate, TextUtils.join("; ", subset));
             setTextImmediate(translationInstructionsLabel, immediate, clueExtractor.translationsInstructionsText(i));
         } else {
-            Log.i("nakama-clue", "Clearing translation " + i);
+            if(DEBUG) Log.d("nakama-clue", "Clearing translation " + i);
             if(i == 0){
                 Log.e("nakama-clue", "Error: cannot find a 0th translation for " + currentCharacter);
             } else {
@@ -384,7 +392,7 @@ public class ClueCard extends CardView {
 
         Translation next = clueExtractor.translationsClue(currentCharacter, i+1);
         boolean nextVisible = (next != null || i != 0) && translationsLayout.getVisibility() == View.VISIBLE;
-        Log.i("nakama-clue", "Updating to translation " + i + "; next was found " + next + "; setting next button visibility to " + nextVisible);
+        if(DEBUG) Log.d("nakama-clue", "Updating to translation " + i + "; next was found " + next + "; setting next button visibility to " + nextVisible);
         otherTranslationsButton.setVisibility(nextVisible ? View.VISIBLE : View.GONE);
     }
 
