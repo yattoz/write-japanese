@@ -33,6 +33,10 @@ public class ProgressTracker {
     final Random random = new Random();
 	private final boolean useSRS;
 
+	public Map<Character,Integer> getScoreSheet() {
+		return this.recordSheet;
+	}
+
 	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
 		public final int forceResetCode;
 
@@ -59,7 +63,7 @@ public class ProgressTracker {
 	private final Map<Character, Integer> recordSheet;
 	private final Map<Character, Integer> othersRecordSheet;
 	private final PriorityQueue<SRSEntry> srsQueue;
-	private final boolean useSRSAcrossSets;
+	public final boolean useSRSAcrossSets;
 
 	private final int advanceIncorrect;
 	private final int advanceReview;
@@ -134,7 +138,13 @@ public class ProgressTracker {
 	private static class SRSEntryComparator implements Comparator<SRSEntry> {
 		@Override
 		public int compare(SRSEntry o1, SRSEntry o2) {
-			return o1.nextPractice.compareTo(o2.nextPractice);
+			int compareDate = o1.nextPractice.compareTo(o2.nextPractice);
+			if(compareDate != 0){
+				return compareDate;
+			}
+
+			// if scheduled dates are equal, ensure a consistent ordering
+			return o1.character.compareTo(o2.character);
 		}
 
 		@Override
@@ -143,11 +153,10 @@ public class ProgressTracker {
 		}
 	}
 
-	ProgressTracker(Set<Character> allChars, String setName, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets){
-		this.setName = setName;
+	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets){
 		this.useSRS = useSRS;
-		this.recordSheet = new HashMap<>();
-		this.othersRecordSheet = new HashMap<>();
+		this.recordSheet = new LinkedHashMap<>();
+		this.othersRecordSheet = new LinkedHashMap<>();
 		for(Character c: allChars){
 			recordSheet.put(c, null);
 		}
@@ -190,6 +199,7 @@ public class ProgressTracker {
 
     Pair<Character, StudyType> nextCharacter(Set<Character> rawAllChars, Character currentChar, Set<Character> rawAvailSet, boolean shuffling,
 												  int introIncorrect, int introReviewing) {
+		Log.i("nakama-progression", "-------------> Starting nexCharacter selection");
 
 		LinkedHashSet<Character> allChars = new LinkedHashSet<>(rawAllChars);
 		LinkedHashSet<Character> availSet = new LinkedHashSet<>(rawAvailSet);
@@ -198,6 +208,7 @@ public class ProgressTracker {
 			SRSEntry soonestEntry = srsQueue.peek();
 			LocalDate today = LocalDate.now();
 			if (soonestEntry != null && (soonestEntry.nextPractice.isBefore(today) || soonestEntry.nextPractice.isEqual(today))) {
+				Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
 				return Pair.create(srsQueue.poll().character, StudyType.SRS);
 			}
 		}
@@ -419,17 +430,16 @@ public class ProgressTracker {
 	}
 
 	public Result markFailure(Character c){
-		if(!recordSheet.containsKey(c)) {
-			return null;
-		}
-		recordSheet.put(c, failScore());
 		removeSRSQueue(c);
+		if(recordSheet.containsKey(c)) {
+			recordSheet.put(c, failScore());
+		}
 
 		return new Result(failScore(), null);
 	}
 
 	public Map<Character, Progress> getAllScores(){
-		Map<Character, Progress> all = new HashMap<>(recordSheet.size());
+		Map<Character, Progress> all = new LinkedHashMap<>(recordSheet.size());
 		for(Map.Entry<Character, Integer> entry: recordSheet.entrySet()){
         	all.put(entry.getKey(), Progress.parse(entry.getValue(), advanceReview, useSRS));
 		}

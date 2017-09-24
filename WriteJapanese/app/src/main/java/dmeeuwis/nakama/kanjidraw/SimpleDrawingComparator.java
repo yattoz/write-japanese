@@ -31,7 +31,7 @@ class SimpleDrawingComparator implements Comparator {
 	private float CIRCLE_DETECTION_DISTANCE;
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 
-	private static final boolean DEBUG = BuildConfig.DEBUG && true;
+	private static final boolean DEBUG = BuildConfig.DEBUG && false;
 
 	char target;
 	PointDrawing known;
@@ -67,7 +67,7 @@ class SimpleDrawingComparator implements Comparator {
 	}
 
 	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion) throws IOException {
-		Log.d("nakama", "Initial input to drawing comparator is: " + challenger);
+		if(DEBUG) Log.d("nakama", "Initial input to drawing comparator is: " + challenger);
 
 		this.target = target;
 
@@ -180,7 +180,7 @@ class SimpleDrawingComparator implements Comparator {
 		}
 
 		if (correctDiagonal) {
-			Log.d("nakama", "Correct diagonal detected! Early CORRECT response..");
+			if(DEBUG) Log.d("nakama", "Correct diagonal detected! Early CORRECT response..");
 			return new Criticism();
 		}
 
@@ -192,13 +192,13 @@ class SimpleDrawingComparator implements Comparator {
 				}
 				StrokeCriticism result = compareStroke(known_i, drawn_i);
 				if (DEBUG)
-					Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
+					if(DEBUG) Log.d("nakama", "Compared known " + known_i + " to drawn " + drawn_i + ": " + result.cost + "; " + result.message);
 				criticismMatrix[known_i][drawn_i] = result;
 				scoreMatrix[known_i][drawn_i] = result.cost;
 			}
 		}
 
-		Log.d("nakama", "Score Matrix (y-axis=known, x-axis=drawn)\n======================" + Util.printMatrix(scoreMatrix) + "====================");
+		if(DEBUG) Log.d("nakama", "Score Matrix (y-axis=known, x-axis=drawn)\n======================" + Util.printMatrix(scoreMatrix) + "====================");
 
 		// find best set of strokes
 		List<StrokeResult> bestStrokes = findBestPairings(scoreMatrix);
@@ -289,7 +289,7 @@ class SimpleDrawingComparator implements Comparator {
 		// special case for hiragana and katakana: find if the user drew katakana version instead of hiragana, and vice-versa
 		if (allowRecursion == Recursion.ALLOW) {
 			if (!c.pass && Kana.isHiragana(target) && target != 'も') {
-				Log.d("nakama", "Doing additional comparison between hiragana and katanama");
+				if(DEBUG) Log.d("nakama", "Doing additional comparison between hiragana and katanama");
 				char katakanaVersion = Kana.hiragana2Katakana(String.valueOf(target)).charAt(0);
 				SimpleDrawingComparator pc = new SimpleDrawingComparator(assetFinder, strokeOrder);
 				if (pc.compare(katakanaVersion, this.drawn, assetFinder.findGlyphForCharacter(katakanaVersion), Recursion.DISALLOW).pass) {
@@ -298,7 +298,7 @@ class SimpleDrawingComparator implements Comparator {
 					return specific;
 				}
 			} else if (!c.pass && Kana.isKatakana(target) && target != 'モ') {
-				Log.d("nakama", "Doing additional comparison between hiragana and katanama");
+				if(DEBUG) Log.d("nakama", "Doing additional comparison between hiragana and katanama");
 				char hiraganaVersion = Kana.katakana2Hiragana(String.valueOf(target)).charAt(0);
 				SimpleDrawingComparator pc = new SimpleDrawingComparator(assetFinder, strokeOrder);
 				if (pc.compare(hiraganaVersion, this.drawn, assetFinder.findGlyphForCharacter(hiraganaVersion), Recursion.DISALLOW).pass) {
@@ -315,7 +315,7 @@ class SimpleDrawingComparator implements Comparator {
 	static List<StrokeResult> findBestPairings(double[][] matrix){
 		HungarianAlgorithm al = new HungarianAlgorithm(matrix);
 		int[] matches = al.execute();
-		Log.i("nakama", "Assignment results: " + Arrays.toString(matches));
+		if(DEBUG) Log.i("nakama", "Assignment results: " + Arrays.toString(matches));
 		List<StrokeResult> l = new ArrayList<>(matches.length);
 		for(int i = 0; i < matrix.length; i++){
 			if(matches[i] < 0){

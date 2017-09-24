@@ -269,7 +269,7 @@ public class CharacterStudySet implements Iterable<Character> {
         if(srsAcrossSets == null){ srsAcrossSets = true; }
 
 
-        tracker = new ProgressTracker(allCharactersSet, shortName, p.advanceIncorrect, p.advanceReviewing, srsEnabled, srsAcrossSets);
+        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing, srsEnabled, srsAcrossSets);
 
         if(loadProgress == LoadProgress.LOAD_SET_PROGRESS) {
             dbHelper.loadProgressTrackerFromDB(Arrays.asList(tracker));
@@ -287,8 +287,16 @@ public class CharacterStudySet implements Iterable<Character> {
         return this.tracker.getAllScores();
     }
 
+    public Map<Character, Integer> getScoreSheet() {
+        return this.tracker.getScoreSheet();
+    }
+
     public Map<LocalDate, List<Character>> getSrsSchedule(){
         return tracker.getSrsSchedule();
     }
 
+
+    public Boolean srsAcrossSets() {
+        return tracker.useSRSAcrossSets;
+    }
 }

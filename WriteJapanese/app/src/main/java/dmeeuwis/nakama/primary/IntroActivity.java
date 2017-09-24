@@ -13,6 +13,7 @@ import agency.tango.materialintroscreen.SlideFragmentBuilder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.SyncRegistration;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
 public class IntroActivity extends MaterialIntroActivity {
 
@@ -41,6 +42,8 @@ public class IntroActivity extends MaterialIntroActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.i("nakama-intro", "IntroActivity.onCreate");
+
         int slidesShown = 0;
 
         Intent intent = getIntent();
@@ -50,6 +53,7 @@ public class IntroActivity extends MaterialIntroActivity {
         boolean srsRequested = intent != null && intent.getBooleanExtra(REQUEST_SRS_SETTINGS, false);
 
         if(srsNotYetShow || srsRequested){
+            Log.i("nakama-intro", "Showing srs screen: " + srsNotYetShow + ", " + srsRequested);
             addSlide(CheckboxSlideFragment.createInstance(R.color.intro_teal, R.color.intro_blue, R.drawable.ic_calendar2,
                     "Spaced Repetition (SRS)",
                     "Once written correctly, characters will be repeated at increasing timed intervals, across many days. This time repetition is often known as a 'spaced repetition system' (SRS). The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
@@ -71,6 +75,7 @@ public class IntroActivity extends MaterialIntroActivity {
         boolean syncRequested = intent != null && intent.getBooleanExtra(REQUEST_SYNC_SETTINGS, false);
 
         if(!syncStatus.asked || syncRequested) {
+            Log.i("nakama-intro", "Showing sync status screen: " + !syncStatus.asked + ", " + syncRequested);
             addSlide(new SlideFragmentBuilder()
                             .backgroundColor(R.color.intro_teal)
                             .image(R.drawable.device_sync_layered)
@@ -94,9 +99,12 @@ public class IntroActivity extends MaterialIntroActivity {
             slidesShown++;
         }
 
+        Log.i("nakama-intro", "After slides, slidesShown is: " + slidesShown);
         if(slidesShown == 0){
+            Log.i("nakama-intro", "Showing EMERGENCY SCREEN, WHY? slidesShown=" + slidesShown);
             // fake to satisfy library
             // should never happen?
+            UncaughtExceptionLogger.backgroundLogError("Error: no slides added on IntroActivity", new RuntimeException(), this);
             addSlide(new SlideFragmentBuilder()
                     .backgroundColor(R.color.intro_green)
                     .buttonsColor(R.color.LightBlue)

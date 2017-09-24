@@ -102,6 +102,8 @@ import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.ClueCard;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 
+import static dmeeuwis.nakama.primary.IntroActivity.USE_SRS_SETTING_NAME;
+
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
@@ -177,7 +179,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i("nakama", "MainActivity: onCreate starting.");
+        Log.i("nakama-intro", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
@@ -380,6 +382,16 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         initializeCharacterSets();
 
         ReminderManager.scheduleRemindersFor(getApplicationContext());
+
+        Boolean srsEnabled = Settings.getSRSEnabled(getApplicationContext());
+        boolean srsAsked = srsEnabled != null;
+        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
+
+        Log.i("nakama", "srsEnabled=" + srsEnabled + "; syncStatus=" + syncStatus);
+        if(!srsAsked || !syncStatus.asked){
+            Log.i("nakama-intro", "Launch IntroActivity from KanjiMasterActivity");
+            startActivity(new Intent(this, IntroActivity.class));
+        }
     }
 
     private void initializeCharacterSets(){
@@ -685,6 +697,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if(this.charSetFrag != null){
             this.charSetFrag.updateProgress();
         }
+
+        if(BuildConfig.DEBUG){
+            Integer curScore = currentCharacterSet.getScoreSheet().get(currentCharacterSet.currentCharacter());
+            if(curScore != null) {
+                Toast.makeText(this, "Current character score " + curScore, Toast.LENGTH_SHORT).show();
+                Log.d("nakama", "Current character " + currentCharacterSet.currentCharacter() + " score " + curScore);
+            }
+
+        }
     }
 
     private void storyButtonUpdate() {
@@ -803,13 +824,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         UpdateNotifier.updateNotifier(this, findViewById(R.id.drawingFrame));
 
 
-        Boolean srsEnabled = Settings.getSRSEnabled(getApplicationContext());
-        boolean srsAsked = srsEnabled != null;
+        // detect if user changed SRS settings, and need to reload charsets
         Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
-
-        Log.i("nakama", "srsEnabled=" + srsEnabled + "; syncStatus=" + syncStatus);
-        if(!srsAsked || !syncStatus.asked){
-            startActivity(new Intent(this, IntroActivity.class));
+        boolean srsAsked = Settings.getBooleanSetting(getApplicationContext(), USE_SRS_SETTING_NAME, null) != null;
+        if(syncStatus.asked && srsAsked &&
+                currentCharacterSet.srsAcrossSets() != Settings.getSRSAcrossSets(getApplicationContext())){
+            Log.i("nakama-intro", "Restarting activity due to change in SRS settings");
+            this.recreate();
         }
 
         super.onResume();

@@ -62,7 +62,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Move from Reviewing to Correct:" />
+            android:text="Move from Reviewing to SRS (or Correct state, if SRS is disabled):" />
 
         <Spinner
             android:id="@+id/when_to_advance_from_reviewing_spinner"
