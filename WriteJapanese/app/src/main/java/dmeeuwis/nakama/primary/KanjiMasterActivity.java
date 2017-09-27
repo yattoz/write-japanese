@@ -892,6 +892,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:LogBackgroundException");
             menu.add("DEBUG:ClearSyncTimestamp");
             menu.add("DEBUG:ClearUpdateNotification");
+            menu.add("DEBUG:PrintCharsetsAndSRS");
         }
 
         return true;
@@ -1095,6 +1096,14 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 ed.apply();
             } else if (item.getTitle().equals("DEBUG:ClearUpdateNotification")) {
                 UpdateNotifier.debugClearNotified(this);
+            } else if(item.getTitle().equals("DEBUG:PrintCharsetsAndSRS")){
+                for(CharacterStudySet c: characterSets.values()){
+                    Log.d("nakama", "Character set " + c.name);
+                    Log.d("nakama", "Character SRS " + c.getSrsScheduleString());
+
+                }
+
+
             }
         }
 

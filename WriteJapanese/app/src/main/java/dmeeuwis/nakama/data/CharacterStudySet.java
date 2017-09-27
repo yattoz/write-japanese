@@ -295,6 +295,9 @@ public class CharacterStudySet implements Iterable<Character> {
         return tracker.getSrsSchedule();
     }
 
+    public String getSrsScheduleString() {
+        return Util.join(getSrsSchedule(), ": ", ", ");
+    }
 
     public Boolean srsAcrossSets() {
         return tracker.useSRSAcrossSets;

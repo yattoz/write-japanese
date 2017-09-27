@@ -108,6 +108,7 @@ public class ProgressTracker {
 		Period delay = SRSTable[score];
 		LocalDate nextDate = timestamp.plus(delay).toLocalDate();
 		SRSEntry entry = new SRSEntry(character, nextDate);
+
 		srsQueue.add(entry);
 
 		return entry;
@@ -431,10 +432,16 @@ public class ProgressTracker {
 
 	public Result markFailure(Character c){
 		removeSRSQueue(c);
-		if(recordSheet.containsKey(c)) {
-			recordSheet.put(c, failScore());
+
+		boolean charInCurrentSet = recordSheet.containsKey(c);
+		Map<Character, Integer> scoreSheetToUse;
+		if(charInCurrentSet){
+			scoreSheetToUse = recordSheet;
+		} else {
+			scoreSheetToUse = othersRecordSheet;
 		}
 
+		scoreSheetToUse.put(c, failScore());
 		return new Result(failScore(), null);
 	}
 
@@ -490,6 +497,10 @@ public class ProgressTracker {
 	}
 
 	public void resetTo(Character character, Progress progress) {
+		if(!recordSheet.containsKey(character)){
+			return;
+		}
+
 		if(progress == Progress.FAILED) {
 			recordSheet.put(character, failScore());
 		} else if(progress == Progress.REVIEWING){
