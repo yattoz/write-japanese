@@ -106,12 +106,13 @@ import static dmeeuwis.nakama.primary.IntroActivity.USE_SRS_SETTING_NAME;
 
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+            ActivityCompat.OnRequestPermissionsResultCallback, GradingOverrideListener {
+
+    public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
 
     private static final boolean DEBUG_SCORES = false;
     private static final boolean DEBUG_MENU = true;
 
-    private enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
     private enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
     public static final String CHAR_SET = "currCharSet";
@@ -154,6 +155,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected ListView criticism;           // TODO: to RecyclerView
     protected ArrayAdapter<String> criticismArrayAdapter;
     protected ColorDrawable actionBarBackground;
+    protected String lastGradingRow;
 
     protected View correctCard, charsetCard, incorrectCard;
 
@@ -228,7 +230,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(), new AssetFinder(is));
 
                 ComparisonAsyncTask comp = new ComparisonAsyncTask(getApplicationContext(), comparator, currentCharacterSet, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
-                    public void run(Criticism critique, ProgressTracker.Result entry) {
+                    public void run(Criticism critique, CharacterStudySet.GradingResult entry) {
+
+                        // to support grading override
+                        lastGradingRow = entry.rowId;
 
                         if (critique.pass) {
 
@@ -1322,6 +1327,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     public void onFragmentInteraction(Uri uri) {
         Log.d("nakama", "KanjiMasterActivity: onFragmentInteraction called, " + uri);
+    }
+
+
+    @Override
+    public void overRide() {
+        Toast.makeText(this, "Override " + lastGradingRow, Toast.LENGTH_LONG).show();
+        currentCharacterSet.overRideLast();
     }
 
     @Override

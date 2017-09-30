@@ -33,11 +33,16 @@ public class ProgressTracker {
     final Random random = new Random();
 	private final boolean useSRS;
 
+    // these 2 track last grading to support override functionality
+    private int lastCharPrevScore = 0;
+    private boolean lastPassed = false;
+    private Character lastChar = null;
+
 	public Map<Character,Integer> getScoreSheet() {
 		return this.recordSheet;
 	}
 
-	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
+    public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
 		public final int forceResetCode;
 
 		Progress(int forceResetCode){
@@ -425,6 +430,10 @@ public class ProgressTracker {
 		}
 		int score = scoreSheetToUse.get(c) == null ? 0 : scoreSheetToUse.get(c);
 		int newScore = Math.min(MAX_SCORE, score + 1);
+
+        lastCharPrevScore = score;
+        lastChar = c;
+
 		scoreSheetToUse.put(c, Math.min(0, newScore));
 
 		if(charInCurrentSet || useSRSAcrossSets) {
@@ -445,6 +454,9 @@ public class ProgressTracker {
 		} else {
 			scoreSheetToUse = othersRecordSheet;
 		}
+
+        lastCharPrevScore = scoreSheetToUse.get(c);
+        lastChar = c;
 
 		scoreSheetToUse.put(c, failScore());
 		return new Result(failScore(), null);
@@ -518,5 +530,14 @@ public class ProgressTracker {
 			recordSheet.put(character, knownScore());
 		}
 	}
+
+	public void overRideLast(){
+        recordSheet.put(lastChar, lastCharPrevScore);
+        if(lastPassed){
+            markFailure(lastChar);
+        } else {
+            markSuccess(lastChar, LocalDateTime.now());
+        }
+    }
 
 }

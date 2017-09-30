@@ -30,6 +30,8 @@ public class CharacterProgressDataHelper {
     private final UUID iid;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    String lastRowId = null;
+
     public CharacterProgressDataHelper(Context c, UUID iid){
         this.context = c;
         this.iid = iid;
@@ -57,18 +59,21 @@ public class CharacterProgressDataHelper {
         }
     }
     
-    public void recordPractice(String charset, String character, PointDrawing d, int score){
+    public String recordPractice(String charset, String character, PointDrawing d, int score){
         String serialized = null;
         if(d != null){
             serialized = d.serialize();
         }
+        String rowId = UUID.randomUUID().toString();
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
             db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, score, drawing) VALUES(?, ?, ?, ?, ?, ?)",
-                    new String[]{UUID.randomUUID().toString(), iid.toString(), character, charset, Integer.toString(score), serialized });
+                    new String[]{rowId, iid.toString(), character, charset, Integer.toString(score), serialized });
         } finally {
             db.close();
         }
+        lastRowId = rowId;
+        return rowId;
     }
 
     public void recordGoals(String charset, GregorianCalendar goalStart, GregorianCalendar goal) {
@@ -209,6 +214,18 @@ public class CharacterProgressDataHelper {
 
     public void resetTo(String charsetId, String character, ProgressTracker.Progress progress) {
         recordPractice(charsetId, character, null, progress.forceResetCode);
+    }
+
+    public void overRideLast() {
+        if(lastRowId != null) {
+            WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+            try {
+                DataHelper.selectRecord(db.getReadableDatabase(),
+                        "UPDATE practice_logs SET score = min(0, -1 * score) WHERE id = ?", lastRowId);
+            } finally {
+                db.close();
+            }
+        }
     }
 
 

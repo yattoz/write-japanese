@@ -190,7 +190,16 @@ public class CharacterStudySet implements Iterable<Character> {
         return (availableCharactersSet()).iterator();
     }
 
-    public ProgressTracker.Result markCurrent(PointDrawing d, boolean pass) {
+    public static class GradingResult extends ProgressTracker.Result {
+        public final String rowId;
+
+        public GradingResult(String rowId, int score, ProgressTracker.SRSEntry srs) {
+            super(score, srs);
+            this.rowId = rowId;
+        }
+    }
+
+    public GradingResult markCurrent(PointDrawing d, boolean pass) {
         Character c = currentCharacter();
         ProgressTracker.Result result;
         try {
@@ -199,12 +208,12 @@ public class CharacterStudySet implements Iterable<Character> {
             } else {
                 result = this.tracker.markFailure(c);
             }
-            dbHelper.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
+            String rowId = dbHelper.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
+            return new GradingResult(rowId, result.score, result.srs);
         } catch (Throwable t) {
             Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
             throw new RuntimeException(t);
         }
-        return result;
     }
 
     public void markCurrentAsUnknown(Context context) {
@@ -302,4 +311,10 @@ public class CharacterStudySet implements Iterable<Character> {
     public Boolean srsAcrossSets() {
         return tracker.useSRSAcrossSets;
     }
+
+    public void overRideLast() {
+        this.tracker.overRideLast();
+        this.dbHelper.overRideLast();
+    }
+
 }
