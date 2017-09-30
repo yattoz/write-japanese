@@ -107,6 +107,8 @@ public class ReminderManager extends BroadcastReceiver {
                         }
                     }
                 }
+
+                Log.d("nakama", hits.size() + " chars for today");
                 if (hits.size() > 0) {
                     srsNotices = true;
                     notificationMessage.append(hits.size() + " timed review characters for today! ");

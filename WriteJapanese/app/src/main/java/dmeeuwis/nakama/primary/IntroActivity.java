@@ -55,19 +55,19 @@ public class IntroActivity extends MaterialIntroActivity {
         if(srsNotYetShow || srsRequested){
             Log.i("nakama-intro", "Showing srs screen: " + srsNotYetShow + ", " + srsRequested);
             addSlide(CheckboxSlideFragment.createInstance(R.color.intro_teal, R.color.intro_blue, R.drawable.ic_calendar2,
-                    "Spaced Repetition (SRS)",
-                    "Once written correctly, characters will be repeated at increasing timed intervals, across many days. This time repetition is often known as a 'spaced repetition system' (SRS). The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
+                    "Spaced Repetition",
+                    "Once written correctly a few times, characters will be repeated at increasing timed intervals, across many days, to really lock them in your memory. The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
                     "Use Spaced Repetition", USE_SRS_SETTING_NAME,
-                    "Show OS Notifications when characters are due for review", SRS_NOTIFICATION_SETTING_NAME,
-                    "Allow SRS repetitions to display even while studying in a different character set", SRS_ACROSS_SETS
+                    "Show spaced repetition characters to display even while studying in a different character set", SRS_ACROSS_SETS,
+                    "Show OS Notifications when characters are due for review", SRS_NOTIFICATION_SETTING_NAME
             ));
             slidesShown++;
 
             // on first view, set defaults
             if(srsNotYetShow) {
                 Settings.setBooleanSetting(getApplicationContext(), USE_SRS_SETTING_NAME, true);
-                Settings.setBooleanSetting(getApplicationContext(), SRS_NOTIFICATION_SETTING_NAME, true);
                 Settings.setBooleanSetting(getApplicationContext(), SRS_ACROSS_SETS, true);
+                Settings.setBooleanSetting(getApplicationContext(), SRS_NOTIFICATION_SETTING_NAME, false);
             }
         }
 
@@ -81,7 +81,7 @@ public class IntroActivity extends MaterialIntroActivity {
                             .image(R.drawable.device_sync_layered)
                             .buttonsColor(R.color.intro_blue)
                             .title("Across your devices")
-                            .description("To sync your progress across all your Android devices - or save your progress if you lose your device - click the below button to enable cross device sync.\n\nYou may be prompted to select which Google account to sync across.")
+                            .description("To sync your progress across all your Android devices - or save your progress if you lose your device - click the below button to enable cross-device sync.\n\nYou may be prompted to select which Google account to sync across.")
                             .build(),
                     new MessageButtonBehaviour(new View.OnClickListener() {
                         @Override
