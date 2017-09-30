@@ -221,7 +221,7 @@ public class CharacterProgressDataHelper {
             WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
             try {
                 DataHelper.selectRecord(db.getReadableDatabase(),
-                        "UPDATE practice_logs SET score = min(0, -1 * score) WHERE id = ?", lastRowId);
+                        "UPDATE practice_log SET score = min(0, -1 * score) WHERE id = ?", lastRowId);
             } finally {
                 db.close();
             }

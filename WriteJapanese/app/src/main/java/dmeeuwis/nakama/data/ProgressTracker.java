@@ -34,7 +34,7 @@ public class ProgressTracker {
 	private final boolean useSRS;
 
     // these 2 track last grading to support override functionality
-    private int lastCharPrevScore = 0;
+    private Integer lastCharPrevScore = null;
     private boolean lastPassed = false;
     private Character lastChar = null;
 

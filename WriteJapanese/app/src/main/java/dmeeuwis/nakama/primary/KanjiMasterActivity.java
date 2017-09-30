@@ -1334,6 +1334,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public void overRide() {
         Toast.makeText(this, "Override " + lastGradingRow, Toast.LENGTH_LONG).show();
         currentCharacterSet.overRideLast();
+        setUiState(State.CORRECT_ANSWER);
     }
 
     @Override
