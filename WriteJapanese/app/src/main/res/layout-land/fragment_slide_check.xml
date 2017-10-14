@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <agency.tango.materialintroscreen.parallax.ParallaxLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                                xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                                xmlns:tools="http://schemas.android.com/tools"
-                                                                android:id="@+id/slide_background"
-                                                                android:layout_width="match_parent"
-                                                                android:layout_height="match_parent"
-                                                                android:layout_marginLeft="16dp"
-                                                                android:layout_marginRight="16dp"
-                                                                android:layout_marginTop="16dp"
-                                                                android:clipToPadding="false"
-                                                                android:fitsSystemWindows="false"
-                                                                android:gravity="center"
-                                                                android:orientation="vertical"
-                                                                android:paddingBottom="164dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/slide_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="16dp"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="false"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="164dp">
 
     <ImageView
         android:id="@+id/checkbox_image_slide"
@@ -47,13 +47,29 @@
         app:layout_parallaxFactor="0.2"
         tools:text="Lorem ipsum dolor sit amet, consectetur, adipisci velit, …" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:id="@+id/button_slide_button"
+    <LinearLayout
         app:layout_parallaxFactor="0.2"
-        tools:text="Select Account to Sync Across"
-        />
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/fragment_check1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Use timed repetition (SRS)"/>
 
+        <CheckBox
+            android:id="@+id/fragment_check2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_parallaxFactor="0.2"
+            tools:text="Show OS Notifications"/>
+
+        <CheckBox
+            android:id="@+id/fragment_check3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_parallaxFactor="0.2"
+            tools:text="Show characters from other character sets when review is due"/>
+    </LinearLayout>
 </agency.tango.materialintroscreen.parallax.ParallaxLinearLayout>

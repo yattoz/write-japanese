@@ -35,20 +35,17 @@ public class ButtonSlideFragment extends SlideFragment {
     private String description;
     private String buttonLabel;
 
-    private View background;
-
     private TextView titleTextView;
     private TextView descriptionTextView;
     private ImageView imageView;
 
-    private MessageButtonBehaviour clickBehaviour;
     private Button buttonView;
 
 
-    public static CheckboxSlideFragment createInstance(int backgroundColor, int buttonsColor, int videoResource, String title, String description,
+    public static ButtonSlideFragment createInstance(int backgroundColor, int buttonsColor, int videoResource, String title, String description,
                                                        String buttonMessage){
 
-        CheckboxSlideFragment slideFragment = new CheckboxSlideFragment();
+        ButtonSlideFragment slideFragment = new ButtonSlideFragment();
 
         Bundle bundle = new Bundle();
         bundle.putInt(BACKGROUND_COLOR, backgroundColor);
@@ -70,7 +67,6 @@ public class ButtonSlideFragment extends SlideFragment {
         descriptionTextView = (TextView) view.findViewById(dmeeuwis.kanjimaster.R.id.txt_description_slide);
         imageView = (ImageView) view.findViewById(R.id.checkbox_image_slide);
         buttonView = (Button) view.findViewById(R.id.button_slide_button);
-        background = view.findViewById(R.id.slide_background);
         initializeView();
         return view;
     }
@@ -92,10 +88,6 @@ public class ButtonSlideFragment extends SlideFragment {
             }
         });
         updateViewWithValues();
-    }
-
-    private void setPref(String pref, boolean value){
-        Settings.setBooleanSetting(getContext().getApplicationContext(), pref, value);
     }
 
     private void updateViewWithValues() {

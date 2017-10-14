@@ -13,7 +13,6 @@ import java.util.List;
 import agency.tango.materialintroscreen.ButtonSlideFragment;
 import agency.tango.materialintroscreen.CheckboxSlideFragment;
 import agency.tango.materialintroscreen.MaterialIntroActivity;
-import agency.tango.materialintroscreen.MessageButtonBehaviour;
 import agency.tango.materialintroscreen.SlideFragment;
 import agency.tango.materialintroscreen.SlideFragmentBuilder;
 import dmeeuwis.kanjimaster.R;
@@ -62,7 +61,7 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
         if(srsNotYetShow || srsRequested){
             Log.i("nakama-intro", "Showing srs screen: " + srsNotYetShow + ", " + srsRequested);
             SlideFragment s =
-                CheckboxSlideFragment.createInstance(r.getColor(R.color.intro_green), r.getColor(R.color.intro_green), R.drawable.ic_calendar2,
+                CheckboxSlideFragment.createInstance(r.getColor(R.color.intro_green), r.getColor(R.color.intro_green), R.drawable.calendar2,
                         "Spaced Repetition",
                         "Once written correctly a few times, characters will be repeated at increasing timed intervals, across many days, to really lock them in your memory. The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
                         "Use Spaced Repetition", USE_SRS_SETTING_NAME,
@@ -88,22 +87,10 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
             SlideFragment s = ButtonSlideFragment.createInstance(
                             r.getColor(R.color.intro_teal),
                             r.getColor(R.color.intro_blue),
-                            R.drawable.device_sync_layered,
+                            R.drawable.device_sync,
                             "Across your devices",
                             "To sync your progress across all your Android devices - or save your progress if you lose your device - click the below button to enable cross-device sync.\n\nYou may be prompted to select which Google account to sync across.",
-                            "Choose Account to Sync Across");
-                    new MessageButtonBehaviour(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startActivityForResult(
-                                    AccountManager.newChooseAccountIntent(
-                                            null, null, new String[]{"com.google"}, false, null, null, null, null),
-                                    SyncRegistration.REQUEST_CODE_PICK_ACCOUNT);
-                            return;
-                        }
-                    }, "Choose Account for Sync");
-
-
+                            "Sync Across Google Account");
             addSlide(s);
             addedSlides.add(s);
             Settings.setCrossDeviceSyncAsked(getApplicationContext());
