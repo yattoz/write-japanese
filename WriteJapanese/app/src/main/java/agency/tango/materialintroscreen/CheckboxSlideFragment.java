@@ -113,8 +113,6 @@ public class CheckboxSlideFragment extends SlideFragment {
     }
 
     private void updateViewWithValues() {
-        background.setBackgroundColor(backgroundColor | 0xFF000000);
-        //background.setBackgroundColor(backgroundColor);
         titleTextView.setText(title);
         descriptionTextView.setText(description);
 

@@ -2,20 +2,26 @@ package dmeeuwis.nakama.primary;
 
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import agency.tango.materialintroscreen.ButtonSlideFragment;
 import agency.tango.materialintroscreen.CheckboxSlideFragment;
 import agency.tango.materialintroscreen.MaterialIntroActivity;
 import agency.tango.materialintroscreen.MessageButtonBehaviour;
+import agency.tango.materialintroscreen.SlideFragment;
 import agency.tango.materialintroscreen.SlideFragmentBuilder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
-public class IntroActivity extends MaterialIntroActivity {
+public class IntroActivity extends MaterialIntroActivity implements View.OnClickListener {
 
     public final static String USE_SRS_SETTING_NAME = "use_spaced_repetition";
     public final static String SRS_NOTIFICATION_SETTING_NAME = "use_srs_notifications";
@@ -43,8 +49,9 @@ public class IntroActivity extends MaterialIntroActivity {
         super.onCreate(savedInstanceState);
 
         Log.i("nakama-intro", "IntroActivity.onCreate");
+        Resources r = getResources();
 
-        int slidesShown = 0;
+        List<SlideFragment> addedSlides = new ArrayList<>();
 
         Intent intent = getIntent();
 
@@ -54,14 +61,16 @@ public class IntroActivity extends MaterialIntroActivity {
 
         if(srsNotYetShow || srsRequested){
             Log.i("nakama-intro", "Showing srs screen: " + srsNotYetShow + ", " + srsRequested);
-            addSlide(CheckboxSlideFragment.createInstance(R.color.intro_teal, R.color.intro_blue, R.drawable.ic_calendar2,
-                    "Spaced Repetition",
-                    "Once written correctly a few times, characters will be repeated at increasing timed intervals, across many days, to really lock them in your memory. The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
-                    "Use Spaced Repetition", USE_SRS_SETTING_NAME,
-                    "Show spaced repetition characters to display even while studying in a different character set", SRS_ACROSS_SETS,
-                    "Show OS Notifications when characters are due for review", SRS_NOTIFICATION_SETTING_NAME
-            ));
-            slidesShown++;
+            SlideFragment s =
+                CheckboxSlideFragment.createInstance(r.getColor(R.color.intro_green), r.getColor(R.color.intro_green), R.drawable.ic_calendar2,
+                        "Spaced Repetition",
+                        "Once written correctly a few times, characters will be repeated at increasing timed intervals, across many days, to really lock them in your memory. The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
+                        "Use Spaced Repetition", USE_SRS_SETTING_NAME,
+                        "Show spaced repetition characters to display even while studying in a different character set", SRS_ACROSS_SETS,
+                        "Show OS Notifications when characters are due for review", SRS_NOTIFICATION_SETTING_NAME
+                );
+            addSlide(s);
+            addedSlides.add(s);
 
             // on first view, set defaults
             if(srsNotYetShow) {
@@ -76,13 +85,13 @@ public class IntroActivity extends MaterialIntroActivity {
 
         if(!syncStatus.asked || syncRequested) {
             Log.i("nakama-intro", "Showing sync status screen: " + !syncStatus.asked + ", " + syncRequested);
-            addSlide(new SlideFragmentBuilder()
-                            .backgroundColor(R.color.intro_teal)
-                            .image(R.drawable.device_sync_layered)
-                            .buttonsColor(R.color.intro_blue)
-                            .title("Across your devices")
-                            .description("To sync your progress across all your Android devices - or save your progress if you lose your device - click the below button to enable cross-device sync.\n\nYou may be prompted to select which Google account to sync across.")
-                            .build(),
+            SlideFragment s = ButtonSlideFragment.createInstance(
+                            r.getColor(R.color.intro_teal),
+                            r.getColor(R.color.intro_blue),
+                            R.drawable.device_sync_layered,
+                            "Across your devices",
+                            "To sync your progress across all your Android devices - or save your progress if you lose your device - click the below button to enable cross-device sync.\n\nYou may be prompted to select which Google account to sync across.",
+                            "Choose Account to Sync Across");
                     new MessageButtonBehaviour(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -92,16 +101,18 @@ public class IntroActivity extends MaterialIntroActivity {
                                     SyncRegistration.REQUEST_CODE_PICK_ACCOUNT);
                             return;
                         }
-                    }, "Choose Account for Sync"));
+                    }, "Choose Account for Sync");
 
 
+            addSlide(s);
+            addedSlides.add(s);
             Settings.setCrossDeviceSyncAsked(getApplicationContext());
-            slidesShown++;
         }
 
-        Log.i("nakama-intro", "After slides, slidesShown is: " + slidesShown);
-        if(slidesShown == 0){
-            Log.i("nakama-intro", "Showing EMERGENCY SCREEN, WHY? slidesShown=" + slidesShown);
+        Log.i("nakama-intro", "After slides, slidesShown is: " + addedSlides.size());
+
+        if(addedSlides.size() == 0){
+            Log.i("nakama-intro", "Showing EMERGENCY SCREEN, WHY? slidesShown=" + addedSlides.size());
             // fake to satisfy library
             // should never happen?
             UncaughtExceptionLogger.backgroundLogError("Error: no slides added on IntroActivity", new RuntimeException(), this);
@@ -111,33 +122,15 @@ public class IntroActivity extends MaterialIntroActivity {
                     .title("Good luck!")
                     .description("Good luck with your studies in Japanese!")
                     .build());
-
         }
-/*
-        addSlide(VideoSlideFragment.createInstance(R.color.intro_blue, R.color.LightBlue, R.raw.correct_draw,
-                "Welcome to Write Japanese",
-                "Learn to draw the Japanese writing systems: Hiragana, Katakana, and the Kanji.\n\nDraw the character indicated in the instruction card. You can choose to be prompted based on character meaning, readings, or vocab examples.\n\nPress the 'back' button while drawing to undo a mistaken stroke."
-        ));
+    }
 
-        addSlide(VideoSlideFragment.createInstance(R.color.intro_teal, R.color.LightBlue, R.raw.correct_draw,
-                "Timed Repetition",
-                "Write Japanese uses a time-based repetition (aka. spaced repetition system) to manage your learning. It helps you study the right characters, when you need to."
-        ));
-
-        addSlide(VideoSlideFragment.createInstance(R.color.intro_green, R.color.LightBlue, R.raw.correct_draw,
-                "You got it!",
-                "If you've drawn correctly, you'll see a happy green screen with vocab examples of the character. Then continue on to the next!"));
-
-        addSlide(VideoSlideFragment.createInstance(R.color.intro_red, R.color.LightBlue, R.raw.incorrect_demo,
-                "Not so fast!",
-                "If incorrect, you'll see an angry red screen, and have a chance to review in study mode. Trace the character, and make a story to help you remember it for next time."));
-
-        addSlide(new SlideFragmentBuilder()
-                .backgroundColor(R.color.intro_green)
-                .buttonsColor(R.color.LightBlue)
-                .title("Good luck!")
-                .description("Good luck with your studies in Japanese!")
-                .build());
-    */
+    @Override
+    public void onClick(View view) {
+        // Hackety hack
+        startActivityForResult(
+                AccountManager.newChooseAccountIntent(
+                        null, null, new String[]{"com.google"}, false, null, null, null, null),
+                SyncRegistration.REQUEST_CODE_PICK_ACCOUNT);
     }
 }
