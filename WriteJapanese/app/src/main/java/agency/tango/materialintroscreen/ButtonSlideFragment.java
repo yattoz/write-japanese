@@ -1,10 +1,13 @@
 package agency.tango.materialintroscreen;
 
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import dmeeuwis.kanjimaster.*;
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.Settings;
 
@@ -39,7 +43,7 @@ public class ButtonSlideFragment extends SlideFragment {
     private TextView descriptionTextView;
     private ImageView imageView;
 
-    private Button buttonView;
+    private AppCompatButton buttonView;
 
 
     public static ButtonSlideFragment createInstance(int backgroundColor, int buttonsColor, int videoResource, String title, String description,
@@ -66,7 +70,7 @@ public class ButtonSlideFragment extends SlideFragment {
         titleTextView = (TextView) view.findViewById(dmeeuwis.kanjimaster.R.id.txt_title_slide);
         descriptionTextView = (TextView) view.findViewById(dmeeuwis.kanjimaster.R.id.txt_description_slide);
         imageView = (ImageView) view.findViewById(R.id.checkbox_image_slide);
-        buttonView = (Button) view.findViewById(R.id.button_slide_button);
+        buttonView = (AppCompatButton) view.findViewById(R.id.button_slide_button);
         initializeView();
         return view;
     }
@@ -87,6 +91,11 @@ public class ButtonSlideFragment extends SlideFragment {
                 ((View.OnClickListener)getActivity()).onClick(view);
             }
         });
+
+        //buttonView.setBackgroundColor(buttonsColor);
+        if(Build.VERSION.SDK_INT >= 21) {
+            buttonView.setBackgroundTintList(ColorStateList.valueOf(buttonsColor));
+        }
         updateViewWithValues();
     }
 

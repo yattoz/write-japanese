@@ -30,14 +30,14 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/txt_title_slide"
-            android:layout_width="match_parent"
-            android:textColor="@color/DarkGreen"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
@@ -54,12 +54,12 @@
             app:layout_parallaxFactor="0.2"
             tools:text="Lorem ipsum dolor sit amet, consectetur, adipisci velit, …" />
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/button_slide_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             app:layout_parallaxFactor="0.2"
+            android:text="SYNC WITH GOOGLE ACCOUNT"
             tools:text="Select Account to Sync Across" />
     </LinearLayout>
 </agency.tango.materialintroscreen.parallax.ParallaxLinearLayout>

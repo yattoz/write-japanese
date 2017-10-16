@@ -33,7 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/Red"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         app:layout_parallaxFactor="0.5"
         tools:text="Lorem ipsum" />
@@ -48,7 +47,7 @@
         app:layout_parallaxFactor="0.2"
         tools:text="Lorem ipsum dolor sit amet, consectetur, adipisci velit, …" />
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
