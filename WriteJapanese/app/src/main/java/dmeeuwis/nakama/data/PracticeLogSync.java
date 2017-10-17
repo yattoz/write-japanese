@@ -39,8 +39,7 @@ public class PracticeLogSync {
 
     final public static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
     final public static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
-    final private static String SYNC_URL = "https://dmeeuwis.com/write-japanese/progress-sync";
-    final private static boolean DEBUG_NETWORK_SYNC = false;
+    final private static String SYNC_URL = "/write-japanese/progress-sync";
 
     final ExternalDependencies extDeps;
     final Context context;
@@ -53,17 +52,7 @@ public class PracticeLogSync {
         }
 
         public InputStream sendPost(String jsonPost) throws Exception {
-            URL syncUrl;
-
-            try {
-                if(BuildConfig.DEBUG && DEBUG_NETWORK_SYNC){
-                    syncUrl = new URL("http://192.168.1.99:8080/write-japanese/progress-sync");
-                } else {
-                    syncUrl = new URL(SYNC_URL);
-                }
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
+            URL syncUrl = HostFinder.formatURL(SYNC_URL);
 
             HttpURLConnection urlConnection = (HttpURLConnection) syncUrl.openConnection();
             urlConnection.setDoOutput(true);

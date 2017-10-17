@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="SYNC WITH GOOGLE ACCOUNT"
+                android:text="@string/sync_button_text"
                 app:layout_parallaxFactor="0.2"
                 tools:text="Select Account to Sync Across" />
         </LinearLayout>

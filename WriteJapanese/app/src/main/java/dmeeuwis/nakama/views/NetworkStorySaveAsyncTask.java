@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.UUID;
 
+import dmeeuwis.nakama.data.HostFinder;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 
 public class NetworkStorySaveAsyncTask extends AsyncTask<Character, String, Void> {
@@ -28,12 +29,12 @@ public class NetworkStorySaveAsyncTask extends AsyncTask<Character, String, Void
     @Override
     protected Void doInBackground(Character... params) {
         try {
-            URL url = new URL("https://dmeeuwis.com/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + installId);
+            URL url = HostFinder.formatURL("/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + installId);
             Log.i("nakama", "Saving story to: " + url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestMethod("POST");
-                urlConnection.setRequestProperty("Content-Type", "application/json");
+                urlConnection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
 
                 OutputStreamWriter wr = new OutputStreamWriter(urlConnection.getOutputStream());
                 wr.write(story);

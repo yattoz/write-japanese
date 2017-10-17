@@ -79,6 +79,7 @@
     <string name="view_intro_tutorial">View Intro Tutorial</string>
     <string name="srs_settings_menu_item">SRS Settings</string>
     <string name="sync_settings">Sync Settings</string>
+    <string name="sync_button_text">SYNC WITH GOOGLE ACCOUNT</string>
 
     <string-array name="when_to_introduce_incorrect_spinner_values">
         <item>Less than 5 characters are incorrect</item>

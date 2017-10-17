@@ -28,7 +28,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
     // service id
     final static String SCOPE = "audience:server:client_id:120575778353-iv0lut9pspdt19qluq5n14g9tq2k17ch.apps.googleusercontent.com";
 
-    final static String SEND_URL = "https://dmeeuwis.com/write-japanese/network-sync-register";
+    final static String SEND_URL = "/write-japanese/network-sync-register";
     public final int AUTH_REQUEST_ACTIVITY_CODE = 0x7832;
 
     public interface RunWithAuthcode {
@@ -53,7 +53,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
             Log.i("nakama-auth", "Found auth token as: " + token);
 
             // Register authcode to server with: iid, device name
-            URL registerUrl = new URL(SEND_URL);
+            URL registerUrl = HostFinder.formatURL(SEND_URL);
             HttpURLConnection urlConnection = (HttpURLConnection) registerUrl.openConnection();
             urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);

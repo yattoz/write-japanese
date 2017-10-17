@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import dmeeuwis.nakama.data.HostFinder;
+
 public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<String>> {
 
     private final AddString sa;
@@ -23,7 +25,7 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
     private final UUID iid;
 
     public interface AddString {
-        public void add(String s);
+        void add(String s);
     }
 
     public NetworkStoriesAsyncTask(Character c, UUID iid, AddString sa){
@@ -35,7 +37,7 @@ public class NetworkStoriesAsyncTask extends AsyncTask<Character, String, List<S
     @Override
     protected List<String> doInBackground(Character... params) {
         try {
-            URL url = new URL("https://dmeeuwis.com/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + iid);
+            URL url = HostFinder.formatURL("/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + iid);
             Log.i("nakama", "Network: Starting network request for: " + url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {

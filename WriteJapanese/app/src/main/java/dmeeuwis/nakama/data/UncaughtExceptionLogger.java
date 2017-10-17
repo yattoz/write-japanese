@@ -80,7 +80,7 @@ public class UncaughtExceptionLogger {
                 return;
             }
 
-            URL url = new URL("https://dmeeuwis.com/write-japanese/bug-report");
+            URL url = HostFinder.formatURL("/write-japanese/bug-report");
             HttpURLConnection report = (HttpURLConnection) url.openConnection();
             try {
                 report.setRequestMethod("POST");
