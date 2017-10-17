@@ -12,12 +12,13 @@
     android:fitsSystemWindows="false"
     android:gravity="center"
     android:orientation="horizontal"
-    android:paddingBottom="164dp">
+    android:paddingBottom="70dp"
+    android:paddingTop="30dp">
 
     <ImageView
         android:id="@+id/checkbox_image_slide"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="48dp"
         android:layout_marginRight="48dp"
@@ -26,40 +27,49 @@
         android:adjustViewBounds="true"
         android:gravity="center"
         app:layout_parallaxFactor="0.6"
-        tools:src="@android:drawable/sym_action_call" />
+        tools:src="@drawable/device_sync" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        app:layout_parallaxFactor="0.5"
+        >
 
-        <TextView
-            android:id="@+id/txt_title_slide"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            app:layout_parallaxFactor="0.5"
-            tools:text="Lorem ipsum" />
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txt_description_slide"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            app:layout_parallaxFactor="0.2"
-            tools:text="Lorem ipsum dolor sit amet, consectetur, adipisci velit, …" />
+            <TextView
+                android:id="@+id/txt_title_slide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                tools:text="Lorem ipsum" />
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/button_slide_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_parallaxFactor="0.2"
-            android:text="SYNC WITH GOOGLE ACCOUNT"
-            tools:text="Select Account to Sync Across" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/txt_description_slide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                app:layout_parallaxFactor="0.2"
+                tools:text="Lorem ipsum dolor sit amet, consectetur, adipisci velit, …" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/button_slide_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="SYNC WITH GOOGLE ACCOUNT"
+                app:layout_parallaxFactor="0.2"
+                tools:text="Select Account to Sync Across" />
+        </LinearLayout>
+    </RelativeLayout>
 </agency.tango.materialintroscreen.parallax.ParallaxLinearLayout>

@@ -61,7 +61,7 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
         if(srsNotYetShow || srsRequested){
             Log.i("nakama-intro", "Showing srs screen: " + srsNotYetShow + ", " + srsRequested);
             SlideFragment s =
-                CheckboxSlideFragment.createInstance(r.getColor(R.color.intro_green), r.getColor(R.color.intro_green), R.drawable.calendar2,
+                CheckboxSlideFragment.createInstance(r.getColor(R.color.intro_green), r.getColor(R.color.intro_blue), R.drawable.calendar2,
                         "Spaced Repetition",
                         "Once written correctly a few times, characters will be repeated at increasing timed intervals, across many days, to really lock them in your memory. The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
                         "Use Spaced Repetition", USE_SRS_SETTING_NAME,
