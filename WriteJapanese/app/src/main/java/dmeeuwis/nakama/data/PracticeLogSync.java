@@ -40,7 +40,7 @@ public class PracticeLogSync {
     final public static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
     final public static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
     final private static String SYNC_URL = "https://dmeeuwis.com/write-japanese/progress-sync";
-    final private static boolean DEBUG_NETWORK_SYNC = true;
+    final private static boolean DEBUG_NETWORK_SYNC = false;
 
     final ExternalDependencies extDeps;
     final Context context;
@@ -57,7 +57,7 @@ public class PracticeLogSync {
 
             try {
                 if(BuildConfig.DEBUG && DEBUG_NETWORK_SYNC){
-                    syncUrl = new URL("http://10.20.2.12:8080/write-japanese/progress-sync");
+                    syncUrl = new URL("http://192.168.1.99:8080/write-japanese/progress-sync");
                 } else {
                     syncUrl = new URL(SYNC_URL);
                 }
@@ -82,7 +82,7 @@ public class PracticeLogSync {
             }
 
             // stream over standardSets rows in from POST response
-            Log.i("nakama", "Received response to JSON sync: " + urlConnection.getResponseMessage() + urlConnection.getResponseMessage());
+            Log.i("nakama", "Received response to JSON sync at " + syncUrl + ": " + urlConnection.getResponseMessage() + urlConnection.getResponseMessage());
             return urlConnection.getInputStream();
         }
 

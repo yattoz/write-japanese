@@ -28,7 +28,7 @@ public class NetworkStorySaveAsyncTask extends AsyncTask<Character, String, Void
     @Override
     protected Void doInBackground(Character... params) {
         try {
-            URL url = new URL("http://10.20.2.12/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + installId);
+            URL url = new URL("https://dmeeuwis.com/write-japanese/stories/" + URLEncoder.encode(c.toString(), "UTF-8") + "?iid=" + installId);
             Log.i("nakama", "Saving story to: " + url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
@@ -40,7 +40,7 @@ public class NetworkStorySaveAsyncTask extends AsyncTask<Character, String, Void
                 wr.flush();
 
                 int statusCode = urlConnection.getResponseCode();
-                Log.i("nakama", "Save story for " + c + " received " + statusCode + " response.");
+                Log.e("nakama", "Save story for " + c + " received " + statusCode + " response: " + urlConnection.getResponseMessage());
             } finally {
                 urlConnection.disconnect();
             }
