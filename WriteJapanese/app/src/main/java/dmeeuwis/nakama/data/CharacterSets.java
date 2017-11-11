@@ -22,6 +22,12 @@ public class CharacterSets  {
     private static final String G5_DESCRIPTION = "The fifth level of 'regular use kanji' (常用漢字). Learned by Japanese schoolchildren in their fifth year of school, at around 9 years of age.";
     private static final String G6_DESCRIPTION = "The sixth level of 'regular use kanji' (常用漢字). Learned by Japanese schoolchildren in their sixth year of school, at around 10 years of age.";
 
+    private static final String JLPT5_DESCRIPTION = "The first and simplest level of required kanji for the Japanese Language Proficiency Test (JLPT).";
+    private static final String JLPT4_DESCRIPTION = "The second levelof required kanji for the Japanese Language Proficiency Test (JLPT).";
+    private static final String JLPT3_DESCRIPTION = "The third level of required kanji for the Japanese Language Proficiency Test (JLPT).";
+    private static final String JLPT2_DESCRIPTION = "The fourth level of required kanji for the Japanese Language Proficiency Test (JLPT).";
+    private static final String JLPT1_DESCRIPTION = "The fifth level of required kanji for the Japanese Language Proficiency Test (JLPT).";
+
 	static public CharacterStudySet fromName(Context ctx, String name, LockChecker LockChecker){
         if(name == null) {
             return joyouG1(LockChecker, ctx);
@@ -57,6 +63,12 @@ public class CharacterSets  {
 	public static CharacterStudySet joyouG5(LockChecker lc, Context context){ return new CharacterStudySet("Joyou Kanji 5", "Kanji J5", G5_DESCRIPTION, "j5", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G5, "犯寄舎財税統像境飼謝", lc, Iid.get(context), true, context); }
 	public static CharacterStudySet joyouG6(LockChecker lc, Context context){ return new CharacterStudySet("Joyou Kanji 6", "Kanji J6", G6_DESCRIPTION, "j6", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_G6, "至捨推針割疑層模訳欲", lc, Iid.get(context), true, context); }
 
+    public static CharacterStudySet jlptN5(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N5", "JLPT N5", JLPT5_DESCRIPTION, "jlpt5", CharacterStudySet.LockLevel.UNLOCKED, Kanji.JLPT_N5, "", lc, Iid.get(context), true, context); }
+    public static CharacterStudySet jlptN4(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N4", "JLPT N4", JLPT4_DESCRIPTION, "jlpt4", CharacterStudySet.LockLevel.UNLOCKED, Kanji.JLPT_N4, "", lc, Iid.get(context), true, context); }
+    public static CharacterStudySet jlptN3(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N3", "JLPT N3", JLPT3_DESCRIPTION, "jlpt3", CharacterStudySet.LockLevel.UNLOCKED, Kanji.JLPT_N3, "", lc, Iid.get(context), true, context); }
+    public static CharacterStudySet jlptN2(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N2", "JLPT N2", JLPT2_DESCRIPTION, "jlpt2", CharacterStudySet.LockLevel.UNLOCKED, Kanji.JLPT_N2, "", lc, Iid.get(context), true, context); }
+    public static CharacterStudySet jlptN1(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N1", "JLPT N1", JLPT1_DESCRIPTION, "jlpt1", CharacterStudySet.LockLevel.UNLOCKED, Kanji.JLPT_N1, "", lc, Iid.get(context), true, context); }
+
 
     public static CharacterStudySet[] standardSets(LockChecker lc, Context context) {
         return new CharacterStudySet[]{
@@ -67,7 +79,13 @@ public class CharacterSets  {
                 joyouG3(lc, context),
                 joyouG4(lc, context),
                 joyouG5(lc, context),
-                joyouG6(lc, context)
+                joyouG6(lc, context),
+
+                jlptN5(lc, context),
+                jlptN4(lc, context),
+                jlptN3(lc, context),
+                jlptN2(lc, context),
+                jlptN1(lc, context)
         };
     }
 }
