@@ -317,6 +317,9 @@ public class PracticeLogSync {
 
             return Util.makeCountMap("practiceLogs", practiceLogCount, "charsetGoals", charsetGoalsCount, "charsetEdits", charsetEditCount);
 
+        } catch(IOException t) {
+            Log.e("nakama", "Network error during sync. Ignoring, will try again next sync.");
+            return Util.makeCountMap("practiceLogs", -1, "charsetGoals", -1, "charsetEdits", -1);
         } catch(Throwable t) {
             StringBuilder message = new StringBuilder();
             message.append("Error when parsing sync; request was: " + (jsonPost == null ? "<null>" : jsonPost));
