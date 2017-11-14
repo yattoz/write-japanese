@@ -94,7 +94,12 @@ public class ReminderManager extends BroadcastReceiver {
             new CharacterProgressDataHelper(context, Iid.get(context))
                     .loadProgressTrackerFromDB(trackers);
 
-            if(Settings.getSRSEnabled(context) && Settings.getSRSNotifications(context)) {
+            Boolean srsEnabled = Settings.getSRSEnabled(context);
+            Boolean notificationsEnabled = Settings.getSRSNotifications(context);
+
+            srsEnabled = srsEnabled == null ? false : srsEnabled;
+            notificationsEnabled = notificationsEnabled == null ? false : notificationsEnabled;
+            if(srsEnabled && notificationsEnabled) {
                 // look for any srs hits
                 Set<Character> hits = new HashSet<>();
                 LocalDate now = LocalDate.now();
