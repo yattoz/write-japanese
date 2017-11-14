@@ -114,7 +114,8 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
             Log.i("nakama-intro", "Showing EMERGENCY SCREEN, WHY? slidesShown=" + addedSlides.size());
             // fake to satisfy library
             // should never happen?
-            UncaughtExceptionLogger.backgroundLogError("Error: no slides added on IntroActivity", new RuntimeException(), this);
+            UncaughtExceptionLogger.backgroundLogError("Error: no slides added on IntroActivity; intent was " + intent,
+                    new RuntimeException(), this);
             addSlide(new SlideFragmentBuilder()
                     .backgroundColor(R.color.intro_green)
                     .buttonsColor(R.color.LightBlue)
