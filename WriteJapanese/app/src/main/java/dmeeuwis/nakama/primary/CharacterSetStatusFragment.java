@@ -56,6 +56,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         HIRAGANA(R.color.BlueGrey), KATAKANA(R.color.DarkSlateBlue),
         J1(R.color.DarkCyan), J2(R.color.RoyalBlue), J3(R.color.DarkSlateGray),
         J4(R.color.IndianRed), J5(R.color.DarkGreen), J6(R.color.BlueGrey2),
+        JHS(R.color.DarkCyan),
 
         JLPT5(R.color.DarkCyan),
         JLPT4(R.color.RoyalBlue),

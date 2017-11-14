@@ -412,6 +412,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         this.characterSets.put("j4", CharacterSets.joyouG4(lockChecker, getApplicationContext()));
         this.characterSets.put("j5", CharacterSets.joyouG5(lockChecker, getApplicationContext()));
         this.characterSets.put("j6", CharacterSets.joyouG6(lockChecker, getApplicationContext()));
+        this.characterSets.put("jhs", CharacterSets.joyouHS(lockChecker, getApplicationContext()));
 
         this.characterSets.put("jlpt5", CharacterSets.jlptN5(lockChecker, getApplicationContext()));
         this.characterSets.put("jlpt4", CharacterSets.jlptN4(lockChecker, getApplicationContext()));
