@@ -107,11 +107,12 @@ import static dmeeuwis.nakama.primary.IntroActivity.USE_SRS_SETTING_NAME;
 public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
-    public enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
 
-    public enum Frequency {ALWAYS, ONCE_PER_SESSION}
+    private static final boolean DEBUG_SCORES = false;
+    private static final boolean DEBUG_MENU = true;
 
-    static final boolean DEBUG_MENU = true;
+    private enum State {DRAWING, REVIEWING, CORRECT_ANSWER}
+    private enum Frequency {ALWAYS, ONCE_PER_SESSION}
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
@@ -404,12 +405,19 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         this.characterSets.clear();
         this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker, getApplicationContext()));
         this.characterSets.put("katakana", CharacterSets.katakana(lockChecker, getApplicationContext()));
+
         this.characterSets.put("j1", CharacterSets.joyouG1(lockChecker, getApplicationContext()));
         this.characterSets.put("j2", CharacterSets.joyouG2(lockChecker, getApplicationContext()));
         this.characterSets.put("j3", CharacterSets.joyouG3(lockChecker, getApplicationContext()));
         this.characterSets.put("j4", CharacterSets.joyouG4(lockChecker, getApplicationContext()));
         this.characterSets.put("j5", CharacterSets.joyouG5(lockChecker, getApplicationContext()));
         this.characterSets.put("j6", CharacterSets.joyouG6(lockChecker, getApplicationContext()));
+
+        this.characterSets.put("jlpt5", CharacterSets.jlptN5(lockChecker, getApplicationContext()));
+        this.characterSets.put("jlpt4", CharacterSets.jlptN4(lockChecker, getApplicationContext()));
+        this.characterSets.put("jlpt3", CharacterSets.jlptN3(lockChecker, getApplicationContext()));
+        this.characterSets.put("jlpt2", CharacterSets.jlptN2(lockChecker, getApplicationContext()));
+        this.characterSets.put("jlpt1", CharacterSets.jlptN1(lockChecker, getApplicationContext()));
 
         CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
         for(CharacterStudySet c: helper.getSets()){
@@ -698,7 +706,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.charSetFrag.updateProgress();
         }
 
-        if(BuildConfig.DEBUG){
+        if(BuildConfig.DEBUG && DEBUG_SCORES){
             Integer curScore = currentCharacterSet.getScoreSheet().get(currentCharacterSet.currentCharacter());
             if(curScore != null) {
                 Toast.makeText(this, "Current character score " + curScore, Toast.LENGTH_SHORT).show();
@@ -1197,10 +1205,22 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             //this.correctVocabList.setVisibility(View.VISIBLE);
         } else if (itemPosition == 7) {
             this.currentCharacterSet = characterSets.get("j6");
+        } else if (itemPosition == 8) {
+            this.currentCharacterSet = characterSets.get("jhs");
+        } else if (itemPosition == 9) {
+            this.currentCharacterSet = characterSets.get("jlpt5");
+        } else if (itemPosition == 10) {
+            this.currentCharacterSet = characterSets.get("jlpt4");
+        } else if (itemPosition == 11) {
+            this.currentCharacterSet = characterSets.get("jlpt3");
+        } else if (itemPosition == 12) {
+            this.currentCharacterSet = characterSets.get("jlpt2");
+        } else if (itemPosition == 13) {
+            this.currentCharacterSet = characterSets.get("jlpt1");
         }
 
-        if(itemPosition >= 8 &&  itemPosition < 8 + customSets.size()){
-            int customSetIndex = itemPosition - 8;
+        if(itemPosition >= 14 &&  itemPosition < 14 + customSets.size()){
+            int customSetIndex = itemPosition - 14;
             this.currentCharacterSet = customSets.get(customSetIndex);
         }
 
@@ -1208,7 +1228,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.currentCharacterSet.setShuffle(prevSet.isShuffling());
         }
 
-        if(itemPosition >= 8 + customSets.size()) {
+        if(itemPosition >= 14 + customSets.size()) {
             if (customSets.size() == 0) {
 
                 getSupportActionBar().setSelectedNavigationItem(currentNavigationItem);
@@ -1227,7 +1247,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             this.charSetFrag.setCharset(this.currentCharacterSet);
         }
 
-        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition >= 8)) {
+        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition >= 14)) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
 

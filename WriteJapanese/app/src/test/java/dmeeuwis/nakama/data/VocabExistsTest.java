@@ -1,32 +1,18 @@
-package dmeeuwis.nakama.kanjidraw;
+package dmeeuwis.nakama.data;
 
 import org.junit.Test;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
-import dmeeuwis.indexer.KanjiFinder;
-import dmeeuwis.indexer.Querier;
-import dmeeuwis.indexer.QuerierRandomAccessFile;
-import dmeeuwis.nakama.data.CharacterSets;
-import dmeeuwis.nakama.data.CharacterStudySet;
-import dmeeuwis.nakama.data.TranslationsFromXml;
 
 import static org.junit.Assert.assertTrue;
 
 public class VocabExistsTest {
-    public static final String KANJIDICT_FILE = "kanjidic.utf8.awb";
-    public static final String KANJIDICT_INDEX = "kanjidic.index.awb";
-
-
     @Test
     public void testVocabExistsForAllKanji() throws Exception {
         String path = System.getProperty("user.dir") + "/app/src/main/assets/char_vocab/";
@@ -41,6 +27,12 @@ public class VocabExistsTest {
                 Kanji.JOUYOU_G4,
                 Kanji.JOUYOU_G5,
                 Kanji.JOUYOU_G6,
+                Kanji.JOUYOU_SS,
+                Kanji.JLPT_N5,
+                Kanji.JLPT_N4,
+                Kanji.JLPT_N3,
+                Kanji.JLPT_N2,
+                Kanji.JLPT_N1,
         };
 
         for(String s: sets){
