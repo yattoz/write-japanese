@@ -8,6 +8,7 @@ import android.util.Pair;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.DateTimeParseException;
 
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -124,7 +125,18 @@ public class CharacterProgressDataHelper {
                         Character character = r.get("character").charAt(0);
                         String set = r.get("charset");
                         String timestampStr = r.get("timestamp");
-                        LocalDateTime t = LocalDateTime.parse(timestampStr, formatter);
+                        LocalDateTime t;
+
+                        try {
+                            t = LocalDateTime.parse(timestampStr, formatter);
+                        } catch(DateTimeParseException e){
+                            try {
+                                t = LocalDateTime.parse(timestampStr.replace(' ', 'T'), formatter);
+                            } catch (DateTimeParseException x) {
+                                UncaughtExceptionLogger.backgroundLogError("Error caught parsing timestamp on practice log: " + timestampStr, x, context);
+                                return;
+                            }
+                        }
 
                         for(ProgressTracker pt: allPts) {
 
