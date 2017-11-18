@@ -13,13 +13,15 @@ import dmeeuwis.nakama.ReleaseNotesActivity;
 public class UpdateNotifier {
 
     private static final String LAST_VERSION_NOTIFIED_KEY = "notified";
+    private static final boolean DEBUG_NOTIFIER = BuildConfig.DEBUG && false;
 
     public static void updateNotifier(final Activity parent, final View view){
         SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(parent.getApplicationContext());
         String notified = shared.getString(LAST_VERSION_NOTIFIED_KEY, "");
 
-        if(!BuildConfig.VERSION_NAME.equalsIgnoreCase(notified)){
-            Snackbar snack = Snackbar.make(view, "Application updated to " + BuildConfig.VERSION_NAME + "!", Snackbar.LENGTH_LONG * 2);
+        if(!BuildConfig.VERSION_NAME.equalsIgnoreCase(notified) || DEBUG_NOTIFIER){
+            Snackbar snack = Snackbar.make(view, "Application updated to " + BuildConfig.VERSION_NAME + "!", Snackbar.LENGTH_LONG);
+            snack.setDuration(10_000);
             snack.setAction("View Release Notes", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
