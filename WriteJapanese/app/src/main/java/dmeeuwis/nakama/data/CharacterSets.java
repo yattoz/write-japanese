@@ -74,10 +74,10 @@ public class CharacterSets  {
 	public static CharacterStudySet joyouHS(LockChecker lc, Context context){ return new CharacterStudySet("Joyou Kanji HS", "Kanji HS", HS_DESCRIPTION, "jhs", CharacterStudySet.LockLevel.LOCKED, Kanji.JOUYOU_SS, "", lc, Iid.get(context), true, context); }
 
     public static CharacterStudySet jlptN5(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N5", "JLPT N5", JLPT5_DESCRIPTION, "jlpt5", CharacterStudySet.LockLevel.UNLOCKED, Kanji.JLPT_N5, "", lc, Iid.get(context), true, context); }
-    public static CharacterStudySet jlptN4(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N4", "JLPT N4", JLPT4_DESCRIPTION, "jlpt4", CharacterStudySet.LockLevel.LOCKED, Kanji.JLPT_N4, "会同事自社発者", lc, Iid.get(context), true, context); }
-    public static CharacterStudySet jlptN3(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N3", "JLPT N3", JLPT3_DESCRIPTION, "jlpt3", CharacterStudySet.LockLevel.LOCKED, Kanji.JLPT_N3, "政議民連対部合", lc, Iid.get(context), true, context); }
-    public static CharacterStudySet jlptN2(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N2", "JLPT N2", JLPT2_DESCRIPTION, "jlpt2", CharacterStudySet.LockLevel.LOCKED, Kanji.JLPT_N2, "党協総区領県設", lc, Iid.get(context), true, context); }
-    public static CharacterStudySet jlptN1(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N1", "JLPT N1", JLPT1_DESCRIPTION, "jlpt1", CharacterStudySet.LockLevel.LOCKED, Kanji.JLPT_N1, "氏統保第結派案", lc, Iid.get(context), true, context); }
+    public static CharacterStudySet jlptN4(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N4", "JLPT N4", JLPT4_DESCRIPTION, "jlpt4", CharacterStudySet.LockLevel.LOCKED, Kanji.JLPT_N4, "兄公会同事自社者肉自", lc, Iid.get(context), true, context); }
+    public static CharacterStudySet jlptN3(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N3", "JLPT N3", JLPT3_DESCRIPTION, "jlpt3", CharacterStudySet.LockLevel.LOCKED, Kanji.JLPT_N3, "未任引政議民連対部合", lc, Iid.get(context), true, context); }
+    public static CharacterStudySet jlptN2(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N2", "JLPT N2", JLPT2_DESCRIPTION, "jlpt2", CharacterStudySet.LockLevel.LOCKED, Kanji.JLPT_N2, "了介仏党協総区領県設", lc, Iid.get(context), true, context); }
+    public static CharacterStudySet jlptN1(LockChecker lc, Context context){ return new CharacterStudySet("JLPT N1", "JLPT N1", JLPT1_DESCRIPTION, "jlpt1", CharacterStudySet.LockLevel.LOCKED, Kanji.JLPT_N1, "乃仙仮氏統保第結派案", lc, Iid.get(context), true, context); }
 
 
     public static CharacterStudySet[] standardSets(LockChecker lc, Context context) {
