@@ -168,7 +168,7 @@ public class ProgressTracker {
 		srsQueue = new PriorityQueue<>(20, new SRSEntryComparator());
 	}
 
-	private List<Set<Character>> getSets(){
+	private List<Set<Character>> getSets(Set<Character> available){
 		Set<Character> failed = new LinkedHashSet<>();
 		Set<Character> reviewing = new LinkedHashSet<>();
 		Set<Character> timedReviewing = new LinkedHashSet<>();
@@ -178,6 +178,10 @@ public class ProgressTracker {
 
         Map<Character, Progress> allScores = getAllScores();
 		for(Map.Entry<Character, Progress> score: allScores.entrySet()){
+			if(available != null && !available.contains(score.getKey())){
+				continue;
+			}
+
 			if(score.getValue() == Progress.FAILED){
 				failed.add(score.getKey());
 			} else if(score.getValue() == Progress.REVIEWING){
@@ -202,7 +206,6 @@ public class ProgressTracker {
 												  int introIncorrect, int introReviewing) {
 		Log.i("nakama-progression", "-------------> Starting nexCharacter selection");
 
-		LinkedHashSet<Character> allChars = new LinkedHashSet<>(rawAllChars);
 		LinkedHashSet<Character> availSet = new LinkedHashSet<>(rawAvailSet);
 
 		if(useSRS) {
@@ -221,7 +224,7 @@ public class ProgressTracker {
 
         double ran = random.nextDouble();
 
-		List<Set<Character>> sets = getSets();
+		List<Set<Character>> sets = getSets(availSet);
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
 		Set<Character> timedReview = sets.get(2);
@@ -279,7 +282,7 @@ public class ProgressTracker {
 			if(shuffling){
 				chosenOnes.addAll(unknown);
 			} else {
-				chosenOnes.add(sortAndReturnFirst(allChars, unknown));
+				chosenOnes.add(sortAndReturnFirst(rawAvailSet, unknown));
 			}
         } else {
 			chosenOnes.addAll(failed);
@@ -316,7 +319,9 @@ public class ProgressTracker {
 				Integer i1 = indexed.get(o1);
 				Integer i2 = indexed.get(o2);
 				if(i1 == null && i2 == null) { return 0; }
-				if(i1 == null) { return i2.compareTo(null); }
+				if(i1 == null) { return -1; }
+				if(i2 == null) { return 1; }
+
 				return i1.compareTo(i2);
 			}
 		});
@@ -328,7 +333,7 @@ public class ProgressTracker {
 		if(findInSRSQueue(c, LocalDate.now())){
 			return StudyType.SRS;
 		}
-		List<Set<Character>> sets = getSets();
+		List<Set<Character>> sets = getSets(null);
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
 
