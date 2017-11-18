@@ -33,18 +33,15 @@ public class DrawingComparator implements Comparator {
 
 	private static final boolean DEBUG = BuildConfig.DEBUG && false;
 
-    static private final CharacterStudySet hiraganaSet = CharacterSets.hiragana(null, null);
-    static private final CharacterStudySet katakanaSet = CharacterSets.katakana(null, null);
+	private final AssetFinder assetFinder;
 
-	final AssetFinder assetFinder;
+	private char target;
+	private PointDrawing known;
+	private PointDrawing drawn;
+	private int drawingAreaMaxDim;
 
-	char target;
-	PointDrawing known;
-	PointDrawing drawn;
-	int drawingAreaMaxDim;
-
-	boolean[][] drawnAboveMatrix;
-	boolean[][] knownAboveMatrix;
+	private boolean[][] drawnAboveMatrix;
+	private boolean[][] knownAboveMatrix;
 
 	DrawingComparator(AssetFinder assetFinder) {
 		this.assetFinder = assetFinder;
@@ -62,6 +59,7 @@ public class DrawingComparator implements Comparator {
 	}
 
 	public Criticism compare(char target, PointDrawing challenger, CurveDrawing known, Recursion recursion) throws IOException {
+		this.target = target;
 		this.drawn = challenger.cutOffEdges();// scaleToBox(nBounds);
 
 		Rect drawnBox = findBounds(target, this.drawn);

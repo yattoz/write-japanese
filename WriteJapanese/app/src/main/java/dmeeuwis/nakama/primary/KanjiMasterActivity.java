@@ -432,13 +432,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
         new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
                 .loadProgressTrackerFromDB(trackers);
-
-
-        long startup = System.currentTimeMillis() - start;
-        Log.d("nakama-progress", "Total across-set charset progress init took " + startup + "ms");
-        if(startup > 500){
-            UncaughtExceptionLogger.backgroundLogError("Long startup detected: " + startup + "ms to load practice log", new RuntimeException(), this);
-        }
     }
 
 

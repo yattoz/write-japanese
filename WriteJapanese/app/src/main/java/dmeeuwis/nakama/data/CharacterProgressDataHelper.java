@@ -189,7 +189,11 @@ public class CharacterProgressDataHelper {
             db.close();
         }
 
-        Log.i("nakama-progress", "Time to load progress tracker: " + (System.currentTimeMillis() - start) + "ms; counted " + count.get() + " records.");
+        long startup = System.currentTimeMillis() - start;
+        Log.i("nakama-progress", "Time to load progress tracker: " + startup + "ms; counted " + count.get() + " records.");
+        if(startup > 500){
+            UncaughtExceptionLogger.backgroundLogError("Long startup detected: " + startup + "ms to load " + count.get() + " practice logs.", new RuntimeException(), context);
+        }
     }
 
     private static GregorianCalendar parseCalendarString(String in){
