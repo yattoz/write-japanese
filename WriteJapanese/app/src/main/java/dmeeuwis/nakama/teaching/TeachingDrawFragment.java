@@ -63,9 +63,13 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
     public void updateCharacter(TeachingActivity parent) {
         this.parent = parent;
         this.character = parent.getCharacter();
-        this.currentCharacterSvg = parent.getCurrentCharacterSvg();
-        this.curveDrawing = new CurveDrawing(currentCharacterSvg);
-        this.teachingLevel = 0;
+        try {
+            this.currentCharacterSvg = parent.getCurrentCharacterSvg();
+            this.curveDrawing = new CurveDrawing(currentCharacterSvg);
+            this.teachingLevel = 0;
+        } catch(Throwable t){
+            throw new RuntimeException("Error parsing out svg for character: " + character, t);
+        }
     }
 
     @Override
