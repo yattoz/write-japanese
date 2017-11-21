@@ -1,8 +1,12 @@
 package dmeeuwis.nakama.data;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,9 +14,14 @@ import java.util.Map;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.BuildConfig;
+import dmeeuwis.nakama.kanjidraw.CurveDrawing;
+import dmeeuwis.util.Util;
 
 import static junit.framework.Assert.assertEquals;
 
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class SvgExistsTest {
 
     @Test
@@ -43,7 +52,14 @@ public class SvgExistsTest {
                 String filename = path + id + ".path";
                 boolean success = new File(filename).exists();
 
-                if(!success){
+                if(success) {
+                    try (FileInputStream fin = new FileInputStream(filename)){
+                        String[] lines = Util.slurp(fin).split("\n");
+                        new CurveDrawing(lines);
+                    } catch(Throwable t){
+                        failures.add("Error making CurveDrawing out of .svg for character: " + c + " in set " + s.getKey() + ": " + t.getMessage());
+                    }
+                } else {
                     String retest = path + "0" + Integer.toHexString((c).charValue()) + ".path";
                     boolean recheck = new File(retest).exists();
 
