@@ -49,6 +49,16 @@
             android:layout_marginLeft="10dp"
             android:elevation="@dimen/elevation_low" />
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/undoStrokeButton"
+            android:layout_width="@dimen/fab_custom_size"
+            android:layout_height="@dimen/fab_custom_size"
+            android:src="@drawable/ic_undo"
+            app:backgroundTint="@color/DarkGray"
+            android:layout_gravity="bottom|start|left"
+            android:layout_marginBottom="200dp"
+            android:layout_marginLeft="10dp"
+            android:elevation="@dimen/elevation_low" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/finishedButton"

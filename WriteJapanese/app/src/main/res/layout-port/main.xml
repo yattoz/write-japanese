@@ -61,6 +61,20 @@
                 android:elevation="@dimen/elevation_low" />
 
             <android.support.design.widget.FloatingActionButton
+                android:id="@+id/undoStrokeButton"
+                android:layout_width="@dimen/fab_custom_size"
+                android:layout_height="@dimen/fab_custom_size"
+                android:layout_gravity="bottom|start"
+                android:src="@drawable/ic_undo"
+                android:scaleType="fitXY"
+                nakama:backgroundTint="@color/DarkGray"
+                android:layout_marginLeft="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="invisible"
+                android:elevation="@dimen/elevation_low" />
+
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/finishedButton"
                 android:layout_width="@dimen/fab_custom_size"
                 android:layout_height="@dimen/fab_custom_size"

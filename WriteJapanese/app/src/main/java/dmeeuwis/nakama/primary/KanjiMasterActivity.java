@@ -150,7 +150,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     protected ViewFlipper flipper;
     protected FlipperAnimationListener flipperAnimationListener;
     protected View maskView;
-    protected FloatingActionButton remindStoryButton, doneButton, teachMeButton;
+    protected FloatingActionButton remindStoryButton, doneButton, undoStrokeButton, teachMeButton;
     protected ListView criticism;           // TODO: to RecyclerView
     protected ArrayAdapter<String> criticismArrayAdapter;
     protected ColorDrawable actionBarBackground;
@@ -271,6 +271,17 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             }
         });
 
+        undoStrokeButton = (FloatingActionButton)findViewById(R.id.undoStrokeButton);
+        undoStrokeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawPad.undo();
+                if(drawPad.getStrokeCount() == 0){
+                    setUiState(State.DRAWING);
+                }
+            }
+        });
+
         db = new StoryDataHelper(getApplicationContext());
         remindStoryButton = (FloatingActionButton) findViewById(R.id.remindStoryButton);
         remindStoryButton.setOnClickListener(new View.OnClickListener() {
@@ -333,6 +344,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             public void onStroke(List<Point> stroke) {
                 if (drawPad.getStrokeCount() == 1) {
                     doneButton.show();
+                    undoStrokeButton.show();
                     teachMeButton.hide();
                     remindStoryButton.hide();
                 }
@@ -349,6 +361,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
                 if (doneButton.isShown()) {
                     doneButton.hide();
+                    undoStrokeButton.hide();
                 }
             }
         });
@@ -572,6 +585,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             slideIn(correctCard);
             slideOut(instructionCard, charsetCard);
             doneButton.hide();
+            undoStrokeButton.hide();
 
             currentState = State.CORRECT_ANSWER;
 
@@ -582,6 +596,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             slideIn(incorrectCard);
             slideOut(instructionCard, charsetCard);
             doneButton.hide();
+            undoStrokeButton.hide();
 
             correctAnimation.startAnimation(200);
             playbackAnimation.startAnimation(200);

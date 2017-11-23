@@ -55,6 +55,19 @@
         app:backgroundTint="@color/Blue"
         app:fabSize="normal" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/undoStrokeButton"
+        android:layout_width="@dimen/fab_custom_size"
+        android:layout_height="@dimen/fab_custom_size"
+        android:layout_gravity="bottom|start"
+        android:layout_marginLeft="280dp"
+        android:layout_marginStart="120dp"
+        android:layout_marginBottom="12dp"
+        android:elevation="@dimen/elevation_low"
+        android:src="@drawable/ic_undo"
+        app:backgroundTint="@color/DarkGray"
+        android:visibility="invisible"
+        app:fabSize="normal" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/finishedButton"
