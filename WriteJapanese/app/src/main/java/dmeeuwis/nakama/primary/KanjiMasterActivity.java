@@ -235,11 +235,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                         // to support grading override
                         lastGradingRow = entry.rowId;
 
-                        if (critique.pass) {
+                        // with the override mechanism, users can switch back and forth between correct and incorrect screens,
+                        // so initialize both now.
 
-                            setUiState(State.CORRECT_ANSWER);
-
-                            if(correctKnownView == null) {
+                        // set correct screen displays
+                        {
+                            if (correctKnownView == null) {
                                 Log.i("nakama", "Setting challenger/drawing in recyclerview adapter");
                                 correctVocabArrayAdapter.addKnownAndDrawnHeader(known, challenger);
                             } else {
@@ -248,13 +249,13 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                                 correctDrawnView.setDrawing(challenger, AnimatedCurveView.DrawTime.STATIC, critique.drawnPaintInstructions);
                             }
 
-                            if(entry.srs != null){
+                            if (entry.srs != null) {
                                 correctVocabArrayAdapter.addNextSrsHeader(entry.srs);
                             }
+                        }
 
-
-                        } else {
-                            Log.d("nakama", "Setting up data for incorrect results critique.");
+                        // set incorrect displays
+                        {
                             correctAnimation.setDrawing(known, AnimatedCurveView.DrawTime.ANIMATED, critique.knownPaintInstructions);
                             playbackAnimation.setDrawing(challenger, AnimatedCurveView.DrawTime.ANIMATED, critique.drawnPaintInstructions);
 
@@ -262,7 +263,11 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                             for (String c : critique.critiques) {
                                 criticismArrayAdapter.add(c);
                             }
+                        }
 
+                        if (critique.pass) {
+                            setUiState(State.CORRECT_ANSWER);
+                        } else {
                             setUiState(State.REVIEWING);
                         }
 
@@ -537,6 +542,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             animateActionBar(getResources().getColor(R.color.actionbar_main));
 
             drawPad.clear();
+            undoStrokeButton.setVisibility(View.GONE);
 
             flipper.setDisplayedChild(State.DRAWING.ordinal());
             currentState = State.DRAWING;
@@ -546,6 +552,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             flipper.setDisplayedChild(State.CORRECT_ANSWER.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_correct));
             currentState = State.CORRECT_ANSWER;
+            undoStrokeButton.setVisibility(View.GONE);
 
         } else if (requestedState == State.REVIEWING) {
             Log.d("nakama", "In REVIEWING state change; starting flip");
@@ -553,6 +560,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             flipper.setDisplayedChild(State.REVIEWING.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
             currentState = State.REVIEWING;
+            undoStrokeButton.setVisibility(View.GONE);
         }
     }
 

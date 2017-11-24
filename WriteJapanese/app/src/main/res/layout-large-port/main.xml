@@ -32,66 +32,70 @@
             android:id="@+id/remindStoryButton"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
-            app:backgroundTint="@color/DarkTurquoise"
             android:layout_gravity="bottom|start|left"
             android:layout_marginBottom="300dp"
             android:layout_marginLeft="10dp"
-            android:elevation="@dimen/elevation_high" />
+            android:elevation="@dimen/elevation_high"
+            app:backgroundTint="@color/DarkTurquoise" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/teachButton"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
-            android:src="@drawable/ic_question_mark"
-            app:backgroundTint="@color/Blue"
             android:layout_gravity="bottom|start|left"
             android:layout_marginBottom="200dp"
             android:layout_marginLeft="10dp"
-            android:elevation="@dimen/elevation_low" />
+            android:elevation="@dimen/elevation_low"
+            android:src="@drawable/ic_question_mark"
+            app:backgroundTint="@color/Blue" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/undoStrokeButton"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
-            android:src="@drawable/ic_undo"
-            app:backgroundTint="@color/DarkGray"
             android:layout_gravity="bottom|start|left"
             android:layout_marginBottom="200dp"
             android:layout_marginLeft="10dp"
-            android:elevation="@dimen/elevation_low" />
+            android:elevation="@dimen/elevation_low"
+            android:src="@drawable/ic_undo"
+            app:backgroundTint="@color/DarkGray" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/finishedButton"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
-            android:scaleType="centerInside"
-            app:backgroundTint="@color/DarkGreen"
-            android:src="@drawable/ic_right_arrow"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="200dp"
             android:layout_marginRight="10dp"
-            android:elevation="@dimen/elevation_low" />
+            android:elevation="@dimen/elevation_low"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_right_arrow"
+            app:backgroundTint="@color/DarkGreen" />
 
     </FrameLayout>
 
 
-    <android.support.v7.widget.CardView
+    <ScrollView
         android:id="@+id/charsetInfoCard"
-        android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="180dp"
-        android:layout_margin="5dp"
-        android:clickable="true"
-        android:tag="slideDown">
+        android:layout_gravity="bottom">
 
-        <fragment
-            android:id="@+id/charSetInfoFragment"
-            class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:tag="slideDown">
 
-    </android.support.v7.widget.CardView>
+            <fragment
+                android:id="@+id/charSetInfoFragment"
+                class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
+        </android.support.v7.widget.CardView>
+    </ScrollView>
 
     <!-- Incorrect view screen -->
     <FrameLayout
@@ -192,38 +196,38 @@
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|start"
-            android:src="@drawable/ic_question_mark"
-            app:backgroundTint="@color/DarkRed"
-            android:elevation="@dimen/elevation_low"
             android:layout_marginBottom="92dp"
             android:layout_marginLeft="12dp"
-            android:tag="slideDown" />
+            android:elevation="@dimen/elevation_low"
+            android:src="@drawable/ic_question_mark"
+            android:tag="slideDown"
+            app:backgroundTint="@color/DarkRed" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|start"
-            android:src="@drawable/ic_question_mark"
-            app:backgroundTint="@color/Blue"
-            android:elevation="@dimen/elevation_low"
             android:layout_marginBottom="12dp"
             android:layout_marginLeft="12dp"
-            android:tag="slideDown" />
+            android:elevation="@dimen/elevation_low"
+            android:src="@drawable/ic_question_mark"
+            android:tag="slideDown"
+            app:backgroundTint="@color/Blue" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/nextButton"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|end"
-            android:src="@drawable/ic_right_arrow"
-            android:scaleType="centerInside"
-            app:backgroundTint="@color/DarkGreen"
             android:layout_marginBottom="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginRight="12dp"
             android:elevation="@dimen/elevation_low"
-            android:tag="slideDown" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_right_arrow"
+            android:tag="slideDown"
+            app:backgroundTint="@color/DarkGreen" />
     </FrameLayout>
 
     <FrameLayout
@@ -311,13 +315,13 @@
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|end"
-            app:backgroundTint="@color/DarkGreen"
-            android:src="@drawable/ic_right_arrow"
-            android:scaleType="centerInside"
             android:layout_marginBottom="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginRight="12dp"
-            android:elevation="@dimen/elevation_low" />
+            android:elevation="@dimen/elevation_low"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_right_arrow"
+            app:backgroundTint="@color/DarkGreen" />
 
     </FrameLayout>
 
