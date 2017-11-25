@@ -43,9 +43,11 @@ import org.threeten.bp.LocalDate;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Translation;
@@ -565,22 +567,41 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     }
 
     private State currentState = State.DRAWING;
+    Set<Integer> slideInIds = new HashSet<>();
+    Set<Integer> slideOutIds = new HashSet<>();
 
     private void slideIn(View ... views){
         for(View v: views) {
+            if(slideInIds.contains(v.getId())){ return; }
+
             if("slideDown".equals(v.getTag())){
                 v.animate().translationYBy(-1 * animateSlide);
             } else {
                 v.animate().translationYBy(animateSlide);
             }
+            slideInIds.add(v.getId());
+
+            if(slideOutIds.contains(v.getId())){
+                slideOutIds.remove(v.getId());
+            } else {
+                slideInIds.add(v.getId());
+            }
         }
     }
     private void slideOut(View ... views){
         for(View v: views) {
+            if(slideOutIds.contains(v.getId())){ return; }
+
             if("slideDown".equals(v.getTag())){
                 v.animate().translationYBy(animateSlide);
             } else {
                 v.animate().translationYBy(-1 * animateSlide);
+            }
+
+            if(slideInIds.contains(v.getId())){
+                slideInIds.remove(v.getId());
+            } else {
+                slideOutIds.add(v.getId());
             }
         }
     }
