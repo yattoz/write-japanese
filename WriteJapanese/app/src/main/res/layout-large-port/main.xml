@@ -46,7 +46,7 @@
             android:layout_marginBottom="200dp"
             android:layout_marginLeft="10dp"
             android:elevation="@dimen/elevation_low"
-            android:src="@drawable/ic_question_mark"
+            android:src="@drawable/ic_study"
             app:backgroundTint="@color/Blue" />
 
         <android.support.design.widget.FloatingActionButton
@@ -200,7 +200,7 @@
             android:layout_marginBottom="92dp"
             android:layout_marginLeft="12dp"
             android:elevation="@dimen/elevation_low"
-            android:src="@drawable/ic_question_mark"
+            android:src="@drawable/ic_exclamation"
             android:tag="slideDown"
             app:backgroundTint="@color/DarkRed" />
 
@@ -212,7 +212,7 @@
             android:layout_marginBottom="12dp"
             android:layout_marginLeft="12dp"
             android:elevation="@dimen/elevation_low"
-            android:src="@drawable/ic_question_mark"
+            android:src="@drawable/ic_study"
             android:tag="slideDown"
             app:backgroundTint="@color/Blue" />
 
