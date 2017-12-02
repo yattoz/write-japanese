@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import dmeeuwis.nakama.data.Rect;
+import dmeeuwis.nakama.data.UncaughtExceptionLogger;
+import dmeeuwis.util.Util;
 
 public class CurveDrawing implements Drawing {
 
@@ -18,8 +20,12 @@ public class CurveDrawing implements Drawing {
 	
 	public CurveDrawing(String[] in){
         if(in == null) { throw new IllegalArgumentException("Cannot construct CurveDrawing from null String[]."); }
-		this.strokes = Collections.unmodifiableList(svg.readSvgEquations(in));
-		this.pointPointDrawing = this.toDrawing();
+		try {
+			this.strokes = Collections.unmodifiableList(svg.readSvgEquations(in));
+			this.pointPointDrawing = this.toDrawing();
+		} catch(Throwable t){
+			throw new RuntimeException("Caught error parsing curve svg: " + Util.join(", ", in), t);
+		}
 	}
 	
 	public int strokeCount(){
