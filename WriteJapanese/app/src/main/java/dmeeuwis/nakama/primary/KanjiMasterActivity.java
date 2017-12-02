@@ -226,7 +226,22 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 }
 
                 final PointDrawing challenger = drawPad.getDrawing();
-                final CurveDrawing known = new CurveDrawing(currentCharacterSvg);
+
+                CurveDrawing curve;
+                try {
+                    curve = new CurveDrawing(currentCharacterSvg);
+                } catch(Throwable t){
+                    // should never happen, but error logs indicate it can.
+
+                    UncaughtExceptionLogger.backgroundLogError("Caught error parsing svg CurveDrawing for " + currentCharacterSet.currentCharacter(), t, KanjiMasterActivity.this);
+                    Toast.makeText(KanjiMasterActivity.this, "Error: failed to parse curve data for " + currentCharacterSet.currentCharacter(), Toast.LENGTH_LONG).show();
+
+                    loadNextCharacter(true);
+                    KanjiMasterActivity.this.recreate();
+
+                    return;
+                }
+                final CurveDrawing known = curve;
 
                 AndroidInputStreamGenerator is = new AndroidInputStreamGenerator(KanjiMasterActivity.this.getAssets());
                 Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(), new AssetFinder(is));
@@ -544,7 +559,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             animateActionBar(getResources().getColor(R.color.actionbar_main));
 
             drawPad.clear();
-            undoStrokeButton.setVisibility(View.GONE);
+            undoStrokeButton.hide();
 
             flipper.setDisplayedChild(State.DRAWING.ordinal());
             currentState = State.DRAWING;
@@ -554,7 +569,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             flipper.setDisplayedChild(State.CORRECT_ANSWER.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_correct));
             currentState = State.CORRECT_ANSWER;
-            undoStrokeButton.setVisibility(View.GONE);
+            undoStrokeButton.hide();
 
         } else if (requestedState == State.REVIEWING) {
             Log.d("nakama", "In REVIEWING state change; starting flip");
@@ -562,7 +577,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             flipper.setDisplayedChild(State.REVIEWING.ordinal());
             animateActionBar(getResources().getColor(R.color.actionbar_incorrect));
             currentState = State.REVIEWING;
-            undoStrokeButton.setVisibility(View.GONE);
+            undoStrokeButton.hide();
         }
     }
 
@@ -1361,7 +1376,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
 
     @Override
     public void overRide() {
-        Toast.makeText(this, "Override " + lastGradingRow, Toast.LENGTH_LONG).show();
+        if(BuildConfig.DEBUG) Toast.makeText(this, "Override " + lastGradingRow, Toast.LENGTH_LONG).show();
         currentCharacterSet.overRideLast();
         setUiState(State.CORRECT_ANSWER);
     }
