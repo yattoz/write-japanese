@@ -276,7 +276,9 @@ public class CharacterSetDetailFragment extends Fragment {
             if(studySet != null){
                 for(char c: studySet.allCharactersSet){
                     int index = asLongString.indexOf(c);
-                    this.selected.set(index);
+                    if(index != -1) {
+                        this.selected.set(index);
+                    }
                 }
             }
 
