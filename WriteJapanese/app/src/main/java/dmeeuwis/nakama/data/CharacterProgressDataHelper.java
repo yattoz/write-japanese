@@ -2,9 +2,11 @@ package dmeeuwis.nakama.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.Toast;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -17,6 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 
@@ -221,7 +224,7 @@ public class CharacterProgressDataHelper {
             WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
             try {
                 DataHelper.selectRecord(db.getReadableDatabase(),
-                        "UPDATE practice_log SET score = min(0, -1 * score) WHERE id = ?", lastRowId);
+                        "UPDATE practice_log SET score = 100 WHERE id = ?", lastRowId);
             } finally {
                 db.close();
             }
