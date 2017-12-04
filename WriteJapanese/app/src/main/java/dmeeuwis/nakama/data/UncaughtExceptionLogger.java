@@ -1,5 +1,6 @@
 package dmeeuwis.nakama.data;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -17,8 +18,23 @@ import java.net.URL;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.primary.KanjiMasterApplicaton;
 
 public class UncaughtExceptionLogger {
+
+    static Application app;
+
+    public static void init(KanjiMasterApplicaton kanjiMasterApplicaton) {
+        app = kanjiMasterApplicaton;
+    }
+
+    public static void backgroundLogError(final String message, final Throwable ex){
+        if(app == null){
+            Log.e("nakama", "Error: UncaughtExceptionLogger not initialized! Can't log.", ex);
+            return;
+        }
+        backgroundLogError(message, ex, app);
+    }
 
     public static void backgroundLogError(final String message, final Throwable ex, final Context applicationContext){
         final Thread t = Thread.currentThread();
@@ -106,4 +122,5 @@ public class UncaughtExceptionLogger {
             Log.e("nakama", "Error trying to report error", e);
         }
     }
+
 }

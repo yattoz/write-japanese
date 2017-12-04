@@ -292,6 +292,17 @@ public class ProgressTracker {
 			chosenOnes.addAll(passed);
 		}
 
+        if(chosenOnes.size() == 0){
+            chosenOnes.addAll(failed);
+            chosenOnes.addAll(reviewing);
+            chosenOnes.addAll(unknown);
+            chosenOnes.addAll(passed);
+
+            UncaughtExceptionLogger.backgroundLogError("ProgressTracker: no chars in chosenOnes. Failed was: " +
+                    Util.join(failed) + ", reviewing was: " + Util.join(reviewing) + "; unknown was: " + Util.join(unknown) +
+                    "; failed was: " + Util.join(failed), new RuntimeException("BOOM"));
+        }
+
 		final Character[] next = chosenOnes.toArray(new Character[0]);
 		final Character n = next[(int)(ran * next.length)];
 		final boolean isReview = failed.contains(n) || reviewing.contains(n) || passed.contains(n);
