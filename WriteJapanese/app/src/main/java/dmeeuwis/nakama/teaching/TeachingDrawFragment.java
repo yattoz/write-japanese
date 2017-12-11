@@ -68,7 +68,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
             this.curveDrawing = new CurveDrawing(currentCharacterSvg);
             this.teachingLevel = 0;
         } catch(Throwable t){
-            throw new RuntimeException("Error parsing out svg for character: " + character, t);
+            throw new RuntimeException("Error parsing out svg for character: " + character + " " + Integer.toHexString(character.charAt(0)), t);
         }
     }
 

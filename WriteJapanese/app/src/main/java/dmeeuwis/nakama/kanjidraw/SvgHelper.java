@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import android.graphics.Path;
 import android.util.Log;
 
 public class SvgHelper {
@@ -35,8 +34,8 @@ public class SvgHelper {
 	}
 
   	
-  	private static interface Processor {
-    	public void process(char c, float[] coords);
+  	private interface Processor {
+    	void process(char c, float[] coords);
   	}
 
     private static class AbsoluteCubicBezierProcesser implements Processor {
@@ -196,16 +195,28 @@ public class SvgHelper {
     private SvgReadData readSvgMove(String in, int start){
     	int index = start + 1;
 
-    	String xs = readSvgNumber(in, index);
+		String xs = readSvgNumber(in, index);
+		float fxs;
+		try {
+			fxs = Float.parseFloat(xs);
+		} catch(NumberFormatException e){
+			throw new RuntimeException("Error parsing string '" + xs + "' at index " + index + " from string '" + in + "'", e);
+		}
     	index += xs.length();
     	
     	String conn = readSvgConnector(in, index);
     	index += conn.length();
-    	
-    	String ys = readSvgNumber(in, index);
+
+		String ys = readSvgNumber(in, index);
+		float fys;
+		try {
+			fys = Float.parseFloat(ys);
+		} catch(NumberFormatException e){
+			throw new RuntimeException("Error parsing string '" + ys + "' at index " + index + " from string '" + in + "'", e);
+		}
     	index += ys.length();
-    	
-    	float[] coords = { Float.parseFloat(xs) * this.scale, Float.parseFloat(ys) * this.scale };
+
+    	float[] coords = { fxs * this.scale, fys * this.scale };
     	return new SvgReadData(in.substring(start, index), in.charAt(start), coords);
     }
 
@@ -233,8 +244,8 @@ public class SvgHelper {
     	}
     	
     	float[] pcoords = { 
-    			Float.parseFloat(coords[0]) * this.scale, Float.parseFloat(coords[1]) * this.scale,
-    			Float.parseFloat(coords[2]) * this.scale, Float.parseFloat(coords[3]) * this.scale
+    			parseFloat(coords[0]) * this.scale, parseFloat(coords[1]) * this.scale,
+    			parseFloat(coords[2]) * this.scale, parseFloat(coords[3]) * this.scale
     	};
     	return new SvgReadData(in.substring(start, index), in.charAt(start), pcoords);
     }
@@ -264,12 +275,20 @@ public class SvgHelper {
     	}
     	
     	float[] pcoords = { 
-    			Float.parseFloat(coords[0]) * this.scale, Float.parseFloat(coords[1]) * this.scale,
-    			Float.parseFloat(coords[2]) * this.scale, Float.parseFloat(coords[3]) * this.scale,
-    			Float.parseFloat(coords[4]) * this.scale, Float.parseFloat(coords[5]) * this.scale
+    			parseFloat(coords[0]) * this.scale, parseFloat(coords[1]) * this.scale,
+    			parseFloat(coords[2]) * this.scale, parseFloat(coords[3]) * this.scale,
+    			parseFloat(coords[4]) * this.scale, parseFloat(coords[5]) * this.scale
     	};
     	return new SvgReadData(in.substring(start, index), in.charAt(start), pcoords);
     }
+
+    private static float parseFloat(String in){
+		try {
+			return Float.parseFloat(in);
+		} catch(NumberFormatException e){
+			throw new RuntimeException("Error parsing float: " + in, e);
+		}
+	}
 
     
     private static String readSvgNumber(String in, int start){
