@@ -36,7 +36,6 @@ public class CharacterStudySet implements Iterable<Character> {
     final public boolean systemSet;
     final private LockChecker LockChecker;
     private ProgressTracker tracker;
-    final UUID iid;
 
     private boolean shuffling = false;
     private Character currentChar;
@@ -113,7 +112,6 @@ public class CharacterStudySet implements Iterable<Character> {
         this.description = description;
         this.systemSet = systemSet;
         this.locked = locked;
-        this.iid = iid;
 
         this.freeCharactersSet = new LinkedHashSet<>(Util.stringToCharList(freeCharacters));
         this.allCharactersSet = new LinkedHashSet<>(Util.stringToCharList(allCharacters));
@@ -247,12 +245,17 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public void nextCharacter() {
-        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
-        Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
-                p.introIncorrect, p.introReviewing);
+        try {
+            CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+            Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
+                    p.introIncorrect, p.introReviewing);
 
-        this.currentChar = i.first;
-        this.reviewing = i.second;
+            this.currentChar = i.first;
+            this.reviewing = i.second;
+
+        } catch(Throwable t){
+            throw new RuntimeException("Error getting next char for charset: " + shortName + "; chars " + charactersAsString(), t);
+        }
     }
 
     public void save() {

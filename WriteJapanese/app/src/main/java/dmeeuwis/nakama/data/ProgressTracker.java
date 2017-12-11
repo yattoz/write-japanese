@@ -293,14 +293,16 @@ public class ProgressTracker {
 		}
 
         if(chosenOnes.size() == 0){
-            chosenOnes.addAll(failed);
-            chosenOnes.addAll(reviewing);
-            chosenOnes.addAll(unknown);
-            chosenOnes.addAll(passed);
+            chosenOnes.addAll(rawAvailSet);
 
             UncaughtExceptionLogger.backgroundLogError("ProgressTracker: no chars in chosenOnes. Failed was: " +
                     Util.join(failed) + ", reviewing was: " + Util.join(reviewing) + "; unknown was: " + Util.join(unknown) +
-                    "; failed was: " + Util.join(failed), new RuntimeException("BOOM"));
+                    "; failed was: " + Util.join(failed) + "; rawAllChars: " + Util.join(rawAllChars) + "; rawAvailSet was: " + Util.join(rawAvailSet) + "; recordSheetKeys: " +
+					Util.join(this.recordSheet.keySet()), new RuntimeException("BOOM"));
+
+			if(chosenOnes.size() == 0){
+				chosenOnes.addAll(rawAllChars);
+			}
         }
 
 		final Character[] next = chosenOnes.toArray(new Character[0]);
