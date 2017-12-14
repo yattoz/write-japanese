@@ -45,7 +45,6 @@ public class SvgExistsTest {
         sets.put("jlpt_2", Kanji.JLPT_N2);
         sets.put("jlpt_1", Kanji.JLPT_N1);
 
-
         for(Map.Entry<String, String> s: sets.entrySet()){
             for(Character c: s.getValue().toCharArray()){
                 String id = Integer.toHexString((c).charValue());
@@ -57,7 +56,7 @@ public class SvgExistsTest {
                         String[] lines = Util.slurp(fin).split("\n");
                         new CurveDrawing(lines);
                     } catch(Throwable t){
-                        failures.add("Error making CurveDrawing out of .svg for character: " + c + " in set " + s.getKey() + ": " + t.getMessage());
+                        failures.add("Error making CurveDrawing out of .svg for character: " + c + " [" + id + "] in set " + s.getKey() + ": " + t.getMessage());
                     }
                 } else {
                     String retest = path + "0" + Integer.toHexString((c).charValue()) + ".path";
