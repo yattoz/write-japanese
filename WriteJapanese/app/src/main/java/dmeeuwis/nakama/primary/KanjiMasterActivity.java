@@ -288,7 +288,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                             setUiState(State.REVIEWING);
                         }
 
-                        if(BuildConfig.DEBUG && entry != null){
+                        if(false && BuildConfig.DEBUG && entry != null){
                             Toast.makeText(KanjiMasterActivity.this, "New character score became " + entry.score, Toast.LENGTH_SHORT).show();
                         }
                     }
