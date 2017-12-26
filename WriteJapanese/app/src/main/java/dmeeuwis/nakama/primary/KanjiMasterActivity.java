@@ -43,6 +43,7 @@ import org.threeten.bp.LocalDate;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -874,7 +875,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
 
-        //initializeCharacterSets();      // should do nothing?
+        initializeCharacterSets();      // should do nothing?
         resumeCharacterSets();
 
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
@@ -974,6 +975,7 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             menu.add("DEBUG:ClearSyncSettings");
             menu.add("DEBUG:ClearSRSSettings");
             menu.add("DEBUG:SRSPassCurrentSet");
+            menu.add("DEBUG:SRSAddDay");
             menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
             menu.add("DEBUG:SyncNow");
@@ -1154,6 +1156,10 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
                 Settings.clearSRSSettings(getApplicationContext());
             } else if (item.getTitle().equals("DEBUG:SRSPassCurrentSet")) {
                 currentCharacterSet.srsForcePassAll();
+            } else if (item.getTitle().equals("DEBUG:SRSAddDay")) {
+                for(Map.Entry<String, CharacterStudySet> set: characterSets.entrySet()){
+                    set.getValue().getProgressTracker().debugAddDayToSRS();
+                }
 
             } else if (item.getTitle().equals("DEBUG:ClearSync")) {
                 new PracticeLogSync(KanjiMasterActivity.this).clearSync();
@@ -1332,7 +1338,12 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
 
+        List<ProgressTracker> singleTracker = new ArrayList<>(1);
+        singleTracker.add(currentCharacterSet.getProgressTracker());
+        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
+                .resumeProgressTrackerFromDB(singleTracker);
         loadNextCharacter(false);
+
         drawPad.clear();
         setUiState(State.DRAWING);
         backgroundLoadTranslations();

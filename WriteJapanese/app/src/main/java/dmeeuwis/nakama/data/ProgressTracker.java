@@ -48,6 +48,7 @@ public class ProgressTracker {
 		}
 	}
 
+
 	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
 		public final int forceResetCode;
 
@@ -109,6 +110,8 @@ public class ProgressTracker {
 
 	private SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp){
 		if(score < 0 || score == knownScore()){
+			if(BuildConfig.DEBUG){ Log.d("nakama-progress", "Removing " + character + " from SRS due to score " + score); }
+			removeSRSQueue(character);
 			return null;
 		}
 
@@ -117,6 +120,7 @@ public class ProgressTracker {
 
 		// schedule next
 		Period delay = SRSTable[score];
+		if(BuildConfig.DEBUG){ Log.d("nakama-progress", "Setting delay to " + delay + " for score " + score + " on char " + character); }
 		LocalDate nextDate = timestamp.plus(delay).toLocalDate();
 		SRSEntry entry = new SRSEntry(character, nextDate);
 
@@ -242,12 +246,12 @@ public class ProgressTracker {
 		Set<Character> unknown = sets.get(4);
 
 		if(BuildConfig.DEBUG) {
-			Log.i("nakama-progression", "Character progression: reviewing sets");
+			Log.d("nakama-progression", "Character progression: reviewing sets");
 
-			Log.i("nakama-progression", "Failed set is: " + Util.join(", ", failed));
-			Log.i("nakama-progression", "Reviewing set is: " + Util.join(", ", reviewing));
-			Log.i("nakama-progression", "Passed set is: " + Util.join(", ", passed));
-			Log.i("nakama-progression", "Unknown set is: " + Util.join(", ", unknown));
+			Log.d("nakama-progression", "Failed set is: " + Util.join(", ", failed));
+			Log.d("nakama-progression", "Reviewing set is: " + Util.join(", ", reviewing));
+			Log.d("nakama-progression", "Passed set is: " + Util.join(", ", passed));
+			Log.d("nakama-progression", "Unknown set is: " + Util.join(", ", unknown));
 		}
 
         // probs array: failed, reviewing, unknown, passed
@@ -255,22 +259,22 @@ public class ProgressTracker {
 
         // still learning new chars, but maxed out the reviewing and failed buckets so just review
         if(failed.size() >= introIncorrect || reviewing.size() > introReviewing) {
-            Log.i("nakama-progress", "Failed or Review buckets maxed out, reviewing 50/50");
+            Log.d("nakama-progress", "Failed or Review buckets maxed out, reviewing 50/50");
             probs = new float[]{0.5f, 0.5f, 0.0f, 0.0f};
 
         // still learning new chars, haven't seen standardSets
         } else if(unknown.size() > 0) {
-			Log.i("nakama-progress", "Still room in failed and review buckets, chance of new characters");
+			Log.d("nakama-progress", "Still room in failed and review buckets, chance of new characters");
             probs = new float[]{0.35f, 0.30f, 0.35f, 0.0f};
 
         // have seen standardSets characters, still learning
         } else if(unknown.size() == 0){
-			Log.i("nakama-progress", "Have seen standardSets characters, reviewing 40/40/0/20");
+			Log.d("nakama-progress", "Have seen standardSets characters, reviewing 40/40/0/20");
             probs = new float[] { 0.40f, 0.30f, 0.0f, 0.2f };
 
         // what situation is this?
         } else {
-			Log.i("nakama-progress", "Unknown situation, reviewing 25/25/25/25.");
+			Log.d("nakama-progress", "Unknown situation, reviewing 25/25/25/25.");
             probs = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
         }
 
@@ -318,8 +322,8 @@ public class ProgressTracker {
 		final boolean isReview = failed.contains(n) || reviewing.contains(n) || passed.contains(n);
 
 		if(BuildConfig.DEBUG) {
-			Log.i("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));
-			Log.i("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh"));
+			Log.d("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));
+			Log.d("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh"));
 		}
 		return Pair.create(n, isReview ? StudyType.REVIEW : StudyType.NEW_CHAR);
     }
@@ -561,5 +565,14 @@ public class ProgressTracker {
             markSuccess(lastChar, LocalDateTime.now());
         }
     }
+
+	public void debugAddDayToSRS() {
+		PriorityQueue<SRSEntry> copy = new PriorityQueue<>(this.srsQueue);
+		for(SRSEntry e: copy){
+			srsQueue.remove(e);
+			SRSEntry newE = new SRSEntry(e.character, e.nextPractice.minusDays(1));
+			srsQueue.add(newE);
+		}
+	}
 
 }
