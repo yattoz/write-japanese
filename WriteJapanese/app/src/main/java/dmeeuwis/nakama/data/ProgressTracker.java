@@ -36,11 +36,19 @@ public class ProgressTracker {
     private boolean lastPassed = false;
     private Character lastChar = null;
 
+	public LocalDateTime oldestLogTimestamp = null;
+
 	public Map<Character,Integer> getScoreSheet() {
 		return this.recordSheet;
 	}
 
-    public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
+	public void noteTimestamp(LocalDateTime t) {
+		if(oldestLogTimestamp == null || t.isAfter(oldestLogTimestamp)){
+			oldestLogTimestamp = t;
+		}
+	}
+
+	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
 		public final int forceResetCode;
 
 		Progress(int forceResetCode){
@@ -100,7 +108,7 @@ public class ProgressTracker {
 	};
 
 	private SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp){
-		if(score < 0){
+		if(score < 0 || score == knownScore()){
 			return null;
 		}
 
@@ -518,10 +526,16 @@ public class ProgressTracker {
 	}
 
 	private int knownScore(){
-		return  MAX_SCORE;
+		return MAX_SCORE;
 	}
 
 	public void resetTo(Character character, Progress progress) {
+		if(progress != Progress.TIMED_REVIEW){
+			removeSRSQueue(character);
+		} else {
+			addToSRSQueue(character, 0, LocalDateTime.now());
+		}
+
 		if(!recordSheet.containsKey(character)){
 			return;
 		}

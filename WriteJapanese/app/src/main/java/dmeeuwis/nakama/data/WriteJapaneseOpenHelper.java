@@ -18,7 +18,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 31;
+	private static final int DB_VERSION = 32;
 
     private final String iid;
     private final Context context;
@@ -70,6 +70,11 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                 "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 "score TEXT NOT NULL" +
         ")");
+    }
+
+    private void addPracticeLogDateIndex(SQLiteDatabase sqlite){
+        Log.d("nakama-db", "Creating practice_log timestamp index.");
+        sqlite.execSQL("CREATE INDEX logs_by_date ON practice_log(timestamp);");
     }
 
     private void addDrawingToPracticeLog(SQLiteDatabase sqlite){
@@ -216,6 +221,10 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         if(oldVersion <= 30) {
             addSRSInitialTombstone(dbase);
+        }
+
+        if(oldVersion <= 32) {
+            addPracticeLogDateIndex(dbase);
         }
 	}
 

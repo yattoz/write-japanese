@@ -117,82 +117,39 @@ public class CharacterProgressDataHelper {
         }
     }
 
+
     public void loadProgressTrackerFromDB(final List<ProgressTracker> allPts){
+        loadProgressTrackerFromDB(allPts, false);
+    }
+
+    public void resumeProgressTrackerFromDB(List<ProgressTracker> allPts) {
+        loadProgressTrackerFromDB(allPts, true);
+    }
+
+    private void loadProgressTrackerFromDB(final List<ProgressTracker> allPts, final boolean resuming){
         long start = System.currentTimeMillis();
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         final AtomicLong count = new AtomicLong(0);
 
+        LocalDateTime oldestLog = LocalDateTime.of(2000, 1, 1, 0, 0);
+        if(resuming) {
+            for (ProgressTracker p : allPts) {
+                if (p != null && oldestLog.isBefore(p.oldestLogTimestamp)) {
+                    oldestLog = p.oldestLogTimestamp;
+                }
+            }
+            Log.i("nakama-progress", "Saw oldest log from " + allPts.size() + " sets as " + oldestLog);
+        }
+
         try {
-            DataHelper.applyToResults(
-                new DataHelper.ProcessRow() {
-                    @Override
-                    public void process(Map<String, String> r) {
-                        count.incrementAndGet();
-
-                        Character character = r.get("character").charAt(0);
-                        String set = r.get("charset");
-                        String timestampStr = r.get("timestamp");
-                        LocalDateTime t;
-
-                        try {
-                            t = LocalDateTime.parse(timestampStr, formatter);
-                        } catch(DateTimeParseException e){
-                            try {
-                                t = LocalDateTime.parse(timestampStr.replace(' ', 'T'), formatter);
-                            } catch (DateTimeParseException x) {
-                                UncaughtExceptionLogger.backgroundLogError("Error caught parsing timestamp on practice log: " + timestampStr, x, context);
-                                return;
-                            }
-                        }
-
-                        for(ProgressTracker pt: allPts) {
-
-                            if (character.toString().equals("R")) {
-                                // indicates reset progress for standardSets characters
-                                pt.progressReset(context, set);
-                                //Log.d("nakama-progress", "Loaded PROGRESS RESET for set " + set);
-
-                            } else if (character.toString().equals("S")) {
-                                // indicates reset progress for srs sets (maybe only on first srs install?)
-                                pt.srsReset(set);
-                                //Log.d("nakama-progress", "Loaded SRS RESET for set " + set);
-
-
-                            } else {
-                                Integer score = Integer.parseInt(r.get("score"));
-                                if (score == 100) {
-                                    pt.markSuccess(character, t);
-                                    //Log.d("nakama-progress", "Loaded PASS result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
-
-                                } else if (score == ProgressTracker.Progress.FAILED.forceResetCode) {
-                                    // indicates reset progress to failed for a single character
-                                    pt.resetTo(character, ProgressTracker.Progress.FAILED);
-
-                                } else if (score == ProgressTracker.Progress.REVIEWING.forceResetCode){
-                                    // indicates reset progress to timed review for a single character
-                                    pt.resetTo(character, ProgressTracker.Progress.REVIEWING);
-
-                                } else if (score == ProgressTracker.Progress.TIMED_REVIEW.forceResetCode){
-                                    // indicates reset progress to timed review for a single character
-                                    pt.resetTo(character, ProgressTracker.Progress.TIMED_REVIEW);
-
-                                } else if (score == ProgressTracker.Progress.PASSED.forceResetCode){
-                                    // indicates reset progress to passed for a single character
-                                    pt.resetTo(character, ProgressTracker.Progress.PASSED);
-
-
-                                } else {
-                                    pt.markFailure(character);
-                                    //Log.d("nakama-progress", "Loaded FAIL result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
-                                }
-                            }
-                        }
-                    }
-                },
-
-                db.getReadableDatabase(),
-                "SELECT character, charset, score, timestamp FROM practice_log");
+            ProcessLogRow plr = new ProcessLogRow(count, allPts);
+            if(resuming){
+                Log.i("nakama-progress", "Selecting all logs since " + oldestLog);
+                DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp FROM practice_log WHERE timestamp > datetime(?)", oldestLog.toString());
+            } else {
+                DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp FROM practice_log");
+            }
         } finally {
             db.close();
         }
@@ -250,5 +207,80 @@ public class CharacterProgressDataHelper {
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, DEFAULT_INTRO_REVIEWING),
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, DEFAULT_ADV_INCORRECT),
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, DEFAULT_ADV_REVIEWING));
+    }
+
+    private class ProcessLogRow implements DataHelper.ProcessRow {
+        private final AtomicLong count;
+        private final List<ProgressTracker> allPts;
+
+        public ProcessLogRow(AtomicLong count, List<ProgressTracker> allPts) {
+            this.count = count;
+            this.allPts = allPts;
+        }
+
+        @Override
+        public void process(Map<String, String> r) {
+            count.incrementAndGet();
+
+            Character character = r.get("character").charAt(0);
+            String set = r.get("charset");
+            String timestampStr = r.get("timestamp");
+            LocalDateTime t;
+
+            try {
+                t = LocalDateTime.parse(timestampStr, formatter);
+            } catch(DateTimeParseException e){
+                try {
+                    t = LocalDateTime.parse(timestampStr.replace(' ', 'T'), formatter);
+                } catch (DateTimeParseException x) {
+                    UncaughtExceptionLogger.backgroundLogError("Error caught parsing timestamp on practice log: " + timestampStr, x, context);
+                    return;
+                }
+            }
+
+            for(ProgressTracker pt: allPts) {
+                pt.noteTimestamp(t);
+
+                if (character.toString().equals("R")) {
+                    // indicates reset progress for standardSets characters
+                    pt.progressReset(context, set);
+                    //Log.d("nakama-progress", "Loaded PROGRESS RESET for set " + set);
+
+                } else if (character.toString().equals("S")) {
+                    // indicates reset progress for srs sets (maybe only on first srs install?)
+                    pt.srsReset(set);
+                    //Log.d("nakama-progress", "Loaded SRS RESET for set " + set);
+
+
+                } else {
+                    Integer score = Integer.parseInt(r.get("score"));
+                    if (score == 100) {
+                        pt.markSuccess(character, t);
+                        //Log.d("nakama-progress", "Loaded PASS result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
+
+                    } else if (score == ProgressTracker.Progress.FAILED.forceResetCode) {
+                        // indicates reset progress to failed for a single character
+                        pt.resetTo(character, ProgressTracker.Progress.FAILED);
+
+                    } else if (score == ProgressTracker.Progress.REVIEWING.forceResetCode){
+                        // indicates reset progress to timed review for a single character
+                        pt.resetTo(character, ProgressTracker.Progress.REVIEWING);
+
+                    } else if (score == ProgressTracker.Progress.TIMED_REVIEW.forceResetCode){
+                        // indicates reset progress to timed review for a single character
+                        pt.resetTo(character, ProgressTracker.Progress.TIMED_REVIEW);
+
+                    } else if (score == ProgressTracker.Progress.PASSED.forceResetCode){
+                        // indicates reset progress to passed for a single character
+                        pt.resetTo(character, ProgressTracker.Progress.PASSED);
+
+
+                    } else {
+                        pt.markFailure(character);
+                        //Log.d("nakama-progress", "Loaded FAIL result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));
+                    }
+                }
+            }
+        }
     }
 }

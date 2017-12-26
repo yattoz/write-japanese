@@ -26,6 +26,12 @@ import dmeeuwis.util.Util;
  */
 public class CharacterStudySet implements Iterable<Character> {
 
+    // TODO: change this. Either ProgressTracker exists outside of CharacterStudySet,
+    // or its never leaked out.
+    public ProgressTracker getProgressTracker() {
+        return tracker;
+    }
+
     public enum LockLevel {NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED}
 
     final public Set<Character> freeCharactersSet;
@@ -118,8 +124,6 @@ public class CharacterStudySet implements Iterable<Character> {
 
         this.pathPrefix = pathPrefix;
         this.LockChecker = LockChecker;
-
-        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
     }
 
 

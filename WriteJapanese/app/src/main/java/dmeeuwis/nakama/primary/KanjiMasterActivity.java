@@ -452,7 +452,6 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         if(this.customSets != null){
             return;
         }
-        long start = System.currentTimeMillis();
 
         this.customSets = new ArrayList<>();
         this.characterSets.clear();
@@ -485,6 +484,15 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
         }
         new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
                 .loadProgressTrackerFromDB(trackers);
+    }
+
+    private void resumeCharacterSets(){
+        List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
+        for(CharacterStudySet c: this.characterSets.values()){
+            trackers.add(c.getProgressTracker());
+        }
+        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
+                .resumeProgressTrackerFromDB(trackers);
     }
 
 
@@ -866,7 +874,9 @@ public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
 
-        initializeCharacterSets();
+        //initializeCharacterSets();      // should do nothing?
+        resumeCharacterSets();
+
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(characterSets.get("j1"));
