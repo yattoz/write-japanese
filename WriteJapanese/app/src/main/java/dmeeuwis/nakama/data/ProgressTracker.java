@@ -24,6 +24,19 @@ import java.util.Set;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.util.Util;
 
+/**
+ * Scores:
+ *
+ * null unknown
+ *
+ * -2 * setting failing
+ * -1 * setting review
+ *  0 time review d1
+ *  1 time review d3
+ *  2 time review d7
+ *  3 time review d14
+ *  4 time review d30
+ */
 public class ProgressTracker {
 
 	final static public int MAX_SCORE = 4;
@@ -323,7 +336,7 @@ public class ProgressTracker {
 
 		if(BuildConfig.DEBUG) {
 			Log.d("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));
-			Log.d("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh"));
+			Log.d("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh, current score: " + getScoreSheet().get(n)));
 		}
 		return Pair.create(n, isReview ? StudyType.REVIEW : StudyType.NEW_CHAR);
     }
@@ -448,7 +461,7 @@ public class ProgressTracker {
 		} else {
 			scoreSheetToUse = othersRecordSheet;
 		}
-		int score = scoreSheetToUse.get(c) == null ? 0 : scoreSheetToUse.get(c);
+		int score = scoreSheetToUse.get(c) == null ? -1 : scoreSheetToUse.get(c);
 		int newScore = Math.min(MAX_SCORE, score + 1);
 
         lastCharPrevScore = score;

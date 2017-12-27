@@ -155,7 +155,7 @@ public class CharacterProgressDataHelper {
         }
 
         long startup = System.currentTimeMillis() - start;
-        Log.i("nakama-progress", "Time to load progress tracker: " + startup + "ms; counted " + count.get() + " records.");
+        Log.i("nakama-progress", "Time to load progress tracker: " + startup + "ms; counted " + count.get() + " records.", new RuntimeException());
         if(startup > 2500){
             UncaughtExceptionLogger.backgroundLogError("Long startup detected: " + startup + "ms to load " + count.get() + " practice logs.", new RuntimeException(), context);
         }
