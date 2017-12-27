@@ -2,7 +2,7 @@ package dmeeuwis.nakama;
 
 import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,7 +23,7 @@ import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 
-public class KanjiCheckActivity extends ActionBarActivity {
+public class KanjiCheckActivity extends AppCompatActivity {
 
     private static class KanjiViewHolder extends RecyclerView.ViewHolder {
 

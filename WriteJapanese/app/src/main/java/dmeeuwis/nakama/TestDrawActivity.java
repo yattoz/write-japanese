@@ -2,8 +2,8 @@ package dmeeuwis.nakama;
 
 import android.graphics.Color;
 import android.graphics.Point;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.views.AnimatedCurveView;
 import dmeeuwis.nakama.views.DrawView;
 
-public class TestDrawActivity extends ActionBarActivity {
+public class TestDrawActivity extends AppCompatActivity {
 
     DrawView dv;
     AnimatedCurveView av;

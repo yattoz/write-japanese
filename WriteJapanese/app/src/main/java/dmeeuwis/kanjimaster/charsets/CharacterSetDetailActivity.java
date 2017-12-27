@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +23,7 @@ import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
  * item details are presented side-by-side with a list of items
  * in a {@link CharacterSetListActivity}.
  */
-public class CharacterSetDetailActivity extends ActionBarActivity implements LockCheckerHolder {
+public class CharacterSetDetailActivity extends AppCompatActivity implements LockCheckerHolder {
 
     public static String CHARSET_SWITCH_BUNDLE_KEY = "CHARSET_SWITCH";
 

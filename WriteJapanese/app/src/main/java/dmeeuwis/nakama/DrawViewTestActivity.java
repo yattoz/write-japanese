@@ -1,15 +1,13 @@
 package dmeeuwis.nakama;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.views.DrawView;
 import dmeeuwis.nakama.views.SquareSignatureView;
 
-public class DrawViewTestActivity extends ActionBarActivity {
+public class DrawViewTestActivity extends AppCompatActivity {
 
     DrawView dv;
     SquareSignatureView sv;

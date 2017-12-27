@@ -6,7 +6,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.Html;
 import android.util.Log;
@@ -20,7 +20,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +36,8 @@ import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.SingleBarChart;
 import dmeeuwis.nakama.views.SingleBarChart.BarChartEntry;
 
-public class ProgressActivity extends ActionBarActivity implements OnItemClickListener, LockCheckerHolder {
+
+public class ProgressActivity extends AppCompatActivity implements OnItemClickListener, LockCheckerHolder {
 
 	String callingClass;
 	String callingPath;

@@ -1,7 +1,7 @@
 package dmeeuwis.nakama;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.appcompat.BuildConfig;
 import android.text.TextUtils;
 import android.util.Log;
@@ -31,7 +31,7 @@ public class LockCheckerIabHelper extends LockChecker implements OnIabSetupFinis
 	private FixedIabHelper iab = null;
 	private boolean iabHelperSetupFinished = false;
 	private boolean iabHelperInventoryRefreshing = false;
-	final private ActionBarActivity parentActivity;
+	final private Activity parentActivity;
 
 	final private List<String> iabDebugLog = new ArrayList<>();
 	final private DateFormat df = new SimpleDateFormat("dd-MMM-yyyy E hh:mm a z");
@@ -40,7 +40,7 @@ public class LockCheckerIabHelper extends LockChecker implements OnIabSetupFinis
 
 	List<Runnable> queuedCommands;
 	
-	private LockCheckerIabHelper(ActionBarActivity parentActivity){
+	private LockCheckerIabHelper(Activity parentActivity){
 		super(parentActivity);
 
 		Log.i("nakama", "New LockCheckerIabHelper: about to start iab setup.");

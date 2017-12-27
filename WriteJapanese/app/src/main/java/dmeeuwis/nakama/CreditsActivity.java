@@ -3,7 +3,7 @@ package dmeeuwis.nakama;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -15,7 +15,7 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 
-public class CreditsActivity extends ActionBarActivity {
+public class CreditsActivity extends AppCompatActivity {
 
 	private final String EDICT_THANKS = "<p>This software uses the EDICT, KANJIDIC, and kradfile-u dictionary files. These files are the property of the Electronic Dictionary Research and Development Group, and are used in conformance with the Group's licence. For further information, see <a href='http://www.edrdg.org/'>the Electronic Dictionary Research and Development Group homepage</a></p>";
 	private final String DIAGRAMS_THANKS = "<p>This software also uses the KanjiVG project's SVG files that describe the shape of each kanji. The KanjiVG is copyright © 2009-2013 Ulrich Apel and released under the Creative Commons Attribution-Share Alike 3.0 license. For more information, see the <a href='http://kanjivg.tagaini.net/'>KanjiVG homepage.</p>";

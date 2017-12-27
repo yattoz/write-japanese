@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import dmeeuwis.kanjimaster.R;
@@ -21,7 +21,7 @@ import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 /**
  * On small devices, holds the CharacterSetStatusFragment standardSets by itself.
  */
-public class CharsetInfoActivity extends ActionBarActivity implements OnGoalPickListener, OnFragmentInteractionListener {
+public class CharsetInfoActivity extends AppCompatActivity implements OnGoalPickListener, OnFragmentInteractionListener {
     private final String CHARSET_SAVED_INSTANCE = "charset";
 
     CharacterStudySet charset;

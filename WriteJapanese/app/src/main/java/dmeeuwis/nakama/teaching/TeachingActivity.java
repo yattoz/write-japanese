@@ -12,7 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.MenuItem;
@@ -36,7 +36,7 @@ import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.util.Util;
 
-public class TeachingActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
+public class TeachingActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
 	ActionBar actionBar;
 	
 	private String character;

@@ -21,7 +21,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -107,7 +107,7 @@ import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 
 import static dmeeuwis.nakama.primary.IntroActivity.USE_SRS_SETTING_NAME;
 
-public class KanjiMasterActivity extends ActionBarActivity implements ActionBar.OnNavigationListener,
+public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
             ActivityCompat.OnRequestPermissionsResultCallback, GradingOverrideListener {
 

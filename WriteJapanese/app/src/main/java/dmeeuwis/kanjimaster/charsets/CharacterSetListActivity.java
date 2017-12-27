@@ -10,7 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -38,7 +38,7 @@ import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class CharacterSetListActivity extends ActionBarActivity implements LockCheckerHolder {
+public class CharacterSetListActivity extends AppCompatActivity implements LockCheckerHolder {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
