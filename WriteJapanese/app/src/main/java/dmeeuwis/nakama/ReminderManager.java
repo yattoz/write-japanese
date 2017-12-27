@@ -2,6 +2,7 @@ package dmeeuwis.nakama;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -40,8 +41,10 @@ import dmeeuwis.util.Util;
 
 public class ReminderManager extends BroadcastReceiver {
 
-    private static final boolean DEBUG_REMINDERS = false;
+    private static final boolean DEBUG_REMINDERS = BuildConfig.DEBUG && false;
     private static final int NOTIFICATION_ID = 289343;
+
+    private static final String NOTIFICATION_CHANNEL_ID = "dmeeuwis.nakama.notifications";
 
     private static Intent makeIntent(Context c){
         return new Intent(c, ReminderManager.class);
@@ -53,7 +56,7 @@ public class ReminderManager extends BroadcastReceiver {
         Calendar calendar = GregorianCalendar.getInstance();
         Log.i("nakama", "Current time is: " + df.format(calendar.getTime()));
 
-        if(BuildConfig.DEBUG && DEBUG_REMINDERS){
+        if(DEBUG_REMINDERS){
             calendar.add(Calendar.MINUTE, 1);
         } else {
             calendar.add(Calendar.HOUR, 24);
@@ -94,6 +97,8 @@ public class ReminderManager extends BroadcastReceiver {
             new CharacterProgressDataHelper(context, Iid.get(context))
                     .loadProgressTrackerFromDB(trackers);
 
+            Log.i("nakama", "Loaded Progress for reminder");
+
             Boolean srsEnabled = Settings.getSRSEnabled(context);
             Boolean notificationsEnabled = Settings.getSRSNotifications(context);
 
@@ -114,11 +119,12 @@ public class ReminderManager extends BroadcastReceiver {
                 }
 
                 Log.d("nakama", hits.size() + " chars for today");
-                if (hits.size() > 0) {
+                if (hits.size() > 0 || DEBUG_REMINDERS) {
                     srsNotices = true;
                     notificationMessage.append(hits.size() + " timed review characters for today! ");
                 }
             }
+            Log.i("nakama", "Checked SRS");
 
             // iterate over character set study goals, see if any for today
             List<Pair<String, Integer>> setGoalCounts = new ArrayList<>();
@@ -129,6 +135,7 @@ public class ReminderManager extends BroadcastReceiver {
                     setGoalCounts.add(Pair.create(set.name, charCount));
                 }
             }
+            Log.i("nakama", "Checked reminder");
 
             if(setGoalCounts.size() == 1 ){
                 Pair<String, Integer> g = setGoalCounts.get(0);
@@ -147,7 +154,13 @@ public class ReminderManager extends BroadcastReceiver {
 
 
             if(notificationMessage.length() > 0) {
+                Log.i("nakama", "Will do notification");
                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+                NotificationChannel c = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID);
+                if(c == null){
+                    notificationManager.createNotificationChannel(new NotificationChannel(NOTIFICATION_CHANNEL_ID, "Write Japanese Reminders", NotificationManager.IMPORTANCE_LOW));
+                }
 
                 // clear any existing notification that user didn't click
                 notificationManager.cancel(NOTIFICATION_ID);
@@ -162,9 +175,12 @@ public class ReminderManager extends BroadcastReceiver {
                     title = "Timed Review and Goal Reminder";
                 }
 
+                Log.i("nakama", "Will display notification: " + title);
                 // add new notification
                 Notification n = getNotification(context, title, notificationMessage.toString());
                 notificationManager.notify(NOTIFICATION_ID, n);
+            } else {
+                Log.i("nakama", "No notifications to display.");
             }
 
             // schedule tomorrow's possible reminder
@@ -176,10 +192,10 @@ public class ReminderManager extends BroadcastReceiver {
     }
 
     private Notification getNotification(Context context, String title, String message) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        builder.setContentTitle(title);
-        builder.setContentText(message);
-        builder.setAutoCancel(true);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setAutoCancel(true);
 
         if(Build.VERSION.SDK_INT >= 21) {
             builder.setVisibility(Notification.VISIBILITY_PUBLIC);
