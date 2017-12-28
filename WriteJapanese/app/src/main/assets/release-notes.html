@@ -5,6 +5,7 @@
 			ul { padding: 0 10px; margin: 20px; margin-right: 1em; }
 			.centerContainer { max-width: 60em ; text-align: left; margin: 2em auto; }
 		</style>
+		<meta charset="utf-8">
 	</head>
 
 	<body>
@@ -14,7 +15,9 @@
         <ul>
             <li>Re-enabling some characters that had been disabled due to problematic SVG files following character set upgrade: 才, 医, 満, 均, 際.</li>
 			<li>Fix bug to ensure that if you manually set a character to 'known' from the Progress activity, it is removed from SRS queue. Similarly fix situations when manually adjusting a character to 'failed', 'reviewing', or 'timed review'.</li>
-			<li>Build now targeting Android SDK 27 (Android OS 8.1); Oreo Notification Channels added.</li>
+            <li>Fix bug in older Android devices where kanji in release notes page would not display properly.</li>
+            <li>Fix bug to re-add filtered katakana ワ.</li>
+			<li>Build now targeting Android SDK 27 (Android OS 8.1). Android Oreo Notification Channel support added.</li>
         </ul>
 
         <h2>Release 15.1</h2>
