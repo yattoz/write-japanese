@@ -2,11 +2,9 @@ package dmeeuwis.nakama.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.Pair;
-import android.widget.Toast;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -19,7 +17,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 
@@ -43,7 +40,6 @@ public class CharacterProgressDataHelper {
     public void srsReset(String charSet){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
-            // 0 to indicate reset progress? Am I being silly...?
             db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)",
                     new String[]{ UUID.randomUUID().toString(), iid.toString(), "S", charSet, "0" });
         } finally {
@@ -54,7 +50,6 @@ public class CharacterProgressDataHelper {
     public void clearProgress(String charSet){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
-            // 0 to indicate reset progress? Am I being silly...?
             db.getWritableDatabase().execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)",
                     new String[]{ UUID.randomUUID().toString(), iid.toString(), "R", charSet, "0" });
         } finally {
@@ -135,7 +130,7 @@ public class CharacterProgressDataHelper {
         LocalDateTime oldestLog = LocalDateTime.of(2000, 1, 1, 0, 0);
         if(resuming) {
             for (ProgressTracker p : allPts) {
-                if (p != null && oldestLog.isBefore(p.oldestLogTimestamp)) {
+                if (p != null && p.oldestLogTimestamp != null && oldestLog.isBefore(p.oldestLogTimestamp)) {
                     oldestLog = p.oldestLogTimestamp;
                 }
             }
