@@ -974,6 +974,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:ClearSharedPrefs");
             menu.add("DEBUG:ClearSyncSettings");
             menu.add("DEBUG:ClearSRSSettings");
+            menu.add("DEBUG:PrintSRSQueues");
             menu.add("DEBUG:SRSPassCurrentSet");
             menu.add("DEBUG:SRSAddDay");
             menu.add("DEBUG:ClearSync");
@@ -1154,6 +1155,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
             } else if (item.getTitle().equals("DEBUG:ClearSRSSettings")) {
                 Settings.clearSRSSettings(getApplicationContext());
+
+            } else if (item.getTitle().equals("DEBUG:PrintSRSQueues")) {
+                for(Map.Entry<String, CharacterStudySet> s: characterSets.entrySet()){
+                    Log.d("nakama", s.getKey() + ": " + s.getValue().getSrsScheduleString());
+                }
+
             } else if (item.getTitle().equals("DEBUG:SRSPassCurrentSet")) {
                 currentCharacterSet.srsForcePassAll();
             } else if (item.getTitle().equals("DEBUG:SRSAddDay")) {
