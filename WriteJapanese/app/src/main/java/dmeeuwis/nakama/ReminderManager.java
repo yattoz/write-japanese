@@ -157,9 +157,11 @@ public class ReminderManager extends BroadcastReceiver {
                 Log.i("nakama", "Will do notification");
                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-                NotificationChannel c = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID);
-                if(c == null){
-                    notificationManager.createNotificationChannel(new NotificationChannel(NOTIFICATION_CHANNEL_ID, "Write Japanese Reminders", NotificationManager.IMPORTANCE_LOW));
+                if(Build.VERSION.SDK_INT >= 26) {
+                    NotificationChannel c = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID);
+                    if (c == null) {
+                        notificationManager.createNotificationChannel(new NotificationChannel(NOTIFICATION_CHANNEL_ID, "Write Japanese Reminders", NotificationManager.IMPORTANCE_LOW));
+                    }
                 }
 
                 // clear any existing notification that user didn't click
@@ -192,10 +194,10 @@ public class ReminderManager extends BroadcastReceiver {
     }
 
     private Notification getNotification(Context context, String title, String message) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setAutoCancel(true);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID);
+        builder .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(true);
 
         if(Build.VERSION.SDK_INT >= 21) {
             builder.setVisibility(Notification.VISIBILITY_PUBLIC);
