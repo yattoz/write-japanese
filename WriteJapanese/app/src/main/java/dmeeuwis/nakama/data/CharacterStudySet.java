@@ -195,7 +195,7 @@ public class CharacterStudySet implements Iterable<Character> {
     public static class GradingResult extends ProgressTracker.Result {
         public final String rowId;
 
-        public GradingResult(String rowId, int score, ProgressTracker.SRSEntry srs) {
+        public GradingResult(String rowId, int score, SRSQueue.SRSEntry srs) {
             super(score, srs);
             this.rowId = rowId;
         }
@@ -285,7 +285,7 @@ public class CharacterStudySet implements Iterable<Character> {
         if(srsAcrossSets == null){ srsAcrossSets = true; }
 
 
-        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing, srsEnabled, srsAcrossSets);
+        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing, srsEnabled, srsAcrossSets, pathPrefix);
 
         if(loadProgress == LoadProgress.LOAD_SET_PROGRESS) {
             dbHelper.loadProgressTrackerFromDB(Arrays.asList(tracker));

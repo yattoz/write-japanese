@@ -1,23 +1,21 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.Period;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
 
@@ -39,7 +37,7 @@ import dmeeuwis.util.Util;
  */
 public class ProgressTracker {
 
-	final static public int MAX_SCORE = 4;
+	final static public int MAX_SCORE = SRSQueue.SRSTable.length;
 
     final Random random = new Random();
 	private final boolean useSRS;
@@ -48,8 +46,12 @@ public class ProgressTracker {
     private Integer lastCharPrevScore = null;
     private boolean lastPassed = false;
     private Character lastChar = null;
+    private final String setId;
+    public final boolean useSRSAcrossSets;
 
 	public LocalDateTime oldestLogTimestamp = null;
+
+	private SRSQueue srsQueue;
 
 	public Map<Character,Integer> getScoreSheet() {
 		return this.recordSheet;
@@ -59,6 +61,10 @@ public class ProgressTracker {
 		if(oldestLogTimestamp == null || t.isAfter(oldestLogTimestamp)){
 			oldestLogTimestamp = t;
 		}
+	}
+
+	public Map<LocalDate,List<Character>> getSrsSchedule() {
+	    return srsQueue.getSrsSchedule();
 	}
 
 
@@ -86,114 +92,36 @@ public class ProgressTracker {
 	}
 	
 	private final Map<Character, Integer> recordSheet;
-	private final Map<Character, Integer> othersRecordSheet;
-	private final PriorityQueue<SRSEntry> srsQueue;
-	public final boolean useSRSAcrossSets;
 
 	private final int advanceIncorrect;
 	private final int advanceReview;
 
 	public static class Result {
 		public final int score;
-		public final SRSEntry srs;
+		public final SRSQueue.SRSEntry srs;
 
-		public Result(int score, SRSEntry srs) {
+		public Result(int score, SRSQueue.SRSEntry srs) {
 			this.score = score;
 			this.srs = srs;
 		}
 	}
 
-	public static class SRSEntry {
-		public final Character character;
-		public final LocalDate nextPractice;
-
-		private SRSEntry(Character character, LocalDate nextPractice) {
-			this.character = character;
-			this.nextPractice = nextPractice;
-		}
-	}
-
-	private final Period[] SRSTable = new Period[] {
-		Period.ofDays(1),
-		Period.ofDays(3),
-		Period.ofDays(7),
-		Period.ofDays(14),
-        Period.ofDays(30)
-	};
-
-	private SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp){
-		if(score < 0 || score == knownScore()){
-			if(BuildConfig.DEBUG){ Log.d("nakama-progress", "Removing " + character + " from SRS due to score " + score); }
-			removeSRSQueue(character);
-			return null;
-		}
-
-		// remove any existing entries
-		removeSRSQueue(character);
-
-		// schedule next
-		Period delay = SRSTable[score];
-		if(BuildConfig.DEBUG){ Log.d("nakama-progress", "Setting delay to " + delay + " for score " + score + " on char " + character); }
-		LocalDate nextDate = timestamp.plus(delay).toLocalDate();
-		SRSEntry entry = new SRSEntry(character, nextDate);
-
-		srsQueue.add(entry);
-
-		return entry;
-	}
-
-	private boolean findInSRSQueue(Character c, LocalDate forTime){
-		Iterator<SRSEntry> it = srsQueue.iterator();
-		while(it.hasNext()){
-			SRSEntry e = it.next();
-			if(e.character.equals(c) && (e.nextPractice.isBefore(forTime) || e.nextPractice.isEqual(forTime))){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private void removeSRSQueue(Character c){
-		Iterator<SRSEntry> it = srsQueue.iterator();
-		while(it.hasNext()){
-			SRSEntry e = it.next();
-			if(e.character.equals(c)){
-				srsQueue.remove(e);
-				break;
-			}
-		}
-	}
-
-	private static class SRSEntryComparator implements Comparator<SRSEntry> {
-		@Override
-		public int compare(SRSEntry o1, SRSEntry o2) {
-			int compareDate = o1.nextPractice.compareTo(o2.nextPractice);
-			if(compareDate != 0){
-				return compareDate;
-			}
-
-			// if scheduled dates are equal, ensure a consistent ordering
-			return o1.character.compareTo(o2.character);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return obj != null && obj.getClass().equals(this.getClass());
-		}
-	}
-
-	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets){
+	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets, String setId){
 		this.useSRS = useSRS;
 		this.recordSheet = new LinkedHashMap<>();
-		this.othersRecordSheet = new LinkedHashMap<>();
 		for(Character c: allChars){
 			recordSheet.put(c, null);
 		}
 		this.advanceIncorrect = advanceIncorrect;
 		this.advanceReview = advanceReview;
+		this.setId = setId;
 		this.useSRSAcrossSets = useSRSAcrossSets;
 
-		srsQueue = new PriorityQueue<>(20, new SRSEntryComparator());
+		if(useSRSAcrossSets){
+			srsQueue = SRSQueue.GLOBAL;
+		} else {
+			srsQueue = new SRSQueue(setId);
+		}
 	}
 
 	private List<Set<Character>> getSets(Set<Character> available){
@@ -237,7 +165,7 @@ public class ProgressTracker {
 		LinkedHashSet<Character> availSet = new LinkedHashSet<>(rawAvailSet);
 
 		if(useSRS) {
-			SRSEntry soonestEntry = srsQueue.peek();
+			SRSQueue.SRSEntry soonestEntry = srsQueue.peek();
 			LocalDate today = LocalDate.now();
 			if (soonestEntry != null && (soonestEntry.nextPractice.isBefore(today) || soonestEntry.nextPractice.isEqual(today))) {
 				Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
@@ -368,7 +296,7 @@ public class ProgressTracker {
 	}
 
 	public StudyType isReviewing(Character c){
-		if(findInSRSQueue(c, LocalDate.now())){
+		if(srsQueue.find(c, LocalDate.now())){
 			return StudyType.SRS;
 		}
 		List<Set<Character>> sets = getSets(null);
@@ -422,15 +350,27 @@ public class ProgressTracker {
 	}
 	
 	public void progressReset(Context ctx, String setName){
-		for(Character c: this.recordSheet.keySet()){
-			this.recordSheet.put(c, null);
-			removeSRSQueue(c);
+		if(!this.setId.equals(setName)) {
+			return;
 		}
+
+        for (Character c : this.recordSheet.keySet()) {
+            this.recordSheet.put(c, null);
+            srsQueue.removeSRSQueue(c);
+        }
 	}
 
+	/**
+	 * A special one-time event when SRS was first introduced, to try to not freak people out.
+	 */
 	public void srsReset(String setId) {
+		Log.d("nakama-progress", "SRS Set reset!!!!!!!!!!!!!!!!!!! On " + setId);
+		if(!(setId.equals(this.setId) || setId.equals("all"))){
+			return;
+		}
+
 		List<Character> charsToReset = new ArrayList<>(srsQueue.size());
-		for(SRSEntry o: srsQueue){
+		for(SRSQueue.SRSEntry o: srsQueue){
 			charsToReset.add(o.character);
 		}
 
@@ -440,58 +380,44 @@ public class ProgressTracker {
 	}
 
 	public void overrideFullCompleted(Character c){
-		boolean charInCurrentSet = recordSheet.containsKey(c);
-		Map<Character, Integer> scoreSheetToUse;
-		if(charInCurrentSet){
-			scoreSheetToUse = recordSheet;
-		} else {
-			scoreSheetToUse = othersRecordSheet;
+		if(!recordSheet.containsKey(c)){
+			return;
 		}
-		int score = MAX_SCORE;
-		scoreSheetToUse.put(c, score);
 
-		removeSRSQueue(c);
+		recordSheet.put(c, MAX_SCORE);
+		srsQueue.removeSRSQueue(c);
 	}
 
 	public Result markSuccess(Character c, LocalDateTime time){
 		boolean charInCurrentSet = recordSheet.containsKey(c);
-		Map<Character, Integer> scoreSheetToUse;
-		if(charInCurrentSet){
-			scoreSheetToUse = recordSheet;
-		} else {
-			scoreSheetToUse = othersRecordSheet;
+		if(!charInCurrentSet){
+			return null;
 		}
-		int score = scoreSheetToUse.get(c) == null ? -1 : scoreSheetToUse.get(c);
+
+		int score = recordSheet.get(c) == null ? -1 : recordSheet.get(c);
 		int newScore = Math.min(MAX_SCORE, score + 1);
 
         lastCharPrevScore = score;
         lastChar = c;
 
-		scoreSheetToUse.put(c, Math.min(0, newScore));
+		recordSheet.put(c, Math.min(0, newScore));
 
-		if(charInCurrentSet || useSRSAcrossSets) {
-			SRSEntry addedToSrs = addToSRSQueue(c, newScore, time);
-			return new Result(newScore, addedToSrs);
-		}
+		if(BuildConfig.DEBUG) Log.d("nakama-progress", "In set " + setId + " setting char " + c + " to score " + recordSheet.get(c));
 
-		return new Result(newScore, null);
+        SRSQueue.SRSEntry addedToSrs = srsQueue.addToSRSQueue(c, newScore, time, MAX_SCORE);
+        return new Result(newScore, addedToSrs);
 	}
 
 	public Result markFailure(Character c){
-		removeSRSQueue(c);
-
-		boolean charInCurrentSet = recordSheet.containsKey(c);
-		Map<Character, Integer> scoreSheetToUse;
-		if(charInCurrentSet){
-			scoreSheetToUse = recordSheet;
-		} else {
-			scoreSheetToUse = othersRecordSheet;
+		if(!recordSheet.containsKey(c)){
+			return null;
 		}
 
-        lastCharPrevScore = scoreSheetToUse.get(c);
+		srsQueue.removeSRSQueue(c);
+        lastCharPrevScore = recordSheet.get(c);
         lastChar = c;
 
-		scoreSheetToUse.put(c, failScore());
+		recordSheet.put(c, failScore());
 		return new Result(failScore(), null);
 	}
 
@@ -506,21 +432,6 @@ public class ProgressTracker {
 	public String toString(){
 		return "[ProgressTracker: " + Util.join(", ", this.recordSheet.keySet()) + "]";
 	}
-
-    public Map<LocalDate, List<Character>> getSrsSchedule() {
-        Map<LocalDate, List<Character>> out = new LinkedHashMap<>();
-        SRSEntry[] entries = srsQueue.toArray(new SRSEntry[0]);
-        Arrays.sort(entries, new SRSEntryComparator());
-        for(SRSEntry s: entries){
-            List<Character> list = out.get(s.nextPractice);
-            if(list == null){
-                list = new ArrayList<>();
-                out.put(s.nextPractice, list);
-            }
-            list.add(s.character);
-        }
-        return out;
-    }
 
 	public Integer debugPeekCharacterScore(Character c){
 		return this.recordSheet.get(c);
@@ -542,19 +453,19 @@ public class ProgressTracker {
 		return null;
 	}
 
-	private int knownScore(){
+	private static int knownScore(){
 		return MAX_SCORE;
 	}
 
 	public void resetTo(Character character, Progress progress) {
-		if(progress != Progress.TIMED_REVIEW){
-			removeSRSQueue(character);
-		} else {
-			addToSRSQueue(character, 0, LocalDateTime.now());
-		}
-
 		if(!recordSheet.containsKey(character)){
 			return;
+		}
+
+		if(progress == Progress.TIMED_REVIEW){
+			srsQueue.addToSRSQueue(character, 0, LocalDateTime.now(), knownScore());
+		} else {
+			srsQueue.removeSRSQueue(character);
 		}
 
 		if(progress == Progress.FAILED) {
@@ -580,12 +491,6 @@ public class ProgressTracker {
     }
 
 	public void debugAddDayToSRS() {
-		PriorityQueue<SRSEntry> copy = new PriorityQueue<>(this.srsQueue);
-		for(SRSEntry e: copy){
-			srsQueue.remove(e);
-			SRSEntry newE = new SRSEntry(e.character, e.nextPractice.minusDays(1));
-			srsQueue.add(newE);
-		}
+		srsQueue.debugAddDayToSRS();
 	}
-
 }

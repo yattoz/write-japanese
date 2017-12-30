@@ -97,6 +97,8 @@ public class ProgressActivity extends AppCompatActivity implements OnItemClickLi
         scores = charSet.getRecordSheet();
         characterList = charSet.charactersAsString();
 
+        Log.i("nakama", "Seeing SRS schedule as: " + charSet.getSrsScheduleString());
+
         chars = characterList.toCharArray();
         strings = new String[chars.length];
         for(int i = 0; i < chars.length; i++){

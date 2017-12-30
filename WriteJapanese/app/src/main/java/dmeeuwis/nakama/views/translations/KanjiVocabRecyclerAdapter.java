@@ -19,6 +19,7 @@ import dmeeuwis.Translation;
 import dmeeuwis.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.data.ProgressTracker;
+import dmeeuwis.nakama.data.SRSQueue;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
@@ -45,7 +46,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     private final static int SRS_HEADER = 5;
 
     private List<Integer> headers = new ArrayList<>(3);
-    private ProgressTracker.SRSEntry srsNextPractice;
+    private SRSQueue.SRSEntry srsNextPractice;
 
 
     public KanjiVocabRecyclerAdapter(Activity context, KanjiFinder kanjiFinder) {
@@ -246,7 +247,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
-    public void addNextSrsHeader(ProgressTracker.SRSEntry entry) {
+    public void addNextSrsHeader(SRSQueue.SRSEntry entry) {
         Log.i("nakama", "addNextSrsHeader called!");
         if(entry == null){
             throw new IllegalArgumentException("known and drawn must be non-null");
