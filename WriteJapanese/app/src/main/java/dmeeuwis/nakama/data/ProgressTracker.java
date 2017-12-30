@@ -365,6 +365,7 @@ public class ProgressTracker {
 	 */
 	public void srsReset(String setId) {
 		Log.d("nakama-progress", "SRS Set reset!!!!!!!!!!!!!!!!!!! On " + setId);
+		Log.d("nakama-progress", "Prior to reset, schedule is: " + srsQueue.getSrsScheduleString());
 		if(!(setId.equals(this.setId) || setId.equals("all"))){
 			return;
 		}
@@ -377,6 +378,9 @@ public class ProgressTracker {
 		for(Character c: charsToReset){
 			overrideFullCompleted(c);
 		}
+
+		Log.d("nakama-progress", "After SRS reset, schedule is: " + srsQueue.getSrsScheduleString());
+		debugPrintAllScores();
 	}
 
 	public void overrideFullCompleted(Character c){
@@ -435,6 +439,14 @@ public class ProgressTracker {
 
 	public Integer debugPeekCharacterScore(Character c){
 		return this.recordSheet.get(c);
+	}
+
+
+	public void debugPrintAllScores(){
+		Map<Character, Progress> all = new LinkedHashMap<>(recordSheet.size());
+		for(Map.Entry<Character, Integer> entry: recordSheet.entrySet()){
+			Log.d("nakama-progress", "In set " + setId + " char " + entry.getKey() + " has score " + entry.getValue());
+		}
 	}
 
 	private int failScore(){
