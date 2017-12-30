@@ -404,7 +404,7 @@ public class ProgressTracker {
         lastCharPrevScore = score;
         lastChar = c;
 
-		recordSheet.put(c, Math.min(0, newScore));
+		recordSheet.put(c, newScore);
 
 		if(BuildConfig.DEBUG) Log.d("nakama-progress", "In set " + setId + " setting char " + c + " to score " + recordSheet.get(c));
 
