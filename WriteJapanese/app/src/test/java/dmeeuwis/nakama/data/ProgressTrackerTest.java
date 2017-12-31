@@ -1,7 +1,5 @@
 package dmeeuwis.nakama.data;
 
-import com.google.common.collect.Lists;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -9,6 +7,7 @@ import org.robolectric.annotation.Config;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +29,14 @@ public class ProgressTrackerTest {
     };
     public final static List<Character> CHARS_LIST = Arrays.asList(CHARS);
     public final static Set<Character> CHARS_SET = new HashSet<>(CHARS_LIST);
+
+    public final static Character[] CHARS_2 = new Character[] {
+            Character.valueOf('x'),
+            Character.valueOf('y'),
+            Character.valueOf('z')
+    };
+    public final static List<Character> CHARS_LIST_2 = Arrays.asList(CHARS_2);
+    public final static Set<Character> CHARS_SET_2 = new HashSet<>(CHARS_LIST_2);
 
     @Test
     public void testEmptyProgressTracker(){
@@ -96,7 +103,32 @@ public class ProgressTrackerTest {
         }
     }
 
-    private LocalDate getSingleDate(Set<LocalDate> set){
+    @Test
+    public void testGlobalSet() {
+        ProgressTracker p1 = new ProgressTracker(CHARS_SET, 2, 2, true, true, "test-1");
+        ProgressTracker p2 = new ProgressTracker(CHARS_SET_2, 2, 2, true, true, "test-2");
+
+        p1.markSuccess('a', LocalDateTime.of(2017, 1, 1, 2, 1));
+        p1.markSuccess('a', LocalDateTime.of(2017, 1, 2, 12, 1));
+
+        // following 2 should have no effect
+        p1.markSuccess('z', LocalDateTime.of(2017, 1, 2, 12, 1));
+        p1.markSuccess('z', LocalDateTime.of(2017, 1, 3, 12, 1));
+
+        p2.markSuccess('x', LocalDateTime.of(2017, 1, 5, 9, 1));
+        p2.markSuccess('x', LocalDateTime.of(2017, 1, 6, 12, 1));
+
+        Map<LocalDate, List<Character>> srs1 = p1.getSrsSchedule();
+        Map<LocalDate, List<Character>> srs2 = p2.getSrsSchedule();
+
+        assertEquals("2 sets with useSRSAcrossSets on give same SRS queue", srs1, srs2);
+        assertEquals("Invalid practice chars on a set don't make it into SRS",
+                Arrays.asList(LocalDate.of(2017, 1, 5),
+                              LocalDate.of(2017, 1, 9)),
+                new ArrayList<>(srs1.keySet()));
+    }
+
+    private static LocalDate getSingleDate(Set<LocalDate> set){
         if(set.size() > 1 || set.size() == 0){
             throw new IllegalArgumentException("Invalid set size for getSingleDate: " + set.size());
         }
