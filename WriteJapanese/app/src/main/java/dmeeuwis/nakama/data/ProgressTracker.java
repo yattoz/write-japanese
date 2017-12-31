@@ -248,11 +248,6 @@ public class ProgressTracker {
         if(chosenOnes.size() == 0){
             chosenOnes.addAll(rawAvailSet);
 
-            UncaughtExceptionLogger.backgroundLogError("ProgressTracker: no chars in chosenOnes. Failed was: " +
-                    Util.join(failed) + ", reviewing was: " + Util.join(reviewing) + "; unknown was: " + Util.join(unknown) +
-                    "; failed was: " + Util.join(failed) + "; rawAllChars: " + Util.join(rawAllChars) + "; rawAvailSet was: " + Util.join(rawAvailSet) + "; recordSheetKeys: " +
-					Util.join(this.recordSheet.keySet()), new RuntimeException("BOOM"));
-
 			if(chosenOnes.size() == 0){
 				chosenOnes.addAll(rawAllChars);
 			}
