@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 
@@ -220,6 +221,7 @@ public class CharacterProgressDataHelper {
             Character character = r.get("character").charAt(0);
             String set = r.get("charset");
             String timestampStr = r.get("timestamp");
+            Integer score = Integer.parseInt(r.get("score"));
             LocalDateTime t;
 
             try {
@@ -236,6 +238,11 @@ public class CharacterProgressDataHelper {
             for(ProgressTracker pt: allPts) {
                 pt.noteTimestamp(t);
 
+
+                if(BuildConfig.DEBUG){
+                    Log.d("nakama-progress", "Processing practice log: " + character + " " + set + " " + timestampStr + " " + score + " on set tracker " + pt.setId);
+                }
+
                 if (character.toString().equals("R")) {
                     // indicates reset progress for standardSets characters
                     pt.progressReset(context, set);
@@ -248,7 +255,6 @@ public class CharacterProgressDataHelper {
 
 
                 } else {
-                    Integer score = Integer.parseInt(r.get("score"));
                     if (score == 100) {
                         pt.markSuccess(character, t);
                         //Log.d("nakama-progress", "Loaded PASS result for " + character + " in set " + set + "; currently at " + pt.debugPeekCharacterScore(character));

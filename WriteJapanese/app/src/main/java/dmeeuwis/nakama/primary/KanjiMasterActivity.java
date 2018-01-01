@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -289,8 +290,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                             setUiState(State.REVIEWING);
                         }
 
-                        if(false && BuildConfig.DEBUG && entry != null){
-                            Toast.makeText(KanjiMasterActivity.this, "New character score became " + entry.score, Toast.LENGTH_SHORT).show();
+                        // apply new grading to all other sets. Otherwise might see old already done chars when switching sets.
+                        Context appContext = getApplicationContext();
+                        for(Map.Entry<String, CharacterStudySet> s: characterSets.entrySet()) {
+                            CharacterStudySet set = s.getValue();
+                            new CharacterProgressDataHelper(appContext, Iid.get(appContext))
+                                    .resumeProgressTrackerFromDB(Arrays.asList(set.getProgressTracker()));
                         }
                     }
                 });
@@ -1312,6 +1317,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         } else if (itemPosition == 13) {
             this.currentCharacterSet = characterSets.get("jlpt1");
         }
+
+        // force a next recalculation due to SRS global. Otherwise might get stucck
+        // redoing same char you just did in previous set.
+        loadNextCharacter(true);
 
         if(itemPosition >= 14 &&  itemPosition < 14 + customSets.size()){
             int customSetIndex = itemPosition - 14;

@@ -192,18 +192,19 @@ public class CharacterStudySet implements Iterable<Character> {
         return (availableCharactersSet()).iterator();
     }
 
-    public static class GradingResult extends ProgressTracker.Result {
+    public static class GradingResult {
         public final String rowId;
+        public final SRSQueue.SRSEntry srs;
 
-        public GradingResult(String rowId, int score, SRSQueue.SRSEntry srs) {
-            super(score, srs);
+        public GradingResult(String rowId, SRSQueue.SRSEntry srs) {
+            this.srs = srs;
             this.rowId = rowId;
         }
     }
 
     public GradingResult markCurrent(PointDrawing d, boolean pass) {
         Character c = currentCharacter();
-        ProgressTracker.Result result;
+        SRSQueue.SRSEntry result;
         try {
             if (pass) {
                 result = this.tracker.markSuccess(c, LocalDateTime.now());
@@ -211,7 +212,7 @@ public class CharacterStudySet implements Iterable<Character> {
                 result = this.tracker.markFailure(c);
             }
             String rowId = dbHelper.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
-            return new GradingResult(rowId, result.score, result.srs);
+            return new GradingResult(rowId, result);
         } catch (Throwable t) {
             Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
             throw new RuntimeException(t);
@@ -267,6 +268,12 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public enum LoadProgress { LOAD_SET_PROGRESS, NO_LOAD_SET_PROGRESS };
+
+
+    public ProgressTracker loadEmptyTracker() {
+        tracker = new ProgressTracker(allCharactersSet, 2, 2, true, false, pathPrefix);
+        return tracker;
+    }
 
     public ProgressTracker load(Context ctx, LoadProgress loadProgress) {
         CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();

@@ -38,15 +38,16 @@ import dmeeuwis.util.Util;
 public class ProgressTracker {
 
 	final static public int MAX_SCORE = SRSQueue.SRSTable.length;
+	private static final boolean DEBUG_SRS = BuildConfig.DEBUG && true;
 
-    final Random random = new Random();
+	final Random random = new Random();
 	private final boolean useSRS;
 
     // these 2 track last grading to support override functionality
     private Integer lastCharPrevScore = null;
     private boolean lastPassed = false;
     private Character lastChar = null;
-    private final String setId;
+    public final String setId;
     public final boolean useSRSAcrossSets;
 
 	public LocalDateTime oldestLogTimestamp = null;
@@ -95,16 +96,6 @@ public class ProgressTracker {
 
 	private final int advanceIncorrect;
 	private final int advanceReview;
-
-	public static class Result {
-		public final int score;
-		public final SRSQueue.SRSEntry srs;
-
-		public Result(int score, SRSQueue.SRSEntry srs) {
-			this.score = score;
-			this.srs = srs;
-		}
-	}
 
 	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets, String setId){
 		this.useSRS = useSRS;
@@ -387,7 +378,7 @@ public class ProgressTracker {
 		srsQueue.removeSRSQueue(c);
 	}
 
-	public Result markSuccess(Character c, LocalDateTime time){
+	public SRSQueue.SRSEntry markSuccess(Character c, LocalDateTime time){
 		boolean charInCurrentSet = recordSheet.containsKey(c);
 		if(!charInCurrentSet){
 			return null;
@@ -404,10 +395,10 @@ public class ProgressTracker {
 		if(BuildConfig.DEBUG) Log.d("nakama-progress", "In set " + setId + " setting char " + c + " to score " + recordSheet.get(c));
 
         SRSQueue.SRSEntry addedToSrs = srsQueue.addToSRSQueue(c, newScore, time, MAX_SCORE);
-        return new Result(newScore, addedToSrs);
+        return addedToSrs;
 	}
 
-	public Result markFailure(Character c){
+	public SRSQueue.SRSEntry markFailure(Character c){
 		if(!recordSheet.containsKey(c)){
 			return null;
 		}
@@ -417,7 +408,7 @@ public class ProgressTracker {
         lastChar = c;
 
 		recordSheet.put(c, failScore());
-		return new Result(failScore(), null);
+		return null;
 	}
 
 	public Map<Character, Progress> getAllScores(){
@@ -470,7 +461,8 @@ public class ProgressTracker {
 		}
 
 		if(progress == Progress.TIMED_REVIEW){
-			srsQueue.addToSRSQueue(character, 0, LocalDateTime.now(), knownScore());
+			LocalDateTime time = DEBUG_SRS ? LocalDateTime.now().minusDays(2) : LocalDateTime.now();
+			srsQueue.addToSRSQueue(character, 0, time, knownScore());
 		} else {
 			srsQueue.removeSRSQueue(character);
 		}
