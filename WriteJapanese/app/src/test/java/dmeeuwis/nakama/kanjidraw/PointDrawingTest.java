@@ -28,8 +28,10 @@ public class PointDrawingTest {
         Rect r = p.findBoundingBox();
         System.out.println("Generated bounding box: " + r);
 
-        assertTrue("Calculated bound box left-top", 7 == r.left && 34 == r.top);
-        assertTrue("Calculated bound box right-bottom", 79 == r.right && 74 == r.bottom);
+        assertEquals("Calculated bound box left", 7, r.left);
+        assertEquals("Calculated bound box top", 34, r.top);
+        assertEquals("Calculated bound box right", 79, r.right);
+        assertEquals("Calculated bound box bottom", 74, r.bottom);
     }
 
     @Test public void cuttoffEdgesTest(){

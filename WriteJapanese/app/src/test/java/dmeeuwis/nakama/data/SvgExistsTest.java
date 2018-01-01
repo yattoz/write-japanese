@@ -25,8 +25,8 @@ import static junit.framework.Assert.assertEquals;
 public class SvgExistsTest {
 
     @Test
-    public void testVocabExistsForAllKanji() throws Exception {
-        String path = System.getProperty("user.dir") + "/app/src/main/assets/paths/";
+    public void svgPathExistsForAllKanji() throws Exception {
+        String path = System.getProperty("user.dir") + "/src/main/assets/paths/";
 
         List<String> failures = new ArrayList<>();
         Map<String, String> sets = new HashMap<>();

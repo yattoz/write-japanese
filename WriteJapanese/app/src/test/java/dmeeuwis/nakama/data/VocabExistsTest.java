@@ -3,6 +3,7 @@ package dmeeuwis.nakama.data;
 import org.junit.Test;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,12 +11,13 @@ import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
 import dmeeuwis.Translation;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class VocabExistsTest {
     @Test
     public void testVocabExistsForAllKanji() throws Exception {
-        String path = System.getProperty("user.dir") + "/app/src/main/assets/char_vocab/";
+        String path = System.getProperty("user.dir") + "/src/main/assets/char_vocab/";
 
         List<String> failures = new ArrayList<>();
         String[] sets = new String[]{
@@ -38,24 +40,30 @@ public class VocabExistsTest {
         for(String s: sets){
             for(Character c: s.toCharArray()){
 
-                String filename = Integer.toHexString((c).charValue()) + "_trans.xml";
-                FileInputStream fin = new FileInputStream(path + filename);
+                try {
+                    String filename = Integer.toHexString((c).charValue()) + "_trans.xml";
+                    FileInputStream fin = new FileInputStream(path + filename);
 
-                TranslationsFromXml t = new TranslationsFromXml();
+                    TranslationsFromXml t = new TranslationsFromXml();
 
-                final List<Translation> collect = new ArrayList<>();
-                TranslationsFromXml.PublishTranslation p = new TranslationsFromXml.PublishTranslation() {
-                    @Override
-                    public void publish(Translation t) {
-                       collect.add(t);
+                    final List<Translation> collect = new ArrayList<>();
+                    TranslationsFromXml.PublishTranslation p = new TranslationsFromXml.PublishTranslation() {
+                        @Override
+                        public void publish(Translation t) {
+                            collect.add(t);
+                        }
+                    };
+
+                    t.load(fin, p);
+
+                    boolean success = collect.size() > 0;
+                    if (!success) {
+                        failures.add(c + " has no translations: " + filename);
                     }
-                };
-
-                t.load(fin, p);
-
-                boolean success = collect.size() > 0;
-                if(!success){
-                    failures.add(c + " has no translations.");
+                } catch(IOException e){
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                    assertFalse("Did not find file for character: " + c, true);
                 }
             }
         }

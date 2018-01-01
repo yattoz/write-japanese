@@ -41,13 +41,18 @@ public class CharacterSetTest {
         String testChars = Kanji.JOUYOU_G3;
         CharacterStudySet c = new CharacterStudySet("Kana", "kana", "Some testing charset", "kana", CharacterStudySet.LockLevel.UNLOCKED,
                 testChars, testChars, null, UUID.randomUUID(), true, new TestCharacterProgressDataHelper());
+        c.loadEmptyTracker();
         c.nextCharacter();
 
         Set<Character> charsSeen = new HashSet<>();
+        long turns = 0;
         while(charsSeen.size() != testChars.length()) {
             c.markCurrent(null, true);
             c.nextCharacter();
+            turns++;
+            System.out.println("Next character is: " + c.currentCharacter());
             charsSeen.add(c.currentCharacter());
+            System.out.println("Trying to see all " + testChars.length() + " chars. After " + turns + " turns, seen set becomes: " + charsSeen.size() + ": " + (Util.join(charsSeen)));
         }
 
         assertEquals("Progressed through standardSets characters", testChars.length(), charsSeen.size());
@@ -59,6 +64,7 @@ public class CharacterSetTest {
         String testChars = Kanji.JOUYOU_G3;
         CharacterStudySet c = new CharacterStudySet("Kanji", "Kanji", "Some testing charset", "Kanji", CharacterStudySet.LockLevel.UNLOCKED,
                 testChars, testChars, null, UUID.randomUUID(), true, new TestCharacterProgressDataHelper());
+        c.loadEmptyTracker();
         c.nextCharacter();
 
         Set<Character> failed = new HashSet<>();
@@ -85,6 +91,7 @@ public class CharacterSetTest {
         String testChars = Kanji.JOUYOU_G3;
         CharacterStudySet c = new CharacterStudySet("Kana", "kana", "Some testing charset", "kana", CharacterStudySet.LockLevel.UNLOCKED,
                 testChars, testChars, null, UUID.randomUUID(), true, new TestCharacterProgressDataHelper());
+        c.loadEmptyTracker();
         c.nextCharacter();
 
         Set<Character> charsSeen = new HashSet<>();

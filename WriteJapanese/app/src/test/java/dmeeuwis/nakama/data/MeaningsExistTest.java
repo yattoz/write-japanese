@@ -32,8 +32,8 @@ public class MeaningsExistTest {
                 Kanji.JLPT_N1,
         };
 
-        final String kanjiDictPath = System.getProperty("user.dir") + "/app/src/main/assets/kanjidic.utf8.awb";
-        final String kanjiIndexPath = System.getProperty("user.dir") + "/app/src/main/assets/kanjidic.index.awb";
+        final String kanjiDictPath = System.getProperty("user.dir") + "/src/main/assets/kanjidic.utf8.awb";
+        final String kanjiIndexPath = System.getProperty("user.dir") + "/src/main/assets/kanjidic.index.awb";
 
         FileInputStream findex = new FileInputStream(kanjiIndexPath);
         FileInputStream fdata = new FileInputStream(kanjiDictPath);
