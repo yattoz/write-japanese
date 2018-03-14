@@ -80,6 +80,7 @@ dependencies {
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.1'
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     compile 'agency.tango.android:material-intro-screen:0.0.5'
+    compile 'com.google.code.gson:gson:2.8.2'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'

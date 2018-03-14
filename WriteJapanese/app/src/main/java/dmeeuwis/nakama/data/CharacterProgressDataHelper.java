@@ -11,6 +11,7 @@ import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -122,10 +123,30 @@ public class CharacterProgressDataHelper {
         loadProgressTrackerFromDB(allPts, true);
     }
 
-    private void loadProgressTrackerFromDB(final List<ProgressTracker> allPts, final boolean resuming){
+    private void loadProgressTrackerFromDB(final List<ProgressTracker> allPtsOrig, boolean resuming){
         long start = System.currentTimeMillis();
 
+        List<ProgressTracker> allPts = new ArrayList<>(allPtsOrig);
+
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+
+        if(!resuming){
+            // check timestamp of log vs json
+
+            for(int i = allPts.size() - 1; i >= 0; i--){
+                ProgressTracker t = allPts.get(i);
+
+                Map<String, String> cache = DataHelper.selectRecord(db.getReadableDatabase(), "SELECT practice_record, srs_queue FROM practice_record_cache WHERE set_id = ?",
+                        t.setId);
+                if(cache != null){
+                    t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), LocalDateTime.parse(cache.get("last_log")));
+                    allPts.remove(i);
+
+                    resuming = true;
+                }
+            }
+        }
+
         final AtomicLong count = new AtomicLong(0);
 
         LocalDateTime oldestLog = LocalDateTime.of(2000, 1, 1, 0, 0);

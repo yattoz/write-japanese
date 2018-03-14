@@ -72,6 +72,18 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         ")");
     }
 
+    private void createPracticeLogCache(SQLiteDatabase sqlite){
+        // t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), LocalDateTime.parse(cache.get("last_log")));
+        Log.d("nakama-db", "Creating practice log table.");
+        sqlite.execSQL("DROP TABLE IF EXISTS practice_record_cache;");
+        sqlite.execSQL("CREATE TABLE practice_record_cache ( " +
+                "set_id TEXT NOT NULL PRIMARY KEY, " +
+                "srs_queue TEXT NOT NULL, " +
+                "practice_record TEXT NOT NULL, " +
+                "last_log DATETIME NOT NULL " +
+                ")");
+    }
+
     private void addPracticeLogDateIndex(SQLiteDatabase sqlite){
         Log.d("nakama-db", "Creating practice_log timestamp index.");
         sqlite.execSQL("CREATE INDEX logs_by_date ON practice_log(timestamp);");
@@ -225,6 +237,10 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         if(oldVersion <= 32) {
             addPracticeLogDateIndex(dbase);
+        }
+
+        if(oldVersion <= 33) {
+            createPracticeLogCache(dbase);
         }
 	}
 

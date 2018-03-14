@@ -304,7 +304,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         });
 
-        undoStrokeButton = (FloatingActionButton)findViewById(R.id.undoStrokeButton);
+        undoStrokeButton = findViewById(R.id.undoStrokeButton);
         undoStrokeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -316,7 +316,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         });
 
         db = new StoryDataHelper(getApplicationContext());
-        remindStoryButton = (FloatingActionButton) findViewById(R.id.remindStoryButton);
+        remindStoryButton = findViewById(R.id.remindStoryButton);
         remindStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

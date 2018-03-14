@@ -5,6 +5,10 @@ import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
@@ -12,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,13 +51,18 @@ public class ProgressTracker {
     // these 2 track last grading to support override functionality
     private Integer lastCharPrevScore = null;
     private boolean lastPassed = false;
+
     private Character lastChar = null;
     public final String setId;
     public final boolean useSRSAcrossSets;
+    private final int advanceIncorrect;
+    private final int advanceReview;
 
 	public LocalDateTime oldestLogTimestamp = null;
 
 	private SRSQueue srsQueue;
+    private Map<Character, Integer> recordSheet;
+
 
 	public Map<Character,Integer> getScoreSheet() {
 		return this.recordSheet;
@@ -92,11 +102,6 @@ public class ProgressTracker {
 		}
 	}
 	
-	private final Map<Character, Integer> recordSheet;
-
-	private final int advanceIncorrect;
-	private final int advanceReview;
-
 	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets, String setId){
 		this.useSRS = useSRS;
 		this.recordSheet = new LinkedHashMap<>();
@@ -492,4 +497,19 @@ public class ProgressTracker {
 	public void debugAddDayToSRS() {
 		srsQueue.debugAddDayToSRS();
 	}
+
+	public Pair<String, String> serializeOut(){
+	    Gson g = new GsonBuilder().create();
+	    Map m = new HashMap();
+	    m.put("record", this.recordSheet);
+
+	    return Pair.create(g.toJson(m), srsQueue.serializeOut());
+    }
+
+    public void deserializeIn(String queueJson, String recordJson, LocalDateTime lastLog){
+        Gson g = new GsonBuilder().create();
+        this.recordSheet = g.fromJson(recordJson, new TypeToken<Map<Character, Integer>>(){}.getType());
+        this.srsQueue.deserializeIn(queueJson);
+        this.oldestLogTimestamp = lastLog;
+    }
 }

@@ -4,6 +4,9 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.Period;
@@ -11,6 +14,7 @@ import org.threeten.bp.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -197,6 +201,16 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
 
     public String getSrsScheduleString() {
         return id + ": " + Util.join(getSrsSchedule(), ": ", ", ");
+    }
+
+    public String serializeOut(){
+        Gson g = new GsonBuilder().create();
+        SRSEntry[] entries = srsQueue.toArray(new SRSEntry[0]);
+        return g.toJson(entries);
+    }
+
+    public static SRSQueue deserializeIn(String in){
+
     }
 
 }
