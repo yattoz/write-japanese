@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.renderscript.Script;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +29,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -940,6 +942,20 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         ed.apply();
         saveCurrentCharacterSet();
         instructionCard.saveCurrentClueType(getApplicationContext());
+
+        CharacterProgressDataHelper d = new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(this.getApplicationContext()));
+        for(CharacterStudySet c: this.characterSets.values()){
+            try {
+                ProgressTracker.ProgressState serialize = c.getProgressTracker().serializeOut();
+                if(serialize != null) {
+                    Log.i("nakama", "Caching progress on " + c.pathPrefix + " with time " + serialize.oldestDateTime);
+                    d.cachePracticeRecord(c.pathPrefix, serialize.recordSheetJson, serialize.srsQueueJson, serialize.oldestDateTime);
+                }
+            } catch(Throwable t){
+                Log.d("nakama", "Error caching progress on " + c.pathPrefix + " onPause", t);
+            }
+        }
+
         super.onPause();
     }
 
@@ -950,6 +966,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         if(pd != null && pd.isAdded()){
             //pd.dismiss();
         }
+
         super.onDestroy();
     }
 

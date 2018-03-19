@@ -1,6 +1,5 @@
 package dmeeuwis.nakama.data;
 
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -14,7 +13,6 @@ import org.threeten.bp.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,7 +27,7 @@ import dmeeuwis.util.Util;
 public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
     public static final SRSQueue GLOBAL = new SRSQueue("global");
 
-    private final PriorityQueue<SRSEntry> srsQueue;
+    private PriorityQueue<SRSEntry> srsQueue;
     private final String id;
 
     public static final Period[] SRSTable = new Period[] {
@@ -43,6 +41,11 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
     public SRSQueue(String id) {
         this.id = id;
         srsQueue = new PriorityQueue<>(20, new SRSEntryComparator());
+    }
+
+    SRSQueue(String id, PriorityQueue<SRSEntry> queue) {
+        this.id = id;
+        this.srsQueue = queue;
     }
 
     public SRSEntry peek() {
@@ -209,8 +212,14 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
         return g.toJson(entries);
     }
 
-    public static SRSQueue deserializeIn(String in){
-
+    public SRSQueue deserializeIn(String id, String queueJSON){
+        Gson g = new GsonBuilder().create();
+        SRSEntry[] entries = g.fromJson(queueJSON, SRSEntry[].class);
+        PriorityQueue<SRSEntry> queue = new PriorityQueue<>(new SRSEntryComparator());
+        for(SRSEntry e: entries){
+            queue.add(e);
+        }
+        return new SRSQueue(id, queue);
     }
 
 }

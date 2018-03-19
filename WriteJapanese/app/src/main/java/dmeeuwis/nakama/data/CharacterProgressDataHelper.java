@@ -39,6 +39,17 @@ public class CharacterProgressDataHelper {
         this.iid = iid;
     }
 
+    public void  cachePracticeRecord(String setId, String practiceRecord, String srsQueue, String oldestLog){
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        try {
+            Log.i("nakama", "Caching progress for " + setId + ": " + practiceRecord + "; " + srsQueue);
+            db.getWritableDatabase().execSQL("INSERT OR REPLACE INTO practice_record_cache(set_id, practice_record, srs_queue, last_log) VALUES(?, ?, ?, ?)",
+                    new String[]{ setId, practiceRecord, srsQueue, oldestLog });
+        } finally {
+            db.close();
+        }
+    }
+
     public void srsReset(String charSet){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
@@ -136,10 +147,12 @@ public class CharacterProgressDataHelper {
             for(int i = allPts.size() - 1; i >= 0; i--){
                 ProgressTracker t = allPts.get(i);
 
-                Map<String, String> cache = DataHelper.selectRecord(db.getReadableDatabase(), "SELECT practice_record, srs_queue FROM practice_record_cache WHERE set_id = ?",
+                Map<String, String> cache = DataHelper.selectRecord(db.getReadableDatabase(),
+                        "SELECT practice_record, srs_queue, last_log_by_device FROM practice_record_cache WHERE set_id = ?",
                         t.setId);
                 if(cache != null){
-                    t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), LocalDateTime.parse(cache.get("last_log")));
+                    Log.i("nakama", "!!!!!!!!!!! Using cached version of practice record for " + t.setId);
+                    t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), cache.get("last_log_by_device"));
                     allPts.remove(i);
 
                     resuming = true;
@@ -149,23 +162,21 @@ public class CharacterProgressDataHelper {
 
         final AtomicLong count = new AtomicLong(0);
 
-        LocalDateTime oldestLog = LocalDateTime.of(2000, 1, 1, 0, 0);
-        if(resuming) {
-            for (ProgressTracker p : allPts) {
-                if (p != null && p.oldestLogTimestamp != null && oldestLog.isBefore(p.oldestLogTimestamp)) {
-                    oldestLog = p.oldestLogTimestamp;
-                }
-            }
-            Log.i("nakama-progress", "Saw oldest log from " + allPts.size() + " sets as " + oldestLog);
-        }
-
         try {
             ProcessLogRow plr = new ProcessLogRow(count, allPts);
             if(resuming){
-                Log.i("nakama-progress", "Selecting all logs since " + oldestLog);
-                DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp FROM practice_log WHERE timestamp > datetime(?)", oldestLog.toString());
+
+                for(ProgressTracker pt: allPts){
+                    for(Map.Entry<String, LocalDateTime> e: pt.oldestLogTimestampByDevice.entrySet()){
+                        Log.i("nakama-progress", "Selecting all logs since " + e.getValue() + " for install " + e.getKey());
+                        DataHelper.applyToResults(plr, db.getReadableDatabase(),
+                                "SELECT character, charset, score, timestamp, install_id FROM practice_log WHERE install_id = ? AND timestamp > datetime(?)",
+                                e.getKey(), e.getValue().toString());
+                    }
+                }
+
             } else {
-                DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp FROM practice_log");
+                DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp, install_id FROM practice_log");
             }
         } finally {
             db.close();
@@ -243,6 +254,7 @@ public class CharacterProgressDataHelper {
             String set = r.get("charset");
             String timestampStr = r.get("timestamp");
             Integer score = Integer.parseInt(r.get("score"));
+            String iid = r.get("iid");
             LocalDateTime t;
 
             try {
@@ -257,8 +269,7 @@ public class CharacterProgressDataHelper {
             }
 
             for(ProgressTracker pt: allPts) {
-                pt.noteTimestamp(t);
-
+                pt.noteTimestamp(character, t, iid);
 
                 if(BuildConfig.DEBUG){
                     Log.d("nakama-progress", "Processing practice log: " + character + " " + set + " " + timestampStr + " " + score + " on set tracker " + pt.setId);
