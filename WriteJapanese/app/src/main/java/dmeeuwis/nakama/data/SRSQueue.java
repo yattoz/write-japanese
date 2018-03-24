@@ -101,16 +101,16 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
         lastLocalDateTime = timestamp;
         lastCharacter = character;
 
-        Log.d("nakama-progress", "------------------------ addToSrsQueue -----------------------");
+        //Log.d("nakama-progress", "------------------------ addToSrsQueue -----------------------");
         if(score < 0 || score == knownScoreValue){
             if(BuildConfig.DEBUG){
-                Log.d("nakama-progress", "Removing " + character + " from SRS due to score " + score);
-                Log.d("nakama-progress", "Set is now: " + getSrsScheduleString());
+                //Log.d("nakama-progress", "Removing " + character + " from SRS due to score " + score);
+                //Log.d("nakama-progress", "Set is now: " + getSrsScheduleString());
             }
             removeSRSQueue(character);
             return null;
         }
-        Log.d("nakama-progress", "Prior to adding, set is: " + getSrsScheduleString());
+        //Log.d("nakama-progress", "Prior to adding, set is: " + getSrsScheduleString());
 
         // remove any existing entries
         removeSRSQueue(character);
@@ -118,14 +118,14 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
         // schedule next
         Period delay = SRSTable[score];
         if(BuildConfig.DEBUG){
-            Log.d("nakama-progress", "Setting delay to " + delay + " for score " + score + " on char " + character);
+            //Log.d("nakama-progress", "Setting delay to " + delay + " for score " + score + " on char " + character);
         }
         LocalDate nextDate = timestamp.plus(delay).toLocalDate();
         SRSEntry entry = new SRSEntry(character, nextDate);
-        if(BuildConfig.DEBUG) Log.d("nakama-progress", "Adding entry: " + entry + " to set " + this);
+        //if(BuildConfig.DEBUG) Log.d("nakama-progress", "Adding entry: " + entry + " to set " + this);
 
         srsQueue.add(entry);
-        if(BuildConfig.DEBUG) Log.d("nakama-progress", "After adding, set is: " + getSrsScheduleString());
+        //if(BuildConfig.DEBUG) Log.d("nakama-progress", "After adding, set is: " + getSrsScheduleString());
 
         return entry;
     }
@@ -147,12 +147,12 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
             SRSEntry e = it.next();
             if(e.character.equals(c)){
 
-                Log.d("nakama-progress", "------------------------ removeSRSQueue -----------------------");
-                Log.d("nakama-progress", "Removing char " + c + "; set before was " + getSrsScheduleString());
+                //Log.d("nakama-progress", "------------------------ removeSRSQueue -----------------------");
+                //Log.d("nakama-progress", "Removing char " + c + "; set before was " + getSrsScheduleString());
 
                 srsQueue.remove(e);
 
-                Log.d("nakama-progress", "Removing char " + c + "; set after was " + getSrsScheduleString());
+                //Log.d("nakama-progress", "Removing char " + c + "; set after was " + getSrsScheduleString());
 
                 break;
             }

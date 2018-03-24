@@ -80,6 +80,7 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.ClueExtractor;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
+import dmeeuwis.nakama.data.DataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.ProgressTracker;
@@ -88,6 +89,7 @@ import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
+import dmeeuwis.nakama.data.WriteJapaneseOpenHelper;
 import dmeeuwis.nakama.kanjidraw.Comparator;
 import dmeeuwis.nakama.kanjidraw.ComparisonAsyncTask;
 import dmeeuwis.nakama.kanjidraw.ComparisonFactory;
@@ -457,10 +459,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     }
 
     private void initializeCharacterSets(){
-        if(this.customSets != null){
-            return;
-        }
-
+        Log.d("nakama-progress", "Initializing character sets!");
         this.customSets = new ArrayList<>();
         this.characterSets.clear();
         this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker, getApplicationContext()));
@@ -503,6 +502,13 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 .resumeProgressTrackerFromDB(trackers);
     }
 
+    private void resumeCurrentCharacterSet(){
+        List<ProgressTracker> singleTracker = new ArrayList<>(1);
+        singleTracker.add(currentCharacterSet.getProgressTracker());
+        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
+                .resumeProgressTrackerFromDB(singleTracker);
+        loadNextCharacter(false);
+    }
 
     public void delayedStartBackgroundLoadTranslations(){
         Handler handler = new Handler(Looper.getMainLooper());
@@ -882,7 +888,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
 
-        initializeCharacterSets();      // should do nothing?
+        //initializeCharacterSets();      // should do nothing?
         resumeCharacterSets();
 
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
@@ -948,7 +954,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             try {
                 ProgressTracker.ProgressState serialize = c.getProgressTracker().serializeOut();
                 if(serialize != null) {
-                    Log.i("nakama", "Caching progress on " + c.pathPrefix + " with time " + serialize.oldestDateTime);
                     d.cachePracticeRecord(c.pathPrefix, serialize.recordSheetJson, serialize.srsQueueJson, serialize.oldestDateTime);
                 }
             } catch(Throwable t){
@@ -984,6 +989,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         if (BuildConfig.DEBUG && DEBUG_MENU) {
+            menu.add("DEBUG:RecalculateProgress");
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:DrawViewComparison");
             menu.add("DEBUG:SpenTest");
@@ -1149,7 +1155,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         if (BuildConfig.DEBUG) {
-            if (item.getTitle().equals("DEBUG:DrawTest")) {
+            if(item.getTitle().equals("DEBUG:RecalculateProgress")) {
+                new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext())).clearPracticeRecord();
+                initializeCharacterSets();
+
+            } else if (item.getTitle().equals("DEBUG:DrawTest")) {
                 startActivity(new Intent(this, TestDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:KanjiCheck")) {
                 startActivity(new Intent(this, KanjiCheckActivity.class));
@@ -1371,11 +1381,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
 
-        List<ProgressTracker> singleTracker = new ArrayList<>(1);
-        singleTracker.add(currentCharacterSet.getProgressTracker());
-        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
-                .resumeProgressTrackerFromDB(singleTracker);
-        loadNextCharacter(false);
+        resumeCurrentCharacterSet();
 
         drawPad.clear();
         setUiState(State.DRAWING);

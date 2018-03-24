@@ -72,6 +72,7 @@ public class ProgressTracker {
 		}
 		LocalDateTime oldestLogTimestamp = oldestLogTimestampByDevice.get(device);
 		if(oldestLogTimestamp == null || t.isAfter(oldestLogTimestamp)){
+			//Log.d("nakama-progress", "Oldest timestamp for device " + device + " is now set to " + t);
 			oldestLogTimestampByDevice.put(device, t);
 		}
 	}
@@ -357,8 +358,8 @@ public class ProgressTracker {
 	 * A special one-time event when SRS was first introduced, to try to not freak people out.
 	 */
 	public void srsReset(String setId) {
-		Log.d("nakama-progress", "SRS Set reset!!!!!!!!!!!!!!!!!!! On " + setId);
-		Log.d("nakama-progress", "Prior to reset, schedule is: " + srsQueue.getSrsScheduleString());
+		//Log.d("nakama-progress", "SRS Set reset!!!!!!!!!!!!!!!!!!! On " + setId);
+		//Log.d("nakama-progress", "Prior to reset, schedule is: " + srsQueue.getSrsScheduleString());
 		if(!(setId.equals(this.setId) || setId.equals("all"))){
 			return;
 		}
@@ -373,7 +374,7 @@ public class ProgressTracker {
 		}
 
 		Log.d("nakama-progress", "After SRS reset, schedule is: " + srsQueue.getSrsScheduleString());
-		debugPrintAllScores();
+		//debugPrintAllScores();
 	}
 
 	public void overrideFullCompleted(Character c){
@@ -398,8 +399,6 @@ public class ProgressTracker {
         lastChar = c;
 
 		recordSheet.put(c, newScore);
-
-		if(BuildConfig.DEBUG) Log.d("nakama-progress", "In set " + setId + " setting char " + c + " to score " + recordSheet.get(c));
 
         SRSQueue.SRSEntry addedToSrs = srsQueue.addToSRSQueue(c, newScore, time, MAX_SCORE);
         return addedToSrs;
@@ -516,14 +515,23 @@ public class ProgressTracker {
 			return null;
 		}
 
-	    Gson g = new GsonBuilder().create();
-	    return new ProgressState(g.toJson(this.recordSheet), srsQueue.serializeOut(), g.toJson(oldestLogTimestampByDevice));
+		LinkedHashMap simplerMap = new LinkedHashMap<>();
+		for(Map.Entry<String, LocalDateTime> d: this.oldestLogTimestampByDevice.entrySet()){
+			simplerMap.put(d.getKey(), d.getValue().toString());
+		}
+
+	    Gson g = new GsonBuilder().serializeNulls().create();
+	    return new ProgressState(g.toJson(this.recordSheet), srsQueue.serializeOut(), g.toJson(simplerMap));
     }
 
     public void deserializeIn(String queueJson, String recordJson, String lastLogsByDevice){
-        Gson g = new GsonBuilder().create();
+        Gson g = new GsonBuilder().serializeNulls().create();
         this.recordSheet = g.fromJson(recordJson, new TypeToken<LinkedHashMap<Character, Integer>>(){}.getType());
         this.srsQueue.deserializeIn(setId, queueJson);
-		this.oldestLogTimestampByDevice = g.fromJson(lastLogsByDevice, new TypeToken<LinkedHashMap<String, LocalDateTime>>(){}.getType());
+		LinkedHashMap<String, String> dates = g.fromJson(lastLogsByDevice, new TypeToken<LinkedHashMap<String, String>>(){}.getType());
+		this.oldestLogTimestampByDevice = new LinkedHashMap<>();
+		for(Map.Entry<String, String> d: dates.entrySet()){
+			this.oldestLogTimestampByDevice.put(d.getKey(), LocalDateTime.parse(d.getValue()));
+		}
     }
 }

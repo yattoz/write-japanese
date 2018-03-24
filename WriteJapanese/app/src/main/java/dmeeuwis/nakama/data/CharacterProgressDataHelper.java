@@ -42,8 +42,8 @@ public class CharacterProgressDataHelper {
     public void  cachePracticeRecord(String setId, String practiceRecord, String srsQueue, String oldestLog){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
         try {
-            Log.i("nakama", "Caching progress for " + setId + ": " + practiceRecord + "; " + srsQueue);
-            db.getWritableDatabase().execSQL("INSERT OR REPLACE INTO practice_record_cache(set_id, practice_record, srs_queue, last_log) VALUES(?, ?, ?, ?)",
+            //Log.i("nakama", "Caching progress for " + setId + ": " + practiceRecord + "; " + srsQueue);
+            db.getWritableDatabase().execSQL("INSERT OR REPLACE INTO practice_record_cache(set_id, practice_record, srs_queue, last_log_by_device) VALUES(?, ?, ?, ?)",
                     new String[]{ setId, practiceRecord, srsQueue, oldestLog });
         } finally {
             db.close();
@@ -144,48 +144,63 @@ public class CharacterProgressDataHelper {
         if(!resuming){
             // check timestamp of log vs json
 
-            for(int i = allPts.size() - 1; i >= 0; i--){
+            for (int i = allPts.size() - 1; i >= 0; i--) {
                 ProgressTracker t = allPts.get(i);
+                try {
 
-                Map<String, String> cache = DataHelper.selectRecord(db.getReadableDatabase(),
-                        "SELECT practice_record, srs_queue, last_log_by_device FROM practice_record_cache WHERE set_id = ?",
-                        t.setId);
-                if(cache != null){
-                    Log.i("nakama", "!!!!!!!!!!! Using cached version of practice record for " + t.setId);
-                    t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), cache.get("last_log_by_device"));
-                    allPts.remove(i);
 
-                    resuming = true;
+                    Map<String, String> cache = DataHelper.selectRecord(db.getReadableDatabase(),
+                            "SELECT practice_record, srs_queue, last_log_by_device FROM practice_record_cache WHERE set_id = ?",
+                            t.setId);
+                    if (cache != null) {
+                        Log.i("nakama", "!!!!!!!!!!! Using cached version of practice record for " + t.setId + "; using last_log_by_device: " + cache.get("last_log_by_device"));
+                        ;
+                        t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), cache.get("last_log_by_device"));
+                        allPts.remove(i);
+
+                        resuming = true;
+                    }
+                } catch (Throwable x){
+                    Log.i("nakama-progress", "Disregarding invalid cache for " + t.setId, x);
                 }
             }
+
         }
 
-        final AtomicLong count = new AtomicLong(0);
-
+        int allCount = 0;
         try {
-            ProcessLogRow plr = new ProcessLogRow(count, allPts);
+            ProcessLogRow plr = new ProcessLogRow(allPts);
             if(resuming){
 
                 for(ProgressTracker pt: allPts){
                     for(Map.Entry<String, LocalDateTime> e: pt.oldestLogTimestampByDevice.entrySet()){
-                        Log.i("nakama-progress", "Selecting all logs since " + e.getValue() + " for install " + e.getKey());
-                        DataHelper.applyToResults(plr, db.getReadableDatabase(),
-                                "SELECT character, charset, score, timestamp, install_id FROM practice_log WHERE install_id = ? AND timestamp > datetime(?)",
-                                e.getKey(), e.getValue().toString());
+
+                        String timestamp = e.getValue() == null ? "1900-01-01 00:00:00" : e.getValue().toString().replace('T', ' ');
+                        int rowCount = DataHelper.applyToResults(plr, db.getReadableDatabase(),
+                                "SELECT character, charset, score, timestamp, install_id FROM practice_log WHERE install_id = ? AND timestamp > datetime(?) and charset = ?",
+                                e.getKey(), timestamp, pt.setId);
+
+                        if(rowCount > 0) {
+                            Log.d("nakama-progress",
+                                    "SELECT character, charset, score, timestamp, install_id FROM practice_log WHERE install_id = '" + e.getKey() +
+                                            "' AND timestamp > datetime('"+ timestamp + "') and charset = '" + pt.setId + "'");
+                            Log.d("nakama-progress", "Processed " + rowCount + " rows on " + pt.setId + " after resuming from " + e.getValue() + " on install " + e.getKey());
+                        }
+                        allCount += rowCount;
                     }
                 }
 
             } else {
-                DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp, install_id FROM practice_log");
+                allCount = DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp, install_id FROM practice_log");
             }
         } finally {
             db.close();
         }
 
         long startup = System.currentTimeMillis() - start;
-        Log.i("nakama-progress", "Time to load progress tracker: " + startup + "ms; counted " + count.get() + " records.");
+        Log.i("nakama-progress", "Time to load progress tracker: " + startup + "ms; counted " + allCount + " records.");
         if(startup > 2500){
-            UncaughtExceptionLogger.backgroundLogError("Long startup detected: " + startup + "ms to load " + count.get() + " practice logs.", new RuntimeException(), context);
+            UncaughtExceptionLogger.backgroundLogError("Long startup detected: " + startup + "ms to load " + allCount + " practice logs.", new RuntimeException(), context);
         }
     }
 
@@ -216,6 +231,15 @@ public class CharacterProgressDataHelper {
         }
     }
 
+    public void clearPracticeRecord() {
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        try {
+            db.getWritableDatabase().execSQL("DELETE FROM practice_record_cache");
+        } finally {
+            db.close();
+        }
+    }
+
 
     public static class ProgressionSettings {
         public final int introIncorrect, introReviewing, advanceIncorrect, advanceReviewing;
@@ -238,23 +262,19 @@ public class CharacterProgressDataHelper {
     }
 
     private class ProcessLogRow implements DataHelper.ProcessRow {
-        private final AtomicLong count;
         private final List<ProgressTracker> allPts;
 
-        public ProcessLogRow(AtomicLong count, List<ProgressTracker> allPts) {
-            this.count = count;
+        public ProcessLogRow(List<ProgressTracker> allPts) {
             this.allPts = allPts;
         }
 
         @Override
         public void process(Map<String, String> r) {
-            count.incrementAndGet();
-
             Character character = r.get("character").charAt(0);
             String set = r.get("charset");
             String timestampStr = r.get("timestamp");
             Integer score = Integer.parseInt(r.get("score"));
-            String iid = r.get("iid");
+            String iid = r.get("install_id");
             LocalDateTime t;
 
             try {
@@ -272,7 +292,7 @@ public class CharacterProgressDataHelper {
                 pt.noteTimestamp(character, t, iid);
 
                 if(BuildConfig.DEBUG){
-                    Log.d("nakama-progress", "Processing practice log: " + character + " " + set + " " + timestampStr + " " + score + " on set tracker " + pt.setId);
+                    //Log.d("nakama-progress", "Processing practice log: " + character + " " + set + " " + timestampStr + " " + score + " on set tracker " + pt.setId);
                 }
 
                 if (character.toString().equals("R")) {
