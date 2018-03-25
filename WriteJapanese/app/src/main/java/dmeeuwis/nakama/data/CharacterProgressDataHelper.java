@@ -289,6 +289,10 @@ public class CharacterProgressDataHelper {
             }
 
             for(ProgressTracker pt: allPts) {
+                if(pt.reject(character)){
+                    continue;
+                }
+
                 pt.noteTimestamp(character, t, iid);
 
                 if(BuildConfig.DEBUG){

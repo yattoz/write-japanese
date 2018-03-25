@@ -67,9 +67,6 @@ public class ProgressTracker {
 	}
 
 	public void noteTimestamp(Character c, LocalDateTime t, String device) {
-		if(!recordSheet.containsKey(c)){
-			return;
-		}
 		LocalDateTime oldestLogTimestamp = oldestLogTimestampByDevice.get(device);
 		if(oldestLogTimestamp == null || t.isAfter(oldestLogTimestamp)){
 			//Log.d("nakama-progress", "Oldest timestamp for device " + device + " is now set to " + t);
@@ -79,6 +76,10 @@ public class ProgressTracker {
 
 	public Map<LocalDate,List<Character>> getSrsSchedule() {
 	    return srsQueue.getSrsSchedule();
+	}
+
+	public boolean reject(Character character) {
+		return !recordSheet.containsKey(character);
 	}
 
 
