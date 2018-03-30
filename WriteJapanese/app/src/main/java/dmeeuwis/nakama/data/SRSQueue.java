@@ -1,15 +1,17 @@
 package dmeeuwis.nakama.data;
 
 import android.support.annotation.NonNull;
+import android.util.JsonReader;
+import android.util.JsonWriter;
 import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.Period;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -206,19 +208,41 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
         return id + ": " + Util.join(getSrsSchedule(), ": ", ", ");
     }
 
-    public String serializeOut(){
-        Gson g = new GsonBuilder().create();
+    public String serializeOut() throws  IOException{
+        StringWriter sw = new StringWriter();
+        JsonWriter j = new JsonWriter(sw);
         SRSEntry[] entries = srsQueue.toArray(new SRSEntry[0]);
-        return g.toJson(entries);
+        j.beginArray();
+        for(SRSEntry s: entries){
+            j.beginObject();
+            j.name("character");
+            j.value(s.character.toString());
+            j.name("nextPractice");
+            j.value(s.nextPractice.toString());
+            j.endObject();
+        }
+        j.endArray();
+        j.close();
+        return sw.toString();
     }
 
-    public SRSQueue deserializeIn(String id, String queueJSON){
-        Gson g = new GsonBuilder().create();
-        SRSEntry[] entries = g.fromJson(queueJSON, SRSEntry[].class);
+    public SRSQueue deserializeIn(String id, String queueJSON) throws IOException{
         PriorityQueue<SRSEntry> queue = new PriorityQueue<>(new SRSEntryComparator());
-        for(SRSEntry e: entries){
-            queue.add(e);
+        JsonReader jr = new JsonReader(new StringReader(queueJSON));
+        jr.beginArray();
+        while(jr.hasNext()){
+            jr.beginObject();
+            while(jr.hasNext()){
+                "character".equals(jr.nextName());
+                String character = jr.nextString();
+                "nextPractice".equals(jr.nextName());
+                String date = jr.nextString();
+                queue.add(new SRSEntry(character.charAt(0), LocalDate.parse(date)));
+            }
+            jr.endObject();
         }
+        jr.endArray();
+        jr.close();
         return new SRSQueue(id, queue);
     }
 

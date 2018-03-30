@@ -141,21 +141,22 @@ public class CharacterProgressDataHelper {
 
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
 
+        long startResume = System.currentTimeMillis();
         if(!resuming){
             // check timestamp of log vs json
+
+            Map<String, Map<String, String>> caches = DataHelper.selectRecordsIndexedByFirst(db.getReadableDatabase(),
+                "SELECT set_id, practice_record, srs_queue, last_log_by_device FROM practice_record_cache",
+                "set_id", new Object[0]);
 
             for (int i = allPts.size() - 1; i >= 0; i--) {
                 ProgressTracker t = allPts.get(i);
                 try {
-
-
-                    Map<String, String> cache = DataHelper.selectRecord(db.getReadableDatabase(),
-                            "SELECT practice_record, srs_queue, last_log_by_device FROM practice_record_cache WHERE set_id = ?",
-                            t.setId);
+                    Map<String, String> cache = caches.get(t.setId);
                     if (cache != null) {
-                        Log.i("nakama", "!!!!!!!!!!! Using cached version of practice record for " + t.setId + "; using last_log_by_device: " + cache.get("last_log_by_device"));
-                        ;
+                        long deserializeStart = System.currentTimeMillis();
                         t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), cache.get("last_log_by_device"));
+                        Log.d("nakama-progress", "Time to deserialize " + t.setId + ": " + (System.currentTimeMillis() - deserializeStart) + "ms");
                         allPts.remove(i);
 
                         resuming = true;
@@ -164,9 +165,10 @@ public class CharacterProgressDataHelper {
                     Log.i("nakama-progress", "Disregarding invalid cache for " + t.setId, x);
                 }
             }
-
         }
+        Log.d("nakama-progress", "Time to do resume block: " + (System.currentTimeMillis() - startResume));
 
+        long processStart = System.currentTimeMillis();
         int allCount = 0;
         try {
             ProcessLogRow plr = new ProcessLogRow(allPts);
@@ -175,12 +177,14 @@ public class CharacterProgressDataHelper {
                 for(ProgressTracker pt: allPts){
                     for(Map.Entry<String, LocalDateTime> e: pt.oldestLogTimestampByDevice.entrySet()){
 
+                        long queryStart = System.currentTimeMillis();
                         String timestamp = e.getValue() == null ? "1900-01-01 00:00:00" : e.getValue().toString().replace('T', ' ');
                         int rowCount = DataHelper.applyToResults(plr, db.getReadableDatabase(),
                                 "SELECT character, charset, score, timestamp, install_id FROM practice_log WHERE install_id = ? AND timestamp > datetime(?) and charset = ?",
                                 e.getKey(), timestamp, pt.setId);
 
                         if(rowCount > 0) {
+                            Log.d("nakama-progress", "Query took: " + (System.currentTimeMillis() - queryStart) + "ms");
                             Log.d("nakama-progress",
                                     "SELECT character, charset, score, timestamp, install_id FROM practice_log WHERE install_id = '" + e.getKey() +
                                             "' AND timestamp > datetime('"+ timestamp + "') and charset = '" + pt.setId + "'");
@@ -196,6 +200,7 @@ public class CharacterProgressDataHelper {
         } finally {
             db.close();
         }
+        Log.d("nakama-progress", "Time to do process block: " + (System.currentTimeMillis() - processStart));
 
         long startup = System.currentTimeMillis() - start;
         Log.i("nakama-progress", "Time to load progress tracker: " + startup + "ms; counted " + allCount + " records.");

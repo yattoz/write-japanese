@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,7 +17,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.renderscript.Script;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -29,7 +27,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -80,7 +77,6 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.ClueExtractor;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
-import dmeeuwis.nakama.data.DataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.ProgressTracker;
@@ -89,7 +85,6 @@ import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
-import dmeeuwis.nakama.data.WriteJapaneseOpenHelper;
 import dmeeuwis.nakama.kanjidraw.Comparator;
 import dmeeuwis.nakama.kanjidraw.ComparisonAsyncTask;
 import dmeeuwis.nakama.kanjidraw.ComparisonFactory;
@@ -190,19 +185,19 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        long start = System.currentTimeMillis();
         Log.i("nakama-intro", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
-
         lockChecker = new LockCheckerInAppBillingService(this);
-
-        setContentView(R.layout.main);
-
+        setContentView(R.layout.main);          // pretty heavy, ~900ms
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
 
+        Log.i("nakama-timing", "MainActivity: mark 1 " + (System.currentTimeMillis() - start) + "ms");
+
         Animation outToLeft = AnimationUtils.loadAnimation(this, R.anim.screen_transition_out);
-        flipper = (ViewFlipper) findViewById(R.id.viewflipper);
+        flipper = findViewById(R.id.viewflipper);
         if (flipper != null) {
             flipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.screen_transition_in));
             flipper.setOutAnimation(outToLeft);
@@ -211,17 +206,18 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             flipperAnimationListener = new FlipperAnimationListener();
             outToLeft.setAnimationListener(flipperAnimationListener);
         }
+        Log.i("nakama-timing", "MainActivity: mark 1.5 " + (System.currentTimeMillis() - start) + "ms loaded animation");
 
         maskView = findViewById(R.id.maskView);
 
         // Draw Frame init
-        drawPad = (DrawView) findViewById(R.id.drawPad);
+        drawPad = findViewById(R.id.drawPad);
         drawPad.setBackgroundColor(DrawView.BACKGROUND_COLOR);
 
-        correctKnownView = (AnimatedCurveView) findViewById(R.id.correctKnownView);
-        correctDrawnView = (AnimatedCurveView) findViewById(R.id.correctDrawnView);
+        correctKnownView = findViewById(R.id.correctKnownView);
+        correctDrawnView = findViewById(R.id.correctDrawnView);
 
-        doneButton = (FloatingActionButton) findViewById(R.id.finishedButton);
+        doneButton = findViewById(R.id.finishedButton);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -293,18 +289,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                         } else {
                             setUiState(State.REVIEWING);
                         }
-
-                        // apply new grading to all other sets. Otherwise might see old already done chars when switching sets.
-                        Context appContext = getApplicationContext();
-                        for(Map.Entry<String, CharacterStudySet> s: characterSets.entrySet()) {
-                            CharacterStudySet set = s.getValue();
-                            new CharacterProgressDataHelper(appContext, Iid.get(appContext))
-                                    .resumeProgressTrackerFromDB(Arrays.asList(set.getProgressTracker()));
-                        }
                     }
                 });
                 comp.execute();
-
             }
         });
 
@@ -328,7 +315,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         });
 
-        teachMeButton = (FloatingActionButton) findViewById(R.id.teachButton);
+        teachMeButton = findViewById(R.id.teachButton);
         teachMeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -339,7 +326,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         });
 
 
-        overrideButton = (FloatingActionButton) findViewById(R.id.overrideButton);
+        overrideButton = findViewById(R.id.overrideButton);
         overrideButton.setOnClickListener(
                 new View.OnClickListener() {
                      @Override
@@ -351,14 +338,14 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                      }
                  });
 
-        correctAnimation = (AnimatedCurveView) findViewById(R.id.animatedKnownReplay);
-        playbackAnimation = (AnimatedCurveView) findViewById(R.id.animatedDrawnReplay);
+        correctAnimation = findViewById(R.id.animatedKnownReplay);
+        playbackAnimation = findViewById(R.id.animatedDrawnReplay);
 
-        criticism = (ListView) findViewById(R.id.criticism);
+        criticism = findViewById(R.id.criticism);
         criticismArrayAdapter = new ArrayAdapter<>(this, R.layout.critique_list_item, R.id.critique_label, new ArrayList<String>(0));
         criticism.setAdapter(criticismArrayAdapter);
 
-        FloatingActionButton next = (FloatingActionButton) findViewById(R.id.nextButton);
+        FloatingActionButton next = findViewById(R.id.nextButton);
         View.OnClickListener nextButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -373,10 +360,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         next.setOnClickListener(nextButtonListener);
 
-        final FloatingActionButton correctNext = (FloatingActionButton) findViewById(R.id.correctNextButton);
+        final FloatingActionButton correctNext = findViewById(R.id.correctNextButton);
         correctNext.setOnClickListener(nextButtonListener);
 
-        final FloatingActionButton practiceButton = (FloatingActionButton) findViewById(R.id.practiceButton);
+        final FloatingActionButton practiceButton = findViewById(R.id.practiceButton);
         practiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -384,7 +371,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         });
 
-        correctVocabList = (RecyclerView) findViewById(R.id.correctExamples);
+        correctVocabList = findViewById(R.id.correctExamples);
         correctVocabList.setLayoutManager(new LinearLayoutManager(this));
         correctVocabArrayAdapter = new KanjiVocabRecyclerAdapter(KanjiMasterActivity.this, dictionarySet.kanjiFinder());
         correctVocabList.setAdapter(correctVocabArrayAdapter);
@@ -416,6 +403,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         });
 
+        Log.i("nakama-timing", "MainActivity: mark 2 " + (System.currentTimeMillis() - start) + "ms, done onClickListeners");
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
         animateSlide = Math.max(dm.heightPixels, dm.widthPixels);
@@ -423,7 +411,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         correctCard = findViewById(R.id.correctCard);
         incorrectCard = findViewById(R.id.incorrectCard);
         charsetCard = findViewById(R.id.charsetInfoCard);
-        instructionCard = (ClueCard) findViewById(R.id.clueCard);
+        instructionCard = findViewById(R.id.clueCard);
         reviewBug = findViewById(R.id.reviewBug);
         if(correctCard != null){
             correctCard.setTranslationY(-1 * animateSlide);
@@ -443,19 +431,25 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
+        Log.i("nakama-timing", "MainActivity: mark 3 " + (System.currentTimeMillis() - start) + "ms");
+
         initializeCharacterSets();
+        Log.i("nakama-timing", "MainActivity: mark 4 " + (System.currentTimeMillis() - start) + "ms");
 
         ReminderManager.scheduleRemindersFor(getApplicationContext());
+        Log.i("nakama-timing", "MainActivity: mark 5 " + (System.currentTimeMillis() - start) + "ms");
 
         Boolean srsEnabled = Settings.getSRSEnabled(getApplicationContext());
         boolean srsAsked = srsEnabled != null;
         Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
 
-        Log.i("nakama", "srsEnabled=" + srsEnabled + "; syncStatus=" + syncStatus);
+        //Log.i("nakama", "srsEnabled=" + srsEnabled + "; syncStatus=" + syncStatus);
         if(!srsAsked || !syncStatus.asked){
             Log.i("nakama-intro", "Launch IntroActivity from KanjiMasterActivity");
             startActivity(new Intent(this, IntroActivity.class));
         }
+
+        Log.d("nakama-timing", "onCreate took " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private void initializeCharacterSets(){
@@ -491,15 +485,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
         new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
                 .loadProgressTrackerFromDB(trackers);
-    }
-
-    private void resumeCharacterSets(){
-        List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
-        for(CharacterStudySet c: this.characterSets.values()){
-            trackers.add(c.getProgressTracker());
-        }
-        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
-                .resumeProgressTrackerFromDB(trackers);
     }
 
     private void resumeCurrentCharacterSet(){
@@ -771,7 +756,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         {
-            Log.i("nakama-progression", "Setting reviewBug visibility to " + currentCharacterSet.isReviewing());
+            //Log.i("nakama-progression", "Setting reviewBug visibility to " + currentCharacterSet.isReviewing());
             int reviewBugVisibility = currentCharacterSet.isReviewing() == ProgressTracker.StudyType.REVIEW ? View.VISIBLE : View.GONE;
             if (reviewBug != null) {
                 reviewBug.setVisibility(reviewBugVisibility);
@@ -782,7 +767,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         {
             int srsBugVisibility = currentCharacterSet.isReviewing() == ProgressTracker.StudyType.SRS ? View.VISIBLE : View.GONE;
-            Log.i("nakama-progression", "Setting srsBug visibility to " + (srsBugVisibility == View.VISIBLE));
+            //Log.i("nakama-progression", "Setting srsBug visibility to " + (srsBugVisibility == View.VISIBLE));
             if (srsBug != null) {
                 //if(BuildConfig.DEBUG && srsBugVisibility == View.VISIBLE) { Toast.makeText(this, "SRS Repetition!", Toast.LENGTH_LONG).show(); }
                 srsBug.setVisibility(srsBugVisibility);
@@ -886,10 +871,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
     @Override
     public void onResume() {
+        long start = System.currentTimeMillis();
         Log.i("nakama", "KanjiMasterActivity.onResume");
-
-        //initializeCharacterSets();      // should do nothing?
-        resumeCharacterSets();
 
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
         if (this.charSetFrag != null) {
@@ -920,6 +903,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 break;
             }
         }
+
+        Log.i("nakama", "onResume: loadNextCharacter queuedNextCharLoad: " + queuedNextCharLoad);
         loadNextCharacter(queuedNextCharLoad);
         queuedNextCharLoad = false;
 
@@ -937,6 +922,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         super.onResume();
+        Log.d("nakama-timing", "onResume took " + (System.currentTimeMillis() - start) + "ms");
+
+        firstSinceResume = true;
     }
 
     @Override
@@ -1022,7 +1010,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem shuffleCheck = menu.findItem(R.id.menu_shuffle);
         if (currentCharacterSet != null) {
-            Log.i("nakama", "Menu prep: shuffle is " + currentCharacterSet.isShuffling());
             shuffleCheck.setChecked(currentCharacterSet.isShuffling());
         }
         MenuItem lockItem = menu.findItem(R.id.menu_lock);
@@ -1300,6 +1287,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
     private int currentNavigationItem = 0;
+    private boolean firstSinceResume = true;
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -1345,9 +1333,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             this.currentCharacterSet = characterSets.get("jlpt1");
         }
 
-        // force a next recalculation due to SRS global. Otherwise might get stucck
+
+        // force a next recalculation due to SRS global. Otherwise might get stuck
         // redoing same char you just did in previous set.
-        loadNextCharacter(true);
+        //loadNextCharacter(true);
+
+        loadNextCharacter(false);
 
         if(itemPosition >= 14 &&  itemPosition < 14 + customSets.size()){
             int customSetIndex = itemPosition - 14;

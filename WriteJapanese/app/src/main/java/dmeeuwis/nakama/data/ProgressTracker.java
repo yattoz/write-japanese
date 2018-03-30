@@ -1,16 +1,18 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
+import android.util.JsonReader;
+import android.util.JsonToken;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.util.Pair;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,7 +43,8 @@ import dmeeuwis.util.Util;
 public class ProgressTracker {
 
 	final static public int MAX_SCORE = SRSQueue.SRSTable.length;
-	private static final boolean DEBUG_SRS = BuildConfig.DEBUG && true;
+	private static final boolean DEBUG_SRS = BuildConfig.DEBUG && false;
+	private static final boolean DEBUG_PROGRESS = BuildConfig.DEBUG && false;
 
 	final Random random = new Random();
 	private final boolean useSRS;
@@ -186,7 +189,7 @@ public class ProgressTracker {
 		Set<Character> passed = sets.get(3);
 		Set<Character> unknown = sets.get(4);
 
-		if(BuildConfig.DEBUG) {
+		if(DEBUG_PROGRESS && BuildConfig.DEBUG) {
 			Log.d("nakama-progression", "Character progression: reviewing sets");
 
 			Log.d("nakama-progression", "Failed set is: " + Util.join(", ", failed));
@@ -516,23 +519,68 @@ public class ProgressTracker {
 			return null;
 		}
 
-		LinkedHashMap simplerMap = new LinkedHashMap<>();
-		for(Map.Entry<String, LocalDateTime> d: this.oldestLogTimestampByDevice.entrySet()){
-			simplerMap.put(d.getKey(), d.getValue().toString());
-		}
+		try {
 
-	    Gson g = new GsonBuilder().serializeNulls().create();
-	    return new ProgressState(g.toJson(this.recordSheet), srsQueue.serializeOut(), g.toJson(simplerMap));
+			// oldest log dates by set
+			StringWriter oldestDates = new StringWriter();
+			JsonWriter jd = new JsonWriter(oldestDates);
+			jd.beginObject();
+			for (Map.Entry<String, LocalDateTime> d : this.oldestLogTimestampByDevice.entrySet()) {
+				jd.name(d.getKey());
+				jd.value(d.getValue().toString());
+			}
+			jd.endObject();
+
+			// record sheet
+			StringWriter recordSheet = new StringWriter();
+			JsonWriter j = new JsonWriter(recordSheet);
+			j.beginObject();
+			for (Map.Entry<Character, Integer> d : this.recordSheet.entrySet()) {
+				j.name(d.getKey().toString());
+				j.value(d.getValue());
+			}
+			j.endObject();
+
+
+			j.close();
+
+			return new ProgressState(recordSheet.toString(), srsQueue.serializeOut(), oldestDates.toString());
+		} catch(IOException e){
+			Log.d("nakama", "Error serializing out", e);
+			return null;
+		}
     }
 
     public void deserializeIn(String queueJson, String recordJson, String lastLogsByDevice){
-        Gson g = new GsonBuilder().serializeNulls().create();
-        this.recordSheet = g.fromJson(recordJson, new TypeToken<LinkedHashMap<Character, Integer>>(){}.getType());
-        this.srsQueue.deserializeIn(setId, queueJson);
-		LinkedHashMap<String, String> dates = g.fromJson(lastLogsByDevice, new TypeToken<LinkedHashMap<String, String>>(){}.getType());
-		this.oldestLogTimestampByDevice = new LinkedHashMap<>();
-		for(Map.Entry<String, String> d: dates.entrySet()){
-			this.oldestLogTimestampByDevice.put(d.getKey(), LocalDateTime.parse(d.getValue()));
+		try {
+			JsonReader record = new JsonReader(new StringReader(recordJson));
+			record.beginObject();
+			while (record.hasNext()) {
+				String name = record.nextName();
+				Integer score = null;
+				if(record.peek() == JsonToken.NULL){
+					record.nextNull();
+				} else {
+					score = record.nextInt();
+				}
+				recordSheet.put(name.charAt(0), score);
+			}
+			record.endObject();
+			record.close();
+
+
+			this.srsQueue.deserializeIn(setId, queueJson);
+
+			JsonReader jr = new JsonReader(new StringReader(lastLogsByDevice));
+			this.oldestLogTimestampByDevice = new LinkedHashMap<>();
+			jr.beginObject();
+			while(jr.hasNext()){
+				oldestLogTimestampByDevice.put(jr.nextName(), LocalDateTime.parse(jr.nextString()));
+			}
+			jr.endObject();
+			jr.close();
+		} catch(IOException e){
+			Log.d("nakama", "Error deserializing in", e);
 		}
     }
 }
