@@ -59,6 +59,9 @@ android{
             systemProperty 'robolectric.logging.enabled', 'true'
         }
     }
+    dataBinding {
+        enabled = true
+    }
     testOptions.unitTests.includeAndroidResources true
 }
 
