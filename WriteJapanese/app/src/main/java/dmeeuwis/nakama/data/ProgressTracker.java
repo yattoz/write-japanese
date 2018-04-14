@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -361,8 +362,9 @@ public class ProgressTracker {
 		}
 
 		List<Character> charsToReset = new ArrayList<>(srsQueue.size());
-		for(SRSQueue.SRSEntry o: srsQueue){
-			charsToReset.add(o.character);
+		Iterator<SRSQueue.SRSEntry> it = srsQueue.iterator();
+		while(it.hasNext()){
+			charsToReset.add(it.next().character);
 		}
 
 		for(Character c: charsToReset){
@@ -386,6 +388,13 @@ public class ProgressTracker {
 		boolean charInCurrentSet = recordSheet.containsKey(c);
 		if(!charInCurrentSet){
 			return null;
+		}
+
+		// if the char is in SRS queue, and the user practices it before it is scheduled, do not
+		// adjust the scoresheet score; not marked 'passed' until the scheduled day has been won.
+		SRSQueue.SRSEntry s = srsQueue.find(c);
+		if(s != null && time.toLocalDate().isBefore(s.nextPractice)){
+			return s;
 		}
 
 		int score = recordSheet.get(c) == null ? -1 : recordSheet.get(c);

@@ -1,7 +1,5 @@
 package dmeeuwis.nakama.data;
 
-import android.os.Build;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.threeten.bp.LocalDate;
@@ -16,13 +14,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.util.Util;
 
-public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
+public class SRSQueue {
     public static final SRSQueue GLOBAL = new SRSQueue("global");
 
     private final PriorityQueue<SRSEntry> srsQueue;
@@ -53,22 +49,6 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
         return srsQueue.size();
     }
 
-    @NonNull
-    @Override
-    public Iterator<SRSEntry> iterator() {
-        return srsQueue.iterator();
-    }
-
-    @Override
-    public void forEach(Consumer<? super SRSEntry> action) {
-        srsQueue.forEach(action);
-    }
-
-    @Override
-    public Spliterator<SRSEntry> spliterator() {
-        return srsQueue.spliterator();
-    }
-
     public static class SRSEntry {
         public final Character character;
         public final LocalDate nextPractice;
@@ -85,6 +65,10 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
 
     private LocalDateTime lastLocalDateTime = null;
     private Character lastCharacter = null;
+
+    public Iterator<SRSEntry> iterator(){
+        return srsQueue.iterator();
+    }
 
     public SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp, int knownScoreValue){
         if(timestamp == lastLocalDateTime && character.equals(lastCharacter)){
@@ -121,6 +105,18 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
         if(BuildConfig.DEBUG) Log.d("nakama-progress", "After adding, set is: " + getSrsScheduleString());
 
         return entry;
+    }
+
+
+    public SRSEntry find(Character c){
+        Iterator<SRSEntry> it = srsQueue.iterator();
+        while(it.hasNext()){
+            SRSEntry e = it.next();
+            if(e.character.equals(c)){
+                return e;
+            }
+        }
+        return null;
     }
 
     public boolean find(Character c, LocalDate forTime){
@@ -185,7 +181,6 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
         return out;
     }
 
-
     public void debugAddDayToSRS() {
         PriorityQueue<SRSEntry> copy = new PriorityQueue<>(this.srsQueue);
         for(SRSEntry e: copy){
@@ -198,5 +193,4 @@ public class SRSQueue implements Iterable<SRSQueue.SRSEntry> {
     public String getSrsScheduleString() {
         return id + ": " + Util.join(getSrsSchedule(), ": ", ", ");
     }
-
 }

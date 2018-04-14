@@ -207,6 +207,12 @@ public class ProgressTrackerTest {
             assertTrue("Every char has been repeated a reasonable number of times after getting all chars into SRS: char " + e.getKey() + " was repeated " + e.getValue(),
             e.getValue() >= 200 / count.size() / 2.0);
         }
+
+        List<Character> all = new ArrayList<>();
+        for(List<Character> values: p1.getSrsSchedule().values()){
+            all.addAll(values);
+        }
+        assertEquals("After lots of repetitive practice, SRS chars aren't cleared unless they hit their SRS day.", CHARS_4.length, all.size());
     }
 
 }
