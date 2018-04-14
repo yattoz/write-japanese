@@ -174,6 +174,7 @@ public class ProgressTracker {
 		List<Set<Character>> sets = getSets(availSet);
 		Set<Character> failed = sets.get(0);
 		Set<Character> reviewing = sets.get(1);
+		Set<Character> timedReviewing = sets.get(2);
 		Set<Character> passed = sets.get(3);
 		Set<Character> unknown = sets.get(4);
 
@@ -182,6 +183,7 @@ public class ProgressTracker {
 
 			Log.d("nakama-progression", "Failed set is: " + Util.join(", ", failed));
 			Log.d("nakama-progression", "Reviewing set is: " + Util.join(", ", reviewing));
+			Log.d("nakama-progression", "TimedReviewing set is: " + Util.join(", ", timedReviewing));
 			Log.d("nakama-progression", "Passed set is: " + Util.join(", ", passed));
 			Log.d("nakama-progression", "Unknown set is: " + Util.join(", ", unknown));
 		}
@@ -214,6 +216,7 @@ public class ProgressTracker {
 		failed.remove(currentChar);
 		reviewing.remove(currentChar);
 		passed.remove(currentChar);
+		timedReviewing.remove(currentChar);
 		unknown.remove(currentChar);
 
 		Set<Character> chosenOnes = new LinkedHashSet<>();
@@ -234,6 +237,7 @@ public class ProgressTracker {
 			chosenOnes.addAll(reviewing);
 			chosenOnes.addAll(unknown);
 			chosenOnes.addAll(passed);
+			chosenOnes.addAll(timedReviewing);
 		}
 
         if(chosenOnes.size() == 0){
@@ -246,7 +250,7 @@ public class ProgressTracker {
 
 		final Character[] next = chosenOnes.toArray(new Character[0]);
 		final Character n = next[(int)(ran * next.length)];
-		final boolean isReview = failed.contains(n) || reviewing.contains(n) || passed.contains(n);
+		final boolean isReview = failed.contains(n) || reviewing.contains(n) || passed.contains(n) || timedReviewing.contains(n);
 
 		if(BuildConfig.DEBUG) {
 			Log.d("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));

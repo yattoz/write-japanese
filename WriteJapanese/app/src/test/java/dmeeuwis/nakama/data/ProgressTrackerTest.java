@@ -1,5 +1,7 @@
 package dmeeuwis.nakama.data;
 
+import android.util.Pair;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -9,7 +11,9 @@ import org.threeten.bp.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +21,9 @@ import java.util.Set;
 import dmeeuwis.kanjimaster.BuildConfig;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
@@ -28,7 +35,7 @@ public class ProgressTrackerTest {
            Character.valueOf('c')
     };
     public final static List<Character> CHARS_LIST = Arrays.asList(CHARS);
-    public final static Set<Character> CHARS_SET = new HashSet<>(CHARS_LIST);
+    public final static Set<Character> CHARS_SET = new LinkedHashSet<>(CHARS_LIST);
 
     public final static Character[] CHARS_2 = new Character[] {
             Character.valueOf('x'),
@@ -36,7 +43,18 @@ public class ProgressTrackerTest {
             Character.valueOf('z')
     };
     public final static List<Character> CHARS_LIST_2 = Arrays.asList(CHARS_2);
-    public final static Set<Character> CHARS_SET_2 = new HashSet<>(CHARS_LIST_2);
+    public final static Set<Character> CHARS_SET_2 = new LinkedHashSet<>(CHARS_LIST_2);
+
+
+    public final static Character[] CHARS_4 = new Character[] {
+            Character.valueOf('a'),
+            Character.valueOf('b'),
+            Character.valueOf('c'),
+            Character.valueOf('d'),
+            Character.valueOf('e'),
+    };
+    public final static List<Character> CHARS_LIST_4 = Arrays.asList(CHARS_4);
+    public final static Set<Character> CHARS_SET_4 = new LinkedHashSet<>(CHARS_LIST_4);
 
     @Test
     public void testEmptyProgressTracker(){
@@ -135,4 +153,60 @@ public class ProgressTrackerTest {
 
         return set.toArray(new LocalDate[0])[0];
     }
+
+    @Test
+    public void testCompletedSRSSet(){
+        ProgressTracker p1 = new ProgressTracker(CHARS_SET_4, 2, 2, true, false, "test-1");
+
+        {
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, null, CHARS_SET_4, false, 1, 1);
+            assertEquals("Practice starts with first character in set", Character.valueOf('a'), c.first);
+            SRSQueue.SRSEntry o = p1.markSuccess('a', LocalDateTime.now());
+            assertEquals("Getting char right on first attempt gets it into SRS for tomorrow", LocalDate.now().plusDays(1), o.nextPractice);
+        }
+
+        {
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, 'a', CHARS_SET_4, false, 1, 1);
+            assertEquals("Practice continues to second in set", Character.valueOf('b'), c.first);
+            p1.markSuccess('b', LocalDateTime.now());
+        }
+
+
+        {
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, 'b', CHARS_SET_4, false, 1, 1);
+            assertEquals("Practice continues to third in set", Character.valueOf('c'), c.first);
+            p1.markSuccess('c', LocalDateTime.now());
+        }
+
+        {
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, 'c', CHARS_SET_4, false, 1, 1);
+            assertEquals("Practice continues to third in set", Character.valueOf('d'), c.first);
+            p1.markSuccess('d', LocalDateTime.now());
+        }
+
+        {
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, 'd', CHARS_SET_4, false, 1, 1);
+            assertEquals("Practice continues to third in set", Character.valueOf('e'), c.first);
+            p1.markSuccess('e', LocalDateTime.now());
+        }
+
+        char lastChar = 'e';
+        Map<Character, Integer> count = new HashMap<>();
+        for(int i = 0; i < 200; i++){
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, lastChar, CHARS_SET_4, false, 1, 1);
+            count.put(c.first, count.get(c.first) == null ? 1 : count.get(c.first) + 1);
+            p1.markSuccess(c.first, LocalDateTime.now());
+            lastChar = c.first;
+        }
+
+        for(Map.Entry<Character, Integer> e: count.entrySet()){
+            System.out.println(e.getKey() + ": " + e.getValue());
+        }
+
+        for(Map.Entry<Character, Integer> e: count.entrySet()){
+            assertTrue("Every char has been repeated a reasonable number of times after getting all chars into SRS: char " + e.getKey() + " was repeated " + e.getValue(),
+            e.getValue() >= 200 / count.size() / 2.0);
+        }
+    }
+
 }
