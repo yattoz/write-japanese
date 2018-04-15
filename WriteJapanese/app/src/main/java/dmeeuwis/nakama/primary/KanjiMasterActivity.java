@@ -493,6 +493,37 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     }
 
     private void resumeCharacterSets(){
+        List<CharacterStudySet> sets = new CustomCharacterSetDataHelper(getApplicationContext()).getSets();
+
+        // load any newly created sets
+        for(CharacterStudySet s: sets){
+            if(!characterSets.containsKey(s.pathPrefix)){
+                Log.i("nakama-sets", "Loading new character set " + s.pathPrefix + ": " + s.name);
+                characterSets.put(s.pathPrefix, s);
+                customSets.add(s);
+                s.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
+            }
+        }
+
+        Set<String> priorSets = new HashSet<>();
+        for(CharacterStudySet c: customSets){
+            priorSets.add(c.pathPrefix);
+        }
+
+        Set<String> currentSets = new HashSet<>();
+        for(CharacterStudySet c: sets){
+            currentSets.add(c.pathPrefix);
+        }
+
+        // remove any sets that were deleted in other activity
+        for(String inPrior: priorSets){
+            if(!currentSets.contains(inPrior)){
+                customSets.remove(characterSets.get(inPrior));
+                CharacterStudySet s = characterSets.remove(inPrior);
+                Log.i("nakama-sets", "Removing deleted set: " + s.name);
+            }
+        }
+
         List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
         for(CharacterStudySet c: this.characterSets.values()){
             trackers.add(c.getProgressTracker());
@@ -880,7 +911,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     public void onResume() {
         Log.i("nakama", "KanjiMasterActivity.onResume");
 
-        initializeCharacterSets();      // should do nothing?
         resumeCharacterSets();
 
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
@@ -1277,6 +1307,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         Log.i("nakama", "onNavigationItemSelected: " + itemPosition);
+        if(currentNavigationItem == itemPosition){
+            return false;
+        }
 
         saveCurrentCharacterSet();
         CharacterStudySet prevSet = this.currentCharacterSet;
