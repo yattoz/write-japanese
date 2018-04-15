@@ -419,7 +419,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         correctCard = findViewById(R.id.correctCard);
         incorrectCard = findViewById(R.id.incorrectCard);
         charsetCard = findViewById(R.id.charsetInfoCard);
-        instructionCard = (ClueCard) findViewById(R.id.clueCard);
+        instructionCard = findViewById(R.id.clueCard);
         reviewBug = findViewById(R.id.reviewBug);
         if(correctCard != null){
             correctCard.setTranslationY(-1 * animateSlide);
@@ -1303,6 +1303,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
     private int currentNavigationItem = 0;
+    private ClueCard.ClueType currentSetClueType = ClueCard.ClueType.MEANING;
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -1350,6 +1351,14 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         } else if (itemPosition == 13) {
             this.currentCharacterSet = characterSets.get("jlpt1");
         }
+
+        this.currentSetClueType = Settings.getCharsetClueType(this.currentCharacterSet.pathPrefix, getApplicationContext());
+        instructionCard.setClueType(this.currentSetClueType);
+        instructionCard.setClueTypeChangeListener(new ClueCard.ClueTypeChangeListener() {
+            @Override public void onClueTypeChane(ClueCard.ClueType c) {
+                Settings.setCharsetClueType(currentCharacterSet.pathPrefix, c, getApplicationContext());
+            }
+        });
 
         // force a next recalculation due to SRS global. Otherwise might get stucck
         // redoing same char you just did in previous set.

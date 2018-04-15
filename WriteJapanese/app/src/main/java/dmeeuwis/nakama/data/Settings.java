@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.nakama.primary.IntroActivity;
+import dmeeuwis.nakama.views.translations.ClueCard;
 
 public class Settings {
     public static Boolean getSRSEnabled(Context ctx) {
@@ -70,7 +71,6 @@ public class Settings {
     }
 
     public enum Strictness { CASUAL, CASUAL_ORDERED, STRICT }
-    public enum ClueType { MEANING, VOCAB }
 
     public static Strictness getStrictness(Context appContext){
         return Strictness.valueOf(getSetting("strictness", Strictness.CASUAL.toString(), appContext));
@@ -78,6 +78,19 @@ public class Settings {
 
     public static void setStrictness(Strictness s, Context appContext){
         setSetting("strictness", s.toString(), appContext);
+    }
+
+    public static void setCharsetClueType(String charsetId, ClueCard.ClueType clueType, Context appContext){
+        setSetting("cluetype_" + charsetId, clueType.toString(), appContext);
+    }
+
+    public static ClueCard.ClueType getCharsetClueType(String charsetId, Context appContext){
+        try {
+            return ClueCard.ClueType.valueOf(getSetting("cluetype_" + charsetId, ClueCard.ClueType.MEANING.toString(), appContext));
+        } catch(Throwable t){
+            UncaughtExceptionLogger.backgroundLogError("Error parsing clue type for charset", t);
+            return ClueCard.ClueType.MEANING;
+        }
     }
 
     public static String getStorySharing(Context appContext){
@@ -89,12 +102,12 @@ public class Settings {
         setSetting("story_sharing", value, appContext);
     }
 
-    public static void setClueType(ClueType value, Context appContext){
+    public static void setClueType(ClueCard.ClueType value, Context appContext){
         setSetting("clue_type", value.toString(), appContext);
     }
 
-    public static ClueType getClueType(Context appContext){
-        return ClueType.valueOf(getSetting("clue_type", ClueType.MEANING.toString(), appContext));
+    public static ClueCard.ClueType getClueType(Context appContext){
+        return ClueCard.ClueType.valueOf(getSetting("clue_type", ClueCard.ClueType.MEANING.toString(), appContext));
     }
 
     public static void setBooleanSetting(Context appContext, String name, Boolean value){

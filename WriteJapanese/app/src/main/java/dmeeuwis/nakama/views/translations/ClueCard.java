@@ -30,6 +30,11 @@ import dmeeuwis.nakama.views.FuriganaSwitcher;
 import dmeeuwis.nakama.views.FuriganaTextView;
 
 public class ClueCard extends CardView {
+
+    public interface ClueTypeChangeListener {
+        void onClueTypeChane(ClueType c);
+    }
+
     final static private String SHARED_PREFS_CLUE_TYPE_KEY = "clueType";
 
     final static private boolean DEBUG = BuildConfig.DEBUG && false;
@@ -64,6 +69,7 @@ public class ClueCard extends CardView {
     private int currentMeaningsClueIndex = 0;
     private int currentReadingsClueIndex = 0;
     private int currentTranslationsClueIndex = 0;
+    private ClueTypeChangeListener clueTypeChangeListener;
 
     private ClueExtractor clueExtractor;
 
@@ -258,25 +264,56 @@ public class ClueCard extends CardView {
         otherClueButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                ClueType c = null;
                 if(meaningsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama-clue", "ClueCard other clue click, hiding meanings, showing readings");
-                    meaningsLayout.setVisibility(View.GONE);
-                    translationsLayout.setVisibility(View.GONE);
-                    readingsLayout.setVisibility(View.VISIBLE);
+                    switchToReadings();
+                    c = ClueType.MEANING;
                 } else if(readingsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama-clue", "ClueCard other clue click, hiding readings, showing translations");
-                    readingsLayout.setVisibility(View.GONE);
-                    meaningsLayout.setVisibility(View.GONE);
-                    translationsLayout.setVisibility(View.VISIBLE);
+                    switchToTranslations();
+                    c = ClueType.READING;
                 } else if(translationsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama-clue", "ClueCard other clue click, hiding translations, showing meanings");
-                    readingsLayout.setVisibility(View.GONE);
-                    translationsLayout.setVisibility(View.GONE);
-                    meaningsLayout.setVisibility(View.VISIBLE);
+                    switchToMeanings();
+                    c = ClueType.TRANSLATION;
                 }
                 setCurrentCharacter(clueExtractor, currentCharacter, true);
+                if(clueTypeChangeListener != null){
+                    clueTypeChangeListener.onClueTypeChane(c);
+                }
             }
         });
+    }
+
+    public void setClueType(ClueType type){
+        if(type == ClueType.MEANING){
+            switchToMeanings();
+        } else if(type == ClueType.READING){
+            switchToReadings();
+        } else  if(type == ClueType.TRANSLATION){
+            switchToTranslations();
+        } else {
+            throw new IllegalArgumentException("Unknown ClueType: " + type);
+        }
+    }
+
+    private void switchToTranslations(){
+        readingsLayout.setVisibility(View.GONE);
+        meaningsLayout.setVisibility(View.GONE);
+        translationsLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void switchToMeanings(){
+        readingsLayout.setVisibility(View.GONE);
+        translationsLayout.setVisibility(View.GONE);
+        meaningsLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void switchToReadings(){
+        meaningsLayout.setVisibility(View.GONE);
+        translationsLayout.setVisibility(View.GONE);
+        readingsLayout.setVisibility(View.VISIBLE);
     }
 
     public void onResume(Context ctx){
@@ -417,6 +454,10 @@ public class ClueCard extends CardView {
         if(this.srsBug != null) {
             this.srsBug.setVisibility(srsBugVisibility);
         }
+    }
+
+    public void setClueTypeChangeListener(ClueTypeChangeListener c){
+        this.clueTypeChangeListener = c;
     }
 
 
