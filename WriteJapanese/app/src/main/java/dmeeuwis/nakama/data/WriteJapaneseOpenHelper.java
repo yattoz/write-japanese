@@ -74,7 +74,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
     private void addPracticeLogDateIndex(SQLiteDatabase sqlite){
         Log.d("nakama-db", "Creating practice_log timestamp index.");
-        sqlite.execSQL("CREATE INDEX logs_by_date ON practice_log(timestamp);");
+        sqlite.execSQL("CREATE INDEX IF NOT EXISTS logs_by_date ON practice_log(timestamp);");
     }
 
     private void addDrawingToPracticeLog(SQLiteDatabase sqlite){
