@@ -1355,7 +1355,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         this.currentSetClueType = Settings.getCharsetClueType(this.currentCharacterSet.pathPrefix, getApplicationContext());
         instructionCard.setClueType(this.currentSetClueType);
         instructionCard.setClueTypeChangeListener(new ClueCard.ClueTypeChangeListener() {
-            @Override public void onClueTypeChane(ClueCard.ClueType c) {
+            @Override public void onClueTypeChange(ClueCard.ClueType c) {
+                Log.i("nakama", "Setting clue type for set " + currentCharacterSet.name + " to " + c);
                 Settings.setCharsetClueType(currentCharacterSet.pathPrefix, c, getApplicationContext());
             }
         });

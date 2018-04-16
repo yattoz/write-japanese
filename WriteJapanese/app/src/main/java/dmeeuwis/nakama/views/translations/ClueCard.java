@@ -32,7 +32,7 @@ import dmeeuwis.nakama.views.FuriganaTextView;
 public class ClueCard extends CardView {
 
     public interface ClueTypeChangeListener {
-        void onClueTypeChane(ClueType c);
+        void onClueTypeChange(ClueType c);
     }
 
     final static private String SHARED_PREFS_CLUE_TYPE_KEY = "clueType";
@@ -117,22 +117,22 @@ public class ClueCard extends CardView {
     private void init() {
         inflate(getContext(), R.layout.clue_card_layout, this);
 
-        this.otherClueButton = (ImageView) findViewById(R.id.other_clue);
+        this.otherClueButton = findViewById(R.id.other_clue);
 
         this.meaningsLayout = findViewById(R.id.clue_meanings_layout);
-        this.instructionsLabel = (TextSwitcher)findViewById(R.id.instructionsLabel);
-        this.target = (TextSwitcher)findViewById(R.id.target);
+        this.instructionsLabel = findViewById(R.id.instructionsLabel);
+        this.target = findViewById(R.id.target);
         this.reviewBug = findViewById(R.id.clue_card_review_bug);
         this.srsBug = findViewById(R.id.clue_card_srs_bug);
 
         this.readingsLayout = findViewById(R.id.clue_readings_layout);
-        this.readingsInstructionLabel = (TextSwitcher)findViewById(R.id.readingsInstructionsLabel);
-        this.readingsTarget = (TextSwitcher)findViewById(R.id.readingsTarget);
+        this.readingsInstructionLabel = findViewById(R.id.readingsInstructionsLabel);
+        this.readingsTarget = findViewById(R.id.readingsTarget);
 
         this.translationsLayout = findViewById(R.id.clue_translation_layout);
-        this.translationInstructionsLabel = (TextSwitcher) findViewById(R.id.translationInstructionsLabel);
-        this.translationTarget = (FuriganaSwitcher) findViewById(R.id.translationTarget);
-        this.translationEnglish = (TextSwitcher)findViewById(R.id.translationEnglish);
+        this.translationInstructionsLabel = findViewById(R.id.translationInstructionsLabel);
+        this.translationTarget = findViewById(R.id.translationTarget);
+        this.translationEnglish = findViewById(R.id.translationEnglish);
 
         translationTarget.setFactory(
                 new ViewSwitcher.ViewFactory() {
@@ -227,7 +227,7 @@ public class ClueCard extends CardView {
         }
         readingsInstructionLabel.setFactory(new SimpleInstructionsLabel(16, 1));
 
-        otherMeaningsButton = (ImageView) findViewById(R.id.other_meanings);
+        otherMeaningsButton = findViewById(R.id.other_meanings);
         otherMeaningsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -239,7 +239,7 @@ public class ClueCard extends CardView {
             }
         });
 
-        otherReadingsButton = (ImageView) findViewById(R.id.other_readings);
+        otherReadingsButton = findViewById(R.id.other_readings);
         otherReadingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,19 +268,19 @@ public class ClueCard extends CardView {
                 if(meaningsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama-clue", "ClueCard other clue click, hiding meanings, showing readings");
                     switchToReadings();
-                    c = ClueType.MEANING;
+                    c = ClueType.READING;
                 } else if(readingsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama-clue", "ClueCard other clue click, hiding readings, showing translations");
                     switchToTranslations();
-                    c = ClueType.READING;
+                    c = ClueType.TRANSLATION;
                 } else if(translationsLayout.getVisibility() == View.VISIBLE){
                     Log.i("nakama-clue", "ClueCard other clue click, hiding translations, showing meanings");
                     switchToMeanings();
-                    c = ClueType.TRANSLATION;
+                    c = ClueType.MEANING;
                 }
                 setCurrentCharacter(clueExtractor, currentCharacter, true);
                 if(clueTypeChangeListener != null){
-                    clueTypeChangeListener.onClueTypeChane(c);
+                    clueTypeChangeListener.onClueTypeChange(c);
                 }
             }
         });
