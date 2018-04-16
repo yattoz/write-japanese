@@ -121,6 +121,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
+    public static final String SKIP_INTRO_CHECK = "skipIntro";
 
     public static final long SECONDS_PER_MINUTE = 60L;
     public static final long SYNC_INTERVAL_IN_MINUTES = 60L * 12;
@@ -447,8 +448,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         boolean srsAsked = srsEnabled != null;
         Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
 
-        Log.i("nakama", "srsEnabled=" + srsEnabled + "; syncStatus=" + syncStatus);
-        if(!srsAsked || !syncStatus.asked){
+        boolean skipIntro = false;
+        try {
+            skipIntro = getIntent().getExtras().getBoolean(SKIP_INTRO_CHECK, false);
+        } catch(Throwable t){ /* ignore */ }
+
+        if((!srsAsked || !syncStatus.asked ) && !skipIntro){
             Log.i("nakama-intro", "Launch IntroActivity from KanjiMasterActivity");
             startActivity(new Intent(this, IntroActivity.class));
         }
@@ -1465,5 +1470,4 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     public void setGoal(int year, int month, int day) {
         charSetFrag.setGoal(year, month, day);
     }
-
 }
