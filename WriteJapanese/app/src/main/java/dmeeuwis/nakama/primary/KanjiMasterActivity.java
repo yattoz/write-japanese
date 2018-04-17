@@ -1307,7 +1307,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     }
 
 
-    private int currentNavigationItem = 0;
+    private int currentNavigationItem = -1;
     private ClueCard.ClueType currentSetClueType = ClueCard.ClueType.MEANING;
 
     @Override
@@ -1366,9 +1366,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         });
 
-        // force a next recalculation due to SRS global. Otherwise might get stucck
+        // force a next recalculation due to SRS global. Otherwise might get stuck
         // redoing same char you just did in previous set.
-        loadNextCharacter(true);
+        if(currentNavigationItem != -1) {
+            loadNextCharacter(true);
+        }
 
         if(itemPosition >= 14 &&  itemPosition < 14 + customSets.size()){
             int customSetIndex = itemPosition - 14;
