@@ -14,7 +14,7 @@
 
     <!-- Drawing frame, where users test their might. -->
 
-    <FrameLayout
+    <android.support.design.widget.CoordinatorLayout
         android:id="@+id/drawingFrame"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
@@ -72,7 +72,7 @@
             android:src="@drawable/ic_right_arrow"
             app:backgroundTint="@color/DarkGreen" />
 
-    </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
 
     <ScrollView
