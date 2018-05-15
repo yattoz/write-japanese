@@ -5,6 +5,8 @@
     <color name="actionbar_incorrect">#8B0000</color>
     <color name="dark_grey_text">#878787</color>
 
+    <color name="draw_background">#FFece5b4</color>
+
     <color name="intro_blue">#3498db</color>
     <color name="intro_green">#3fb34f</color>
     <color name="intro_red">#f55b5c</color>
