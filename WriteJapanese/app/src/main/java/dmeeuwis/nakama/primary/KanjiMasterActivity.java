@@ -724,7 +724,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         params.putChar(Constants.KANJI_PARAM, character);
         params.putString(Constants.KANJI_PATH_PARAM, currentCharacterSet.pathPrefix);
         teachIntent.putExtras(params);
-        queuedNextCharLoad = true;
+
+        if(currentState == State.DRAWING) {
+            queuedNextCharLoad = true;
+        }
         startActivity(teachIntent);
     }
 
@@ -947,6 +950,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 break;
             }
         }
+
         loadNextCharacter(queuedNextCharLoad);
         queuedNextCharLoad = false;
 
@@ -1368,7 +1372,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         // force a next recalculation due to SRS global. Otherwise might get stuck
         // redoing same char you just did in previous set.
-        if(currentNavigationItem != -1) {
+        if(currentNavigationItem != -1 && currentState == State.DRAWING) {
             loadNextCharacter(true);
         }
 
