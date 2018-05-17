@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,6 +26,8 @@ import dmeeuwis.nakama.data.Rect;
 import dmeeuwis.nakama.kanjidraw.Criticism;
 import dmeeuwis.nakama.kanjidraw.Drawing;
 import dmeeuwis.nakama.kanjidraw.ParameterizedEquation;
+import dmeeuwis.nakama.kanjidraw.PathCalculator;
+import dmeeuwis.nakama.kanjidraw.Stroke;
 import dmeeuwis.nakama.views.MeasureUtil.ScaleAndOffsets;
 import dmeeuwis.nakama.views.MeasureUtil.WidthAndHeight;
 
@@ -45,6 +48,7 @@ public class AnimatedCurveView extends View implements Animatable {
 	final ScaleAndOffsets scaleAndOffsets = new ScaleAndOffsets();
 	List<Path> pathsToDraw = new ArrayList<>();
 	List<ParameterizedEquation> eqns = new LinkedList<>();
+    List<Double> strokeLengthMultipliers = new LinkedList<>();
 
 	int eqn_i = 0;
 	int allowedStrokes = 1;
@@ -174,6 +178,15 @@ public class AnimatedCurveView extends View implements Animatable {
 
         this.unscaledBoundingBox = new Rect(drawing.findBoundingBox());
         this.eqns = drawing.toParameterizedEquations(1);
+
+        Iterator<Stroke> o = drawing.toDrawing().iterator();
+        while(o.hasNext()){
+            int arcLength = o.next().arcLength();
+            this.strokeLengthMultipliers.add(
+                    Math.max(1,
+                        Math.min(0.25,
+                                 108.0 / arcLength)));
+        }
         this.scaleAndOffsets.initialized = false;
 
         this.drawTime = drawTimeParam;
@@ -226,7 +239,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		    		path.lineTo(x, y);
 	    	}
 	    	
-	    	time += T_INCREMENTS;
+	    	time += T_INCREMENTS * strokeLengthMultipliers.get(eqn_i);
 	    	
 		} else {
 			if(eqn_i >= eqnsRef.size()-1){
