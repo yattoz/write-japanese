@@ -548,10 +548,15 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }, 500L);
     }
 
+    private Character vocabChar = null;
     public void backgroundLoadTranslations(){
+        if(vocabChar == currentCharacterSet.currentCharacter()){
+            return;
+        }
         correctVocabList.scrollToPosition(0);
         correctVocabArrayAdapter.clear();
         Character c = currentCharacterSet.currentCharacter();
+        Log.i("nakama-vocab", "Background loading vocab for: " + c);
         if(Kana.isKanji(c)) {
             correctVocabArrayAdapter.addReadingsHeader(c);
             try {
@@ -573,8 +578,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         if (vocabAsync != null) {
             vocabAsync.cancel(true);
         }
-        vocabAsync = new CharacterTranslationListAsyncTask(adder, getApplicationContext(), currentCharacterSet.currentCharacter());
+        vocabAsync = new CharacterTranslationListAsyncTask(adder, getApplicationContext(), c);
         vocabAsync.execute();
+        vocabChar = currentCharacterSet.currentCharacter();
     }
 
     public void animateActionBar(Integer colorTo) {
@@ -778,6 +784,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
     }
 
+    private boolean loadedInitialVocab = false;
     public void loadNextCharacter(boolean increment) {
         // push before-next character onto back-stack
         Character priorCharacter = currentCharacterSet.currentCharacter();
@@ -797,8 +804,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         if (increment) {
             currentCharacterSet.nextCharacter();
+            backgroundLoadTranslations();
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
-
+        } else if(!loadedInitialVocab){
+            backgroundLoadTranslations();
         }
 
         {
@@ -952,6 +961,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         loadNextCharacter(queuedNextCharLoad);
+        backgroundLoadTranslations();
         queuedNextCharLoad = false;
 
         instructionCard.onResume(getApplicationContext());
@@ -1416,7 +1426,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         drawPad.clear();
         setUiState(State.DRAWING);
-        backgroundLoadTranslations();
 
         currentNavigationItem = itemPosition;
 
