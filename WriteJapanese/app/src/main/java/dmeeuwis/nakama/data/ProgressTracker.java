@@ -155,6 +155,7 @@ public class ProgressTracker {
 		Log.i("nakama-progression", "-------------> Starting nexCharacter selection");
 
 		LinkedHashSet<Character> availSet = new LinkedHashSet<>(rawAvailSet);
+		availSet.remove(currentChar);
 
 		if(useSRS) {
 			SRSQueue.SRSEntry soonestEntry = srsQueue.peek();
