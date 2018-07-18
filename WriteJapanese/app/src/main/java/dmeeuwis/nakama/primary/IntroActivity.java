@@ -111,17 +111,9 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
         Log.i("nakama-intro", "After slides, slidesShown is: " + addedSlides.size());
 
         if(addedSlides.size() == 0){
-            Log.i("nakama-intro", "Showing EMERGENCY SCREEN, WHY? slidesShown=" + addedSlides.size());
-            // fake to satisfy library
-            // should never happen?
-            UncaughtExceptionLogger.backgroundLogError("Error: no slides added on IntroActivity; intent was " + intent,
-                    new RuntimeException(), this);
-            addSlide(new SlideFragmentBuilder()
-                    .backgroundColor(R.color.intro_green)
-                    .buttonsColor(R.color.LightBlue)
-                    .title("Good luck!")
-                    .description("Good luck with your studies in Japanese!")
-                    .build());
+            Intent redirect = new Intent(this, KanjiMasterActivity.class);
+            redirect.putExtra(KanjiMasterActivity.SKIP_INTRO_CHECK, true);
+            startActivity(redirect);
         }
     }
 

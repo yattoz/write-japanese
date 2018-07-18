@@ -82,7 +82,7 @@ public class TracingCurveView extends FrameLayout implements Animatable {
                         public void run() {
                             animatedCurve.incrementCurveStroke();
                         }
-                    }, 300);
+                    }, 150);
 
                 }
             }

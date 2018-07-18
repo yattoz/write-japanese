@@ -120,6 +120,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
     public static final String CHAR_SET = "currCharSet";
     public static final String CHAR_SET_CHAR = "currCharSetChar";
+    public static final String SKIP_INTRO_CHECK = "skipIntro";
 
     public static final long SECONDS_PER_MINUTE = 60L;
     public static final long SYNC_INTERVAL_IN_MINUTES = 60L * 12;
@@ -159,6 +160,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     protected ArrayAdapter<String> criticismArrayAdapter;
     protected ColorDrawable actionBarBackground;
     protected String lastGradingRow;
+
+    private List<Character> studySessionHistory = new ArrayList<>();
 
     protected View correctCard, charsetCard, incorrectCard;
 
@@ -443,8 +446,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         boolean srsAsked = srsEnabled != null;
         Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
 
-        //Log.i("nakama", "srsEnabled=" + srsEnabled + "; syncStatus=" + syncStatus);
-        if(!srsAsked || !syncStatus.asked){
+        boolean skipIntro = false;
+        try {
+            skipIntro = getIntent().getExtras().getBoolean(SKIP_INTRO_CHECK, false);
+        } catch(Throwable t){ /* ignore */ }
+
+        if((!srsAsked || !syncStatus.asked ) && !skipIntro){
             Log.i("nakama-intro", "Launch IntroActivity from KanjiMasterActivity");
             startActivity(new Intent(this, IntroActivity.class));
         }
@@ -487,12 +494,42 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 .loadProgressTrackerFromDB(trackers);
     }
 
-    private void resumeCurrentCharacterSet(){
-        List<ProgressTracker> singleTracker = new ArrayList<>(1);
-        singleTracker.add(currentCharacterSet.getProgressTracker());
-        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
-                .resumeProgressTrackerFromDB(singleTracker);
-        loadNextCharacter(false);
+    private void resumeCharacterSets(){
+        List<CharacterStudySet> sets = new CustomCharacterSetDataHelper(getApplicationContext()).getSets();
+
+        // load any newly created sets
+        for(CharacterStudySet s: sets){
+            if(!characterSets.containsKey(s.pathPrefix)){
+                Log.i("nakama-sets", "Loading new character set " + s.pathPrefix + ": " + s.name);
+                characterSets.put(s.pathPrefix, s);
+                customSets.add(s);
+                s.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
+            }
+        }
+
+        Set<String> priorSets = new HashSet<>();
+        for(CharacterStudySet c: customSets){
+            priorSets.add(c.pathPrefix);
+        }
+
+        Set<String> currentSets = new HashSet<>();
+        for(CharacterStudySet c: sets){
+            currentSets.add(c.pathPrefix);
+        }
+
+        // remove any sets that were deleted in other activity
+        for(String inPrior: priorSets){
+            if(!currentSets.contains(inPrior)){
+                customSets.remove(characterSets.get(inPrior));
+                CharacterStudySet s = characterSets.remove(inPrior);
+                Log.i("nakama-sets", "Removing deleted set: " + s.name);
+            }
+        }
+
+        List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
+        for(CharacterStudySet c: this.characterSets.values()){
+            trackers.add(c.getProgressTracker());
+        }
     }
 
     public void delayedStartBackgroundLoadTranslations(){
@@ -505,10 +542,16 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }, 500L);
     }
 
+    private Character vocabChar = null;
     public void backgroundLoadTranslations(){
+        if(vocabChar != null && vocabChar.equals(currentCharacterSet.currentCharacter())){
+            return;
+        }
+
         correctVocabList.scrollToPosition(0);
         correctVocabArrayAdapter.clear();
         Character c = currentCharacterSet.currentCharacter();
+        Log.i("nakama-vocab", "Background loading vocab for: " + c);
         if(Kana.isKanji(c)) {
             correctVocabArrayAdapter.addReadingsHeader(c);
             try {
@@ -530,8 +573,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         if (vocabAsync != null) {
             vocabAsync.cancel(true);
         }
-        vocabAsync = new CharacterTranslationListAsyncTask(adder, getApplicationContext(), currentCharacterSet.currentCharacter());
+        vocabAsync = new CharacterTranslationListAsyncTask(adder, getApplicationContext(), c);
         vocabAsync.execute();
+        vocabChar = c;
     }
 
     public void animateActionBar(Integer colorTo) {
@@ -681,7 +725,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         params.putChar(Constants.KANJI_PARAM, character);
         params.putString(Constants.KANJI_PATH_PARAM, currentCharacterSet.pathPrefix);
         teachIntent.putExtras(params);
-        queuedNextCharLoad = true;
+
+        if(currentState == State.DRAWING) {
+            queuedNextCharLoad = true;
+        }
         startActivity(teachIntent);
     }
 
@@ -732,6 +779,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
     }
 
+    private boolean loadedInitialVocab = false;
     public void loadNextCharacter(boolean increment) {
         // push before-next character onto back-stack
         Character priorCharacter = currentCharacterSet.currentCharacter();
@@ -751,8 +799,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         if (increment) {
             currentCharacterSet.nextCharacter();
+            studySessionHistory.add(currentCharacterSet.currentCharacter());
+            backgroundLoadTranslations();
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
-
+        } else if(!loadedInitialVocab){
+            backgroundLoadTranslations();
         }
 
         {
@@ -837,7 +888,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         currentCharacterSet.save();
     }
 
-    private void loadCurrentCharacterSet() {
+    private void resumeCurrentCharacterSet() {
 
         // current character set
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -848,12 +899,15 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             Log.e("nakama", "Invalid character set: " + set + "; defaulting to j1");
             this.currentCharacterSet = this.characterSets.get("j1");
         }
-        Log.i("nakama", "loadCurrentCharacterSet: setting to " + set + " (" + this.currentCharacterSet.pathPrefix + ")");
+        Log.i("nakama", "resumeCurrentCharacterSet: setting to " + set + " (" + this.currentCharacterSet.pathPrefix + ")");
 
         // current character
         String currChar = prefs.getString(CHAR_SET_CHAR, null);
         if (currChar != null) {
             this.currentCharacterSet.skipTo(currChar.charAt(0));
+            studySessionHistory.add(currChar.charAt(0));
+
+            prefs.edit().remove(CHAR_SET_CHAR).apply();
         }
 
         // shuffle setting
@@ -892,7 +946,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             ed.apply();
         }
 
-        loadCurrentCharacterSet();
+        resumeCurrentCharacterSet();
 
         // update tab navigation dropdown to selected character set
         String[] charSetNames = this.characterSets.keySet().toArray(new String[0]);
@@ -904,8 +958,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         }
 
-        Log.i("nakama", "onResume: loadNextCharacter queuedNextCharLoad: " + queuedNextCharLoad);
         loadNextCharacter(queuedNextCharLoad);
+        backgroundLoadTranslations();
         queuedNextCharLoad = false;
 
         instructionCard.onResume(getApplicationContext());
@@ -923,8 +977,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         super.onResume();
         Log.d("nakama-timing", "onResume took " + (System.currentTimeMillis() - start) + "ms");
-
-        firstSinceResume = true;
     }
 
     @Override
@@ -1286,12 +1338,15 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     }
 
 
-    private int currentNavigationItem = 0;
-    private boolean firstSinceResume = true;
+    private int currentNavigationItem = -1;
+    private ClueCard.ClueType currentSetClueType = ClueCard.ClueType.MEANING;
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         Log.i("nakama", "onNavigationItemSelected: " + itemPosition);
+        if(currentNavigationItem == itemPosition){
+            return false;
+        }
 
         saveCurrentCharacterSet();
         CharacterStudySet prevSet = this.currentCharacterSet;
@@ -1333,12 +1388,20 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             this.currentCharacterSet = characterSets.get("jlpt1");
         }
 
+        this.currentSetClueType = Settings.getCharsetClueType(this.currentCharacterSet.pathPrefix, getApplicationContext());
+        instructionCard.setClueType(this.currentSetClueType);
+        instructionCard.setClueTypeChangeListener(new ClueCard.ClueTypeChangeListener() {
+            @Override public void onClueTypeChange(ClueCard.ClueType c) {
+                Log.i("nakama", "Setting clue type for set " + currentCharacterSet.name + " to " + c);
+                Settings.setCharsetClueType(currentCharacterSet.pathPrefix, c, getApplicationContext());
+            }
+        });
 
         // force a next recalculation due to SRS global. Otherwise might get stuck
         // redoing same char you just did in previous set.
-        //loadNextCharacter(true);
-
-        loadNextCharacter(false);
+        if(currentNavigationItem != -1 && currentState == State.DRAWING) {
+            loadNextCharacter(true);
+        }
 
         if(itemPosition >= 14 &&  itemPosition < 14 + customSets.size()){
             int customSetIndex = itemPosition - 14;
@@ -1376,7 +1439,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         drawPad.clear();
         setUiState(State.DRAWING);
-        backgroundLoadTranslations();
 
         currentNavigationItem = itemPosition;
 
@@ -1436,5 +1498,4 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     public void setGoal(int year, int month, int day) {
         charSetFrag.setGoal(year, month, day);
     }
-
 }
