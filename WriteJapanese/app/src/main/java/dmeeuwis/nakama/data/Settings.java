@@ -102,13 +102,8 @@ public class Settings {
         setSetting("story_sharing", value, appContext);
     }
 
-    public static void setClueType(ClueCard.ClueType value, Context appContext){
-        setSetting("clue_type", value.toString(), appContext);
-    }
 
-    public static ClueCard.ClueType getClueType(Context appContext){
-        return ClueCard.ClueType.valueOf(getSetting("clue_type", ClueCard.ClueType.MEANING.toString(), appContext));
-    }
+    // -----------------------
 
     public static void setBooleanSetting(Context appContext, String name, Boolean value){
         setSetting(name, value == null ? null : Boolean.toString(value), appContext);
@@ -129,8 +124,10 @@ public class Settings {
         WriteJapaneseOpenHelper dbh = new WriteJapaneseOpenHelper(appContext);
         try {
             SQLiteDatabase db = dbh.getReadableDatabase();
-            Map<String, String> v = DataHelper.selectRecord(db, "SELECT value FROM settings_log WHERE setting = ? ORDER BY timestamp DESC LIMIT 1",
-                    new String[]{ key });
+            Map<String, String> v = DataHelper.selectRecord(
+                    db,
+                    "SELECT value FROM settings_log WHERE setting = ? ORDER BY timestamp DESC LIMIT 1",
+                    key);
             if(v == null){
                 return defaultValue;
             }
@@ -146,7 +143,7 @@ public class Settings {
             SQLiteDatabase db = dbh.getWritableDatabase();
             Map<String, String> v = DataHelper.selectRecord(db,
                     "INSERT INTO settings_log(id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
-                    new String[]{UUID.randomUUID().toString(), Iid.get(appContext).toString(), key, value });
+                    UUID.randomUUID().toString(), Iid.get(appContext).toString(), key, value);
         } finally {
             dbh.close();
         }

@@ -130,7 +130,7 @@ public class CharacterSetDetailFragment extends Fragment {
 
         if (studySet != null) {
 
-            grid = (AutofitRecyclerView) rootView.findViewById(R.id.charset_detail_grid);
+            grid = rootView.findViewById(R.id.charset_detail_grid);
             grid.setAdapter(new CharacterGridAdapter(
                     CharacterSets.standardSets(
                             new LockCheckerInAppBillingService(getActivity()),
@@ -407,8 +407,8 @@ public class CharacterSetDetailFragment extends Fragment {
             return s.toString();
         }
 
-        public Set<Character> getCharactersAsSet(){
-            Set s = new HashSet();
+        Set<Character> getCharactersAsSet(){
+            Set<Character> s = new HashSet<>();
             for(int i = 0; i < selected.length(); i++){
                 if(selected.get(i)){
                     s.add(asLongString.charAt(i));

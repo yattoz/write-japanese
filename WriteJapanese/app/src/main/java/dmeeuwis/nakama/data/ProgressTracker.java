@@ -1,7 +1,6 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
 
@@ -41,7 +40,7 @@ public class ProgressTracker {
 	final static public int MAX_SCORE = SRSQueue.SRSTable.length;
 	private static final boolean DEBUG_SRS = BuildConfig.DEBUG && true;
 
-	final Random random = new Random();
+	private final Random random = new Random();
 	private final boolean useSRS;
 
     // these 2 track last grading to support override functionality
@@ -404,6 +403,7 @@ public class ProgressTracker {
         lastCharPrevScore = score;
         lastChar = c;
 
+        lastPassed = true;
 		recordSheet.put(c, newScore);
 
 		if(BuildConfig.DEBUG) Log.d("nakama-progress", "In set " + setId + " setting char " + c + " to score " + recordSheet.get(c));
@@ -420,6 +420,7 @@ public class ProgressTracker {
 		srsQueue.removeSRSQueue(c);
         lastCharPrevScore = recordSheet.get(c);
         lastChar = c;
+        lastPassed = false;
 
 		recordSheet.put(c, failScore());
 		return null;

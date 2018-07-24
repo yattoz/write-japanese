@@ -270,7 +270,7 @@ public class CharacterStudySet implements Iterable<Character> {
     public enum LoadProgress { LOAD_SET_PROGRESS, NO_LOAD_SET_PROGRESS };
 
 
-    public ProgressTracker loadEmptyTracker() {
+    public ProgressTracker loadEmptyTestingTracker() {
         tracker = new ProgressTracker(allCharactersSet, 2, 2, true, false, pathPrefix);
         return tracker;
     }
@@ -298,6 +298,12 @@ public class CharacterStudySet implements Iterable<Character> {
             dbHelper.loadProgressTrackerFromDB(Arrays.asList(tracker));
         }
 
+        return tracker;
+    }
+
+    public ProgressTracker load(ProgressTracker tracker){
+        this.tracker = tracker;
+        dbHelper.loadProgressTrackerFromDB(Arrays.asList(tracker));
         return tracker;
     }
 

@@ -13,7 +13,6 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.Kanji;
 import dmeeuwis.nakama.data.CharacterProgressDataHelper;
 import dmeeuwis.nakama.data.CharacterStudySet;
-import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.util.Util;
 
 import static junit.framework.Assert.*;
@@ -41,7 +40,7 @@ public class CharacterSetTest {
         String testChars = Kanji.JOUYOU_G3;
         CharacterStudySet c = new CharacterStudySet("Kana", "kana", "Some testing charset", "kana", CharacterStudySet.LockLevel.UNLOCKED,
                 testChars, testChars, null, UUID.randomUUID(), true, new TestCharacterProgressDataHelper());
-        c.loadEmptyTracker();
+        c.loadEmptyTestingTracker();
         c.nextCharacter();
 
         Set<Character> charsSeen = new HashSet<>();
@@ -64,7 +63,7 @@ public class CharacterSetTest {
         String testChars = Kanji.JOUYOU_G3;
         CharacterStudySet c = new CharacterStudySet("Kanji", "Kanji", "Some testing charset", "Kanji", CharacterStudySet.LockLevel.UNLOCKED,
                 testChars, testChars, null, UUID.randomUUID(), true, new TestCharacterProgressDataHelper());
-        c.loadEmptyTracker();
+        c.loadEmptyTestingTracker();
         c.nextCharacter();
 
         Set<Character> failed = new HashSet<>();
@@ -91,7 +90,7 @@ public class CharacterSetTest {
         String testChars = Kanji.JOUYOU_G3;
         CharacterStudySet c = new CharacterStudySet("Kana", "kana", "Some testing charset", "kana", CharacterStudySet.LockLevel.UNLOCKED,
                 testChars, testChars, null, UUID.randomUUID(), true, new TestCharacterProgressDataHelper());
-        c.loadEmptyTracker();
+        c.loadEmptyTestingTracker();
         c.nextCharacter();
 
         Set<Character> charsSeen = new HashSet<>();
