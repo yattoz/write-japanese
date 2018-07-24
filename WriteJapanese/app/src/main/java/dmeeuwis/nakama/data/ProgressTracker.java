@@ -69,12 +69,7 @@ public class ProgressTracker {
 	}
 
 
-	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
-		public final int forceResetCode;
-
-		Progress(int forceResetCode){
-			this.forceResetCode = forceResetCode;
-		}
+	public enum Progress { FAILED, REVIEWING, TIMED_REVIEW, PASSED, UNKNOWN;
 
 		private static Progress parse(Integer in, int advanceReviewing, boolean srsEnabled){
         	if(in == null){

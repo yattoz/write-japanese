@@ -32,6 +32,10 @@ public class CharacterStudySet implements Iterable<Character> {
         return tracker;
     }
 
+    public void overrideCurrent(Character character) {
+        this.currentChar = character;
+    }
+
     public enum LockLevel {NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED}
 
     final public Set<Character> freeCharactersSet;
@@ -250,15 +254,19 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public void nextCharacter() {
+        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+        nextCharacter(p);
+    }
+
+    public void nextCharacter(CharacterProgressDataHelper.ProgressionSettings p) {
         try {
-            CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
             Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
                     p.introIncorrect, p.introReviewing);
 
             this.currentChar = i.first;
             this.reviewing = i.second;
 
-        } catch(Throwable t){
+        } catch (Throwable t) {
             throw new RuntimeException("Error getting next char for charset: " + shortName + "; chars " + charactersAsString(), t);
         }
     }
