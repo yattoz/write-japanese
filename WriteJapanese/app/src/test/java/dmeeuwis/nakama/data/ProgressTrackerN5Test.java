@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import dmeeuwis.Kanji;
 import dmeeuwis.util.Util;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -139,7 +141,7 @@ public class ProgressTrackerN5Test {
 
         // all are in incorrect, preventing new characters
         for(int i = 0; i < 100; i++) {
-            Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, last, charSet, false, 5, 5);
+            Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, false, 5, 5);
             last = r.first;
             System.out.println("Next char reported as: " + last + ", " + r.second);
             t.markFailure(r.first);
@@ -180,7 +182,7 @@ public class ProgressTrackerN5Test {
 
 
         for(int i = 0; i < 100; i++) {
-            Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, last, charSet, false, 5, 5);
+            Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, false, 5, 5);
             last = r.first;
             System.out.println("Next char reported as: " + last + ", " + r.second);
             printValidScores(t);
@@ -353,13 +355,144 @@ public class ProgressTrackerN5Test {
     }
 
     @Test
-    public void srsWithShuffle() {
+    public void iterateOverAllChars(){
+        ProgressTracker t = simpleTestTracker(2, 1);
+        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        s.load(t);
 
+        s.nextCharacter();
+        for(int i = 0; i < chars.size(); i++){
+            assertEquals("Characters go in order", chars.get(i), s.currentCharacter());
+            s.markCurrent(null, true);
+            s.nextCharacter();
+        }
+
+        for(Map.Entry<Character, ProgressTracker.Progress> e: s.getRecordSheet().entrySet()){
+           assertEquals("All chars are in TIMED_REVIEW", ProgressTracker.Progress.TIMED_REVIEW, e.getValue());
+        }
+    }
+
+    @Test
+    public void showReviewAfterHISTORYEntries(){
+        ProgressTracker t = simpleTestTracker(2, 1);
+        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        s.load(t);
+
+        s.nextCharacter();
+        for(int i = 0; i < chars.size(); i++) {
+            if (!s.currentCharacter().equals('書')){
+                s.markCurrent(null, true);
+                s.nextCharacter();
+            }  else {
+                s.markCurrent(null, false);
+                s.nextCharacter();
+                break;
+            }
+        }
+
+        for(int i = 0; i < ProgressTracker.IGNORE_HISTORY - 1; i++){
+            assertNotSame("Bad char doesn't repeat for IGNORE_HISTORY turns", '書', s.currentCharacter());
+            s.markCurrent(null, true);
+            s.nextCharacter();
+        }
+
+        s.markCurrent(null, true);
+        s.nextCharacter();
+
+        assertEquals("Immediately after IGNORE_HISTORY expires, bad char comes back", '書', (char)s.currentCharacter());
+
+    }
+
+
+    @Test
+    public void srsWithShuffle() {
+        ProgressTracker t = new ProgressTracker(charSet, 2, 1, true, false, "jlpt5");
+        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        s.setShuffle(true);
+        s.load(t);
+
+        s.nextCharacter();
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < chars.size(); i++){
+            sb.append(s.currentCharacter());
+            s.markCurrent(null, true);
+            s.nextCharacter();
+        }
+
+        System.out.println("Saw shuffled order as: " + sb.toString());
+        assertNotSame("If shuffle enabled, chars are NOT in order: " + s.toString(), Kanji.JLPT_N5, s.toString());
+
+        for(Map.Entry<Character, ProgressTracker.Progress> e: s.getRecordSheet().entrySet()){
+            assertEquals("All chars are in TIMED_REVIEW", ProgressTracker.Progress.TIMED_REVIEW, e.getValue());
+        }
+    }
+
+    private ProgressTracker.DateFactory makeDateFactory(final int year, final int month, final int day){
+        return new ProgressTracker.DateFactory() {
+            @Override
+            public LocalDateTime nowLocalDateTime() {
+                return LocalDateTime.of(year, month, day, 12, 0);
+            }
+
+            @Override
+            public LocalDate nowLocalDate() {
+                return LocalDate.of(year, month, day);
+            }
+        };
     }
 
     @Test
     public void testGettingIntoPassedStateAfterSRS() {
+        ProgressTracker t = new ProgressTracker(charSet, 2, 1, true, false, "jlpt5");
 
+        t.markSuccess('書', LocalDateTime.of(2000, 1, 1, 12, 30));
+        assertEquals("Char goes into SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
+
+        {       // 1 day later
+            ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 2);
+            t.setDateFactory(df);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1);
+            t.markSuccess('書', df.nowLocalDateTime());
+            assertEquals("Char shows up on next date", '書', (char) c.first);
+            assertEquals("Char still in SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
+        }
+
+
+        {       // 3 days later
+            ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 5);
+            t.setDateFactory(df);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1);
+            t.markSuccess('書', df.nowLocalDateTime());
+            assertEquals("Char shows up on next date", '書', (char) c.first);
+            assertEquals("Char still in SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
+        }
+
+        {       // 7 days later
+            ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 12);
+            t.setDateFactory(df);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1);
+            t.markSuccess('書', df.nowLocalDateTime());
+            assertEquals("Char shows up on next date", '書', (char) c.first);
+            assertEquals("Char still in SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
+        }
+
+        {       // 14 days later
+            ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 26);
+            t.setDateFactory(df);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1);
+            t.markSuccess('書', df.nowLocalDateTime());
+            assertEquals("Char shows up on next date", '書', (char) c.first);
+            assertEquals("Char still in SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
+        }
+
+        {       // 30 days later
+            ProgressTracker.DateFactory df = makeDateFactory(2000, 2, 25);
+            t.setDateFactory(df);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1);
+            t.markSuccess('書', df.nowLocalDateTime());
+            assertEquals("Char shows up on next date", '書', (char) c.first);
+            assertEquals("Char still in now PASSED", ProgressTracker.Progress.PASSED, t.getAllScores().get('書'));
+        }
     }
 
     @Test

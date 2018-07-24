@@ -8,6 +8,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -260,7 +261,7 @@ public class CharacterStudySet implements Iterable<Character> {
 
     public void nextCharacter(CharacterProgressDataHelper.ProgressionSettings p) {
         try {
-            Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
+            Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(availableCharactersSet(), this.shuffling,
                     p.introIncorrect, p.introReviewing);
 
             this.currentChar = i.first;
