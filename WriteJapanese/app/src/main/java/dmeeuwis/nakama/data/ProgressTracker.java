@@ -69,7 +69,15 @@ public class ProgressTracker {
 	}
 
 
-	public enum Progress { FAILED, REVIEWING, TIMED_REVIEW, PASSED, UNKNOWN;
+	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
+
+	    // forceResetCode are the code used in the score field of the practice_log database. They should be outside of
+        // the range of allowed scores. No real meaning to them.
+		public final int forceResetCode;
+
+		Progress(int forceResetCode){
+			this.forceResetCode = forceResetCode;
+		}
 
 		private static Progress parse(Integer in, int advanceReviewing, boolean srsEnabled){
         	if(in == null){
