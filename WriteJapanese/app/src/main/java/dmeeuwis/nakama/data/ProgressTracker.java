@@ -9,8 +9,6 @@ import org.threeten.bp.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -152,8 +150,6 @@ public class ProgressTracker {
 	}
 
 	public enum StudyType { NEW_CHAR, REVIEW, SRS }
-    public static final int IGNORE_HISTORY = 5;
-
 	/*========== TEMP HACK FOR TESTING ============ */
 	public void setDateFactory(DateFactory d){
 	    this.dateFactory = d;
@@ -175,7 +171,7 @@ public class ProgressTracker {
     /*========== END TEMP HACK FOR TESTING ============ */
 
 
-    Pair<Character, StudyType> nextCharacter(Set<Character> rawAvailSet, boolean shuffling, int introIncorrect, int introReviewing) {
+    Pair<Character, StudyType> nextCharacter(Set<Character> rawAvailSet, boolean shuffling, int introIncorrect, int introReviewing, int characterCooldown) {
 		Log.i("nakama-progression", "-------------> Starting nexCharacter selection");
 
 
@@ -192,7 +188,7 @@ public class ProgressTracker {
 
 
         Set<Character> availSet = new LinkedHashSet<>(rawAvailSet);
-        for(int i = 0; i < IGNORE_HISTORY; i++){
+        for(int i = 0; i < characterCooldown; i++){
             try {
                 availSet.remove(history.get(history.size() - 1 - i));
             } catch(ArrayIndexOutOfBoundsException e){
@@ -233,12 +229,13 @@ public class ProgressTracker {
         Character n = null;
 		boolean isReview = false;
 
+		// character not in cooldown that are failed get priority, in their order.
         if(n == null && failed.size() > 0){
             n = failed.get(0);
             isReview = true;
         }
 
-		// if we have space to introduce new characters, go ahead and do so immediately
+		// if we're not at reviewing or failed limits, try to introduce a new character.
 		if(n == null && unfilteredReviewing.size() < introReviewing && unfilteredFailed.size() < introIncorrect && unknown.size() > 0){
 		    // Intro a new character! Congratulations!
             if(shuffling){
@@ -248,20 +245,38 @@ public class ProgressTracker {
             }
         }
 
+        // do a reviewing char if no failed and no space for new chars.
         if(n == null && reviewing.size() > 0){
 		    n = reviewing.get(0);
             isReview = true;
         }
 
-        if(n == null && unknown.size() > 0){
-		    n = unknown.get(0);
+        // if we get here, there were no failed or reviewing characters, and we couldn't introduce a new char. Maybe
+        // a tiny custom list, or a very high character cooldown? Go to the unfiltered lists.
+        if(n == null && unfilteredFailed.size() > 0){
+		    n = unfilteredFailed.get(0);
+        }
+        if(n == null && unfilteredReviewing.size() > 0){
+            n = unfilteredReviewing.get(0);
         }
 
+        // since we couldn't get a reviewing or failed character, try repeating a timed review (ahead of schedule)
+        // or a passed character.
         if(n == null && (timedReviewing.size() > 0 || passed.size() > 0)){
             isReview = true;
 		    List<Character> allReview = new ArrayList<>(timedReviewing);
 		    allReview.addAll(passed);
 		    n = allReview.get((int) (allReview.size() * Math.random()));
+        }
+
+        if(n == null){
+            // I think this case can never happen? If nothing else was available, do comletely random char.
+            UncaughtExceptionLogger.backgroundLogError(
+                    "Error: no char found. Set is: " + Util.join("", rawAvailSet) +
+                            " and history is: " + Util.join("", history),
+                        new RuntimeException());
+
+            n = rawAvailSet.toArray(new Character[0])[(int)(rawAvailSet.size() * Math.random())];
         }
 
 		if(BuildConfig.DEBUG) {

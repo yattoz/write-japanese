@@ -24,8 +24,9 @@ public class ProgressSettingsDialog extends DialogFragment {
     public final static String SHARED_PREFS_KEY_INTRO_REVIEWING = "introduceReviewing";
     public final static String SHARED_PREFS_KEY_ADV_INCORRECT = "advanceIncorrect";
     public final static String SHARED_PREFS_KEY_ADV_REVIEWING = "advanceReviewing";
+    public final static String SHARED_PREFS_KEY_CHAR_COOLDOWN = "characterCooldown";
 
-    Spinner introduceIncorrect, introduceReviewing, advanceIncorrect, advanceReviewing;
+    Spinner introduceIncorrect, introduceReviewing, advanceIncorrect, advanceReviewing, characterCooldown;
 
     static Pattern MATCH_NUMBER = Pattern.compile("(\\d+)");
 
@@ -43,6 +44,7 @@ public class ProgressSettingsDialog extends DialogFragment {
                         Integer introReviewing = pullNumberFromString(introduceReviewing.getSelectedItem());
                         Integer advIncorrect = pullNumberFromString(advanceIncorrect.getSelectedItem());
                         Integer advReviewing = pullNumberFromString(advanceReviewing.getSelectedItem());
+                        Integer charCooldown = pullNumberFromString(characterCooldown.getSelectedItem());
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                         SharedPreferences.Editor ed = prefs.edit();
@@ -50,6 +52,7 @@ public class ProgressSettingsDialog extends DialogFragment {
                         ed.putInt(SHARED_PREFS_KEY_INTRO_REVIEWING, introReviewing);
                         ed.putInt(SHARED_PREFS_KEY_ADV_INCORRECT, advIncorrect);
                         ed.putInt(SHARED_PREFS_KEY_ADV_REVIEWING, advReviewing);
+                        ed.putInt(SHARED_PREFS_KEY_CHAR_COOLDOWN, charCooldown);
                         ed.apply();
                     }
                 })
@@ -67,26 +70,33 @@ public class ProgressSettingsDialog extends DialogFragment {
         int introReviewing = prefs.getInt(SHARED_PREFS_KEY_INTRO_REVIEWING, 10);
         int advIncorrect = prefs.getInt(SHARED_PREFS_KEY_ADV_INCORRECT, 1);
         int advReviewing = prefs.getInt(SHARED_PREFS_KEY_ADV_REVIEWING, 2);
+        int charCooldown = prefs.getInt(SHARED_PREFS_KEY_CHAR_COOLDOWN, 5);
 
-        introduceIncorrect = (Spinner) dialogLayout.findViewById(R.id.when_to_introduce_incorrect_spinner);
+        introduceIncorrect = dialogLayout.findViewById(R.id.when_to_introduce_incorrect_spinner);
         introduceIncorrect.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_introduce_incorrect_spinner_values, android.R.layout.simple_spinner_dropdown_item));
         String[] introIncorrectSelections = getActivity().getResources().getStringArray(R.array.when_to_introduce_incorrect_spinner_values);
         setSpinnerForIntValue(introIncorrectSelections, introduceIncorrect, introIncorrect);
 
-        introduceReviewing = (Spinner) dialogLayout.findViewById(R.id.when_to_introduce_reviewing_spinner);
+        introduceReviewing = dialogLayout.findViewById(R.id.when_to_introduce_reviewing_spinner);
         introduceReviewing.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_introduce_reviewing_spinner_values, android.R.layout.simple_spinner_dropdown_item));
         String[] introReviewingSelections = getActivity().getResources().getStringArray(R.array.when_to_introduce_reviewing_spinner_values);
         setSpinnerForIntValue(introReviewingSelections, introduceReviewing, introReviewing);
 
-        advanceIncorrect = (Spinner) dialogLayout.findViewById(R.id.when_to_advance_from_incorrect_spinner);
+        advanceIncorrect = dialogLayout.findViewById(R.id.when_to_advance_from_incorrect_spinner);
         advanceIncorrect.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_advance_from_incorrect, android.R.layout.simple_spinner_dropdown_item));
         String[] advIncorrectSelections = getActivity().getResources().getStringArray(R.array.when_to_advance_from_incorrect);
         setSpinnerForIntValue(advIncorrectSelections, advanceIncorrect, advIncorrect);
 
-        advanceReviewing = (Spinner) dialogLayout.findViewById(R.id.when_to_advance_from_reviewing_spinner);
+        advanceReviewing = dialogLayout.findViewById(R.id.when_to_advance_from_reviewing_spinner);
         advanceReviewing.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_advance_from_reviewing, android.R.layout.simple_spinner_dropdown_item));
         String[] advReviewingSelections = getActivity().getResources().getStringArray(R.array.when_to_advance_from_reviewing);
         setSpinnerForIntValue(advReviewingSelections, advanceReviewing, advReviewing);
+
+
+        characterCooldown = dialogLayout.findViewById(R.id.character_cooldown_spinner);
+        characterCooldown.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.character_cooldown_options, android.R.layout.simple_spinner_dropdown_item));
+        String[] charCooldownSelections = getActivity().getResources().getStringArray(R.array.character_cooldown_options);
+        setSpinnerForIntValue(charCooldownSelections, characterCooldown, charCooldown);
 
         // Create the AlertDialog object and return it
         return d;

@@ -124,4 +124,15 @@
         <item>after drawing correctly 5 times</item>
         <item>after drawing correctly 10 times</item>
     </string-array>
+
+    <string-array name="character_cooldown_options">
+        <item>Allow a character to repeat multiple times in a row</item>
+        <item>Do not repeat for at least 1 character</item>
+        <item>Do not repeat for at least 2 characters</item>
+        <item>Do not repeat for at least 3 characters</item>
+        <item>Do not repeat for at least 5 characters</item>
+        <item>Do not repeat for at least 10 characters</item>
+        <item>Do not repeat for at least 15 characters</item>
+        <item>Do not repeat for at least 20 characters</item>
+    </string-array>
 </resources>

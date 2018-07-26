@@ -27,7 +27,7 @@ public class CharacterSetTest {
         }
 
         @Override public ProgressionSettings getProgressionSettings(){
-            return new ProgressionSettings(5, 10, 1, 2);
+            return new ProgressionSettings(5, 10, 1, 2, 5);
         }
 
         @Override public String recordPractice(String charset, String character, PointDrawing d, int score){

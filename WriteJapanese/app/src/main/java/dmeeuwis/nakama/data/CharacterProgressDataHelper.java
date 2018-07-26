@@ -26,6 +26,7 @@ public class CharacterProgressDataHelper {
     public final static int DEFAULT_INTRO_REVIEWING = 10;
     public final static int DEFAULT_ADV_INCORRECT = 1;
     public final static int DEFAULT_ADV_REVIEWING = 2;
+    public final static int DEFAULT_CHAR_COOLDOWN = 5;
 
     private final Context context;
     private final UUID iid;
@@ -186,13 +187,14 @@ public class CharacterProgressDataHelper {
 
 
     public static class ProgressionSettings {
-        public final int introIncorrect, introReviewing, advanceIncorrect, advanceReviewing;
+        public final int introIncorrect, introReviewing, advanceIncorrect, advanceReviewing, characterCooldown;
 
-        public ProgressionSettings(int introIncorrect, int introReviewing, int advanceIncorrect, int advanceReviewing) {
+        public ProgressionSettings(int introIncorrect, int introReviewing, int advanceIncorrect, int advanceReviewing, int characterCooldown) {
             this.introIncorrect = introIncorrect;
             this.introReviewing = introReviewing;
             this.advanceIncorrect = advanceIncorrect;
             this.advanceReviewing = advanceReviewing;
+            this.characterCooldown = characterCooldown;
         }
     }
 
@@ -202,7 +204,8 @@ public class CharacterProgressDataHelper {
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_INCORRECT, DEFAULT_INTRO_INCORRECT),
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, DEFAULT_INTRO_REVIEWING),
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, DEFAULT_ADV_INCORRECT),
-            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, DEFAULT_ADV_REVIEWING));
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, DEFAULT_ADV_REVIEWING),
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_CHAR_COOLDOWN, DEFAULT_CHAR_COOLDOWN));
     }
 
     private class ProcessLogRow implements DataHelper.ProcessRow {

@@ -262,7 +262,7 @@ public class CharacterStudySet implements Iterable<Character> {
     public void nextCharacter(CharacterProgressDataHelper.ProgressionSettings p) {
         try {
             Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(availableCharactersSet(), this.shuffling,
-                    p.introIncorrect, p.introReviewing);
+                    p.introIncorrect, p.introReviewing, p.characterCooldown);
 
             this.currentChar = i.first;
             this.reviewing = i.second;
