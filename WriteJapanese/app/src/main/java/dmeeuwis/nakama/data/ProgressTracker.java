@@ -307,7 +307,8 @@ public class ProgressTracker {
 
     public CharacterStudySet.SetProgress calculateProgress(){
         int known = 0, reviewing = 0, timedReviewing = 0, failed = 0, unknown = 0;
-        for(Map.Entry<Character, Progress> c: getAllScores().entrySet()){
+        Map<Character, Progress> scores = getAllScores();
+        for(Map.Entry<Character, Progress> c: scores.entrySet()){
             if(c.getValue() == Progress.FAILED){
                 failed++;
 			} else if(c.getValue() == Progress.TIMED_REVIEW){
@@ -320,7 +321,7 @@ public class ProgressTracker {
                 unknown++;
             }
         }
-        return new CharacterStudySet.SetProgress(known, reviewing, timedReviewing, failed, unknown);
+        return new CharacterStudySet.SetProgress(known, reviewing, timedReviewing, failed, unknown, scores);
     }
 	
 	private List<Character> charactersMatchingScore(Set<Character> allowedChars, Integer... scores){

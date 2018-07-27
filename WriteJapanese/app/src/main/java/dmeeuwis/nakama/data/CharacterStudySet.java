@@ -63,13 +63,15 @@ public class CharacterStudySet implements Iterable<Character> {
         public final int timedReviewing;
         public final int failing;
         public final int unknown;
+        public final Map<Character, ProgressTracker.Progress> perChar;
 
-        SetProgress(int passed, int reviewing, int timedReviewing, int failing, int unknown) {
+        SetProgress(int passed, int reviewing, int timedReviewing, int failing, int unknown, Map<Character, ProgressTracker.Progress> perChar) {
             this.passed = passed;
             this.reviewing = reviewing;
             this.timedReviewing = timedReviewing;
             this.failing = failing;
             this.unknown = unknown;
+            this.perChar = perChar;
         }
     }
 
