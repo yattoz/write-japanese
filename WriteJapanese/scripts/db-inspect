@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e 
 
 adb exec-out run-as dmeeuwis.kanjimaster cat databases/write_japanese.db > /tmp/write_japanese.db
 sqlite3 /tmp/write_japanese.db

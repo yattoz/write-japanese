@@ -73,7 +73,11 @@ public class Settings {
     public enum Strictness { CASUAL, CASUAL_ORDERED, STRICT }
 
     public static Strictness getStrictness(Context appContext){
-        return Strictness.valueOf(getSetting("strictness", Strictness.CASUAL.toString(), appContext));
+        try {
+            return Strictness.valueOf(getSetting("strictness", Strictness.CASUAL.toString(), appContext));
+        } catch(IllegalArgumentException e){
+            return Strictness.CASUAL_ORDERED;
+        }
     }
 
     public static void setStrictness(Strictness s, Context appContext){

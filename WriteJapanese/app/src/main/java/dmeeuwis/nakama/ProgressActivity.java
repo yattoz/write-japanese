@@ -115,11 +115,11 @@ public class ProgressActivity extends AppCompatActivity implements OnItemClickLi
         characterGrid.setColumnWidth((int)px);
 
         chart.setPercents(
-                new BarChartEntry((int)(100*(float)scores.passed / characterList.length()), AppColors.PASSED_BORDER, AppColors.PASSED_COLOR, "Passed"),
-                new BarChartEntry((int)(100*(float)scores.timedReviewing / characterList.length()), AppColors.TIMED_REVIEW_BORDER, AppColors.TIMED_REVIEW_COLOR, "Timed Review"),
-                new BarChartEntry((int)(100*(float)scores.reviewing / characterList.length()), AppColors.TRAINING_BORDER, AppColors.TRAINING_COLOR, "Reviewing"),
-                new BarChartEntry((int)(100*(float)scores.failing / characterList.length()), AppColors.FAILED_BORDER, AppColors.FAILED_COLOR, "Failed"),
-                new BarChartEntry((int)(100*(float)scores.unknown / characterList.length()), AppColors.UNKNOWN_BORDER, AppColors.UNKNOWN_COLOR, "Untested")
+                new BarChartEntry((int)(100*(float)scores.passed / characterList.length() + 0.5), AppColors.PASSED_BORDER, AppColors.PASSED_COLOR, "Passed"),
+                new BarChartEntry((int)(100*(float)scores.timedReviewing / characterList.length() + 0.5), AppColors.TIMED_REVIEW_BORDER, AppColors.TIMED_REVIEW_COLOR, "Timed Review"),
+                new BarChartEntry((int)(100*(float)scores.reviewing / characterList.length() + 0.5), AppColors.TRAINING_BORDER, AppColors.TRAINING_COLOR, "Reviewing"),
+                new BarChartEntry((int)(100*(float)scores.failing / characterList.length() + 0.5), AppColors.FAILED_BORDER, AppColors.FAILED_COLOR, "Failed"),
+                new BarChartEntry((int)(100*(float)scores.unknown / characterList.length() + 0.5), AppColors.UNKNOWN_BORDER, AppColors.UNKNOWN_COLOR, "Untested")
         );
 
         TextView chartLegend = findViewById(R.id.chartLegend);

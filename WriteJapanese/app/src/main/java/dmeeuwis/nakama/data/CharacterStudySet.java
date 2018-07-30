@@ -274,7 +274,7 @@ public class CharacterStudySet implements Iterable<Character> {
         }
     }
 
-    public void save() {
+    public void saveGoals() {
         dbHelper.recordGoals(pathPrefix, goalStarted, studyGoal);
     }
 

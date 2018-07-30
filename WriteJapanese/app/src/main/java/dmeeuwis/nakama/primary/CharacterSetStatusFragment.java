@@ -102,7 +102,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
 
     public void setGoal(int year, int month, int day) {
         charSet.setStudyGoal(new GregorianCalendar(year, month, day));
-        charSet.save();
+        charSet.saveGoals();
         updateProgress();
         updateGoals();
     }
@@ -305,6 +305,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
             @Override
             public void onClick(View v) {
                 charSet.clearStudyGoal();
+                charSet.saveGoals();
                 updateGoals();
             }
         });
