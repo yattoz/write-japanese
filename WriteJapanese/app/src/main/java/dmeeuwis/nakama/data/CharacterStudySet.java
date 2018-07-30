@@ -33,10 +33,6 @@ public class CharacterStudySet implements Iterable<Character> {
         return tracker;
     }
 
-    public void overrideCurrent(Character character) {
-        this.currentChar = character;
-    }
-
     public enum LockLevel {NULL_LOCK, LOCKED, UNLOCKABLE, UNLOCKED}
 
     final public Set<Character> freeCharactersSet;
