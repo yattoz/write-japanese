@@ -37,14 +37,6 @@
             android:name="dmeeuwis.nakama.primary.KanjiMasterActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask">
-            <intent-filter>
-<!--
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
--->
-            </intent-filter>
         </activity>
 
         <receiver

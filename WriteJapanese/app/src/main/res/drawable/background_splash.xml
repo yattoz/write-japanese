@@ -6,7 +6,8 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/ic_launcher_round"/>
+            android:src="@mipmap/ic_launcher_adaptive_round"
+            />
     </item>
 
 </layer-list>
