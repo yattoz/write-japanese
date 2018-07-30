@@ -884,8 +884,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         ed.putString(CHAR_SET, this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET_CHAR, Character.toString(this.currentCharacterSet.currentCharacter()));
         ed.apply();
-
-        currentCharacterSet.save();
     }
 
     private void resumeCurrentCharacterSet() {

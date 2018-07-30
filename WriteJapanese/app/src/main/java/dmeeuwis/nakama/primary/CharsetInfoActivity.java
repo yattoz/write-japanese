@@ -81,7 +81,6 @@ public class CharsetInfoActivity extends AppCompatActivity implements OnGoalPick
 
     @Override
     public void onPause() {
-        charset.save();
         super.onPause();
     }
 

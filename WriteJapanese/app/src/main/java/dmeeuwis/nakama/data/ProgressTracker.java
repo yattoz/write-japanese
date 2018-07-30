@@ -15,14 +15,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
@@ -47,7 +44,6 @@ public class ProgressTracker {
 	private static final boolean DEBUG_SRS = BuildConfig.DEBUG && false;
 	private static final boolean DEBUG_PROGRESS = BuildConfig.DEBUG && false;
 
-	final Random random = new Random();
 	private final boolean useSRS;
 
     // these 2 track last grading to support override functionality
@@ -65,8 +61,12 @@ public class ProgressTracker {
 	private SRSQueue srsQueue;
     private Map<Character, Integer> recordSheet;
 
+    private final List<Character> history = new ArrayList<>();
 
-	public Map<Character,Integer> getScoreSheet() {
+	public LocalDateTime oldestLogTimestamp = null;
+    private DateFactory dateFactory;
+
+    public Map<Character,Integer> getScoreSheet() {
 		return this.recordSheet;
 	}
 
@@ -88,6 +88,9 @@ public class ProgressTracker {
 
 
 	public enum Progress { FAILED(-300), REVIEWING(200), TIMED_REVIEW(300), PASSED(400), UNKNOWN(-200);
+
+	    // forceResetCode are the code used in the score field of the practice_log database. They should be outside of
+        // the range of allowed scores. No real meaning to them.
 		public final int forceResetCode;
 
 		Progress(int forceResetCode){
@@ -128,12 +131,12 @@ public class ProgressTracker {
 		}
 	}
 
-	private List<Set<Character>> getSets(Set<Character> available){
-		Set<Character> failed = new LinkedHashSet<>();
-		Set<Character> reviewing = new LinkedHashSet<>();
-		Set<Character> timedReviewing = new LinkedHashSet<>();
-		Set<Character> passed = new LinkedHashSet<>();
-		Set<Character> unknown = new LinkedHashSet<>();
+	private List<List<Character>> getSets(Set<Character> available){
+		List<Character> failed = new ArrayList<>();
+		List<Character> reviewing = new ArrayList<>();
+		List<Character> timedReviewing = new ArrayList<>();
+		List<Character> passed = new ArrayList<>();
+        List<Character> unknown = new ArrayList<>();
 
 
         Map<Character, Progress> allScores = getAllScores();
@@ -161,36 +164,71 @@ public class ProgressTracker {
 	}
 
 	public enum StudyType { NEW_CHAR, REVIEW, SRS }
+	/*========== TEMP HACK FOR TESTING ============ */
+	public void setDateFactory(DateFactory d){
+	    this.dateFactory = d;
+    }
 
-    Pair<Character, StudyType> nextCharacter(Set<Character> rawAllChars, Character currentChar, Set<Character> rawAvailSet, boolean shuffling,
-												  int introIncorrect, int introReviewing) {
+    private LocalDateTime now(){
+	    if(this.dateFactory != null){
+	        return dateFactory.nowLocalDateTime();
+        }
+        return LocalDateTime.now();
+    }
+
+    private LocalDate nowDate(){
+        if(this.dateFactory != null){
+            return dateFactory.nowLocalDate();
+        }
+        return LocalDate.now();
+    }
+    /*========== END TEMP HACK FOR TESTING ============ */
+
+
+    Pair<Character, StudyType> nextCharacter(Set<Character> rawAvailSet, boolean shuffling, int introIncorrect, int introReviewing, int characterCooldown) {
 		Log.i("nakama-progression", "-------------> Starting nexCharacter selection");
 
-		LinkedHashSet<Character> availSet = new LinkedHashSet<>(rawAvailSet);
-		availSet.remove(currentChar);
 
 		if(useSRS) {
 			SRSQueue.SRSEntry soonestEntry = srsQueue.peek();
-			LocalDate today = LocalDate.now();
+			LocalDate today = nowDate();
 			if (soonestEntry != null && (soonestEntry.nextPractice.isBefore(today) || soonestEntry.nextPractice.isEqual(today))) {
 				Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
-				return Pair.create(srsQueue.poll().character, StudyType.SRS);
+                Character n = srsQueue.poll().character;
+                history.add(n);
+				return Pair.create(n, StudyType.SRS);
 			}
 		}
+
+
+        Set<Character> availSet = new LinkedHashSet<>(rawAvailSet);
+        for(int i = 0; i < characterCooldown; i++){
+            try {
+                availSet.remove(history.get(history.size() - 1 - i));
+            } catch(ArrayIndexOutOfBoundsException e){
+                // didn't have enough history
+            }
+        }
 
 		if(availSet.size() == 1){
 			Log.i("nakama-progression", "Returning early from nextCharacter, only 1 character in set");
 			return Pair.create(availSet.toArray(new Character[0])[0], StudyType.REVIEW);
 		}
 
-        double ran = random.nextDouble();
+        List<List<Character>> unfilteredSets = getSets(rawAvailSet);
+        List<Character> unfilteredFailed = unfilteredSets.get(0);
+        List<Character> unfilteredReviewing = unfilteredSets.get(1);
+        List<Character> unfilteredTimedReviewing = unfilteredSets.get(2);
+        List<Character> unfilteredPassed = unfilteredSets.get(3);
+        List<Character> unfilteredUnknown = unfilteredSets.get(4);
 
-		List<Set<Character>> sets = getSets(availSet);
-		Set<Character> failed = sets.get(0);
-		Set<Character> reviewing = sets.get(1);
-		Set<Character> timedReviewing = sets.get(2);
-		Set<Character> passed = sets.get(3);
-		Set<Character> unknown = sets.get(4);
+
+		List<List<Character>> sets = getSets(availSet);
+		List<Character> failed = sets.get(0);
+		List<Character> reviewing = sets.get(1);
+		List<Character> timedReviewing = sets.get(2);
+		List<Character> passed = sets.get(3);
+		List<Character> unknown = sets.get(4);
 
 		if(DEBUG_PROGRESS && BuildConfig.DEBUG) {
 			Log.d("nakama-progression", "Character progression: reviewing sets");
@@ -202,110 +240,74 @@ public class ProgressTracker {
 			Log.d("nakama-progression", "Unknown set is: " + Util.join(", ", unknown));
 		}
 
-        // probs array: failed, reviewing, unknown, passed
-        float[] probs;
+        Character n = null;
+		boolean isReview = false;
 
-        // still learning new chars, but maxed out the reviewing and failed buckets so just review
-        if(failed.size() >= introIncorrect || reviewing.size() > introReviewing) {
-            Log.d("nakama-progress", "Failed or Review buckets maxed out, reviewing 50/50");
-            probs = new float[]{0.5f, 0.5f, 0.0f, 0.0f};
-
-        // still learning new chars, haven't seen standardSets
-        } else if(unknown.size() > 0) {
-			Log.d("nakama-progress", "Still room in failed and review buckets, chance of new characters");
-            probs = new float[]{0.35f, 0.30f, 0.35f, 0.0f};
-
-        // have seen standardSets characters, still learning
-        } else if(unknown.size() == 0){
-			Log.d("nakama-progress", "Have seen standardSets characters, reviewing 40/40/0/20");
-            probs = new float[] { 0.40f, 0.30f, 0.0f, 0.2f };
-
-        // what situation is this?
-        } else {
-			Log.d("nakama-progress", "Unknown situation, reviewing 25/25/25/25.");
-            probs = new float[] { 0.25f, 0.25f, 0.25f, 0.25f };
+		// character not in cooldown that are failed get priority, in their order.
+        if(n == null && failed.size() > 0){
+            n = failed.get(0);
+            isReview = true;
         }
 
-        availSet.remove(currentChar);
-		failed.remove(currentChar);
-		reviewing.remove(currentChar);
-		passed.remove(currentChar);
-		timedReviewing.remove(currentChar);
-		unknown.remove(currentChar);
-
-		Set<Character> chosenOnes = new LinkedHashSet<>();
-
-        if(ran <= probs[0] && failed.size() > 0){
-			chosenOnes.addAll(failed);
-        } else if(ran <= (probs[0] + probs[1]) && (failed.size() > 0 || reviewing.size() > 0)){
-			chosenOnes.addAll(failed);
-			chosenOnes.addAll(reviewing);
-		} else if(ran <= (probs[0] + probs[1] + probs[2]) && unknown.size() > 0){
-			if(shuffling){
-				chosenOnes.addAll(unknown);
-			} else {
-				chosenOnes.add(sortAndReturnFirst(rawAvailSet, unknown));
-			}
-        } else {
-			chosenOnes.addAll(failed);
-			chosenOnes.addAll(reviewing);
-			chosenOnes.addAll(unknown);
-			chosenOnes.addAll(passed);
-			chosenOnes.addAll(timedReviewing);
-		}
-
-        if(chosenOnes.size() == 0){
-            chosenOnes.addAll(rawAvailSet);
-
-			if(chosenOnes.size() == 0){
-				chosenOnes.addAll(rawAllChars);
-			}
+		// if we're not at reviewing or failed limits, try to introduce a new character.
+		if(n == null && unfilteredReviewing.size() < introReviewing && unfilteredFailed.size() < introIncorrect && unknown.size() > 0){
+		    // Intro a new character! Congratulations!
+            if(shuffling){
+                n = unknown.get((int)(Math.random() * unknown.size()));
+            } else {
+                n = unknown.get(0);
+            }
         }
 
-		final Character[] next = chosenOnes.toArray(new Character[0]);
-		final Character n = next[(int)(ran * next.length)];
-		final boolean isReview = failed.contains(n) || reviewing.contains(n) || passed.contains(n) || timedReviewing.contains(n);
+        // do a reviewing char if no failed and no space for new chars.
+        if(n == null && reviewing.size() > 0){
+		    n = reviewing.get(0);
+            isReview = true;
+        }
+
+        // if we get here, there were no failed or reviewing characters, and we couldn't introduce a new char. Maybe
+        // a tiny custom list, or a very high character cooldown? Go to the unfiltered lists.
+        if(n == null && unfilteredFailed.size() > 0){
+		    n = unfilteredFailed.get(0);
+        }
+        if(n == null && unfilteredReviewing.size() > 0){
+            n = unfilteredReviewing.get(0);
+        }
+
+        // since we couldn't get a reviewing or failed character, try repeating a timed review (ahead of schedule)
+        // or a passed character.
+        if(n == null && (timedReviewing.size() > 0 || passed.size() > 0)){
+            isReview = true;
+		    List<Character> allReview = new ArrayList<>(timedReviewing);
+		    allReview.addAll(passed);
+		    n = allReview.get((int) (allReview.size() * Math.random()));
+        }
+
+        if(n == null){
+            // I think this case can never happen? If nothing else was available, do comletely random char.
+            UncaughtExceptionLogger.backgroundLogError(
+                    "Error: no char found. Set is: " + Util.join("", rawAvailSet) +
+                            " and history is: " + Util.join("", history),
+                        new RuntimeException());
+
+            n = rawAvailSet.toArray(new Character[0])[(int)(rawAvailSet.size() * Math.random())];
+        }
 
 		if(BuildConfig.DEBUG) {
-			Log.d("nakama-progression", "Potential set is: " + Util.join(", ", chosenOnes));
 			Log.d("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh, current score: " + getScoreSheet().get(n)));
 		}
+
+		history.add(n);
 		return Pair.create(n, isReview ? StudyType.REVIEW : StudyType.NEW_CHAR);
     }
-
-	private Character sortAndReturnFirst(Set<Character> allChars, Set<Character> unknown) {
-		final List<Character> chars = new ArrayList<>(allChars);
-		//Log.d("nakama-progression", "Sorting allchars: " + Util.join(", ", chars)  + " to order unknown set " + Util.join(", ", unknown));
-
-		final LinkedHashMap<Character, Integer> indexed = new LinkedHashMap<>(chars.size());
-		for(int i = 0; i < chars.size(); i++){
-			indexed.put(chars.get(i), i);
-		}
-
-		List<Character> toSort = new ArrayList<>(unknown);
-		Collections.sort(toSort, new Comparator<Character>() {
-			@Override
-			public int compare(Character o1, Character o2) {
-				Integer i1 = indexed.get(o1);
-				Integer i2 = indexed.get(o2);
-				if(i1 == null && i2 == null) { return 0; }
-				if(i1 == null) { return -1; }
-				if(i2 == null) { return 1; }
-
-				return i1.compareTo(i2);
-			}
-		});
-
-		return toSort.get(0);
-	}
 
 	public StudyType isReviewing(Character c){
 		if(srsQueue.find(c, LocalDate.now())){
 			return StudyType.SRS;
 		}
-		List<Set<Character>> sets = getSets(null);
-		Set<Character> failed = sets.get(0);
-		Set<Character> reviewing = sets.get(1);
+		List<List<Character>> sets = getSets(null);
+		List<Character> failed = sets.get(0);
+		List<Character> reviewing = sets.get(1);
 
 		boolean r = failed.contains(c) || reviewing.contains(c);
 		if(BuildConfig.DEBUG) {
@@ -319,7 +321,8 @@ public class ProgressTracker {
 
     public CharacterStudySet.SetProgress calculateProgress(){
         int known = 0, reviewing = 0, timedReviewing = 0, failed = 0, unknown = 0;
-        for(Map.Entry<Character, Progress> c: getAllScores().entrySet()){
+        Map<Character, Progress> scores = getAllScores();
+        for(Map.Entry<Character, Progress> c: scores.entrySet()){
             if(c.getValue() == Progress.FAILED){
                 failed++;
 			} else if(c.getValue() == Progress.TIMED_REVIEW){
@@ -332,7 +335,7 @@ public class ProgressTracker {
                 unknown++;
             }
         }
-        return new CharacterStudySet.SetProgress(known, reviewing, timedReviewing, failed, unknown);
+        return new CharacterStudySet.SetProgress(known, reviewing, timedReviewing, failed, unknown, scores);
     }
 	
 	private List<Character> charactersMatchingScore(Set<Character> allowedChars, Integer... scores){
@@ -416,6 +419,7 @@ public class ProgressTracker {
         lastCharPrevScore = score;
         lastChar = c;
 
+        lastPassed = true;
 		recordSheet.put(c, newScore);
 
         SRSQueue.SRSEntry addedToSrs = srsQueue.addToSRSQueue(c, newScore, time, MAX_SCORE);
@@ -430,6 +434,7 @@ public class ProgressTracker {
 		srsQueue.removeSRSQueue(c);
         lastCharPrevScore = recordSheet.get(c);
         lastChar = c;
+        lastPassed = false;
 
 		recordSheet.put(c, failScore());
 		return null;
@@ -485,7 +490,7 @@ public class ProgressTracker {
 		}
 
 		if(progress == Progress.TIMED_REVIEW){
-			LocalDateTime time = DEBUG_SRS ? LocalDateTime.now().minusDays(2) : LocalDateTime.now();
+			LocalDateTime time = DEBUG_SRS ? now().minusDays(2) : now();
 			srsQueue.addToSRSQueue(character, 0, time, knownScore());
 		} else {
 			srsQueue.removeSRSQueue(character);
@@ -509,7 +514,7 @@ public class ProgressTracker {
         if(lastPassed){
             markFailure(lastChar);
         } else {
-            markSuccess(lastChar, LocalDateTime.now());
+            markSuccess(lastChar, now());
         }
     }
 
@@ -565,36 +570,41 @@ public class ProgressTracker {
 		}
     }
 
-    public void deserializeIn(String queueJson, String recordJson, String lastLogsByDevice){
-		try {
-			JsonReader record = new JsonReader(new StringReader(recordJson));
-			record.beginObject();
-			while (record.hasNext()) {
-				String name = record.nextName();
-				Integer score = null;
-				if(record.peek() == JsonToken.NULL){
-					record.nextNull();
-				} else {
-					score = record.nextInt();
-				}
-				recordSheet.put(name.charAt(0), score);
-			}
-			record.endObject();
-			record.close();
+    public void deserializeIn(String queueJson, String recordJson, String lastLogsByDevice) {
+        try {
+            JsonReader record = new JsonReader(new StringReader(recordJson));
+            record.beginObject();
+            while (record.hasNext()) {
+                String name = record.nextName();
+                Integer score = null;
+                if (record.peek() == JsonToken.NULL) {
+                    record.nextNull();
+                } else {
+                    score = record.nextInt();
+                }
+                recordSheet.put(name.charAt(0), score);
+            }
+            record.endObject();
+            record.close();
 
 
-			this.srsQueue.deserializeIn(setId, queueJson);
+            this.srsQueue.deserializeIn(setId, queueJson);
 
-			JsonReader jr = new JsonReader(new StringReader(lastLogsByDevice));
-			this.oldestLogTimestampByDevice = new LinkedHashMap<>();
-			jr.beginObject();
-			while(jr.hasNext()){
-				oldestLogTimestampByDevice.put(jr.nextName(), LocalDateTime.parse(jr.nextString()));
-			}
-			jr.endObject();
-			jr.close();
-		} catch(IOException e){
-			Log.d("nakama", "Error deserializing in", e);
-		}
+            JsonReader jr = new JsonReader(new StringReader(lastLogsByDevice));
+            this.oldestLogTimestampByDevice = new LinkedHashMap<>();
+            jr.beginObject();
+            while (jr.hasNext()) {
+                oldestLogTimestampByDevice.put(jr.nextName(), LocalDateTime.parse(jr.nextString()));
+            }
+            jr.endObject();
+            jr.close();
+        } catch (IOException e) {
+            Log.d("nakama", "Error deserializing in", e);
+        }
+    }
+
+    interface DateFactory {
+	    LocalDateTime nowLocalDateTime();
+        LocalDate nowLocalDate();
     }
 }

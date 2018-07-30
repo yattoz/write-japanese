@@ -8,6 +8,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -58,13 +59,15 @@ public class CharacterStudySet implements Iterable<Character> {
         public final int timedReviewing;
         public final int failing;
         public final int unknown;
+        public final Map<Character, ProgressTracker.Progress> perChar;
 
-        SetProgress(int passed, int reviewing, int timedReviewing, int failing, int unknown) {
+        SetProgress(int passed, int reviewing, int timedReviewing, int failing, int unknown, Map<Character, ProgressTracker.Progress> perChar) {
             this.passed = passed;
             this.reviewing = reviewing;
             this.timedReviewing = timedReviewing;
             this.failing = failing;
             this.unknown = unknown;
+            this.perChar = perChar;
         }
     }
 
@@ -250,27 +253,31 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public void nextCharacter() {
+        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+        nextCharacter(p);
+    }
+
+    public void nextCharacter(CharacterProgressDataHelper.ProgressionSettings p) {
         try {
-            CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
-            Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(allCharactersSet, this.currentChar, this.availableCharactersSet(), this.shuffling,
-                    p.introIncorrect, p.introReviewing);
+            Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(availableCharactersSet(), this.shuffling,
+                    p.introIncorrect, p.introReviewing, p.characterCooldown);
 
             this.currentChar = i.first;
             this.reviewing = i.second;
 
-        } catch(Throwable t){
+        } catch (Throwable t) {
             throw new RuntimeException("Error getting next char for charset: " + shortName + "; chars " + charactersAsString(), t);
         }
     }
 
-    public void save() {
+    public void saveGoals() {
         dbHelper.recordGoals(pathPrefix, goalStarted, studyGoal);
     }
 
     public enum LoadProgress { LOAD_SET_PROGRESS, NO_LOAD_SET_PROGRESS };
 
 
-    public ProgressTracker loadEmptyTracker() {
+    public ProgressTracker loadEmptyTestingTracker() {
         tracker = new ProgressTracker(allCharactersSet, 2, 2, true, false, pathPrefix);
         return tracker;
     }
@@ -298,6 +305,12 @@ public class CharacterStudySet implements Iterable<Character> {
             dbHelper.loadProgressTrackerFromDB(Arrays.asList(tracker));
         }
 
+        return tracker;
+    }
+
+    public ProgressTracker load(ProgressTracker tracker){
+        this.tracker = tracker;
+        dbHelper.loadProgressTrackerFromDB(Arrays.asList(tracker));
         return tracker;
     }
 
