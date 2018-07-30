@@ -461,6 +461,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
     private void initializeCharacterSets(){
         Log.d("nakama-progress", "Initializing character sets!");
+        long start = System.currentTimeMillis();
+
         this.customSets = new ArrayList<>();
         this.characterSets.clear();
         this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker, getApplicationContext()));
@@ -492,43 +494,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
         new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
                 .loadProgressTrackerFromDB(trackers);
-    }
 
-    private void resumeCharacterSets(){
-        List<CharacterStudySet> sets = new CustomCharacterSetDataHelper(getApplicationContext()).getSets();
-
-        // load any newly created sets
-        for(CharacterStudySet s: sets){
-            if(!characterSets.containsKey(s.pathPrefix)){
-                Log.i("nakama-sets", "Loading new character set " + s.pathPrefix + ": " + s.name);
-                characterSets.put(s.pathPrefix, s);
-                customSets.add(s);
-                s.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
-            }
-        }
-
-        Set<String> priorSets = new HashSet<>();
-        for(CharacterStudySet c: customSets){
-            priorSets.add(c.pathPrefix);
-        }
-
-        Set<String> currentSets = new HashSet<>();
-        for(CharacterStudySet c: sets){
-            currentSets.add(c.pathPrefix);
-        }
-
-        // remove any sets that were deleted in other activity
-        for(String inPrior: priorSets){
-            if(!currentSets.contains(inPrior)){
-                customSets.remove(characterSets.get(inPrior));
-                CharacterStudySet s = characterSets.remove(inPrior);
-                Log.i("nakama-sets", "Removing deleted set: " + s.name);
-            }
-        }
-
-        List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
-        for(CharacterStudySet c: this.characterSets.values()){
-            trackers.add(c.getProgressTracker());
+        long time = System.currentTimeMillis() - start;
+        Log.i("nakama", "Loading character sets took: " + time + "ms");
+        if(BuildConfig.DEBUG){
+            Toast.makeText(this, "Load took: " + time + "ms", Toast.LENGTH_LONG).show();
         }
     }
 
