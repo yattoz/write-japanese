@@ -66,11 +66,11 @@ public class DrawView extends View implements OnTouchListener {
 	protected GridBackgroundDrawer grid;
 	
 	public interface OnStrokeListener {
-		public void onStroke(List<Point> stroke);
+		void onStroke(List<Point> stroke);
 	}
 	
 	public interface OnClearListener {
-		public void onClear();
+		void onClear();
 	}
 
 	private class FadeTimerTask implements Runnable {

@@ -11,6 +11,7 @@ import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,17 @@ public class CharacterProgressDataHelper {
     public CharacterProgressDataHelper(Context c, UUID iid){
         this.context = c;
         this.iid = iid;
+    }
+
+    public void  cachePracticeRecord(String setId, String practiceRecord, String srsQueue, String oldestLog){
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        try {
+            //Log.i("nakama", "Caching progress for " + setId + ": " + practiceRecord + "; " + srsQueue);
+            db.getWritableDatabase().execSQL("INSERT OR REPLACE INTO practice_record_cache(set_id, practice_record, srs_queue, last_log_by_device) VALUES(?, ?, ?, ?)",
+                    new String[]{ setId, practiceRecord, srsQueue, oldestLog });
+        } finally {
+            db.close();
+        }
     }
 
     public void srsReset(String charSet){
@@ -123,38 +135,78 @@ public class CharacterProgressDataHelper {
         loadProgressTrackerFromDB(allPts, true);
     }
 
-    private void loadProgressTrackerFromDB(final List<ProgressTracker> allPts, final boolean resuming){
+    private void loadProgressTrackerFromDB(final List<ProgressTracker> allPtsOrig, boolean resuming){
         long start = System.currentTimeMillis();
 
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
-        final AtomicLong count = new AtomicLong(0);
+        List<ProgressTracker> allPts = new ArrayList<>(allPtsOrig);
 
-        LocalDateTime oldestLog = LocalDateTime.of(2000, 1, 1, 0, 0);
-        if(resuming) {
-            for (ProgressTracker p : allPts) {
-                if (p != null && p.oldestLogTimestamp != null && oldestLog.isBefore(p.oldestLogTimestamp)) {
-                    oldestLog = p.oldestLogTimestamp;
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+
+        long startResume = System.currentTimeMillis();
+        if(!resuming){
+            // check timestamp of log vs json
+
+            Map<String, Map<String, String>> caches = DataHelper.selectRecordsIndexedByFirst(db.getReadableDatabase(),
+                "SELECT set_id, practice_record, srs_queue, last_log_by_device FROM practice_record_cache",
+                "set_id", new Object[0]);
+
+            for (int i = allPts.size() - 1; i >= 0; i--) {
+                ProgressTracker t = allPts.get(i);
+                try {
+                    Map<String, String> cache = caches.get(t.setId);
+                    if (cache != null) {
+                        long deserializeStart = System.currentTimeMillis();
+                        t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), cache.get("last_log_by_device"));
+                        Log.d("nakama-progress", "Time to deserialize " + t.setId + ": " + (System.currentTimeMillis() - deserializeStart) + "ms");
+                        allPts.remove(i);
+
+                        resuming = true;
+                    }
+                } catch (Throwable x){
+                    Log.i("nakama-progress", "Disregarding invalid cache for " + t.setId, x);
                 }
             }
-            Log.i("nakama-progress", "Saw oldest log from " + allPts.size() + " sets as " + oldestLog);
         }
+        Log.d("nakama-progress", "Time to do resume block: " + (System.currentTimeMillis() - startResume));
 
+        long processStart = System.currentTimeMillis();
+        int allCount = 0;
         try {
-            ProcessLogRow plr = new ProcessLogRow(count, allPts);
+            ProcessLogRow plr = new ProcessLogRow(allPts);
             if(resuming){
-                Log.i("nakama-progress", "Selecting all logs since " + oldestLog);
-                DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp FROM practice_log WHERE timestamp > datetime(?)", oldestLog.toString());
+
+                for(ProgressTracker pt: allPts){
+                    for(Map.Entry<String, LocalDateTime> e: pt.oldestLogTimestampByDevice.entrySet()){
+
+                        long queryStart = System.currentTimeMillis();
+                        String timestamp = e.getValue() == null ? "1900-01-01 00:00:00" : e.getValue().toString().replace('T', ' ');
+                        int rowCount = DataHelper.applyToResults(plr, db.getReadableDatabase(),
+                                "SELECT character, charset, score, timestamp, install_id FROM practice_log WHERE install_id = ? AND timestamp > datetime(?) and charset = ?",
+                                e.getKey(), timestamp, pt.setId);
+
+                        if(rowCount > 0) {
+                            Log.d("nakama-progress", "Query took: " + (System.currentTimeMillis() - queryStart) + "ms");
+                            Log.d("nakama-progress",
+                                    "SELECT character, charset, score, timestamp, install_id FROM practice_log WHERE install_id = '" + e.getKey() +
+                                            "' AND timestamp > datetime('"+ timestamp + "') and charset = '" + pt.setId + "'");
+                            Log.d("nakama-progress", "Processed " + rowCount + " rows on " + pt.setId + " after resuming from " + e.getValue() + " on install " + e.getKey());
+                        }
+                        allCount += rowCount;
+                    }
+                }
+
             } else {
-                DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp FROM practice_log");
+                allCount = DataHelper.applyToResults(plr, db.getReadableDatabase(), "SELECT character, charset, score, timestamp, install_id FROM practice_log");
             }
         } finally {
             db.close();
         }
+        Log.d("nakama-progress", "Time to do process block: " + (System.currentTimeMillis() - processStart));
 
         long startup = System.currentTimeMillis() - start;
-        Log.i("nakama-progress", "Time to load progress tracker: " + startup + "ms; counted " + count.get() + " records.");
+        Log.i("nakama-progress", "Time to load progress tracker: " + startup + "ms; counted " + allCount + " records.");
         if(startup > 2500){
-            UncaughtExceptionLogger.backgroundLogError("Long startup detected: " + startup + "ms to load " + count.get() + " practice logs.", new RuntimeException(), context);
+            UncaughtExceptionLogger.backgroundLogError("Long startup detected: " + startup + "ms to load " + allCount + " practice logs.", new RuntimeException(), context);
         }
     }
 
@@ -185,6 +237,15 @@ public class CharacterProgressDataHelper {
         }
     }
 
+    public void clearPracticeRecord() {
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        try {
+            db.getWritableDatabase().execSQL("DELETE FROM practice_record_cache");
+        } finally {
+            db.close();
+        }
+    }
+
 
     public static class ProgressionSettings {
         public final int introIncorrect, introReviewing, advanceIncorrect, advanceReviewing, characterCooldown;
@@ -209,22 +270,19 @@ public class CharacterProgressDataHelper {
     }
 
     private class ProcessLogRow implements DataHelper.ProcessRow {
-        private final AtomicLong count;
         private final List<ProgressTracker> allPts;
 
-        public ProcessLogRow(AtomicLong count, List<ProgressTracker> allPts) {
-            this.count = count;
+        public ProcessLogRow(List<ProgressTracker> allPts) {
             this.allPts = allPts;
         }
 
         @Override
         public void process(Map<String, String> r) {
-            count.incrementAndGet();
-
             Character character = r.get("character").charAt(0);
             String set = r.get("charset");
             String timestampStr = r.get("timestamp");
             Integer score = Integer.parseInt(r.get("score"));
+            String iid = r.get("install_id");
             LocalDateTime t;
 
             try {
@@ -239,11 +297,14 @@ public class CharacterProgressDataHelper {
             }
 
             for(ProgressTracker pt: allPts) {
-                pt.noteTimestamp(t);
+                if(pt.reject(character)){
+                    continue;
+                }
 
+                pt.noteTimestamp(character, t, iid);
 
                 if(BuildConfig.DEBUG){
-                    Log.d("nakama-progress", "Processing practice log: " + character + " " + set + " " + timestampStr + " " + score + " on set tracker " + pt.setId);
+                    //Log.d("nakama-progress", "Processing practice log: " + character + " " + set + " " + timestampStr + " " + score + " on set tracker " + pt.setId);
                 }
 
                 if (character.toString().equals("R")) {

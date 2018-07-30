@@ -93,46 +93,6 @@ public class Criticism {
         }
     }
 
-    private static class OrderColours implements PaintColourInstructions {
-        private final int drawn, shouldHaveBeen;
-
-        public OrderColours(int shouldHaveBeen, int drawn){
-            this.shouldHaveBeen = shouldHaveBeen;
-            this.drawn = drawn;
-        }
-
-        public void colour(int stroke, float t, Paint p, int defaultColor){
-            if(stroke == drawn){
-                p.setColor(CORRECT_COLOUR);
-            } else if (stroke == shouldHaveBeen){
-                p.setColor(INCORRECT_COLOUR);
-            } else {
-                p.setColor(defaultColor);
-            }
-        }
-    }
-
-    public static class RightOrderColours extends OrderColours {
-        public RightOrderColours(int shouldHaveBeen, int drawn){
-            super(shouldHaveBeen, drawn);
-        }
-    }
-
-    public static class WrongOrderColours extends OrderColours {
-        public WrongOrderColours(int shouldHaveBeen, int drawn){
-            super(shouldHaveBeen, drawn);
-        }
-    }
-
-
-    public static PaintColourInstructions allRight(){
-        return new AllColourSame(CORRECT_COLOUR);
-    }
-
-    public static PaintColourInstructions allWrong(){
-        return new AllColourSame(INCORRECT_COLOUR);
-    }
-
     public static PaintColourInstructions incorrectColours(int...strokes){
         return new ColourStrokes(INCORRECT_COLOUR, strokes);
     }
@@ -163,19 +123,6 @@ public class Criticism {
             } else {
                 p.setColor(defaultColor);
             }
-        }
-    }
-
-    private static class AllColourSame implements PaintColourInstructions {
-        private int colour;
-
-        public AllColourSame(int colour){
-            this.colour = colour;
-        }
-
-        @Override
-        public void colour(int stroke, float t, Paint p, int defaultColor){
-            p.setColor(colour);
         }
     }
 

@@ -18,7 +18,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 33;
+	private static final int DB_VERSION = 34;
 
     private final String iid;
     private final Context context;
@@ -38,6 +38,8 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         addDrawingToPracticeLog(dbase);
         addSettingsLog(dbase);
         addCharacterSets(dbase);
+        addPracticeLogDateIndex(dbase);
+        createPracticeLogCache(dbase);
 	}
 
     private void createStoryTables(SQLiteDatabase dbase){
@@ -70,6 +72,17 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                 "timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
                 "score TEXT NOT NULL" +
         ")");
+    }
+
+    private void createPracticeLogCache(SQLiteDatabase sqlite){
+        Log.d("nakama-db", "Creating practice log table.");
+        sqlite.execSQL("DROP TABLE IF EXISTS practice_record_cache;");
+        sqlite.execSQL("CREATE TABLE practice_record_cache ( " +
+                "set_id TEXT NOT NULL PRIMARY KEY, " +
+                "srs_queue TEXT NOT NULL, " +
+                "practice_record TEXT NOT NULL, " +
+                "last_log_by_device TEXT NOT NULL " +
+                ")");
     }
 
     private void addPracticeLogDateIndex(SQLiteDatabase sqlite){
@@ -225,6 +238,14 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         if(oldVersion <= 32) {
             addPracticeLogDateIndex(dbase);
+        }
+
+        if(oldVersion <= 33) {
+            // in prev version addPracticeLogDateIndex has been added to onUpgrade, but not onCreate. So add again,
+            // having added IF NOT EXISTS to the CREATE
+            addPracticeLogDateIndex(dbase);
+
+            createPracticeLogCache(dbase);
         }
 	}
 

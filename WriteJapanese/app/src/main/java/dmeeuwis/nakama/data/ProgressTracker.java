@@ -1,12 +1,18 @@
 package dmeeuwis.nakama.data;
 
 import android.content.Context;
+import android.util.JsonReader;
+import android.util.JsonToken;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.util.Pair;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -35,36 +41,49 @@ import dmeeuwis.util.Util;
 public class ProgressTracker {
 
 	final static public int MAX_SCORE = SRSQueue.SRSTable.length;
-	private static final boolean DEBUG_SRS = BuildConfig.DEBUG && true;
+	private static final boolean DEBUG_SRS = BuildConfig.DEBUG && false;
+	private static final boolean DEBUG_PROGRESS = BuildConfig.DEBUG && false;
 
 	private final boolean useSRS;
 
     // these 2 track last grading to support override functionality
     private Integer lastCharPrevScore = null;
     private boolean lastPassed = false;
+
     private Character lastChar = null;
     public final String setId;
     public final boolean useSRSAcrossSets;
+    private final int advanceIncorrect;
+    private final int advanceReview;
+
+	public LinkedHashMap<String, LocalDateTime> oldestLogTimestampByDevice = new LinkedHashMap<>();
+
+	private SRSQueue srsQueue;
+    private Map<Character, Integer> recordSheet;
 
     private final List<Character> history = new ArrayList<>();
 
 	public LocalDateTime oldestLogTimestamp = null;
-
-	private SRSQueue srsQueue;
     private DateFactory dateFactory;
 
     public Map<Character,Integer> getScoreSheet() {
 		return this.recordSheet;
 	}
 
-	public void noteTimestamp(LocalDateTime t) {
+	public void noteTimestamp(Character c, LocalDateTime t, String device) {
+		LocalDateTime oldestLogTimestamp = oldestLogTimestampByDevice.get(device);
 		if(oldestLogTimestamp == null || t.isAfter(oldestLogTimestamp)){
-			oldestLogTimestamp = t;
+			//Log.d("nakama-progress", "Oldest timestamp for device " + device + " is now set to " + t);
+			oldestLogTimestampByDevice.put(device, t);
 		}
 	}
 
 	public Map<LocalDate,List<Character>> getSrsSchedule() {
 	    return srsQueue.getSrsSchedule();
+	}
+
+	public boolean reject(Character character) {
+		return !recordSheet.containsKey(character);
 	}
 
 
@@ -94,11 +113,6 @@ public class ProgressTracker {
 		}
 	}
 	
-	private final Map<Character, Integer> recordSheet;
-
-	private final int advanceIncorrect;
-	private final int advanceReview;
-
 	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets, String setId){
 		this.useSRS = useSRS;
 		this.recordSheet = new LinkedHashMap<>();
@@ -216,7 +230,7 @@ public class ProgressTracker {
 		List<Character> passed = sets.get(3);
 		List<Character> unknown = sets.get(4);
 
-		if(BuildConfig.DEBUG) {
+		if(DEBUG_PROGRESS && BuildConfig.DEBUG) {
 			Log.d("nakama-progression", "Character progression: reviewing sets");
 
 			Log.d("nakama-progression", "Failed set is: " + Util.join(", ", failed));
@@ -357,8 +371,8 @@ public class ProgressTracker {
 	 * A special one-time event when SRS was first introduced, to try to not freak people out.
 	 */
 	public void srsReset(String setId) {
-		Log.d("nakama-progress", "SRS Set reset!!!!!!!!!!!!!!!!!!! On " + setId);
-		Log.d("nakama-progress", "Prior to reset, schedule is: " + srsQueue.getSrsScheduleString());
+		//Log.d("nakama-progress", "SRS Set reset!!!!!!!!!!!!!!!!!!! On " + setId);
+		//Log.d("nakama-progress", "Prior to reset, schedule is: " + srsQueue.getSrsScheduleString());
 		if(!(setId.equals(this.setId) || setId.equals("all"))){
 			return;
 		}
@@ -374,7 +388,7 @@ public class ProgressTracker {
 		}
 
 		Log.d("nakama-progress", "After SRS reset, schedule is: " + srsQueue.getSrsScheduleString());
-		debugPrintAllScores();
+		//debugPrintAllScores();
 	}
 
 	public void overrideFullCompleted(Character c){
@@ -407,8 +421,6 @@ public class ProgressTracker {
 
         lastPassed = true;
 		recordSheet.put(c, newScore);
-
-		if(BuildConfig.DEBUG) Log.d("nakama-progress", "In set " + setId + " setting char " + c + " to score " + recordSheet.get(c));
 
         SRSQueue.SRSEntry addedToSrs = srsQueue.addToSRSQueue(c, newScore, time, MAX_SCORE);
         return addedToSrs;
@@ -509,6 +521,87 @@ public class ProgressTracker {
 	public void debugAddDayToSRS() {
 		srsQueue.debugAddDayToSRS();
 	}
+
+	public class ProgressState {
+		public final String recordSheetJson, srsQueueJson;
+		public final String oldestDateTime;
+
+		public ProgressState(String recordSheetJson, String srsQueueJson, String oldestDateTime) {
+			this.recordSheetJson = recordSheetJson;
+			this.srsQueueJson = srsQueueJson;
+			this.oldestDateTime = oldestDateTime;
+		}
+	}
+
+	public ProgressState serializeOut(){
+		if(oldestLogTimestampByDevice.size() == 0){
+			return null;
+		}
+
+		try {
+
+			// oldest log dates by set
+			StringWriter oldestDates = new StringWriter();
+			JsonWriter jd = new JsonWriter(oldestDates);
+			jd.beginObject();
+			for (Map.Entry<String, LocalDateTime> d : this.oldestLogTimestampByDevice.entrySet()) {
+				jd.name(d.getKey());
+				jd.value(d.getValue().toString());
+			}
+			jd.endObject();
+
+			// record sheet
+			StringWriter recordSheet = new StringWriter();
+			JsonWriter j = new JsonWriter(recordSheet);
+			j.beginObject();
+			for (Map.Entry<Character, Integer> d : this.recordSheet.entrySet()) {
+				j.name(d.getKey().toString());
+				j.value(d.getValue());
+			}
+			j.endObject();
+
+
+			j.close();
+
+			return new ProgressState(recordSheet.toString(), srsQueue.serializeOut(), oldestDates.toString());
+		} catch(IOException e){
+			Log.d("nakama", "Error serializing out", e);
+			return null;
+		}
+    }
+
+    public void deserializeIn(String queueJson, String recordJson, String lastLogsByDevice) {
+        try {
+            JsonReader record = new JsonReader(new StringReader(recordJson));
+            record.beginObject();
+            while (record.hasNext()) {
+                String name = record.nextName();
+                Integer score = null;
+                if (record.peek() == JsonToken.NULL) {
+                    record.nextNull();
+                } else {
+                    score = record.nextInt();
+                }
+                recordSheet.put(name.charAt(0), score);
+            }
+            record.endObject();
+            record.close();
+
+
+            this.srsQueue.deserializeIn(setId, queueJson);
+
+            JsonReader jr = new JsonReader(new StringReader(lastLogsByDevice));
+            this.oldestLogTimestampByDevice = new LinkedHashMap<>();
+            jr.beginObject();
+            while (jr.hasNext()) {
+                oldestLogTimestampByDevice.put(jr.nextName(), LocalDateTime.parse(jr.nextString()));
+            }
+            jr.endObject();
+            jr.close();
+        } catch (IOException e) {
+            Log.d("nakama", "Error deserializing in", e);
+        }
+    }
 
     interface DateFactory {
 	    LocalDateTime nowLocalDateTime();

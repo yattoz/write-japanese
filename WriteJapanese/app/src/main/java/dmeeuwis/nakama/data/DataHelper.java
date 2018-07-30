@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,17 +23,28 @@ public class DataHelper {
 		return out.get(0);
 	}
 
+	public static Map<String, Map<String, String>> selectRecordsIndexedByFirst(SQLiteDatabase db, String sql, String indexKey, Object ... params) {
+		List<Map<String, String>> results = selectRecords(db, sql, params);
+		Map<String, Map<String, String>> indexed = new LinkedHashMap<>();
+		for(Map<String, String> r: results){
+			indexed.put(r.get(indexKey), r);
+		}
+		return indexed;
+	}
+
 	interface ProcessRow {
 		void process(Map<String, String> row);
 	}
 
 
-	public static void applyToResults(ProcessRow rowProcessor, SQLiteDatabase db, String sql, Object ... params){
+	public static int applyToResults(ProcessRow rowProcessor, SQLiteDatabase db, String sql, Object ... params){
 		String[] sparams = asStringArray(params);
 		Cursor c = db.rawQuery(sql,sparams);
+		int count = 0;
 		try {
 			int columnCount = c.getColumnCount();
 			while(c.moveToNext()){
+				count++;
 				Map<String, String> m = new HashMap<String, String>();
 				for(int i = 0; i < columnCount; i++){
 					String colName = c.getColumnName(i);
@@ -44,6 +56,7 @@ public class DataHelper {
 		} finally {
 			if(c != null) c.close();
 		}
+		return count;
 	}
 
 
