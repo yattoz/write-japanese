@@ -867,7 +867,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             Log.e("nakama", "Invalid character set: " + set + "; defaulting to j1");
             this.currentCharacterSet = this.characterSets.get("j1");
         }
-        Log.i("nakama", "resumeCurrentCharacterSet: setting to " + set + " (" + this.currentCharacterSet.pathPrefix + ")");
+        Log.i("nakama", "resume CurrentCharacterSet: setting to " + set + " (" + this.currentCharacterSet.pathPrefix + ")");
 
         // current character
         String currChar = prefs.getString(CHAR_SET_CHAR, null);
@@ -1316,7 +1316,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             return false;
         }
 
-        saveCurrentCharacterSet();
         CharacterStudySet prevSet = this.currentCharacterSet;
 
         if (itemPosition == 0) {
@@ -1395,11 +1394,14 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         }
 
+        saveCurrentCharacterSet();
+
+
         if (this.charSetFrag != null) {
             this.charSetFrag.setCharset(this.currentCharacterSet);
         }
 
-        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition >= 14)) {
+        if (!(itemPosition == 0 || itemPosition == 2 || itemPosition == 9 || itemPosition >= 14)) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
 
