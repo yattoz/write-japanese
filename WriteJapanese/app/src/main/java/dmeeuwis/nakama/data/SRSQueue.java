@@ -223,8 +223,8 @@ public class SRSQueue {
         return sw.toString();
     }
 
-    public SRSQueue deserializeIn(String id, String queueJSON) throws IOException{
-        PriorityQueue<SRSEntry> queue = new PriorityQueue<>(new SRSEntryComparator());
+    public static SRSQueue deserializeIn(String id, String queueJSON) throws IOException{
+        PriorityQueue<SRSEntry> queue = new PriorityQueue<>(20, new SRSEntryComparator());
         JsonReader jr = new JsonReader(new StringReader(queueJSON));
         jr.beginArray();
         while(jr.hasNext()){

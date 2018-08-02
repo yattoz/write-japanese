@@ -18,7 +18,7 @@ import dmeeuwis.nakama.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "write_japanese.db";
-	private static final int DB_VERSION = 34;
+	private static final int DB_VERSION = 35;
 
     private final String iid;
     private final Context context;
@@ -75,7 +75,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
     }
 
     private void createPracticeLogCache(SQLiteDatabase sqlite){
-        Log.d("nakama-db", "Creating practice log table.");
+        Log.d("nakama-db", "Creating practice log cache table.");
         sqlite.execSQL("DROP TABLE IF EXISTS practice_record_cache;");
         sqlite.execSQL("CREATE TABLE practice_record_cache ( " +
                 "set_id TEXT NOT NULL PRIMARY KEY, " +
@@ -83,6 +83,11 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                 "practice_record TEXT NOT NULL, " +
                 "last_log_by_device TEXT NOT NULL " +
                 ")");
+    }
+
+    private void clearPractiveLogCache(SQLiteDatabase sqlite) {
+        Log.d("nakama-db", "Clearing practice log cache table.");
+        sqlite.execSQL("DELETE FROM practice_record_cache;");
     }
 
     private void addPracticeLogDateIndex(SQLiteDatabase sqlite){
@@ -247,6 +252,9 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
             createPracticeLogCache(dbase);
         }
-	}
 
+        if(oldVersion <= 34){
+            clearPractiveLogCache(dbase);
+        }
+	}
 }

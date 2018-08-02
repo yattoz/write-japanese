@@ -127,15 +127,17 @@ public class CharacterProgressDataHelper {
     }
 
 
-    public void loadProgressTrackerFromDB(final List<ProgressTracker> allPts){
-        loadProgressTrackerFromDB(allPts, false);
+    public void loadProgressTrackerFromDB(final List<ProgressTracker> allPts, ProgressCacheFlag cacheFlag){
+        loadProgressTrackerFromDB(allPts, false, cacheFlag);
     }
 
     public void resumeProgressTrackerFromDB(List<ProgressTracker> allPts) {
-        loadProgressTrackerFromDB(allPts, true);
+        loadProgressTrackerFromDB(allPts, true, ProgressCacheFlag.USE_RAW_LOGS);
     }
 
-    private void loadProgressTrackerFromDB(final List<ProgressTracker> allPtsOrig, boolean resuming){
+    public enum ProgressCacheFlag { USE_CACHE, USE_RAW_LOGS }
+
+    private void loadProgressTrackerFromDB(final List<ProgressTracker> allPtsOrig, boolean resuming, ProgressCacheFlag useCache ){
         long start = System.currentTimeMillis();
 
         List<ProgressTracker> allPts = new ArrayList<>(allPtsOrig);
@@ -143,12 +145,12 @@ public class CharacterProgressDataHelper {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
 
         long startResume = System.currentTimeMillis();
-        if(!resuming){
+        if(!resuming && useCache == ProgressCacheFlag.USE_CACHE){
             // check timestamp of log vs json
 
             Map<String, Map<String, String>> caches = DataHelper.selectRecordsIndexedByFirst(db.getReadableDatabase(),
                 "SELECT set_id, practice_record, srs_queue, last_log_by_device FROM practice_record_cache",
-                "set_id", new Object[0]);
+                "set_id");
 
             for (int i = allPts.size() - 1; i >= 0; i--) {
                 ProgressTracker t = allPts.get(i);

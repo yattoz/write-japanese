@@ -436,7 +436,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         Log.i("nakama-timing", "MainActivity: mark 3 " + (System.currentTimeMillis() - start) + "ms");
 
-        initializeCharacterSets();
+        initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);
         Log.i("nakama-timing", "MainActivity: mark 4 " + (System.currentTimeMillis() - start) + "ms");
 
         ReminderManager.scheduleRemindersFor(getApplicationContext());
@@ -459,7 +459,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         Log.d("nakama-timing", "onCreate took " + (System.currentTimeMillis() - start) + "ms");
     }
 
-    private void initializeCharacterSets(){
+    private void initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag progressCacheFlag){
         Log.d("nakama-progress", "Initializing character sets!");
         long start = System.currentTimeMillis();
 
@@ -493,7 +493,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             trackers.add(c.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
         }
         new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
-                .loadProgressTrackerFromDB(trackers);
+                .loadProgressTrackerFromDB(trackers, progressCacheFlag);
 
         long time = System.currentTimeMillis() - start;
         Log.i("nakama", "Loading character sets took: " + time + "ms");
@@ -883,6 +883,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         Log.i("nakama", "Setting shuffle on " + currentCharacterSet.name + " to " + shuffle);
         currentCharacterSet.setShuffle(shuffle);
 
+        ProgressTracker pt  = currentCharacterSet.getProgressTracker();
+        new CharacterProgressDataHelper(this, Iid.get(this)).resumeProgressTrackerFromDB(Arrays.asList(pt));
+
         try {
             invalidateOptionsMenu();
         } catch (Throwable t) {
@@ -997,7 +1000,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         if (BuildConfig.DEBUG && DEBUG_MENU) {
-            menu.add("DEBUG:RecalculateProgress");
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:DrawViewComparison");
             menu.add("DEBUG:SpenTest");
@@ -1159,14 +1161,14 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_progression_settings) {
             // show criticism selection fragment
             showProgressionSettingsDialog();
+        } else if(item.getTitle().equals("Recalculate Progress")) {
+            new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext())).clearPracticeRecord();
+            initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
         }
 
         if (BuildConfig.DEBUG) {
-            if(item.getTitle().equals("DEBUG:RecalculateProgress")) {
-                new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext())).clearPracticeRecord();
-                initializeCharacterSets();
 
-            } else if (item.getTitle().equals("DEBUG:DrawTest")) {
+            if (item.getTitle().equals("DEBUG:DrawTest")) {
                 startActivity(new Intent(this, TestDrawActivity.class));
             } else if (item.getTitle().equals("DEBUG:KanjiCheck")) {
                 startActivity(new Intent(this, KanjiCheckActivity.class));

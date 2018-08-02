@@ -95,7 +95,7 @@ public class ReminderManager extends BroadcastReceiver {
                 trackers.add(set.load(context, CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
             }
             new CharacterProgressDataHelper(context, Iid.get(context))
-                    .loadProgressTrackerFromDB(trackers);
+                    .loadProgressTrackerFromDB(trackers, CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);
 
             Log.i("nakama", "Loaded Progress for reminder");
 

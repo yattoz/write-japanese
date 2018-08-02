@@ -588,7 +588,7 @@ public class ProgressTracker {
             record.close();
 
 
-            this.srsQueue.deserializeIn(setId, queueJson);
+            this.srsQueue = SRSQueue.deserializeIn(setId, queueJson);
 
             JsonReader jr = new JsonReader(new StringReader(lastLogsByDevice));
             this.oldestLogTimestampByDevice = new LinkedHashMap<>();
