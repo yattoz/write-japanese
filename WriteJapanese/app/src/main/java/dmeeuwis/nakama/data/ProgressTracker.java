@@ -15,6 +15,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -56,6 +57,12 @@ public class ProgressTracker {
     private final int advanceIncorrect;
     private final int advanceReview;
 
+    private final Set<Character> specialChars = new HashSet<>();
+    {
+        specialChars.add('R');
+        specialChars.add('S');
+    }
+
 	public LinkedHashMap<String, LocalDateTime> oldestLogTimestampByDevice = new LinkedHashMap<>();
 
 	private SRSQueue srsQueue;
@@ -83,7 +90,7 @@ public class ProgressTracker {
 	}
 
 	public boolean reject(Character character) {
-		return !recordSheet.containsKey(character);
+		return !(recordSheet.containsKey(character) || specialChars.contains(character));
 	}
 
 

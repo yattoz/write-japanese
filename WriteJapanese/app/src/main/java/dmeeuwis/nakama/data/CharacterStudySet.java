@@ -236,7 +236,7 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public void progressReset(Context context) {
-        this.tracker.progressReset(context, shortName);
+        this.tracker.progressReset(context, pathPrefix);
         dbHelper.clearProgress(pathPrefix);
     }
 

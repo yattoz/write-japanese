@@ -856,6 +856,54 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         ed.apply();
     }
 
+    /**
+     * Loads any newly custom created characters sets, removes deleted. Does not load the practice logs
+     * for these sets.
+     */
+    private void resumeCharacterSets() {
+        List<CharacterStudySet> sets = new CustomCharacterSetDataHelper(getApplicationContext()).getSets();
+        // load any newly created sets
+        for (CharacterStudySet s : sets) {
+            if (!characterSets.containsKey(s.pathPrefix)) {
+                Log.i("nakama-sets", "Loading new character set " + s.pathPrefix + ": " + s.name);
+                characterSets.put(s.pathPrefix, s);
+                customSets.add(s);
+                s.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
+            }
+        }
+        Set<String> priorSets = new HashSet<>();
+        for (CharacterStudySet c : customSets) {
+            priorSets.add(c.pathPrefix);
+        }
+        Set<String> currentSets = new HashSet<>();
+        for (CharacterStudySet c : sets) {
+            currentSets.add(c.pathPrefix);
+        }
+        // remove any sets that were deleted in other activity
+        for (String inPrior : priorSets) {
+            if (!currentSets.contains(inPrior)) {
+                customSets.remove(characterSets.get(inPrior));
+                CharacterStudySet s = characterSets.remove(inPrior);
+                Log.i("nakama-sets", "Removing deleted set: " + s.name);
+            }
+        }
+
+        List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
+        for (CharacterStudySet c : this.characterSets.values()) {
+            trackers.add(c.getProgressTracker());
+        }
+
+        try {
+            invalidateOptionsMenu();
+        } catch (Throwable t) {
+            Log.d("nakama", "Ignore error during invalidateOptionsMenu; must be older android device.");
+            // ignore for older devices.
+        }
+    }
+
+    /**
+     * Loads all needed practice logs for this set.
+     */
     private void resumeCurrentCharacterSet() {
 
         // current character set
@@ -886,12 +934,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         ProgressTracker pt  = currentCharacterSet.getProgressTracker();
         new CharacterProgressDataHelper(this, Iid.get(this)).resumeProgressTrackerFromDB(Arrays.asList(pt));
 
-        try {
-            invalidateOptionsMenu();
-        } catch (Throwable t) {
-            Log.d("nakama", "Ignore error during invalidateOptionsMenu; must be older android device.");
-            // ignore for older devices.
-        }
     }
 
     @Override
@@ -904,11 +946,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             this.charSetFrag.setCharset(characterSets.get("j1"));
         }
 
-        LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
-        characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
-
         String charsetSwitch = getIntent().getStringExtra("CHARSET_SWITCH");
         if(charsetSwitch != null){
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -917,7 +954,14 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             ed.apply();
         }
 
+        resumeCharacterSets();
         resumeCurrentCharacterSet();
+
+        LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
+        characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
+
 
         // update tab navigation dropdown to selected character set
         String[] charSetNames = this.characterSets.keySet().toArray(new String[0]);
@@ -1284,10 +1328,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         builder.setPositiveButton("Reset Progress", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                Editor ed = prefs.edit();
-                ed.remove(currentCharacterSet.pathPrefix);
-                ed.apply();
                 currentCharacterSet.progressReset(getApplicationContext());
                 loadNextCharacter(true);
 
@@ -1357,6 +1397,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             this.currentCharacterSet = characterSets.get("jlpt1");
         }
 
+        if(itemPosition >= 14 &&  itemPosition < 14 + customSets.size()){
+            int customSetIndex = itemPosition - 14;
+            this.currentCharacterSet = customSets.get(customSetIndex);
+        }
+
+
         this.currentSetClueType = Settings.getCharsetClueType(this.currentCharacterSet.pathPrefix, getApplicationContext());
         instructionCard.setClueType(this.currentSetClueType);
         instructionCard.setClueTypeChangeListener(new ClueCard.ClueTypeChangeListener() {
@@ -1370,11 +1416,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         // redoing same char you just did in previous set.
         if(currentNavigationItem != -1 && currentState == State.DRAWING) {
             loadNextCharacter(true);
-        }
-
-        if(itemPosition >= 14 &&  itemPosition < 14 + customSets.size()){
-            int customSetIndex = itemPosition - 14;
-            this.currentCharacterSet = customSets.get(customSetIndex);
         }
 
         if(prevSet != null && this.currentCharacterSet != null){
