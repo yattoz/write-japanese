@@ -57,7 +57,8 @@ public class ProgressTrackerTest {
 
     @Test
     public void testEmptyProgressTracker(){
-        ProgressTracker p = new ProgressTracker(CHARS_SET, 2, 2, true, false, "test-set");
+        ProgressTracker p = new ProgressTracker(
+                CHARS_SET, 2, 2, true, false, true, "test-set");
         assertEquals("Empty tracker has no SRS dates", 0, p.getSrsSchedule().size());
 
         Map<Character, Integer> scoreSheet = p.getScoreSheet();
@@ -69,7 +70,8 @@ public class ProgressTrackerTest {
 
     @Test
     public void testSingleChar(){
-        ProgressTracker p = new ProgressTracker(CHARS_SET, 2, 2, true, false, "test-set");
+        ProgressTracker p = new ProgressTracker(
+                CHARS_SET, 2, 2, true, false, true,"test-set");
         p.markSuccess('a', LocalDateTime.of(2017, 1, 1, 12,1));
 
         assertEquals("Single correct goes to score 0", Integer.valueOf(0), p.debugPeekCharacterScore('a'));
@@ -122,8 +124,10 @@ public class ProgressTrackerTest {
 
     @Test
     public void testGlobalSet() {
-        ProgressTracker p1 = new ProgressTracker(CHARS_SET, 2, 2, true, true, "test-1");
-        ProgressTracker p2 = new ProgressTracker(CHARS_SET_2, 2, 2, true, true, "test-2");
+        ProgressTracker p1 = new ProgressTracker(
+                CHARS_SET, 2, 2, true, true, true, "test-1");
+        ProgressTracker p2 = new ProgressTracker(
+                CHARS_SET_2, 2, 2, true, true, true, "test-2");
 
         p1.markSuccess('a', LocalDateTime.of(2017, 1, 1, 2, 1));
         p1.markSuccess('a', LocalDateTime.of(2017, 1, 2, 12, 1));
@@ -155,36 +159,38 @@ public class ProgressTrackerTest {
 
     @Test
     public void testCompletedSRSSet(){
-        ProgressTracker p1 = new ProgressTracker(CHARS_SET_4, 2, 2, true, false, "test-1");
+        ProgressTracker p1 = new ProgressTracker(
+                CHARS_SET_4, 2, 2, true, false, true, "test-1");
+        CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(2, 2, 1, 1, 5, true);
 
         {
-            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, 1, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, p);
             assertEquals("Practice starts with first character in set", Character.valueOf('a'), c.first);
             SRSQueue.SRSEntry o = p1.markSuccess('a', LocalDateTime.now());
             assertEquals("Getting char right on first attempt gets it into SRS for tomorrow", LocalDate.now().plusDays(1), o.nextPractice);
         }
 
         {
-            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, 1, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, p);
             assertEquals("Practice continues to second in set", Character.valueOf('b'), c.first);
             p1.markSuccess('b', LocalDateTime.now());
         }
 
 
         {
-            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, 1, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, p);
             assertEquals("Practice continues to third in set", Character.valueOf('c'), c.first);
             p1.markSuccess('c', LocalDateTime.now());
         }
 
         {
-            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, 1, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, p);
             assertEquals("Practice continues to third in set", Character.valueOf('d'), c.first);
             p1.markSuccess('d', LocalDateTime.now());
         }
 
         {
-            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, 1, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, p);
             assertEquals("Practice continues to third in set", Character.valueOf('e'), c.first);
             p1.markSuccess('e', LocalDateTime.now());
         }
@@ -192,7 +198,7 @@ public class ProgressTrackerTest {
         char lastChar = 'e';
         Map<Character, Integer> count = new HashMap<>();
         for(int i = 0; i < 200; i++){
-            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, 1, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, p);
             count.put(c.first, count.get(c.first) == null ? 1 : count.get(c.first) + 1);
             p1.markSuccess(c.first, LocalDateTime.now());
             lastChar = c.first;

@@ -277,7 +277,7 @@ public class CharacterStudySet implements Iterable<Character> {
 
 
     public ProgressTracker loadEmptyTestingTracker() {
-        tracker = new ProgressTracker(allCharactersSet, 2, 2, true, false, pathPrefix);
+        tracker = new ProgressTracker(allCharactersSet, 2, 2, true, false, true, pathPrefix);
         return tracker;
     }
 
@@ -298,7 +298,7 @@ public class CharacterStudySet implements Iterable<Character> {
         if(srsAcrossSets == null){ srsAcrossSets = true; }
 
 
-        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing, srsEnabled, srsAcrossSets, pathPrefix);
+        tracker = new ProgressTracker(allCharactersSet, p.advanceIncorrect, p.advanceReviewing, srsEnabled, srsAcrossSets, p.skipSRSOnFirstTimeCorrect, pathPrefix);
 
         if(loadProgress == LoadProgress.LOAD_SET_PROGRESS) {
             dbHelper.loadProgressTrackerFromDB(Arrays.asList(tracker), CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);

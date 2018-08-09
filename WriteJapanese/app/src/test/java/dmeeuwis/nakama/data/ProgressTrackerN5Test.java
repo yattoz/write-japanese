@@ -32,8 +32,9 @@ public class ProgressTrackerN5Test {
     private List<Character> chars = Util.toCharList(Kanji.JLPT_N5);
     private Set<Character> charSet = new LinkedHashSet<>(chars);
 
-    private ProgressTracker simpleTestTracker(int advIncorrect, int advReview){
-        return new ProgressTracker(charSet, advIncorrect, advReview, true, false, "jlpt5");
+    private ProgressTracker simpleTestTracker(int advIncorrect, int advReview, boolean skipSrsIfFirstCorrect){
+        return new ProgressTracker(
+                charSet, advIncorrect, advReview, true, false, skipSrsIfFirstCorrect, "jlpt5");
     }
 
     @Test
@@ -53,12 +54,12 @@ public class ProgressTrackerN5Test {
         assertEquals("Marks as failed", ProgressTracker.Progress.FAILED, s.getRecordSheet().get('一'));
 
         s.overRideLast();
-        assertEquals("After rest, marks as passed", ProgressTracker.Progress.TIMED_REVIEW, s.getRecordSheet().get('一'));
+        assertEquals("After rest, marks as passed", ProgressTracker.Progress.PASSED, s.getRecordSheet().get('一'));
     }
 
     @Test
     public void testProgressionCustomization(){
-        ProgressTracker tracker = simpleTestTracker(10, 5);
+        ProgressTracker tracker = simpleTestTracker(10, 5, true);
 
         tracker.markFailure('一');
         assertEquals("After failure, set to failed", ProgressTracker.Progress.FAILED, tracker.getAllScores().get('一'));
@@ -124,9 +125,6 @@ public class ProgressTrackerN5Test {
         Character c3 = Kanji.JLPT_N5.charAt(3);
         Character c4 = Kanji.JLPT_N5.charAt(4);
 
-//      Character c5 = Kanji.JLPT_N5.charAt(5);
-//      Character c6 = Kanji.JLPT_N5.charAt(6);
-
         Set<Character> first = new HashSet<>();
         first.add(c0);
         first.add(c1);
@@ -134,13 +132,15 @@ public class ProgressTrackerN5Test {
         first.add(c3);
         first.add(c4);
 
-        ProgressTracker t = simpleTestTracker(1, 1);
+        ProgressTracker t = simpleTestTracker(1, 1, true);
         Character last;
 
         // all are in incorrect, preventing new characters
         for(int i = 0; i < 100; i++) {
             // note character cooldown of 3 here
-            Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, false, 5, 5,10);
+            CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(
+                    5, 5, 1, 1, 4, true);
+            Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, false, p);
             last = r.first;
             System.out.println("Next char reported as: " + last + ", " + r.second);
             t.markFailure(r.first);
@@ -151,12 +151,11 @@ public class ProgressTrackerN5Test {
 
         {
             Map<Character, Integer> scores = t.getScoreSheet();
-            assertEquals(-2, (int) scores.get(c0));
-            assertEquals(-2, (int) scores.get(c1));
-            assertEquals(-2, (int) scores.get(c2));
-            assertEquals(-2, (int) scores.get(c3));
-            assertEquals(-2, (int) scores.get(c4));
-//          assertEquals(-2, (int) scores.get(c5));
+            assertEquals("Character " + c0 + " had failed score", Integer.valueOf(-2), scores.get(c0));
+            assertEquals("Character " + c1 + " had failed score", Integer.valueOf(-2), scores.get(c1));
+            assertEquals("Character " + c2 + " had failed score", Integer.valueOf(-2), scores.get(c2));
+            assertEquals("Character " + c3 + " had failed score", Integer.valueOf(-2), scores.get(c3));
+            assertEquals("Character " + c4 + " had failed score", Integer.valueOf(-2), scores.get(c4));
         }
 
         t.markSuccess(c0, LocalDateTime.now());
@@ -164,22 +163,19 @@ public class ProgressTrackerN5Test {
         t.markSuccess(c2, LocalDateTime.now());
         t.markSuccess(c3, LocalDateTime.now());
         t.markSuccess(c4, LocalDateTime.now());
-//      t.markSuccess(c5, LocalDateTime.now());
 
-        assertEquals(-1, (int)t.getScoreSheet().get(c0));
-        assertEquals(-1, (int)t.getScoreSheet().get(c1));
-        assertEquals(-1, (int)t.getScoreSheet().get(c2));
-        assertEquals(-1, (int)t.getScoreSheet().get(c3));
-        assertEquals(-1, (int)t.getScoreSheet().get(c4));
-//      assertEquals(-1, (int)t.getScoreSheet().get(c5));
+        assertEquals("Character " + c0 + " had failed score", Integer.valueOf(-1), t.getScoreSheet().get(c0));
+        assertEquals("Character " + c1 + " had failed score", Integer.valueOf(-1), t.getScoreSheet().get(c1));
+        assertEquals("Character " + c2 + " had failed score", Integer.valueOf(-1), t.getScoreSheet().get(c2));
+        assertEquals("Character " + c3 + " had failed score", Integer.valueOf(-1), t.getScoreSheet().get(c3));
+        assertEquals("Character " + c4 + " had failed score", Integer.valueOf(-1), t.getScoreSheet().get(c4));
 
         // all seen are in reviewing, still preventing new characters
         System.out.println("=====================> Stage 2 in-review");
 
-//      firstThree.add(c6);     // off-by-one bug!!
-
+        CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(1, 1, 5, 5, 5, false);
         for(int i = 0; i < 100; i++) {
-            Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, false, 5, 5, 5);
+            Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, false, p);
             last = r.first;
             System.out.println("Next char reported as: " + last + ", " + r.second);
             printValidScores(t);
@@ -298,13 +294,13 @@ public class ProgressTrackerN5Test {
 
         CharacterProgressDataHelper.ProgressionSettings prog =
                 new CharacterProgressDataHelper.ProgressionSettings(
-                        20, 100, 1, 2, 5, skipSRSOnFirstTimeCorrect);
+                        20, 100, 1, 2, 5, true);
 
         s.nextCharacter(prog);
 
         int i = 0;
         for(Pair<String, Boolean> p: bugList){
-            s.overrideCurrent(p.first.charAt(0));
+            s.overRideLast();
             System.out.println("Replaying " + p);
             s.markCurrent(null, p.second);
             i++;
@@ -352,8 +348,18 @@ public class ProgressTrackerN5Test {
     }
 
     @Test
-    public void iterateOverAllChars(){
-        ProgressTracker t = simpleTestTracker(2, 1);
+    public void iterateOverAllCharsSkipSRSOnFirstDISABLED() {
+        iterateOverAllTestImpl(false, ProgressTracker.Progress.TIMED_REVIEW);
+    }
+
+    @Test
+    public void iterateOverAllCharsSkipSRSOnFirstENABLED() {
+        iterateOverAllTestImpl(true, ProgressTracker.Progress.PASSED);
+    }
+
+
+    private void iterateOverAllTestImpl(boolean skipSRSOnFirstCorrect, ProgressTracker.Progress expected){
+        ProgressTracker t = simpleTestTracker(2, 1, skipSRSOnFirstCorrect);
         CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
         s.load(t);
 
@@ -365,14 +371,14 @@ public class ProgressTrackerN5Test {
         }
 
         for(Map.Entry<Character, ProgressTracker.Progress> e: s.getRecordSheet().entrySet()){
-           assertEquals("All chars are in TIMED_REVIEW", ProgressTracker.Progress.TIMED_REVIEW, e.getValue());
+           assertEquals("All chars are in " + expected, expected, e.getValue());
         }
     }
 
     @Test
     public void showReviewAfterHISTORYEntries(){
         int characterCooldown = 5;
-        ProgressTracker t = simpleTestTracker(2, 1);
+        ProgressTracker t = simpleTestTracker(2, 1, true);
         CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
         s.load(t);
 
@@ -404,7 +410,8 @@ public class ProgressTrackerN5Test {
 
     @Test
     public void srsWithShuffle() {
-        ProgressTracker t = new ProgressTracker(charSet, 2, 1, true, false, "jlpt5");
+        ProgressTracker t = new ProgressTracker(
+                charSet, 2, 1, true, false, false, "jlpt5");
         CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
         s.setShuffle(true);
         s.load(t);
@@ -441,15 +448,18 @@ public class ProgressTrackerN5Test {
 
     @Test
     public void testGettingIntoPassedStateAfterSRS() {
-        ProgressTracker t = new ProgressTracker(charSet, 2, 1, true, false, "jlpt5");
+        ProgressTracker t = new ProgressTracker(
+                charSet, 2, 1, true, false, false,"jlpt5");
 
         t.markSuccess('書', LocalDateTime.of(2000, 1, 1, 12, 30));
         assertEquals("Char goes into SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
 
+        CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(1, 1, 2, 1, 5, true);
+
         {       // 1 day later
             ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 2);
             t.setDateFactory(df);
-            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, p);
             t.markSuccess('書', df.nowLocalDateTime());
             assertEquals("Char shows up on next date", '書', (char) c.first);
             assertEquals("Char still in SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
@@ -459,7 +469,7 @@ public class ProgressTrackerN5Test {
         {       // 3 days later
             ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 5);
             t.setDateFactory(df);
-            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, p);
             t.markSuccess('書', df.nowLocalDateTime());
             assertEquals("Char shows up on next date", '書', (char) c.first);
             assertEquals("Char still in SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
@@ -468,7 +478,7 @@ public class ProgressTrackerN5Test {
         {       // 7 days later
             ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 12);
             t.setDateFactory(df);
-            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, p);
             t.markSuccess('書', df.nowLocalDateTime());
             assertEquals("Char shows up on next date", '書', (char) c.first);
             assertEquals("Char still in SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
@@ -477,7 +487,7 @@ public class ProgressTrackerN5Test {
         {       // 14 days later
             ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 26);
             t.setDateFactory(df);
-            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, p);
             t.markSuccess('書', df.nowLocalDateTime());
             assertEquals("Char shows up on next date", '書', (char) c.first);
             assertEquals("Char still in SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
@@ -486,7 +496,7 @@ public class ProgressTrackerN5Test {
         {       // 30 days later
             ProgressTracker.DateFactory df = makeDateFactory(2000, 2, 25);
             t.setDateFactory(df);
-            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, 2, 1, 5);
+            Pair<Character, ProgressTracker.StudyType> c = t.nextCharacter(charSet, false, p);
             t.markSuccess('書', df.nowLocalDateTime());
             assertEquals("Char shows up on next date", '書', (char) c.first);
             assertEquals("Char still in now PASSED", ProgressTracker.Progress.PASSED, t.getAllScores().get('書'));

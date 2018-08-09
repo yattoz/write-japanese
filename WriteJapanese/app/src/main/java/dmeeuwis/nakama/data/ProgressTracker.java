@@ -46,6 +46,7 @@ public class ProgressTracker {
 	private static final boolean DEBUG_PROGRESS = BuildConfig.DEBUG && false;
 
 	private final boolean useSRS;
+    private final boolean skipSrsIfFirstCorrect;
 
     // these 2 track last grading to support override functionality
     private Integer lastCharPrevScore = null;
@@ -121,7 +122,7 @@ public class ProgressTracker {
 		}
 	}
 	
-	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets, String setId){
+	ProgressTracker(Set<Character> allChars, int advanceIncorrect, int advanceReview, boolean useSRS, boolean useSRSAcrossSets, boolean skipSrsIfFirstCorrect, String setId){
 		this.useSRS = useSRS;
 		this.recordSheet = new LinkedHashMap<>();
 		for(Character c: allChars){
@@ -129,6 +130,7 @@ public class ProgressTracker {
 		}
 		this.advanceIncorrect = advanceIncorrect;
 		this.advanceReview = advanceReview;
+        this.skipSrsIfFirstCorrect = skipSrsIfFirstCorrect;
 		this.setId = setId;
 		this.useSRSAcrossSets = useSRSAcrossSets;
 
@@ -289,7 +291,8 @@ public class ProgressTracker {
         }
 
         // since we couldn't get a reviewing or failed character, try repeating a timed review (ahead of schedule)
-        // or a passed character.
+        // or a passed character at random. Needs to be random so we don't just keep repeating the first few characters
+        // of the passed set.
         if(n == null && (timedReviewing.size() > 0 || passed.size() > 0)){
             isReview = true;
 		    List<Character> allReview = new ArrayList<>(timedReviewing);
@@ -298,7 +301,7 @@ public class ProgressTracker {
         }
 
         if(n == null){
-            // I think this case can never happen? If nothing else was available, do comletely random char.
+            // I think this case can never happen? If nothing else was available, do completely random char.
             UncaughtExceptionLogger.backgroundLogError(
                     "Error: no char found. Set is: " + Util.join("", rawAvailSet) +
                             " and history is: " + Util.join("", history),
@@ -433,7 +436,7 @@ public class ProgressTracker {
 		int score;
 
 		// if you get the character right the first time you see it, skip the SRS queue.
-		if(firstTime){
+		if(firstTime && skipSrsIfFirstCorrect){
 		    score = MAX_SCORE;
         } else {
             score = recordSheet.get(c) == null ? -1 : recordSheet.get(c);
@@ -611,7 +614,6 @@ public class ProgressTracker {
             }
             record.endObject();
             record.close();
-
 
             this.srsQueue = SRSQueue.deserializeIn(setId, queueJson);
 
