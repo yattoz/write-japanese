@@ -137,7 +137,8 @@
     </string-array>
 
     <string-array name="skip_srs_on_first_correct_options">
-        <item>Skip Spaced Repetition (SRS) queue if drawn correctly on first try</item>
-        <item>Always use Spaced Repetition (SRS)</item>
+        <item>Character drawn correctly on first try</item>
+        <item>Never (when SRS enabled)</item>
     </string-array>
+
 </resources>

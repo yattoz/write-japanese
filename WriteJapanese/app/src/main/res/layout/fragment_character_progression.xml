@@ -63,7 +63,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Skip SRS if correct on first try:" />
+            android:text="Skip Spaced Repetition if:" />
 
         <Spinner
             android:id="@+id/skip_character_on_first_correct_spinner"

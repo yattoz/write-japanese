@@ -193,7 +193,7 @@ public class ProgressTracker {
     /*========== END TEMP HACK FOR TESTING ============ */
 
 
-    Pair<Character, StudyType> nextCharacter(Set<Character> rawAvailSet, boolean shuffling, int introIncorrect, int introReviewing, int characterCooldown) {
+    Pair<Character, StudyType> nextCharacter(Set<Character> rawAvailSet, boolean shuffling, CharacterProgressDataHelper.ProgressionSettings prog) {
 		Log.i("nakama-progression", "-------------> Starting nexCharacter selection");
 
 		boolean prevWasReview = isReview;
@@ -211,7 +211,7 @@ public class ProgressTracker {
 
 
         Set<Character> availSet = new LinkedHashSet<>(rawAvailSet);
-        for(int i = 0; i < characterCooldown; i++){
+        for(int i = 0; i < prog.characterCooldown; i++){
             try {
                 availSet.remove(history.get(history.size() - 1 - i));
             } catch(ArrayIndexOutOfBoundsException e){
@@ -259,7 +259,7 @@ public class ProgressTracker {
         }
 
 		// if we're not at reviewing or failed limits, alternate reviewing chars and new chars
-		if(n == null && unfilteredReviewing.size() < introReviewing && unfilteredFailed.size() < introIncorrect && unknown.size() > 0){
+		if(n == null && unfilteredReviewing.size() < prog.introReviewing && unfilteredFailed.size() < prog.introIncorrect && unknown.size() > 0){
             if(!prevWasReview && reviewing.size() > 0) {
                 n = reviewing.get(0);
                 isReview = true;
