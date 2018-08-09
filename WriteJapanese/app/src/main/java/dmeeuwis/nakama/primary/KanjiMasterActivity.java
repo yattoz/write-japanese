@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -85,6 +86,7 @@ import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.StoryDataHelper;
 import dmeeuwis.nakama.data.SyncRegistration;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
+import dmeeuwis.nakama.data.WriteJapaneseOpenHelper;
 import dmeeuwis.nakama.kanjidraw.Comparator;
 import dmeeuwis.nakama.kanjidraw.ComparisonAsyncTask;
 import dmeeuwis.nakama.kanjidraw.ComparisonFactory;
@@ -1067,6 +1069,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:ClearSyncTimestamp");
             menu.add("DEBUG:ClearUpdateNotification");
             menu.add("DEBUG:PrintCharsetsAndSRS");
+            menu.add("DEBUG:ClearLogCache");
         }
 
         return true;
@@ -1289,7 +1292,16 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                     Log.d("nakama", "Character SRS " + c.getSrsScheduleString());
 
                 }
+            } else if(item.getTitle().equals("DEBUG:ClearLogCache")){
 
+                WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this);
+                SQLiteDatabase sqlite = db.getWritableDatabase();
+                try {
+                    db.clearPracticeLogCache(sqlite);
+                    Toast.makeText(this, "Cleared!", Toast.LENGTH_LONG).show();
+                } finally {
+                    sqlite.close();
+                }
 
             }
         }

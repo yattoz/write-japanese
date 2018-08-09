@@ -60,6 +60,22 @@
             android:background="@color/Gray" />
 
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Skip SRS if correct on first try:" />
+
+        <Spinner
+            android:id="@+id/skip_character_on_first_correct_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/Gray" />
 
         <TextView
             android:layout_width="wrap_content"

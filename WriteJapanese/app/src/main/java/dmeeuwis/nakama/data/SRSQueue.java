@@ -83,37 +83,31 @@ public class SRSQueue {
 
     public SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp, int knownScoreValue){
         if(timestamp == lastLocalDateTime && character.equals(lastCharacter)){
-            Log.d("nakama-progress", "Skipping dup as seen by queue: " + character + " " + timestamp);
             return null;
         }
+
+        // they have passed! No more SRS.
+        if(score == SRSTable.length){
+            return null;
+        }
+
         lastLocalDateTime = timestamp;
         lastCharacter = character;
 
-        //Log.d("nakama-progress", "------------------------ addToSrsQueue -----------------------");
         if(score < 0 || score == knownScoreValue){
-            if(BuildConfig.DEBUG){
-                //Log.d("nakama-progress", "Removing " + character + " from SRS due to score " + score);
-                //Log.d("nakama-progress", "Set is now: " + getSrsScheduleString());
-            }
             removeSRSQueue(character);
             return null;
         }
-        //Log.d("nakama-progress", "Prior to adding, set is: " + getSrsScheduleString());
 
         // remove any existing entries
         removeSRSQueue(character);
 
         // schedule next
         Period delay = SRSTable[score];
-        if(BuildConfig.DEBUG){
-            //Log.d("nakama-progress", "Setting delay to " + delay + " for score " + score + " on char " + character);
-        }
         LocalDate nextDate = timestamp.plus(delay).toLocalDate();
         SRSEntry entry = new SRSEntry(character, nextDate);
-        //if(BuildConfig.DEBUG) Log.d("nakama-progress", "Adding entry: " + entry + " to set " + this);
 
         srsQueue.add(entry);
-        //if(BuildConfig.DEBUG) Log.d("nakama-progress", "After adding, set is: " + getSrsScheduleString());
 
         return entry;
     }

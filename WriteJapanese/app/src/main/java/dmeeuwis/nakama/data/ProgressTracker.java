@@ -52,6 +52,7 @@ public class ProgressTracker {
     private boolean lastPassed = false;
 
     private Character lastChar = null;
+    private boolean isReview = false;
     public final String setId;
     public final boolean useSRSAcrossSets;
     private final int advanceIncorrect;
@@ -195,6 +196,7 @@ public class ProgressTracker {
     Pair<Character, StudyType> nextCharacter(Set<Character> rawAvailSet, boolean shuffling, int introIncorrect, int introReviewing, int characterCooldown) {
 		Log.i("nakama-progression", "-------------> Starting nexCharacter selection");
 
+		boolean prevWasReview = isReview;
 
 		if(useSRS) {
 			SRSQueue.SRSEntry soonestEntry = srsQueue.peek();
@@ -248,20 +250,25 @@ public class ProgressTracker {
 		}
 
         Character n = null;
-		boolean isReview = false;
+		isReview = false;
 
 		// character not in cooldown that are failed get priority, in their order.
-        if(n == null && failed.size() > 0){
+        if(failed.size() > 0){
             n = failed.get(0);
             isReview = true;
         }
 
-		// if we're not at reviewing or failed limits, try to introduce a new character.
+		// if we're not at reviewing or failed limits, alternate reviewing chars and new chars
 		if(n == null && unfilteredReviewing.size() < introReviewing && unfilteredFailed.size() < introIncorrect && unknown.size() > 0){
-		    // Intro a new character! Congratulations!
-            if(shuffling){
+            if(!prevWasReview && reviewing.size() > 0) {
+                n = reviewing.get(0);
+                isReview = true;
+            }
+
+            // Intro a new character! Congratulations!
+            if(n == null && shuffling){
                 n = unknown.get((int)(Math.random() * unknown.size()));
-            } else {
+            } else if(n == null){
                 n = unknown.get(0);
             }
         }
@@ -420,7 +427,18 @@ public class ProgressTracker {
 			return s;
 		}
 
-		int score = recordSheet.get(c) == null ? -1 : recordSheet.get(c);
+		// has the key, but is null, means char is in set, but has not yet been attempted
+		boolean firstTime = recordSheet.get(c) == null;
+
+		int score;
+
+		// if you get the character right the first time you see it, skip the SRS queue.
+		if(firstTime){
+		    score = MAX_SCORE;
+        } else {
+            score = recordSheet.get(c) == null ? -1 : recordSheet.get(c);
+        }
+
 		int newScore = Math.min(MAX_SCORE, score + 1);
 
         lastCharPrevScore = score;

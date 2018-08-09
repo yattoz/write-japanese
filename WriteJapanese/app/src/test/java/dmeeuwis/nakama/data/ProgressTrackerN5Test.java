@@ -298,7 +298,7 @@ public class ProgressTrackerN5Test {
 
         CharacterProgressDataHelper.ProgressionSettings prog =
                 new CharacterProgressDataHelper.ProgressionSettings(
-                        20, 100, 1, 2, 5);
+                        20, 100, 1, 2, 5, skipSRSOnFirstTimeCorrect);
 
         s.nextCharacter(prog);
 

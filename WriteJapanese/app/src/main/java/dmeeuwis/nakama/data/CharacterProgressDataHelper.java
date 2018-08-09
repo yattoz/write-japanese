@@ -16,7 +16,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
@@ -24,10 +23,12 @@ import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 
 public class CharacterProgressDataHelper {
     public final static int DEFAULT_INTRO_INCORRECT = 5;
-    public final static int DEFAULT_INTRO_REVIEWING = 10;
-    public final static int DEFAULT_ADV_INCORRECT = 1;
-    public final static int DEFAULT_ADV_REVIEWING = 2;
-    public final static int DEFAULT_CHAR_COOLDOWN = 5;
+
+    private final static int DEFAULT_INTRO_REVIEWING = 10;
+    private final static int DEFAULT_ADV_INCORRECT = 1;
+    private final static int DEFAULT_ADV_REVIEWING = 2;
+    private final static int DEFAULT_CHAR_COOLDOWN = 5;
+    private final static boolean DEFAULT_SKIP_SRS_ON_FIRST_CORRECT = true;
 
     private final Context context;
     private final UUID iid;
@@ -154,18 +155,26 @@ public class CharacterProgressDataHelper {
 
             for (int i = allPts.size() - 1; i >= 0; i--) {
                 ProgressTracker t = allPts.get(i);
-                try {
-                    Map<String, String> cache = caches.get(t.setId);
-                    if (cache != null) {
+                Map<String, String> cache = caches.get(t.setId);
+
+                if(cache != null) {
+                    String srsCache = cache.get("srs_queue");
+                    String recordCache = cache.get("practice_record");
+                    String lastLogCache = cache.get("last_log_by_device");
+                    try {
                         long deserializeStart = System.currentTimeMillis();
-                        t.deserializeIn(cache.get("srs_queue"), cache.get("practice_record"), cache.get("last_log_by_device"));
+                        t.deserializeIn(srsCache, recordCache, lastLogCache);
                         Log.d("nakama-progress", "Time to deserialize " + t.setId + ": " + (System.currentTimeMillis() - deserializeStart) + "ms");
                         allPts.remove(i);
 
                         resuming = true;
+                    } catch (Throwable x) {
+                        Log.i("nakama-progress", "Disregarding invalid cache for " + t.setId, x);
+                        UncaughtExceptionLogger.backgroundLogError(
+                                "Disregarding invalid cache for  " + t.setId + "; SRS cache: " + srsCache +
+                                        "; log cache: " + recordCache + "; lastLogCache: " + lastLogCache,
+                                new RuntimeException());
                     }
-                } catch (Throwable x){
-                    Log.i("nakama-progress", "Disregarding invalid cache for " + t.setId, x);
                 }
             }
         }
@@ -251,13 +260,15 @@ public class CharacterProgressDataHelper {
 
     public static class ProgressionSettings {
         public final int introIncorrect, introReviewing, advanceIncorrect, advanceReviewing, characterCooldown;
+        public final boolean skipSRSOnFirstTimeCorrect;
 
-        public ProgressionSettings(int introIncorrect, int introReviewing, int advanceIncorrect, int advanceReviewing, int characterCooldown) {
+        public ProgressionSettings(int introIncorrect, int introReviewing, int advanceIncorrect, int advanceReviewing, int characterCooldown, boolean skipSRSOnFirstTimeCorrect) {
             this.introIncorrect = introIncorrect;
             this.introReviewing = introReviewing;
             this.advanceIncorrect = advanceIncorrect;
             this.advanceReviewing = advanceReviewing;
             this.characterCooldown = characterCooldown;
+            this.skipSRSOnFirstTimeCorrect = skipSRSOnFirstTimeCorrect;
         }
     }
 
@@ -268,7 +279,8 @@ public class CharacterProgressDataHelper {
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_REVIEWING, DEFAULT_INTRO_REVIEWING),
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_INCORRECT, DEFAULT_ADV_INCORRECT),
             prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, DEFAULT_ADV_REVIEWING),
-            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_CHAR_COOLDOWN, DEFAULT_CHAR_COOLDOWN));
+            prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_CHAR_COOLDOWN, DEFAULT_CHAR_COOLDOWN),
+            prefs.getBoolean(ProgressSettingsDialog.SHARED_PREFS_KEY_SKIP_SRS_ON_FIRST_CORRECT, DEFAULT_SKIP_SRS_ON_FIRST_CORRECT));
     }
 
     private class ProcessLogRow implements DataHelper.ProcessRow {
@@ -309,12 +321,12 @@ public class CharacterProgressDataHelper {
                     //Log.d("nakama-progress", "Processing practice log: " + character + " " + set + " " + timestampStr + " " + score + " on set tracker " + pt.setId);
                 }
 
-                if (character.toString().equals("R")) {
+                if (character.equals('R')) {
                     // indicates reset progress for standardSets characters
                     pt.progressReset(context, set);
                     //Log.d("nakama-progress", "Loaded PROGRESS RESET for set " + set);
 
-                } else if (character.toString().equals("S")) {
+                } else if (character.equals('S')) {
                     // indicates reset progress for srs sets (maybe only on first srs install?)
                     pt.srsReset(set);
                     //Log.d("nakama-progress", "Loaded SRS RESET for set " + set);

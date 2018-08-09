@@ -85,7 +85,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                 ")");
     }
 
-    private void clearPractiveLogCache(SQLiteDatabase sqlite) {
+    public void clearPracticeLogCache(SQLiteDatabase sqlite) {
         Log.d("nakama-db", "Clearing practice log cache table.");
         sqlite.execSQL("DELETE FROM practice_record_cache;");
     }
@@ -254,7 +254,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         }
 
         if(oldVersion <= 34){
-            clearPractiveLogCache(dbase);
+            clearPracticeLogCache(dbase);
         }
 	}
 }

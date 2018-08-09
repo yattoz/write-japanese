@@ -25,8 +25,9 @@ public class ProgressSettingsDialog extends DialogFragment {
     public final static String SHARED_PREFS_KEY_ADV_INCORRECT = "advanceIncorrect";
     public final static String SHARED_PREFS_KEY_ADV_REVIEWING = "advanceReviewing";
     public final static String SHARED_PREFS_KEY_CHAR_COOLDOWN = "characterCooldown";
+    public final static String SHARED_PREFS_KEY_SKIP_SRS_ON_FIRST_CORRECT = "skipSRSOnFirstCorrect";
 
-    Spinner introduceIncorrect, introduceReviewing, advanceIncorrect, advanceReviewing, characterCooldown;
+    Spinner introduceIncorrect, introduceReviewing, advanceIncorrect, advanceReviewing, characterCooldown, skipSRSOnFirstCorrect;
 
     static Pattern MATCH_NUMBER = Pattern.compile("(\\d+)");
 
@@ -45,6 +46,7 @@ public class ProgressSettingsDialog extends DialogFragment {
                         Integer advIncorrect = pullNumberFromString(advanceIncorrect.getSelectedItem());
                         Integer advReviewing = pullNumberFromString(advanceReviewing.getSelectedItem());
                         Integer charCooldown = pullNumberFromString(characterCooldown.getSelectedItem());
+                        Boolean skipSRS = skipSRSOnFirstCorrect.getSelectedItemPosition() == 0;
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                         SharedPreferences.Editor ed = prefs.edit();
@@ -53,6 +55,7 @@ public class ProgressSettingsDialog extends DialogFragment {
                         ed.putInt(SHARED_PREFS_KEY_ADV_INCORRECT, advIncorrect);
                         ed.putInt(SHARED_PREFS_KEY_ADV_REVIEWING, advReviewing);
                         ed.putInt(SHARED_PREFS_KEY_CHAR_COOLDOWN, charCooldown);
+                        ed.putBoolean(SHARED_PREFS_KEY_SKIP_SRS_ON_FIRST_CORRECT, skipSRS);
                         ed.apply();
                     }
                 })
@@ -71,6 +74,7 @@ public class ProgressSettingsDialog extends DialogFragment {
         int advIncorrect = prefs.getInt(SHARED_PREFS_KEY_ADV_INCORRECT, 1);
         int advReviewing = prefs.getInt(SHARED_PREFS_KEY_ADV_REVIEWING, 2);
         int charCooldown = prefs.getInt(SHARED_PREFS_KEY_CHAR_COOLDOWN, 5);
+        boolean skipSrsOnFirst = prefs.getBoolean(SHARED_PREFS_KEY_SKIP_SRS_ON_FIRST_CORRECT, true);
 
         introduceIncorrect = dialogLayout.findViewById(R.id.when_to_introduce_incorrect_spinner);
         introduceIncorrect.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.when_to_introduce_incorrect_spinner_values, android.R.layout.simple_spinner_dropdown_item));
@@ -97,6 +101,11 @@ public class ProgressSettingsDialog extends DialogFragment {
         characterCooldown.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.character_cooldown_options, android.R.layout.simple_spinner_dropdown_item));
         String[] charCooldownSelections = getActivity().getResources().getStringArray(R.array.character_cooldown_options);
         setSpinnerForIntValue(charCooldownSelections, characterCooldown, charCooldown);
+
+
+        skipSRSOnFirstCorrect = dialogLayout.findViewById(R.id.skip_character_on_first_correct_spinner);
+        skipSRSOnFirstCorrect.setAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.skip_srs_on_first_correct_options, android.R.layout.simple_spinner_dropdown_item));
+        skipSRSOnFirstCorrect.setSelection(skipSrsOnFirst ? 0 : 1);
 
         // Create the AlertDialog object and return it
         return d;

@@ -135,4 +135,9 @@
         <item>Do not repeat for at least 15 characters</item>
         <item>Do not repeat for at least 20 characters</item>
     </string-array>
+
+    <string-array name="skip_srs_on_first_correct_options">
+        <item>Skip Spaced Repetition (SRS) queue if drawn correctly on first try</item>
+        <item>Always use Spaced Repetition (SRS)</item>
+    </string-array>
 </resources>
