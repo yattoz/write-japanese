@@ -212,7 +212,7 @@ public class PracticeLogSync {
                     String[] insert = new String[]{values.get("id"), values.get("install_id"),
                             values.get("charset"), values.get("character"), values.get("score"),
                             values.get("device_timestamp"), values.get("drawing")};
-                    Log.i("nakama-sync", "Inserting remote log: " + Util.join(", ", insert));
+                    //Log.i("nakama-sync", "Inserting remote log: " + Util.join(", ", insert));
                     practiceLogCount++;
                     DataHelper.selectRecord(sqlite, "INSERT INTO practice_log(id, install_id, charset, character, score, timestamp, drawing) VALUES(?, ?, ?, ?, ?, ?, ?)", (Object[])insert);
                 } catch (SQLiteConstraintException t) {

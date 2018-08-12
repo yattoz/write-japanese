@@ -490,18 +490,22 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             this.characterSets.put(c.pathPrefix, c);
         }
 
-        List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
-        for(CharacterStudySet c: this.characterSets.values()){
-            trackers.add(c.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
-        }
-        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
-                .loadProgressTrackerFromDB(trackers, progressCacheFlag);
+        reloadPracticeLogs(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS, progressCacheFlag);
 
         long time = System.currentTimeMillis() - start;
         Log.i("nakama", "Loading character sets took: " + time + "ms");
         if(BuildConfig.DEBUG){
             Toast.makeText(this, "Load took: " + time + "ms", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void reloadPracticeLogs(CharacterStudySet.LoadProgress loadType, CharacterProgressDataHelper.ProgressCacheFlag progressCacheFlag){
+        List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
+        for(CharacterStudySet c: this.characterSets.values()){
+            trackers.add(c.load(this.getApplicationContext(), loadType));
+        }
+        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
+                .loadProgressTrackerFromDB(trackers, progressCacheFlag);
     }
 
     public void delayedStartBackgroundLoadTranslations(){
@@ -1298,6 +1302,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 SQLiteDatabase sqlite = db.getWritableDatabase();
                 try {
                     db.clearPracticeLogCache(sqlite);
+                    reloadPracticeLogs(CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS, CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
                     Toast.makeText(this, "Cleared!", Toast.LENGTH_LONG).show();
                 } finally {
                     sqlite.close();
