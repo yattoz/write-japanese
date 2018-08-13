@@ -856,7 +856,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Editor ed = prefs.edit();
-        //Log.i("nakama", "KanjiMasterActivity: saveCurrentCharacterSet : writing " + CHAR_SET + " to " + this.currentCharacterSet.pathPrefix);
+        ed.putBoolean("shuffleEnabled", currentCharacterSet.isShuffling());
         ed.putString(CHAR_SET, this.currentCharacterSet.pathPrefix);
         ed.putString(CHAR_SET_CHAR, Character.toString(this.currentCharacterSet.currentCharacter()));
         ed.apply();
@@ -932,14 +932,17 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             prefs.edit().remove(CHAR_SET_CHAR).apply();
         }
 
+    }
+
+
+    private void resumePracticeLogsCurrentCharset(){
         // shuffle setting
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean shuffle = prefs.getBoolean("shuffleEnabled", false);
-        Log.i("nakama", "Setting shuffle on " + currentCharacterSet.name + " to " + shuffle);
         currentCharacterSet.setShuffle(shuffle);
 
         ProgressTracker pt  = currentCharacterSet.getProgressTracker();
         new CharacterProgressDataHelper(this, Iid.get(this)).resumeProgressTrackerFromDB(Arrays.asList(pt));
-
     }
 
     @Override
@@ -1003,10 +1006,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     @Override
     public void onPause() {
         Log.i("nakama", "KanjiMasterActivity.onPause: saving state.");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        Editor ed = prefs.edit();
-        ed.putBoolean("shuffleEnabled", currentCharacterSet.isShuffling());
-        ed.apply();
         saveCurrentCharacterSet();
         instructionCard.saveCurrentClueType(getApplicationContext());
 
@@ -1427,13 +1426,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 Log.i("nakama", "Setting clue type for set " + currentCharacterSet.name + " to " + c);
                 Settings.setCharsetClueType(currentCharacterSet.pathPrefix, c, getApplicationContext());
             }
-        });
 
-        // force a next recalculation due to SRS global. Otherwise might get stuck
-        // redoing same char you just did in previous set.
-        if(currentNavigationItem != -1 && currentState == State.DRAWING) {
-            loadNextCharacter(true);
-        }
+        });
 
         if(prevSet != null && this.currentCharacterSet != null){
             this.currentCharacterSet.setShuffle(prevSet.isShuffling());
@@ -1454,7 +1448,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         }
 
-        saveCurrentCharacterSet();
+        // force a next recalculation due to SRS global. Otherwise might get stuck
+        // redoing same char you just did in previous set.
+        if(currentNavigationItem != -1 && currentState == State.DRAWING) {
+            loadNextCharacter(true);
+        }
 
 
         if (this.charSetFrag != null) {
@@ -1465,7 +1463,15 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             raisePurchaseDialog(PurchaseDialog.DialogMessage.START_OF_LOCKED_SET, Frequency.ONCE_PER_SESSION);
         }
 
-        resumeCurrentCharacterSet();
+        resumePracticeLogsCurrentCharset();
+
+        if(currentCharacterSet.currentCharacter() == null){
+            UncaughtExceptionLogger.backgroundLogError("Unexpected: no currentChar in onNavigationItemSelected (" + itemPosition + "); loading.", new RuntimeException());
+            loadNextCharacter(false);
+        }
+
+        saveCurrentCharacterSet();
+
 
         drawPad.clear();
         setUiState(State.DRAWING);
