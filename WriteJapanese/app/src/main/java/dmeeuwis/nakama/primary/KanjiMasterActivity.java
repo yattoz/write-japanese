@@ -1465,8 +1465,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         resumePracticeLogsCurrentCharset();
 
+        // this can happen when rotating, after onCreate, but before onResume, this method is called. In future,
+        /// move loadNextCharacter calls to end of onCreate?
         if(currentCharacterSet.currentCharacter() == null){
-            UncaughtExceptionLogger.backgroundLogError("Unexpected: no currentChar in onNavigationItemSelected (" + itemPosition + "); loading.", new RuntimeException());
             loadNextCharacter(false);
         }
 
