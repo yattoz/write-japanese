@@ -46,6 +46,8 @@ public class ProgressSettingsDialog extends DialogFragment {
                         Integer advIncorrect = pullNumberFromString(advanceIncorrect.getSelectedItem());
                         Integer advReviewing = pullNumberFromString(advanceReviewing.getSelectedItem());
                         Integer charCooldown = pullNumberFromString(characterCooldown.getSelectedItem());
+                        if(charCooldown == null){ charCooldown = 0; }
+
                         Boolean skipSRS = skipSRSOnFirstCorrect.getSelectedItemPosition() == 0;
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
