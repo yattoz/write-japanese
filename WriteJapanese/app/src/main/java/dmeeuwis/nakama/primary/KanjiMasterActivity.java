@@ -775,6 +775,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         if (increment) {
             currentCharacterSet.nextCharacter();
+
+            if(currentCharacterSet.currentCharacter().equals(priorCharacter)) {
+                UncaughtExceptionLogger.backgroundLogError("Error: increment nextCharacter is same as current! " + currentCharacterSet.currentCharacter(), new RuntimeException());
+            }
+
             studySessionHistory.add(currentCharacterSet.currentCharacter());
             backgroundLoadTranslations();
             Log.d("nakama", "Incremented to next character " + currentCharacterSet.currentCharacter());
