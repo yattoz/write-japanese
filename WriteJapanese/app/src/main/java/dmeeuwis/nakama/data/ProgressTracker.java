@@ -200,26 +200,28 @@ public class ProgressTracker {
 
 		boolean prevWasReview = isReview;
 
+		//Set<Character> recentHistorySet = new HashSet<>();
+		Set<Character> availSet = new LinkedHashSet<>(rawAvailSet);
+		for(int i = 0; i < prog.characterCooldown; i++){
+			try {
+				Character c = history.get(history.size() - 1 - i);
+				//recentHistorySet.add(c);
+				availSet.remove(c);
+			} catch(ArrayIndexOutOfBoundsException e){
+				// didn't have enough history
+			}
+		}
+
 		if(useSRS) {
-			SRSQueue.SRSEntry soonestEntry = srsQueue.peek();
-			LocalDate today = nowDate();
+			SRSQueue.SRSEntry soonestEntry = srsQueue.checkForEntry(availSet, today);
 			if (soonestEntry != null && (soonestEntry.nextPractice.isBefore(today) || soonestEntry.nextPractice.isEqual(today))) {
 				Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
-                Character n = srsQueue.poll().character;
+                Character n = srsQueue.peek(availSet).character;
                 history.add(n);
 				return Pair.create(n, StudyType.SRS);
 			}
 		}
 
-
-        Set<Character> availSet = new LinkedHashSet<>(rawAvailSet);
-        for(int i = 0; i < prog.characterCooldown; i++){
-            try {
-                availSet.remove(history.get(history.size() - 1 - i));
-            } catch(ArrayIndexOutOfBoundsException e){
-                // didn't have enough history
-            }
-        }
 
 		if(availSet.size() == 1){
 			Log.i("nakama-progression", "Returning early from nextCharacter, only 1 character in set");

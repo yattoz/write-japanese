@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.util.Util;
@@ -48,12 +49,38 @@ public class SRSQueue {
         this.srsQueue = queue;
     }
 
-    public SRSEntry peek() {
-        return srsQueue.peek();
+    public SRSEntry checkForEntry(Set<Character> availSet, LocalDate now) {
+        SRSEntry c = srsQueue.peek();
+
+        // empty queue, just return
+        if(c == null){ return c; }
+
+        // great! Here's an SRS review.
+        if(checkSrsIsReady(c, now, availSet)){
+            return c;
+        }
+
+        // if the earliest avail srs char is after today, then optimize and return
+        if(c.nextPractice.isAfter(now)){
+            return null;
+        }
+
+        // uncommon case: the next SRS character has been studied in the last n characters.
+        // Need to look through the SRS queue in order until we hit the end, or one that is after today.
+        // Current implementation is pretty slow, need to (shallow) clone the queue.
+        PriorityQueue<SRSEntry> clone = new PriorityQueue<>(srsQueue);
+        SRSEntry s;
+        while((s = clone.poll()) != null){
+            if(checkSrsIsReady(s, now, availSet)){
+                return s;
+            }
+        }
+
+        return null;
     }
 
-    public SRSEntry poll() {
-        return srsQueue.peek();
+    private boolean checkSrsIsReady(SRSEntry c, LocalDate now, Set<Character> availSet){
+        return availSet.contains(c.character) && (c.nextPractice.isBefore(now) || c.nextPractice.isEqual(now));
     }
 
     public int size() {
