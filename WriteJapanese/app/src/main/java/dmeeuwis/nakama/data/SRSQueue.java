@@ -53,7 +53,7 @@ public class SRSQueue {
         SRSEntry c = srsQueue.peek();
 
         // empty queue, just return
-        if(c == null){ return c; }
+        if(c == null){ return null; }
 
         // great! Here's an SRS review.
         if(checkSrsIsReady(c, now, availSet)){
@@ -73,6 +73,11 @@ public class SRSQueue {
         while((s = clone.poll()) != null){
             if(checkSrsIsReady(s, now, availSet)){
                 return s;
+            }
+
+            // don't go through the whole queue unless we have to
+            if(s.nextPractice.isAfter(now)) {
+                return null;
             }
         }
 
@@ -110,11 +115,6 @@ public class SRSQueue {
 
     public SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp, int knownScoreValue){
         if(timestamp == lastLocalDateTime && character.equals(lastCharacter)){
-            return null;
-        }
-
-        // they have passed! No more SRS.
-        if(score == SRSTable.length){
             return null;
         }
 
@@ -167,14 +167,7 @@ public class SRSQueue {
         while(it.hasNext()){
             SRSEntry e = it.next();
             if(e.character.equals(c)){
-
-                //Log.d("nakama-progress", "------------------------ removeSRSQueue -----------------------");
-                //Log.d("nakama-progress", "Removing char " + c + "; set before was " + getSrsScheduleString());
-
                 srsQueue.remove(e);
-
-                //Log.d("nakama-progress", "Removing char " + c + "; set after was " + getSrsScheduleString());
-
                 break;
             }
         }

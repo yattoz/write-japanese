@@ -72,8 +72,17 @@ public class ProgressTracker {
 
     private final List<Character> history = new ArrayList<>();
 
-	public LocalDateTime oldestLogTimestamp = null;
-    private DateFactory dateFactory;
+    private DateFactory dateFactory = new DateFactory() {
+		@Override
+		public LocalDateTime nowLocalDateTime() {
+			return LocalDateTime.now();
+		}
+
+		@Override
+		public LocalDate nowLocalDate() {
+			return LocalDate.now();
+		}
+	};
 
     public Map<Character,Integer> getScoreSheet() {
 		return this.recordSheet;
@@ -178,20 +187,6 @@ public class ProgressTracker {
 	public void setDateFactory(DateFactory d){
 	    this.dateFactory = d;
     }
-
-    private LocalDateTime now(){
-	    if(this.dateFactory != null){
-	        return dateFactory.nowLocalDateTime();
-        }
-        return LocalDateTime.now();
-    }
-
-    private LocalDate nowDate(){
-        if(this.dateFactory != null){
-            return dateFactory.nowLocalDate();
-        }
-        return LocalDate.now();
-    }
     /*========== END TEMP HACK FOR TESTING ============ */
 
 
@@ -200,12 +195,10 @@ public class ProgressTracker {
 
 		boolean prevWasReview = isReview;
 
-		//Set<Character> recentHistorySet = new HashSet<>();
 		Set<Character> availSet = new LinkedHashSet<>(rawAvailSet);
 		for(int i = 0; i < prog.characterCooldown; i++){
 			try {
 				Character c = history.get(history.size() - 1 - i);
-				//recentHistorySet.add(c);
 				availSet.remove(c);
 			} catch(ArrayIndexOutOfBoundsException e){
 				// didn't have enough history
@@ -213,12 +206,17 @@ public class ProgressTracker {
 		}
 
 		if(useSRS) {
-			SRSQueue.SRSEntry soonestEntry = srsQueue.checkForEntry(availSet, today);
-			if (soonestEntry != null && (soonestEntry.nextPractice.isBefore(today) || soonestEntry.nextPractice.isEqual(today))) {
-				Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
-                Character n = srsQueue.peek(availSet).character;
-                history.add(n);
-				return Pair.create(n, StudyType.SRS);
+			try {
+				LocalDate today = this.dateFactory.nowLocalDate();
+				SRSQueue.SRSEntry soonestEntry = srsQueue.checkForEntry(availSet, today);
+				if (soonestEntry != null) {
+					Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
+					Character n = soonestEntry.character;
+					history.add(n);
+					return Pair.create(n, StudyType.SRS);
+				}
+			} catch(Throwable t){
+				UncaughtExceptionLogger.backgroundLogError("Error during SRS nextCharacter", t);
 			}
 		}
 
@@ -487,13 +485,6 @@ public class ProgressTracker {
 	}
 
 
-	public void debugPrintAllScores(){
-		Map<Character, Progress> all = new LinkedHashMap<>(recordSheet.size());
-		for(Map.Entry<Character, Integer> entry: recordSheet.entrySet()){
-			Log.d("nakama-progress", "In set " + setId + " char " + entry.getKey() + " has score " + entry.getValue());
-		}
-	}
-
 	private int failScore(){
 		return  -1 * (advanceIncorrect + advanceReview);
 	}
@@ -520,7 +511,7 @@ public class ProgressTracker {
 		}
 
 		if(progress == Progress.TIMED_REVIEW){
-			LocalDateTime time = DEBUG_SRS ? now().minusDays(2) : now();
+			LocalDateTime time = DEBUG_SRS ? dateFactory.nowLocalDateTime().minusDays(2) : dateFactory.nowLocalDateTime();
 			srsQueue.addToSRSQueue(character, 0, time, knownScore());
 		} else {
 			srsQueue.removeSRSQueue(character);
@@ -544,7 +535,7 @@ public class ProgressTracker {
         if(lastPassed){
             markFailure(lastChar);
         } else {
-            markSuccess(lastChar, now());
+            markSuccess(lastChar, dateFactory.nowLocalDateTime());
         }
     }
 

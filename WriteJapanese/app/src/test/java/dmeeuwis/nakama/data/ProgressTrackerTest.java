@@ -71,7 +71,7 @@ public class ProgressTrackerTest {
     @Test
     public void testSingleChar(){
         ProgressTracker p = new ProgressTracker(
-                CHARS_SET, 2, 2, true, false, true,"test-set");
+                CHARS_SET, 2, 2, true, false, false,"test-set");
         p.markSuccess('a', LocalDateTime.of(2017, 1, 1, 12,1));
 
         assertEquals("Single correct goes to score 0", Integer.valueOf(0), p.debugPeekCharacterScore('a'));
@@ -125,9 +125,9 @@ public class ProgressTrackerTest {
     @Test
     public void testGlobalSet() {
         ProgressTracker p1 = new ProgressTracker(
-                CHARS_SET, 2, 2, true, true, true, "test-1");
+                CHARS_SET, 2, 2, true, true, false, "test-1");
         ProgressTracker p2 = new ProgressTracker(
-                CHARS_SET_2, 2, 2, true, true, true, "test-2");
+                CHARS_SET_2, 2, 2, true, true, false, "test-2");
 
         p1.markSuccess('a', LocalDateTime.of(2017, 1, 1, 2, 1));
         p1.markSuccess('a', LocalDateTime.of(2017, 1, 2, 12, 1));
@@ -160,7 +160,7 @@ public class ProgressTrackerTest {
     @Test
     public void testCompletedSRSSet(){
         ProgressTracker p1 = new ProgressTracker(
-                CHARS_SET_4, 2, 2, true, false, true, "test-1");
+                CHARS_SET_4, 2, 2, true, false, false, "test-1");
         CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(2, 2, 1, 1, 5, true);
 
         {

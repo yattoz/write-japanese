@@ -27,6 +27,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,6 +44,7 @@ import android.widget.ViewFlipper;
 import org.threeten.bp.LocalDate;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
