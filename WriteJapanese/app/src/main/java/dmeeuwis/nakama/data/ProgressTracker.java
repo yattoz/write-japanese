@@ -70,7 +70,23 @@ public class ProgressTracker {
 	private SRSQueue srsQueue;
     private Map<Character, Integer> recordSheet;
 
-    private final List<Character> history = new ArrayList<>();
+    private static class StudyRecord {
+        private final Character chosenChar;
+        private final Character previousChar;
+        private final String setId;
+        private final StudyType type;
+        private final String pool;
+
+        private StudyRecord(Character chosen, Character prev, String setId, StudyType type, String pool) {
+            this.chosenChar = chosen;
+            this.previousChar = prev;
+            this.setId = setId;
+            this.type = type;
+            this.pool = pool;
+        }
+    }
+
+    private static final List<StudyRecord> history = new ArrayList<>();
 
     private DateFactory dateFactory = new DateFactory() {
 		@Override
@@ -195,11 +211,13 @@ public class ProgressTracker {
 
 		boolean prevWasReview = isReview;
 
+		Character prev = null;
 		Set<Character> availSet = new LinkedHashSet<>(rawAvailSet);
 		for(int i = 0; i < prog.characterCooldown; i++){
 			try {
-				Character c = history.get(history.size() - 1 - i);
+				Character c = history.get(history.size() - 1 - i).chosenChar;
 				availSet.remove(c);
+				if(prev == null){ prev = c; }
 			} catch(ArrayIndexOutOfBoundsException e){
 				// didn't have enough history
 			}
@@ -212,8 +230,9 @@ public class ProgressTracker {
 				if (soonestEntry != null) {
 					Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
 					Character n = soonestEntry.character;
-					history.add(n);
-					return Pair.create(n, StudyType.SRS);
+					StudyRecord rec = new StudyRecord(n, prev, setId, StudyType.SRS, today.toString());
+					history.add(rec);
+					return Pair.create(rec.chosenChar, rec.type);
 				}
 			} catch(Throwable t){
 				UncaughtExceptionLogger.backgroundLogError("Error during SRS nextCharacter", t);
@@ -253,11 +272,13 @@ public class ProgressTracker {
 
         Character n = null;
 		isReview = false;
+		String pool = "";
 
 		// character not in cooldown that are failed get priority, in their order.
         if(failed.size() > 0){
             n = failed.get(0);
             isReview = true;
+            pool = "failed";
         }
 
 		// if we're not at reviewing or failed limits, alternate reviewing chars and new chars
@@ -265,13 +286,16 @@ public class ProgressTracker {
             if(!prevWasReview && reviewing.size() > 0) {
                 n = reviewing.get(0);
                 isReview = true;
+                pool = "first-reviewing";
             }
 
             // Intro a new character! Congratulations!
             if(n == null && shuffling){
                 n = unknown.get((int)(Math.random() * unknown.size()));
+                pool = "new-char-shuffle";
             } else if(n == null){
                 n = unknown.get(0);
+                pool = "new-char";
             }
         }
 
@@ -279,15 +303,18 @@ public class ProgressTracker {
         if(n == null && reviewing.size() > 0){
 		    n = reviewing.get(0);
             isReview = true;
+            pool = "reviewing-no-space";
         }
 
         // if we get here, there were no failed or reviewing characters, and we couldn't introduce a new char. Maybe
         // a tiny custom list, or a very high character cooldown? Go to the unfiltered lists.
         if(n == null && unfilteredFailed.size() > 0){
 		    n = unfilteredFailed.get(0);
+            pool = "unfiltered-failed";
         }
         if(n == null && unfilteredReviewing.size() > 0){
             n = unfilteredReviewing.get(0);
+            pool = "unfiltered-reviewing";
         }
 
         // since we couldn't get a reviewing or failed character, try repeating a timed review (ahead of schedule)
@@ -298,6 +325,7 @@ public class ProgressTracker {
 		    List<Character> allReview = new ArrayList<>(timedReviewing);
 		    allReview.addAll(passed);
 		    n = allReview.get((int) (allReview.size() * Math.random()));
+            pool = "random-review";
         }
 
         if(n == null){
@@ -308,14 +336,52 @@ public class ProgressTracker {
                         new RuntimeException());
 
             n = rawAvailSet.toArray(new Character[0])[(int)(rawAvailSet.size() * Math.random())];
+            pool = "random-raw-avail";
         }
 
 		if(BuildConfig.DEBUG) {
 			Log.d("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh, current score: " + getScoreSheet().get(n)));
 		}
 
-		history.add(n);
-		return Pair.create(n, isReview ? StudyType.REVIEW : StudyType.NEW_CHAR);
+		StudyRecord rec = new StudyRecord(n, prev, setId, isReview ? StudyType.REVIEW : StudyType.NEW_CHAR, pool);
+		history.add(rec);
+		return Pair.create(rec.chosenChar, rec.type);
+    }
+
+    public String debugHistory(){
+        try {
+            StringWriter sw = new StringWriter();
+            JsonWriter jw = new JsonWriter(sw);
+
+            jw.beginArray();
+            for (StudyRecord s : history) {
+                jw.beginObject();
+
+                jw.name("char");
+                jw.value(s.chosenChar.toString());
+
+                jw.name("prev");
+                jw.value(s.previousChar == null ? "none" : s.previousChar.toString());
+
+                jw.name("set");
+                jw.value(s.setId);
+
+                jw.name("type");
+                jw.value(s.type.toString());
+
+                jw.name("pool");
+                jw.value(s.pool);
+
+                jw.endObject();
+            }
+            jw.endArray();
+
+            return sw.toString();
+
+        } catch(Throwable t){
+            Log.e("nakama", "Error generating debug history json", t);
+            return t.getMessage();
+        }
     }
 
 	public StudyType isReviewing(Character c){

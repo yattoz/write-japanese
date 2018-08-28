@@ -779,7 +779,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             currentCharacterSet.nextCharacter();
 
             if(currentCharacterSet.currentCharacter().equals(priorCharacter)) {
-                UncaughtExceptionLogger.backgroundLogError("Error: increment nextCharacter is same as current! " + currentCharacterSet.currentCharacter(), new RuntimeException());
+                try {
+                    UncaughtExceptionLogger.backgroundLogError("Error: increment nextCharacter is same as current! " + currentCharacterSet.currentCharacter() + "\n" +
+                            currentCharacterSet.getProgressTracker().debugHistory(), new RuntimeException());
+                } catch(Throwable t){
+                    // never die because of this!
+                }
             }
 
             studySessionHistory.add(currentCharacterSet.currentCharacter());
@@ -1080,6 +1085,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:ClearUpdateNotification");
             menu.add("DEBUG:PrintCharsetsAndSRS");
             menu.add("DEBUG:ClearLogCache");
+            menu.add("DEBUG:DebugHistory");
         }
 
         return true;
@@ -1314,6 +1320,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                     sqlite.close();
                 }
 
+            } else if(item.getTitle().equals("DEBUG:DebugHistory")){
+                Toast.makeText(this, currentCharacterSet.getProgressTracker().debugHistory(), Toast.LENGTH_LONG * 5).show();
             }
         }
 
