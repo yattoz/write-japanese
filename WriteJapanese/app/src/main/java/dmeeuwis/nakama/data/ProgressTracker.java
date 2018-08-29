@@ -282,7 +282,11 @@ public class ProgressTracker {
         }
 
 		// if we're not at reviewing or failed limits, alternate reviewing chars and new chars
-		if(n == null && unfilteredReviewing.size() < prog.introReviewing && unfilteredFailed.size() < prog.introIncorrect && unknown.size() > 0){
+		boolean spaceInReviewingPool = unfilteredReviewing.size() < prog.introReviewing;
+        boolean spaceInFailedPool = unfilteredFailed.size() < prog.introIncorrect;
+        boolean unknownCharsInSet = unknown.size() > 0;
+
+		if(n == null && spaceInReviewingPool && spaceInFailedPool && unknownCharsInSet){
             if(!prevWasReview && reviewing.size() > 0) {
                 n = reviewing.get(0);
                 isReview = true;
