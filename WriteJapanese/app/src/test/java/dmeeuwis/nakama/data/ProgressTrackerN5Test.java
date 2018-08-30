@@ -365,7 +365,7 @@ public class ProgressTrackerN5Test {
 
         s.nextCharacter();
         for(int i = 0; i < chars.size(); i++){
-            assertEquals("Characters go in order", chars.get(i), s.currentCharacter());
+            assertEquals("Characters go in order (" + i + ")", chars.get(i), s.currentCharacter());
             s.markCurrent(null, true);
             s.nextCharacter();
         }

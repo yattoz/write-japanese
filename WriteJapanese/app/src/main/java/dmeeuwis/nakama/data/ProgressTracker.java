@@ -320,7 +320,7 @@ public class ProgressTracker {
 		// if we get here, there were no failed or reviewing characters, and we couldn't introduce a new char.
 		// Logically, everything must be in timed review or passed.
 		// These two sets won't progress on pass, so need to do them out of order.
-		if(n == null && timedReviewing.size() > 0 || passed.size() > 0){
+		if(n == null && (timedReviewing.size() > 0 || passed.size() > 0)){
 			List<Character> summed = new ArrayList<>(timedReviewing);
 			summed.addAll(passed);
 			n = summed.get((int)(Math.random() * summed.size()));
