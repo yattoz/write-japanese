@@ -27,7 +27,9 @@ public class CharacterSetTest {
         }
 
         @Override public ProgressionSettings getProgressionSettings(){
-            return new ProgressionSettings(5, 10, 1, 2, 5, true);
+            return new ProgressionSettings(CharacterProgressDataHelper.DEFAULT_INTRO_INCORRECT, CharacterProgressDataHelper.DEFAULT_INTRO_REVIEWING,
+                    CharacterProgressDataHelper.DEFAULT_ADV_INCORRECT, CharacterProgressDataHelper.DEFAULT_ADV_REVIEWING,
+                    CharacterProgressDataHelper.DEFAULT_CHAR_COOLDOWN, true);
         }
 
         @Override public String recordPractice(String charset, String character, PointDrawing d, int score){
@@ -78,7 +80,11 @@ public class CharacterSetTest {
         System.out.println("Failed is: " + Util.join(", ", failed));
 
         for(int i = 0; i < 100; i++){
+            if(i == 4){
+                System.out.println("Hey!");
+            }
             c.nextCharacter();
+
             assertTrue("No new characters are introduced when at max INTRO_INCORRECT; failed was " +
                     Util.join(", ", failed) + " and new was " + c.currentCharacter() + " on loop iteration " + i,
                     failed.contains(c.currentCharacter()));

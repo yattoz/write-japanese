@@ -33,8 +33,10 @@ public class ProgressTrackerN5Test {
     private Set<Character> charSet = new LinkedHashSet<>(chars);
 
     private ProgressTracker simpleTestTracker(int advIncorrect, int advReview, boolean skipSrsIfFirstCorrect){
-        return new ProgressTracker(
+        ProgressTracker p = new ProgressTracker(
                 charSet, advIncorrect, advReview, true, false, skipSrsIfFirstCorrect, "jlpt5");
+        p.clearGlobalState();
+        return p;
     }
 
     @Test
@@ -173,7 +175,7 @@ public class ProgressTrackerN5Test {
         // all seen are in reviewing, still preventing new characters
         System.out.println("=====================> Stage 2 in-review");
 
-        CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(1, 1, 5, 5, 5, false);
+        CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(1, 1, 5, 5, 0, false);
         for(int i = 0; i < 100; i++) {
             Pair<Character, ProgressTracker.StudyType> r = t.nextCharacter(charSet, false, p);
             last = r.first;
@@ -377,7 +379,7 @@ public class ProgressTrackerN5Test {
 
     @Test
     public void showReviewAfterHISTORYEntries(){
-        int characterCooldown = 5;
+        int characterCooldown = 4;
         ProgressTracker t = simpleTestTracker(2, 1, true);
         CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
         s.load(t);
@@ -412,6 +414,7 @@ public class ProgressTrackerN5Test {
     public void srsWithShuffle() {
         ProgressTracker t = new ProgressTracker(
                 charSet, 2, 1, true, false, false, "jlpt5");
+        t.clearGlobalState();
         CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
         s.setShuffle(true);
         s.load(t);
@@ -450,11 +453,13 @@ public class ProgressTrackerN5Test {
     public void testGettingIntoPassedStateAfterSRS() {
         ProgressTracker t = new ProgressTracker(
                 charSet, 2, 1, true, false, false,"jlpt5");
+        t.clearGlobalState();
 
         t.markSuccess('書', LocalDateTime.of(2000, 1, 1, 12, 30));
         assertEquals("Char goes into SRS", ProgressTracker.Progress.TIMED_REVIEW, t.getAllScores().get('書'));
 
-        CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(1, 1, 2, 1, 5, true);
+        // note: character cooldown disabled completely for this test.
+        CharacterProgressDataHelper.ProgressionSettings p = new CharacterProgressDataHelper.ProgressionSettings(1, 1, 2, 1, 0, true);
 
         {       // 1 day later
             ProgressTracker.DateFactory df = makeDateFactory(2000, 1, 2);

@@ -278,6 +278,7 @@ public class CharacterStudySet implements Iterable<Character> {
 
     public ProgressTracker loadEmptyTestingTracker() {
         tracker = new ProgressTracker(allCharactersSet, 2, 2, true, false, true, pathPrefix);
+        tracker.clearGlobalState();
         return tracker;
     }
 

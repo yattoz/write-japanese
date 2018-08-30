@@ -24,11 +24,11 @@ import dmeeuwis.nakama.primary.ProgressSettingsDialog;
 public class CharacterProgressDataHelper {
     public final static int DEFAULT_INTRO_INCORRECT = 5;
 
-    private final static int DEFAULT_INTRO_REVIEWING = 10;
-    private final static int DEFAULT_ADV_INCORRECT = 1;
-    private final static int DEFAULT_ADV_REVIEWING = 2;
-    private final static int DEFAULT_CHAR_COOLDOWN = 5;
-    private final static boolean DEFAULT_SKIP_SRS_ON_FIRST_CORRECT = true;
+    public final static int DEFAULT_INTRO_REVIEWING = 10;
+    public final static int DEFAULT_ADV_INCORRECT = 1;
+    public final static int DEFAULT_ADV_REVIEWING = 2;
+    public final static int DEFAULT_CHAR_COOLDOWN = 4;
+    public final static boolean DEFAULT_SKIP_SRS_ON_FIRST_CORRECT = true;
 
     private final Context context;
     private final UUID iid;

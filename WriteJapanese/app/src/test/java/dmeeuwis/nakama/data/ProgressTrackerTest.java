@@ -20,40 +20,38 @@ import java.util.Set;
 import dmeeuwis.kanjimaster.BuildConfig;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class ProgressTrackerTest {
 
-    public final static Character[] CHARS = new Character[] {
-           Character.valueOf('a'),
-           Character.valueOf('b'),
-           Character.valueOf('c')
+    private final static Character[] CHARS = new Character[] {
+            'a',
+            'b',
+            'c'
     };
-    public final static List<Character> CHARS_LIST = Arrays.asList(CHARS);
-    public final static Set<Character> CHARS_SET = new LinkedHashSet<>(CHARS_LIST);
+    private final static List<Character> CHARS_LIST = Arrays.asList(CHARS);
+    private final static Set<Character> CHARS_SET = new LinkedHashSet<>(CHARS_LIST);
 
-    public final static Character[] CHARS_2 = new Character[] {
-            Character.valueOf('x'),
-            Character.valueOf('y'),
-            Character.valueOf('z')
+    private final static Character[] CHARS_2 = new Character[] {
+            'x',
+            'y',
+            'z'
     };
-    public final static List<Character> CHARS_LIST_2 = Arrays.asList(CHARS_2);
-    public final static Set<Character> CHARS_SET_2 = new LinkedHashSet<>(CHARS_LIST_2);
+    private final static List<Character> CHARS_LIST_2 = Arrays.asList(CHARS_2);
+    private final static Set<Character> CHARS_SET_2 = new LinkedHashSet<>(CHARS_LIST_2);
 
 
-    public final static Character[] CHARS_4 = new Character[] {
-            Character.valueOf('a'),
-            Character.valueOf('b'),
-            Character.valueOf('c'),
-            Character.valueOf('d'),
-            Character.valueOf('e'),
+    private final static Character[] CHARS_4 = new Character[] {
+            'a',
+            'b',
+            'c',
+            'd',
+            'e',
     };
-    public final static List<Character> CHARS_LIST_4 = Arrays.asList(CHARS_4);
-    public final static Set<Character> CHARS_SET_4 = new LinkedHashSet<>(CHARS_LIST_4);
+    private final static List<Character> CHARS_LIST_4 = Arrays.asList(CHARS_4);
+    private final static Set<Character> CHARS_SET_4 = new LinkedHashSet<>(CHARS_LIST_4);
 
     @Test
     public void testEmptyProgressTracker(){
@@ -63,9 +61,9 @@ public class ProgressTrackerTest {
 
         Map<Character, Integer> scoreSheet = p.getScoreSheet();
         assertEquals("Progress tracker knows about valid chars", 3, scoreSheet.size());
-        assertEquals("Progress tracker starts with null integers", null, scoreSheet.get(Character.valueOf('a')));
-        assertEquals("Progress tracker starts with null integers", null, scoreSheet.get(Character.valueOf('b')));
-        assertEquals("Progress tracker starts with null integers", null, scoreSheet.get(Character.valueOf('c')));
+        assertEquals("Progress tracker starts with null integers", null, scoreSheet.get('a'));
+        assertEquals("Progress tracker starts with null integers", null, scoreSheet.get('b'));
+        assertEquals("Progress tracker starts with null integers", null, scoreSheet.get('c'));
     }
 
     @Test
@@ -195,13 +193,11 @@ public class ProgressTrackerTest {
             p1.markSuccess('e', LocalDateTime.now());
         }
 
-        char lastChar = 'e';
         Map<Character, Integer> count = new HashMap<>();
         for(int i = 0; i < 200; i++){
             Pair<Character, ProgressTracker.StudyType> c = p1.nextCharacter(CHARS_SET_4, false, p);
             count.put(c.first, count.get(c.first) == null ? 1 : count.get(c.first) + 1);
             p1.markSuccess(c.first, LocalDateTime.now());
-            lastChar = c.first;
         }
 
         for(Map.Entry<Character, Integer> e: count.entrySet()){

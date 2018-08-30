@@ -70,7 +70,13 @@ public class ProgressTracker {
 	private SRSQueue srsQueue;
     private Map<Character, Integer> recordSheet;
 
-    private static class StudyRecord {
+    // TODO: would be better to take a reference to global history object in constructor, instead of relying
+	// on tests to call this clear method.
+	public void clearGlobalState() {
+		history.clear();
+	}
+
+	private static class StudyRecord {
         private final Character chosenChar;
         private final Character previousChar;
         private final String setId;
