@@ -310,8 +310,27 @@ public class ProgressTracker {
             pool = "reviewing-no-space";
         }
 
-        // if we get here, there were no failed or reviewing characters, and we couldn't introduce a new char. Maybe
-        // a tiny custom list, or a very high character cooldown? Go to the unfiltered lists.
+		// if we get here, there were no failed or reviewing characters available right now. I guess everything is in
+		// timed review or passed? Go ahead and introduce a new character, even though it might take us over our pool limits.
+		if(n == null && unknownCharsInSet){
+			n = unknown.get(0);
+			pool = "new-char-no-failed-or-reviewing";
+		}
+
+		// if we get here, there were no failed or reviewing characters, and we couldn't introduce a new char.
+		// Logically, everything must be in timed review or passed.
+		// These two sets won't progress on pass, so need to do them out of order.
+		if(n == null && timedReviewing.size() > 0 || passed.size() > 0){
+			List<Character> summed = new ArrayList<>(timedReviewing);
+			summed.addAll(passed);
+			n = summed.get((int)(Math.random() * summed.size()));
+			isReview = true;
+			pool = "random-review";
+		}
+
+
+        // if we get here, there were no failed or reviewing characters, and we couldn't introduce a new char,
+		// and we can't do timed review. This should be impossible? Maybe a huge cooldown setting? What the hell, go to the unfiltered lists.
         if(n == null && unfilteredFailed.size() > 0){
 		    n = unfilteredFailed.get(0);
             pool = "unfiltered-failed";
@@ -319,17 +338,6 @@ public class ProgressTracker {
         if(n == null && unfilteredReviewing.size() > 0){
             n = unfilteredReviewing.get(0);
             pool = "unfiltered-reviewing";
-        }
-
-        // since we couldn't get a reviewing or failed character, try repeating a timed review (ahead of schedule)
-        // or a passed character at random. Needs to be random so we don't just keep repeating the first few characters
-        // of the passed set.
-        if(n == null && (timedReviewing.size() > 0 || passed.size() > 0)){
-            isReview = true;
-		    List<Character> allReview = new ArrayList<>(timedReviewing);
-		    allReview.addAll(passed);
-		    n = allReview.get((int) (allReview.size() * Math.random()));
-            pool = "random-review";
         }
 
         if(n == null){
