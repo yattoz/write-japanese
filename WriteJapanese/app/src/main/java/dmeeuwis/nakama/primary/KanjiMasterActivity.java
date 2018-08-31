@@ -80,9 +80,11 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.ClueExtractor;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
+import dmeeuwis.nakama.data.DataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.ProgressTracker;
+import dmeeuwis.nakama.data.SRSQueue;
 import dmeeuwis.nakama.data.SRSScheduleHtmlGenerator;
 import dmeeuwis.nakama.data.Settings;
 import dmeeuwis.nakama.data.StoryDataHelper;
@@ -506,8 +508,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         for(CharacterStudySet c: this.characterSets.values()){
             trackers.add(c.load(this.getApplicationContext(), loadType));
         }
-        new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()))
-                .loadProgressTrackerFromDB(trackers, progressCacheFlag);
+        CharacterProgressDataHelper ch = new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()));
+        ch.loadProgressTrackerFromDB(trackers, progressCacheFlag);
     }
 
     public void delayedStartBackgroundLoadTranslations(){
@@ -1029,8 +1031,15 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                     d.cachePracticeRecord(c.pathPrefix, serialize.recordSheetJson, serialize.srsQueueJson, serialize.oldestDateTime);
                 }
             } catch(Throwable t){
-                Log.d("nakama", "Error caching progress on " + c.pathPrefix + " onPause", t);
+                UncaughtExceptionLogger.backgroundLogError("Error caching progress on " + c.pathPrefix + " onPause", t);
             }
+        }
+
+        // cache global SRS queue separately
+        try {
+            d.cachePracticeRecord("global", "[]", SRSQueue.GLOBAL.serializeOut(), null);
+        } catch (IOException e) {
+            UncaughtExceptionLogger.backgroundLogError("Error caching progress on global SRS set", e);
         }
 
         super.onPause();
@@ -1313,9 +1322,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this);
                 SQLiteDatabase sqlite = db.getWritableDatabase();
                 try {
+                    Toast.makeText(this, "Recalculating Progress!", Toast.LENGTH_SHORT).show();
                     db.clearPracticeLogCache(sqlite);
                     reloadPracticeLogs(CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS, CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
-                    Toast.makeText(this, "Cleared!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Recalculated!", Toast.LENGTH_LONG).show();
                 } finally {
                     sqlite.close();
                 }

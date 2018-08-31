@@ -10,6 +10,7 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.DateTimeParseException;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -176,6 +177,16 @@ public class CharacterProgressDataHelper {
                                 new RuntimeException());
                     }
                 }
+            }
+
+            try {
+                Map<String, String> globalSRS = caches.get("globalSRS");
+                if(globalSRS != null){
+                    String json = globalSRS.get("srs_queue");
+                    SRSQueue.GLOBAL = SRSQueue.deserializeIn("global", json);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         Log.d("nakama-progress", "Time to do resume block: " + (System.currentTimeMillis() - startResume));
