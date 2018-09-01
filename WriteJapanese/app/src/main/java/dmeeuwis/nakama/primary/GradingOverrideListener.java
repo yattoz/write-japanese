@@ -1,5 +1,7 @@
 package dmeeuwis.nakama.primary;
 
+import dmeeuwis.nakama.views.OverrideDialog;
+
 public interface GradingOverrideListener {
-    void overRide();
+    void overRide(OverrideDialog.OverideType type);
 }

@@ -99,6 +99,8 @@ import dmeeuwis.nakama.views.translations.ClueCard;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 
 import static dmeeuwis.nakama.primary.IntroActivity.USE_SRS_SETTING_NAME;
+import static dmeeuwis.nakama.views.OverrideDialog.OverideType.CORRECT_OVERRIDE;
+import static dmeeuwis.nakama.views.OverrideDialog.OverideType.INCORRECT_OVERRIDE;
 
 public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
@@ -148,7 +150,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     protected ViewFlipper flipper;
     protected FlipperAnimationListener flipperAnimationListener;
     protected View maskView;
-    protected FloatingActionButton overrideButton, remindStoryButton, doneButton, undoStrokeButton, teachMeButton;
+    protected FloatingActionButton remindStoryButton, doneButton, undoStrokeButton, teachMeButton;
     protected ListView criticism;           // TODO: to RecyclerView
     protected ArrayAdapter<String> criticismArrayAdapter;
     protected ColorDrawable actionBarBackground;
@@ -322,17 +324,29 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         });
 
 
-        overrideButton = findViewById(R.id.overrideButton);
+        FloatingActionButton overrideButton = findViewById(R.id.overrideButton);
         overrideButton.setOnClickListener(
                 new View.OnClickListener() {
                      @Override
                      public void onClick(View v) {
-                         OverrideDialog od = OverrideDialog.make();
+                         OverrideDialog od = OverrideDialog.make(INCORRECT_OVERRIDE);
                          if(!od.isAdded()) {
                              od.show(KanjiMasterActivity.this.getSupportFragmentManager(), "override");
                          }
                      }
                  });
+
+        FloatingActionButton correctOverrideButton = findViewById(R.id.correctOverrideButton);
+        correctOverrideButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        OverrideDialog od = OverrideDialog.make(CORRECT_OVERRIDE);
+                        if(!od.isAdded()) {
+                            od.show(KanjiMasterActivity.this.getSupportFragmentManager(), "override");
+                        }
+                    }
+                });
 
         correctAnimation = findViewById(R.id.animatedKnownReplay);
         playbackAnimation = findViewById(R.id.animatedDrawnReplay);
@@ -1669,10 +1683,16 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
     @Override
-    public void overRide() {
+    public void overRide(OverrideDialog.OverideType type) {
         if(BuildConfig.DEBUG) Toast.makeText(this, "Override " + lastGradingRow, Toast.LENGTH_LONG).show();
         currentCharacterSet.overRideLast();
-        setUiState(State.CORRECT_ANSWER);
+
+        if(type == INCORRECT_OVERRIDE){
+            setUiState(State.CORRECT_ANSWER);
+        }
+        if(type == CORRECT_OVERRIDE){
+            setUiState(State.REVIEWING);
+        }
     }
 
     @Override

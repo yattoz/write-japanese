@@ -241,8 +241,11 @@ public class CharacterProgressDataHelper {
         if(lastRowId != null) {
             WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
             try {
+                Integer last = DataHelper.selectInteger(db.getReadableDatabase(),
+                        "SELECT score FROM practice_log WHERE id = ?", lastRowId);
+                Integer next = last == 100 ? 0 : 100;
                 DataHelper.selectRecord(db.getReadableDatabase(),
-                        "UPDATE practice_log SET score = 100 WHERE id = ?", lastRowId);
+                        "UPDATE practice_log SET score = ? WHERE id = ?", next, lastRowId);
             } finally {
                 db.close();
             }

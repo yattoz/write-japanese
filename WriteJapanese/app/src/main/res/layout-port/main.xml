@@ -260,6 +260,18 @@
             </LinearLayout>
 
             <android.support.design.widget.FloatingActionButton
+                android:id="@+id/correctOverrideButton"
+                android:layout_width="@dimen/fab_custom_size"
+                android:layout_height="@dimen/fab_custom_size"
+                android:layout_gravity="bottom|start"
+                android:src="@drawable/ic_exclamation"
+                nakama:backgroundTint="@color/DarkRed"
+                android:layout_marginLeft="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="@dimen/elevation_low"/>
+
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/correctNextButton"
                 android:layout_width="@dimen/fab_custom_size"
                 android:layout_height="@dimen/fab_custom_size"
