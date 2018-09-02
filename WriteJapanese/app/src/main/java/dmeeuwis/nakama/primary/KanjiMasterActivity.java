@@ -1037,7 +1037,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         // cache global SRS queue separately
         try {
-            d.cachePracticeRecord("global", "[]", SRSQueue.GLOBAL.serializeOut(), null);
+            d.cachePracticeRecord("globalSRS", "[]", SRSQueue.GLOBAL.serializeOut(), "");
         } catch (IOException e) {
             UncaughtExceptionLogger.backgroundLogError("Error caching progress on global SRS set", e);
         }
@@ -1094,6 +1094,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:ClearUpdateNotification");
             menu.add("DEBUG:PrintCharsetsAndSRS");
             menu.add("DEBUG:ClearLogCache");
+            menu.add("DEBUG:DeleteSRSGlobal");
             menu.add("DEBUG:DebugHistory");
         }
 
@@ -1332,6 +1333,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
             } else if(item.getTitle().equals("DEBUG:DebugHistory")){
                 Toast.makeText(this, currentCharacterSet.getProgressTracker().debugHistory(), Toast.LENGTH_LONG * 5).show();
+            } else if(item.getTitle().equals("DEBUG:DeleteSRSGlobal")){
+                WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this);
+                SQLiteDatabase sqlite = db.getWritableDatabase();
+                DataHelper.selectRecord(sqlite, "DELETE FROM practice_record_cache WHERE set_id = 'globalSRS'");
+                Toast.makeText(this, "globalSRS cleared.", Toast.LENGTH_LONG).show();
             }
         }
 

@@ -26,7 +26,7 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.util.Util;
 
 public class SRSQueue {
-    public static SRSQueue GLOBAL = new SRSQueue("global");
+    public static SRSQueue GLOBAL = new SRSQueue("globalSRS");
 
     private PriorityQueue<SRSEntry> srsQueue;
     private final String id;

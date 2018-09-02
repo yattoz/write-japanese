@@ -147,12 +147,19 @@ public class CharacterProgressDataHelper {
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
 
         long startResume = System.currentTimeMillis();
-        if(!resuming && useCache == ProgressCacheFlag.USE_CACHE){
+        fromCache: if(!resuming && useCache == ProgressCacheFlag.USE_CACHE){
             // check timestamp of log vs json
 
             Map<String, Map<String, String>> caches = DataHelper.selectRecordsIndexedByFirst(db.getReadableDatabase(),
                 "SELECT set_id, practice_record, srs_queue, last_log_by_device FROM practice_record_cache",
                 "set_id");
+
+            // the initial practice log cache release broke global SRS. Specifically detect that situation here,
+            // and recalculate
+            if(caches.size() > 0 && caches.get("globalSRS") == null){
+                db.clearPracticeLogCache(db.getWritableDatabase());
+                break fromCache;
+            }
 
             for (int i = allPts.size() - 1; i >= 0; i--) {
                 ProgressTracker t = allPts.get(i);
@@ -183,7 +190,7 @@ public class CharacterProgressDataHelper {
                 Map<String, String> globalSRS = caches.get("globalSRS");
                 if(globalSRS != null){
                     String json = globalSRS.get("srs_queue");
-                    SRSQueue.GLOBAL = SRSQueue.deserializeIn("global", json);
+                    SRSQueue.GLOBAL = SRSQueue.deserializeIn("globalSRS", json);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
