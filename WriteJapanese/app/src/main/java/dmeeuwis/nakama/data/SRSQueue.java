@@ -28,6 +28,8 @@ import dmeeuwis.util.Util;
 public class SRSQueue {
     public static SRSQueue GLOBAL = new SRSQueue("globalSRS");
 
+    public boolean useSRSGlobal = true;
+
     private PriorityQueue<SRSEntry> srsQueue;
     private final String id;
 
@@ -50,7 +52,9 @@ public class SRSQueue {
     }
 
     public SRSEntry checkForEntry(Set<Character> availSet, LocalDate now) {
-        SRSEntry c = srsQueue.peek();
+        PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? GLOBAL.srsQueue : this.srsQueue;
+
+        SRSEntry c = queueToUse.peek();
 
         // empty queue, just return
         if(c == null){ return null; }
@@ -68,7 +72,7 @@ public class SRSQueue {
         // uncommon case: the next SRS character has been studied in the last n characters.
         // Need to look through the SRS queue in order until we hit the end, or one that is after today.
         // Current implementation is pretty slow, need to (shallow) clone the queue.
-        PriorityQueue<SRSEntry> clone = new PriorityQueue<>(srsQueue);
+        PriorityQueue<SRSEntry> clone = new PriorityQueue<>(queueToUse);
         SRSEntry s;
         while((s = clone.poll()) != null){
             if(checkSrsIsReady(s, now, availSet)){
@@ -84,7 +88,7 @@ public class SRSQueue {
         return null;
     }
 
-    private boolean checkSrsIsReady(SRSEntry c, LocalDate now, Set<Character> availSet){
+    static private boolean checkSrsIsReady(SRSEntry c, LocalDate now, Set<Character> availSet){
         return availSet.contains(c.character) && (c.nextPractice.isBefore(now) || c.nextPractice.isEqual(now));
     }
 
@@ -110,6 +114,9 @@ public class SRSQueue {
     private Character lastCharacter = null;
 
     public Iterator<SRSEntry> iterator(){
+        if(useSRSGlobal){
+            return GLOBAL.srsQueue.iterator();
+        }
         return srsQueue.iterator();
     }
 
@@ -135,6 +142,7 @@ public class SRSQueue {
         SRSEntry entry = new SRSEntry(character, nextDate);
 
         srsQueue.add(entry);
+        GLOBAL.srsQueue.add(entry);
 
         return entry;
     }
@@ -168,6 +176,7 @@ public class SRSQueue {
             SRSEntry e = it.next();
             if(e.character.equals(c)){
                 srsQueue.remove(e);
+                GLOBAL.srsQueue.remove(e);
                 break;
             }
         }
