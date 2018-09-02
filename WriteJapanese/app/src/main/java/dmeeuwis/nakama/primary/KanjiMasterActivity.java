@@ -977,6 +977,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             ed.apply();
         }
 
+        SRSQueue.useSRSGlobal = Settings.getSRSAcrossSets(getApplicationContext());
+
         resumeCharacterSets();
         resumeCurrentCharacterSet();
 

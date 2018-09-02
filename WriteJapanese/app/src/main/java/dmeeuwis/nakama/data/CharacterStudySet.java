@@ -250,6 +250,7 @@ public class CharacterStudySet implements Iterable<Character> {
             this.currentChar = character;
             this.reviewing = tracker.isReviewing(character);
         }
+        this.tracker.forceCharacterOntoHistory(character);
     }
 
     public void nextCharacter() {
@@ -268,6 +269,7 @@ public class CharacterStudySet implements Iterable<Character> {
             throw new RuntimeException("Error getting next char for charset: " + shortName + "; chars " + charactersAsString(), t);
         }
     }
+
 
     public void saveGoals() {
         dbHelper.recordGoals(pathPrefix, goalStarted, studyGoal);

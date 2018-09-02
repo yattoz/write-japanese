@@ -76,6 +76,10 @@ public class ProgressTracker {
 		history.clear();
 	}
 
+	public void forceCharacterOntoHistory(Character c) {
+	    history.add(new StudyRecord(c, null, setId, StudyType.REVIEW, "init" ));
+	}
+
 	private static class StudyRecord {
         private final Character chosenChar;
         private final Character previousChar;

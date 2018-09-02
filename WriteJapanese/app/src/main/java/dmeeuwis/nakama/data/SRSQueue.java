@@ -28,7 +28,7 @@ import dmeeuwis.util.Util;
 public class SRSQueue {
     public static SRSQueue GLOBAL = new SRSQueue("globalSRS");
 
-    public boolean useSRSGlobal = true;
+    public static boolean useSRSGlobal = true;
 
     private PriorityQueue<SRSEntry> srsQueue;
     private final String id;
