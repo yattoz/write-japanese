@@ -494,6 +494,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             this.characterSets.put(c.pathPrefix, c);
         }
 
+        SRSQueue.registerSetsForGlobalSRS(characterSets.values());
+
         reloadPracticeLogs(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS, progressCacheFlag);
 
         long time = System.currentTimeMillis() - start;
@@ -1040,13 +1042,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         }
 
-        // cache global SRS queue separately
-        try {
-            d.cachePracticeRecord("globalSRS", "[]", SRSQueue.GLOBAL.serializeOut(), "");
-        } catch (IOException e) {
-            UncaughtExceptionLogger.backgroundLogError("Error caching progress on global SRS set", e);
-        }
-
         super.onPause();
     }
 
@@ -1330,7 +1325,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 try {
                     Toast.makeText(this, "Recalculating Progress!", Toast.LENGTH_SHORT).show();
                     db.clearPracticeLogCache(sqlite);
-                    SRSQueue.GLOBAL.clear();
                     reloadPracticeLogs(CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS, CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
                     Toast.makeText(this, "Recalculated!", Toast.LENGTH_LONG).show();
                 } finally {

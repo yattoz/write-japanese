@@ -154,13 +154,6 @@ public class CharacterProgressDataHelper {
                 "SELECT set_id, practice_record, srs_queue, last_log_by_device FROM practice_record_cache",
                 "set_id");
 
-            // the initial practice log cache release broke global SRS. Specifically detect that situation here,
-            // and recalculate
-            if(caches.size() > 0 && caches.get("globalSRS") == null){
-                db.clearPracticeLogCache(db.getWritableDatabase());
-                break fromCache;
-            }
-
             for (int i = allPts.size() - 1; i >= 0; i--) {
                 ProgressTracker t = allPts.get(i);
                 Map<String, String> cache = caches.get(t.setId);
@@ -184,16 +177,6 @@ public class CharacterProgressDataHelper {
                                 new RuntimeException());
                     }
                 }
-            }
-
-            try {
-                Map<String, String> globalSRS = caches.get("globalSRS");
-                if(globalSRS != null){
-                    String json = globalSRS.get("srs_queue");
-                    SRSQueue.GLOBAL = SRSQueue.deserializeIn("globalSRS", json);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         Log.d("nakama-progress", "Time to do resume block: " + (System.currentTimeMillis() - startResume));

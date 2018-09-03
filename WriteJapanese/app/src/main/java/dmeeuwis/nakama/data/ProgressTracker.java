@@ -67,8 +67,8 @@ public class ProgressTracker {
 
 	public LinkedHashMap<String, LocalDateTime> oldestLogTimestampByDevice = new LinkedHashMap<>();
 
-	private SRSQueue srsQueue;
-    private Map<Character, Integer> recordSheet;
+	SRSQueue srsQueue;
+    Map<Character, Integer> recordSheet;
 
     // TODO: would be better to take a reference to global history object in constructor, instead of relying
 	// on tests to call this clear method.
@@ -169,11 +169,7 @@ public class ProgressTracker {
 		this.setId = setId;
 		this.useSRSAcrossSets = useSRSAcrossSets;
 
-		if(useSRSAcrossSets){
-			srsQueue = SRSQueue.GLOBAL;
-		} else {
-			srsQueue = new SRSQueue(setId);
-		}
+		srsQueue = new SRSQueue(setId);
 	}
 
 	private List<List<Character>> getSets(Set<Character> available){

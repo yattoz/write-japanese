@@ -1,9 +1,7 @@
 package dmeeuwis.nakama.data;
 
-import android.support.annotation.NonNull;
 import android.util.JsonReader;
 import android.util.JsonWriter;
-import android.util.Log;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
@@ -12,22 +10,11 @@ import org.threeten.bp.Period;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
-import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.util.Util;
 
 public class SRSQueue {
-    public static SRSQueue GLOBAL = new SRSQueue("globalSRS");
-
     public static boolean useSRSGlobal = true;
 
     private PriorityQueue<SRSEntry> srsQueue;
@@ -41,6 +28,25 @@ public class SRSQueue {
             Period.ofDays(30)
     };
 
+    static List<CharacterStudySet> globalSRSSets = new ArrayList<>();
+    public static void registerSetsForGlobalSRS(Collection<CharacterStudySet> sets){
+        globalSRSSets = new ArrayList<>(sets);
+    }
+
+    static PriorityQueue<SRSEntry> globalQueue(){
+        PriorityQueue<SRSEntry> gq = new PriorityQueue<>(20, new SRSEntryComparator());
+        Set<Character> countedChars = new HashSet<>();
+        for(CharacterStudySet s: globalSRSSets){
+            for(SRSEntry e: s.getProgressTracker().srsQueue.srsQueue){
+                if(!countedChars.contains(e.character)) {
+                    gq.add(e);
+                    countedChars.add(e.character);
+                }
+            }
+        }
+        return gq;
+    }
+
     public SRSQueue(String id) {
         this.id = id;
         srsQueue = new PriorityQueue<>(20, new SRSEntryComparator());
@@ -52,7 +58,7 @@ public class SRSQueue {
     }
 
     public SRSEntry checkForEntry(Set<Character> notAvailSet, LocalDate now) {
-        PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? GLOBAL.srsQueue : this.srsQueue;
+        PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? globalQueue() : this.srsQueue;
 
         SRSEntry c = queueToUse.peek();
 
@@ -119,7 +125,7 @@ public class SRSQueue {
 
     public Iterator<SRSEntry> iterator(){
         if(useSRSGlobal){
-            return GLOBAL.srsQueue.iterator();
+            return globalQueue().iterator();
         }
         return srsQueue.iterator();
     }
@@ -146,7 +152,6 @@ public class SRSQueue {
         SRSEntry entry = new SRSEntry(character, nextDate);
 
         srsQueue.add(entry);
-        GLOBAL.srsQueue.add(entry);
 
         return entry;
     }
@@ -175,18 +180,9 @@ public class SRSQueue {
     }
 
     public void removeSRSQueue(Character c){
-        {
-            for (SRSEntry e : srsQueue) {
-                if (e.character.equals(c)) {
-                    srsQueue.remove(e);
-                    break;
-                }
-            }
-        }
-
-        for (SRSEntry e : GLOBAL.srsQueue) {
+        for (SRSEntry e : srsQueue) {
             if (e.character.equals(c)) {
-                GLOBAL.srsQueue.remove(e);
+                srsQueue.remove(e);
                 break;
             }
         }
@@ -211,7 +207,7 @@ public class SRSQueue {
     }
 
     public Map<LocalDate, List<Character>> getSrsSchedule() {
-        PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? GLOBAL.srsQueue : this.srsQueue;
+        PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? globalQueue() : this.srsQueue;
 
         Map<LocalDate, List<Character>> out = new LinkedHashMap<>();
         SRSQueue.SRSEntry[] entries = queueToUse.toArray(new SRSQueue.SRSEntry[0]);
@@ -228,12 +224,11 @@ public class SRSQueue {
     }
 
     public void debugAddDayToSRS() {
-        PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? GLOBAL.srsQueue : this.srsQueue;
-        PriorityQueue<SRSEntry> copy = new PriorityQueue<>(queueToUse);
+        PriorityQueue<SRSEntry> copy = new PriorityQueue<>(srsQueue);
         for(SRSEntry e: copy){
-            queueToUse.remove(e);
+            srsQueue.remove(e);
             SRSEntry newE = new SRSEntry(e.character, e.nextPractice.minusDays(1));
-            queueToUse.add(newE);
+            srsQueue.add(newE);
         }
     }
 
