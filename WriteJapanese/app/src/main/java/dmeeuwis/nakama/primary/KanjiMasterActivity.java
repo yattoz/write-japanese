@@ -978,6 +978,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         SRSQueue.useSRSGlobal = Settings.getSRSAcrossSets(getApplicationContext());
+        if(BuildConfig.DEBUG){
+            Toast.makeText(this, "Global SRS: " + SRSQueue.useSRSGlobal, Toast.LENGTH_LONG).show();
+        }
 
         resumeCharacterSets();
         resumeCurrentCharacterSet();
@@ -1327,6 +1330,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 try {
                     Toast.makeText(this, "Recalculating Progress!", Toast.LENGTH_SHORT).show();
                     db.clearPracticeLogCache(sqlite);
+                    SRSQueue.GLOBAL.clear();
                     reloadPracticeLogs(CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS, CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
                     Toast.makeText(this, "Recalculated!", Toast.LENGTH_LONG).show();
                 } finally {

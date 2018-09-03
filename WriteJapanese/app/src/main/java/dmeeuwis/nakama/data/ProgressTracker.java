@@ -222,11 +222,13 @@ public class ProgressTracker {
 		boolean prevWasReview = isReview;
 
 		Character prev = null;
+		Set<Character> recentHistoryChars = new LinkedHashSet<>();
 		Set<Character> availSet = new LinkedHashSet<>(rawAvailSet);
 		for(int i = 0; i < prog.characterCooldown; i++){
 			try {
 				Character c = history.get(history.size() - 1 - i).chosenChar;
 				availSet.remove(c);
+				recentHistoryChars.add(c);
 				if(prev == null){ prev = c; }
 			} catch(ArrayIndexOutOfBoundsException e){
 				// didn't have enough history
@@ -236,7 +238,7 @@ public class ProgressTracker {
 		if(useSRS) {
 			try {
 				LocalDate today = this.dateFactory.nowLocalDate();
-				SRSQueue.SRSEntry soonestEntry = srsQueue.checkForEntry(availSet, today);
+				SRSQueue.SRSEntry soonestEntry = srsQueue.checkForEntry(recentHistoryChars, today);
 				if (soonestEntry != null) {
 					Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
 					Character n = soonestEntry.character;

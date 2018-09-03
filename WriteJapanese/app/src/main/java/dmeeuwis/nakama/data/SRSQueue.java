@@ -51,7 +51,7 @@ public class SRSQueue {
         this.srsQueue = queue;
     }
 
-    public SRSEntry checkForEntry(Set<Character> availSet, LocalDate now) {
+    public SRSEntry checkForEntry(Set<Character> notAvailSet, LocalDate now) {
         PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? GLOBAL.srsQueue : this.srsQueue;
 
         SRSEntry c = queueToUse.peek();
@@ -60,7 +60,7 @@ public class SRSQueue {
         if(c == null){ return null; }
 
         // great! Here's an SRS review.
-        if(checkSrsIsReady(c, now, availSet)){
+        if(checkSrsIsReady(c, now, notAvailSet)){
             return c;
         }
 
@@ -75,7 +75,7 @@ public class SRSQueue {
         PriorityQueue<SRSEntry> clone = new PriorityQueue<>(queueToUse);
         SRSEntry s;
         while((s = clone.poll()) != null){
-            if(checkSrsIsReady(s, now, availSet)){
+            if(checkSrsIsReady(s, now, notAvailSet)){
                 return s;
             }
 
@@ -88,12 +88,16 @@ public class SRSQueue {
         return null;
     }
 
-    static private boolean checkSrsIsReady(SRSEntry c, LocalDate now, Set<Character> availSet){
-        return availSet.contains(c.character) && (c.nextPractice.isBefore(now) || c.nextPractice.isEqual(now));
+    static private boolean checkSrsIsReady(SRSEntry c, LocalDate now, Set<Character> notAvailSet){
+        return !notAvailSet.contains(c.character) && (c.nextPractice.isBefore(now) || c.nextPractice.isEqual(now));
     }
 
     public int size() {
         return srsQueue.size();
+    }
+
+    public void clear() {
+        this.srsQueue.clear();
     }
 
     public static class SRSEntry {
@@ -121,7 +125,7 @@ public class SRSQueue {
     }
 
     public SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp, int knownScoreValue){
-        if(timestamp == lastLocalDateTime && character.equals(lastCharacter)){
+        if(timestamp.equals(lastLocalDateTime) && character.equals(lastCharacter)){
             return null;
         }
 
@@ -171,11 +175,17 @@ public class SRSQueue {
     }
 
     public void removeSRSQueue(Character c){
-        Iterator<SRSEntry> it = srsQueue.iterator();
-        while(it.hasNext()){
-            SRSEntry e = it.next();
-            if(e.character.equals(c)){
-                srsQueue.remove(e);
+        {
+            for (SRSEntry e : srsQueue) {
+                if (e.character.equals(c)) {
+                    srsQueue.remove(e);
+                    break;
+                }
+            }
+        }
+
+        for (SRSEntry e : GLOBAL.srsQueue) {
+            if (e.character.equals(c)) {
                 GLOBAL.srsQueue.remove(e);
                 break;
             }
@@ -201,8 +211,10 @@ public class SRSQueue {
     }
 
     public Map<LocalDate, List<Character>> getSrsSchedule() {
+        PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? GLOBAL.srsQueue : this.srsQueue;
+
         Map<LocalDate, List<Character>> out = new LinkedHashMap<>();
-        SRSQueue.SRSEntry[] entries = srsQueue.toArray(new SRSQueue.SRSEntry[0]);
+        SRSQueue.SRSEntry[] entries = queueToUse.toArray(new SRSQueue.SRSEntry[0]);
         Arrays.sort(entries, new SRSEntryComparator());
         for(SRSEntry s: entries){
             List<Character> list = out.get(s.nextPractice);
@@ -216,11 +228,12 @@ public class SRSQueue {
     }
 
     public void debugAddDayToSRS() {
-        PriorityQueue<SRSEntry> copy = new PriorityQueue<>(this.srsQueue);
+        PriorityQueue<SRSEntry> queueToUse = useSRSGlobal ? GLOBAL.srsQueue : this.srsQueue;
+        PriorityQueue<SRSEntry> copy = new PriorityQueue<>(queueToUse);
         for(SRSEntry e: copy){
-            srsQueue.remove(e);
+            queueToUse.remove(e);
             SRSEntry newE = new SRSEntry(e.character, e.nextPractice.minusDays(1));
-            srsQueue.add(newE);
+            queueToUse.add(newE);
         }
     }
 
