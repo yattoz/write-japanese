@@ -80,12 +80,16 @@ public class ProgressTracker {
 	    history.add(new StudyRecord(c, null, setId, StudyType.REVIEW, "init" ));
 	}
 
-	private static class StudyRecord {
-        private final Character chosenChar;
-        private final Character previousChar;
-        private final String setId;
-        private final StudyType type;
-        private final String pool;
+	public SRSQueue.SRSEntry checkPresentInSRS(Character c) {
+		return this.srsQueue.find(c);
+	}
+
+	public static class StudyRecord {
+        public final Character chosenChar;
+        public final Character previousChar;
+        public final String setId;
+        public final StudyType type;
+        public final String pool;
 
         private StudyRecord(Character chosen, Character prev, String setId, StudyType type, String pool) {
             this.chosenChar = chosen;
@@ -212,7 +216,7 @@ public class ProgressTracker {
     /*========== END TEMP HACK FOR TESTING ============ */
 
 
-    Pair<Character, StudyType> nextCharacter(Set<Character> rawAvailSet, boolean shuffling, CharacterProgressDataHelper.ProgressionSettings prog) {
+    StudyRecord nextCharacter(Set<Character> rawAvailSet, boolean shuffling, CharacterProgressDataHelper.ProgressionSettings prog) {
 		Log.i("nakama-progression", "-------------> Starting nexCharacter selection");
 
 		boolean prevWasReview = isReview;
@@ -238,20 +242,15 @@ public class ProgressTracker {
 				if (soonestEntry != null) {
 					Log.i("nakama-progression", "Returning early from nextCharacter, found an scheduled SRS review.");
 					Character n = soonestEntry.character;
-					StudyRecord rec = new StudyRecord(n, prev, setId, StudyType.SRS, today.toString());
+					StudyRecord rec = new StudyRecord(n, prev, soonestEntry.setId, StudyType.SRS, today.toString());
 					history.add(rec);
-					return Pair.create(rec.chosenChar, rec.type);
+					return rec;
 				}
 			} catch(Throwable t){
 				UncaughtExceptionLogger.backgroundLogError("Error during SRS nextCharacter", t);
 			}
 		}
 
-
-		if(availSet.size() == 1){
-			Log.i("nakama-progression", "Returning early from nextCharacter, only 1 character in set");
-			return Pair.create(availSet.toArray(new Character[0])[0], StudyType.REVIEW);
-		}
 
         List<List<Character>> unfilteredSets = getSets(rawAvailSet);
         List<Character> unfilteredFailed = unfilteredSets.get(0);
@@ -365,7 +364,7 @@ public class ProgressTracker {
 
 		StudyRecord rec = new StudyRecord(n, prev, setId, isReview ? StudyType.REVIEW : StudyType.NEW_CHAR, pool);
 		history.add(rec);
-		return Pair.create(rec.chosenChar, rec.type);
+		return rec;
     }
 
     public String debugHistory(){

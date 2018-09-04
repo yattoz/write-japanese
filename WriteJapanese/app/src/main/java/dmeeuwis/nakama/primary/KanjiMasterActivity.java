@@ -203,7 +203,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         setContentView(R.layout.main);          // pretty heavy, ~900ms
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
 
-        Log.i("nakama-timing", "MainActivity: mark 1 " + (System.currentTimeMillis() - start) + "ms");
+        Log.i("nakama-timing", "MainActivity: timing 1 " + (System.currentTimeMillis() - start) + "ms");
 
         Animation outToLeft = AnimationUtils.loadAnimation(this, R.anim.screen_transition_out);
         flipper = findViewById(R.id.viewflipper);
@@ -215,7 +215,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             flipperAnimationListener = new FlipperAnimationListener();
             outToLeft.setAnimationListener(flipperAnimationListener);
         }
-        Log.i("nakama-timing", "MainActivity: mark 1.5 " + (System.currentTimeMillis() - start) + "ms loaded animation");
+        Log.i("nakama-timing", "MainActivity: timing 1.5 " + (System.currentTimeMillis() - start) + "ms loaded animation");
 
         maskView = findViewById(R.id.maskView);
 
@@ -257,7 +257,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 AndroidInputStreamGenerator is = new AndroidInputStreamGenerator(KanjiMasterActivity.this.getAssets());
                 Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(), new AssetFinder(is));
 
-                ComparisonAsyncTask comp = new ComparisonAsyncTask(getApplicationContext(), comparator, currentCharacterSet, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
+                ComparisonAsyncTask comp = new ComparisonAsyncTask(KanjiMasterActivity.this, currentCharacterSet.currentCharacter(), currentCharacterSet.pathPrefix, comparator, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
                     public void run(Criticism critique, CharacterStudySet.GradingResult entry) {
 
                         // to support grading override
@@ -329,7 +329,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             @Override
             public void onClick(View v) {
                 char c = currentCharacterSet.currentCharacter();
-                currentCharacterSet.markCurrentAsUnknown(getApplicationContext());
+                findSetForCharacter(c).markCurrentAsUnknown(getApplicationContext());
                 goToTeachingActivity(c);
             }
         });
@@ -412,7 +412,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         });
 
-        Log.i("nakama-timing", "MainActivity: mark 2 " + (System.currentTimeMillis() - start) + "ms, done onClickListeners");
+        Log.i("nakama-timing", "MainActivity: timing 2 " + (System.currentTimeMillis() - start) + "ms, done onClickListeners");
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
         animateSlide = Math.max(dm.heightPixels, dm.widthPixels);
@@ -440,13 +440,13 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         actionBar.show();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
-        Log.i("nakama-timing", "MainActivity: mark 3 " + (System.currentTimeMillis() - start) + "ms");
+        Log.i("nakama-timing", "MainActivity: timing 3 " + (System.currentTimeMillis() - start) + "ms");
 
         initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);
-        Log.i("nakama-timing", "MainActivity: mark 4 " + (System.currentTimeMillis() - start) + "ms");
+        Log.i("nakama-timing", "MainActivity: timing 4 " + (System.currentTimeMillis() - start) + "ms");
 
         ReminderManager.scheduleRemindersFor(getApplicationContext());
-        Log.i("nakama-timing", "MainActivity: mark 5 " + (System.currentTimeMillis() - start) + "ms");
+        Log.i("nakama-timing", "MainActivity: timing 5 " + (System.currentTimeMillis() - start) + "ms");
 
         Boolean srsEnabled = Settings.getSRSEnabled(getApplicationContext());
         boolean srsAsked = srsEnabled != null;
@@ -463,6 +463,31 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         Log.d("nakama-timing", "onCreate took " + (System.currentTimeMillis() - start) + "ms");
+    }
+
+
+    public CharacterStudySet.GradingResult mark(Character currChar, String setId, PointDrawing drawn, boolean pass) {
+        // Record against all sets (sets ignore chars that don't have.)
+        // Take the soonest SRS review as next.
+        SRSQueue.SRSEntry s = null;
+        for(CharacterStudySet c: characterSets.values()){
+            SRSQueue.SRSEntry srs = c.markCurrent(currChar, drawn, pass);
+            if(srs != null){
+                if(s == null) {
+                    s = srs;
+                }  else {
+                    if(srs.nextPractice.isBefore(s.nextPractice)){
+                        s = srs;
+                    }
+                }
+            }
+        }
+
+        // record only once in db, not once per set.
+        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext()));
+        String rowId = dbHelper.recordPractice(setId, currChar.toString(), drawn, pass ? 100 : -100);
+
+        return new CharacterStudySet.GradingResult(rowId, s);
     }
 
     private void initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag progressCacheFlag){
@@ -503,6 +528,22 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         if(BuildConfig.DEBUG){
             Toast.makeText(this, "Load took: " + time + "ms", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public CharacterStudySet findSetForCharacter(Character c){
+        // only for srs review, we need to hunt and find right set to mark progress on
+        if(!(srsBug.getVisibility() == View.VISIBLE)){
+            return currentCharacterSet;
+        }
+
+        for(CharacterStudySet s: this.characterSets.values()){
+            if(s.allCharactersSet.contains(c) && s.getProgressTracker().checkPresentInSRS(c) != null){
+                return s;
+            }
+        }
+
+        // this should never happen?
+        return currentCharacterSet;
     }
 
     private void reloadPracticeLogs(CharacterStudySet.LoadProgress loadType, CharacterProgressDataHelper.ProgressCacheFlag progressCacheFlag){
@@ -780,7 +821,14 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         if (increment) {
-            currentCharacterSet.nextCharacter();
+            ProgressTracker.StudyRecord r = currentCharacterSet.nextCharacter();
+            if(r.type == ProgressTracker.StudyType.SRS && !r.setId.equals(currentCharacterSet.pathPrefix)){
+                try {
+                    Toast.makeText(this, "Cross-set SRS review from " + characterSets.get(r.setId).name, Toast.LENGTH_LONG).show();
+                } catch(Throwable t){
+                    UncaughtExceptionLogger.backgroundLogError("Error displaying Toast!", t);
+                }
+            }
 
             if(currentCharacterSet.currentCharacter().equals(priorCharacter)) {
                 try {
@@ -981,7 +1029,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         SRSQueue.useSRSGlobal = Settings.getSRSAcrossSets(getApplicationContext());
         if(BuildConfig.DEBUG){
-            Toast.makeText(this, "Global SRS: " + SRSQueue.useSRSGlobal, Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Global SRS: " + SRSQueue.useSRSGlobal, Toast.LENGTH_LONG).show();
         }
 
         resumeCharacterSets();

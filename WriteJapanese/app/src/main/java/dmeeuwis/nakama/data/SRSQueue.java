@@ -108,10 +108,12 @@ public class SRSQueue {
 
     public static class SRSEntry {
         public final Character character;
+        public final String setId;
         public final LocalDate nextPractice;
 
-        private SRSEntry(Character character, LocalDate nextPractice) {
+        private SRSEntry(Character character, String setId, LocalDate nextPractice) {
             this.character = character;
+            this.setId = setId;
             this.nextPractice = nextPractice;
         }
 
@@ -149,7 +151,7 @@ public class SRSQueue {
         // schedule next
         Period delay = SRSTable[score];
         LocalDate nextDate = timestamp.plus(delay).toLocalDate();
-        SRSEntry entry = new SRSEntry(character, nextDate);
+        SRSEntry entry = new SRSEntry(character, id, nextDate);
 
         srsQueue.add(entry);
 
@@ -227,7 +229,7 @@ public class SRSQueue {
         PriorityQueue<SRSEntry> copy = new PriorityQueue<>(srsQueue);
         for(SRSEntry e: copy){
             srsQueue.remove(e);
-            SRSEntry newE = new SRSEntry(e.character, e.nextPractice.minusDays(1));
+            SRSEntry newE = new SRSEntry(e.character, id, e.nextPractice.minusDays(1));
             srsQueue.add(newE);
         }
     }
@@ -265,7 +267,7 @@ public class SRSQueue {
                 String character = jr.nextString();
                 "nextPractice".equals(jr.nextName());
                 String date = jr.nextString();
-                queue.add(new SRSEntry(character.charAt(0), LocalDate.parse(date)));
+                queue.add(new SRSEntry(character.charAt(0), id, LocalDate.parse(date)));
             }
             jr.endObject();
         }

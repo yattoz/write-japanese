@@ -10,6 +10,7 @@ import java.io.IOException;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.ProgressTracker;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
+import dmeeuwis.nakama.primary.*;
 
 public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
@@ -17,17 +18,19 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
         void run(Criticism c, CharacterStudySet.GradingResult entry);
     }
 
-    private Context appContext;
+    private KanjiMasterActivity appContext;
+    private Character currChar;
+    private String setId;
     private Comparator comparator;
-    private CharacterStudySet currentCharacterSet;
     private PointDrawing drawn;
     private CurveDrawing known;
     private OnCriticismDone onDone;
 
-    public ComparisonAsyncTask(Context appContext, Comparator comparator, CharacterStudySet currentCharacterSet, PointDrawing drawn, CurveDrawing known, OnCriticismDone onDone){
+    public ComparisonAsyncTask(KanjiMasterActivity appContext, Character currChar, String setId, Comparator comparator, PointDrawing drawn, CurveDrawing known, OnCriticismDone onDone){
         this.appContext = appContext;
         this.comparator = comparator;
-        this.currentCharacterSet = currentCharacterSet;
+        this.currChar = currChar;
+        this.setId = setId;
         this.drawn = drawn;
         this.known = known;
         this.onDone = onDone;
@@ -36,7 +39,7 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
     @Override
     protected Criticism doInBackground(Void ... params) {
         try {
-            return comparator.compare(currentCharacterSet.currentCharacter(), drawn, known);
+            return comparator.compare(currChar, drawn, known);
         } catch (IOException e) {
             UncaughtExceptionLogger.backgroundLogError("IO error from comparator", e, appContext);
             return null;
@@ -47,7 +50,7 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
     protected void onPostExecute(Criticism criticism) {
         CharacterStudySet.GradingResult entry = null;
         try {
-            entry = currentCharacterSet.markCurrent(drawn, criticism.pass);
+            entry = appContext.mark(currChar, setId, drawn, criticism.pass);
         } catch(SQLiteFullException e){
             Toast.makeText(appContext, "Could not record progress: disk is full.", Toast.LENGTH_SHORT).show();
             UncaughtExceptionLogger.backgroundLogError("Could not record progress: disk is full", e, appContext);

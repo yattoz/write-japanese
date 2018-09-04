@@ -20,7 +20,7 @@ public class Criticism {
 	public final List<String> critiques;
 	public final List<PaintColourInstructions> knownPaintInstructions, drawnPaintInstructions;
 	public boolean pass;
-	
+
 	public Criticism(){
 		this.critiques = new ArrayList<>();
 		this.knownPaintInstructions = new ArrayList<>();

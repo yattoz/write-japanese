@@ -205,8 +205,7 @@ public class CharacterStudySet implements Iterable<Character> {
         }
     }
 
-    public GradingResult markCurrent(PointDrawing d, boolean pass) {
-        Character c = currentCharacter();
+    public SRSQueue.SRSEntry markCurrent(Character c, PointDrawing d, boolean pass) {
         SRSQueue.SRSEntry result;
         try {
             if (pass) {
@@ -214,8 +213,7 @@ public class CharacterStudySet implements Iterable<Character> {
             } else {
                 result = this.tracker.markFailure(c);
             }
-            String rowId = dbHelper.recordPractice(pathPrefix, currentCharacter().toString(), d, pass ? 100 : -100);
-            return new GradingResult(rowId, result);
+            return result;
         } catch (Throwable t) {
             Log.e("nakama", "Error when marking character " + c + " from character set " + Util.join(", ", this.allCharactersSet) + "; tracker is " + tracker);
             throw new RuntimeException(t);
@@ -224,7 +222,6 @@ public class CharacterStudySet implements Iterable<Character> {
 
     public void markCurrentAsUnknown(Context context) {
         this.tracker.markFailure(currentCharacter());
-        nextCharacter();
     }
 
     public void setShuffle(boolean isShuffle) {
@@ -253,17 +250,19 @@ public class CharacterStudySet implements Iterable<Character> {
         this.tracker.forceCharacterOntoHistory(character);
     }
 
-    public void nextCharacter() {
+    public ProgressTracker.StudyRecord nextCharacter() {
         CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
-        nextCharacter(p);
+        return nextCharacter(p);
     }
 
-    public void nextCharacter(CharacterProgressDataHelper.ProgressionSettings p) {
+    public ProgressTracker.StudyRecord nextCharacter(CharacterProgressDataHelper.ProgressionSettings p) {
         try {
-            Pair<Character, ProgressTracker.StudyType> i = tracker.nextCharacter(availableCharactersSet(), this.shuffling, p);
+            ProgressTracker.StudyRecord i = tracker.nextCharacter(availableCharactersSet(), this.shuffling, p);
 
-            this.currentChar = i.first;
-            this.reviewing = i.second;
+            this.currentChar = i.chosenChar;
+            this.reviewing = i.type;
+
+            return i;
 
         } catch (Throwable t) {
             throw new RuntimeException("Error getting next char for charset: " + shortName + "; chars " + charactersAsString(), t);
