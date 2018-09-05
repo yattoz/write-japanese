@@ -77,8 +77,8 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
                         "Spaced Repetition",
                         "Once written correctly a few times, characters will be repeated at increasing timed intervals, across many days, to really lock them in your memory. The built-in schedule repeats after 1, 3, 7, 14, and 30 days.",
                         "Use Spaced Repetition", USE_SRS_SETTING_NAME,
-                        "Show spaced repetition characters to display even while studying in a different character set", SRS_ACROSS_SETS,
-                        "Show OS Notifications when characters are due for review", SRS_NOTIFICATION_SETTING_NAME
+                        "Spaced Repetition reviews override current study-set when ready (cross-set SRS)", SRS_ACROSS_SETS,
+                        "Show OS Notifications when characters are due for spaced review", SRS_NOTIFICATION_SETTING_NAME
                 );
             addSlide(s);
             addedSlides.add(s);

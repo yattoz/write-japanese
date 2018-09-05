@@ -220,10 +220,6 @@ public class CharacterStudySet implements Iterable<Character> {
         }
     }
 
-    public void markCurrentAsUnknown(Context context) {
-        this.tracker.markFailure(currentCharacter());
-    }
-
     public void setShuffle(boolean isShuffle) {
         this.shuffling = isShuffle;
     }

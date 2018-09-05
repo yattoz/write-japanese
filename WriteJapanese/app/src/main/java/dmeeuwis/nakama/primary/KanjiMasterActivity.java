@@ -329,7 +329,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             @Override
             public void onClick(View v) {
                 char c = currentCharacterSet.currentCharacter();
-                findSetForCharacter(c).markCurrentAsUnknown(getApplicationContext());
+                mark(currentCharacterSet.currentCharacter(), currentCharacterSet.pathPrefix, null, false);
                 goToTeachingActivity(c);
             }
         });
@@ -528,22 +528,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         if(BuildConfig.DEBUG){
             Toast.makeText(this, "Load took: " + time + "ms", Toast.LENGTH_LONG).show();
         }
-    }
-
-    public CharacterStudySet findSetForCharacter(Character c){
-        // only for srs review, we need to hunt and find right set to mark progress on
-        if(!(srsBug.getVisibility() == View.VISIBLE)){
-            return currentCharacterSet;
-        }
-
-        for(CharacterStudySet s: this.characterSets.values()){
-            if(s.allCharactersSet.contains(c) && s.getProgressTracker().checkPresentInSRS(c) != null){
-                return s;
-            }
-        }
-
-        // this should never happen?
-        return currentCharacterSet;
     }
 
     private void reloadPracticeLogs(CharacterStudySet.LoadProgress loadType, CharacterProgressDataHelper.ProgressCacheFlag progressCacheFlag){
