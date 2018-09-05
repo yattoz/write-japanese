@@ -48,7 +48,7 @@ public class CharacterSetTest {
         Set<Character> charsSeen = new HashSet<>();
         long turns = 0;
         while(charsSeen.size() != testChars.length()) {
-            c.markCurrent(null, true);
+            c.markCurrent(c.currentCharacter(), null, true);
             c.nextCharacter();
             turns++;
             System.out.println("Next character is: " + c.currentCharacter());
@@ -70,7 +70,7 @@ public class CharacterSetTest {
 
         Set<Character> failed = new HashSet<>();
         while(failed.size() != CharacterProgressDataHelper.DEFAULT_INTRO_INCORRECT){
-            c.markCurrent(null, false);
+            c.markCurrent(c.currentCharacter(), null, false);
             failed.add(c.currentCharacter());
             System.out.println("Marking character " + c.currentCharacter() + " as failed");
 
@@ -104,10 +104,10 @@ public class CharacterSetTest {
         while(charsSeen.size() != testChars.length()) {
             if(count < 20 && count % 2 == 0) {
                 System.out.println("Marking incorrect");
-                c.markCurrent(null, false);
+                c.markCurrent(c.currentCharacter(), null, false);
             } else {
                 System.out.println("Marking correct");
-                c.markCurrent(null, true);
+                c.markCurrent(c.currentCharacter(), null, true);
             }
             c.nextCharacter();
             charsSeen.add(c.currentCharacter());

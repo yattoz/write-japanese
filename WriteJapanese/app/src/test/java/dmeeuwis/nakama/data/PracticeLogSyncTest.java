@@ -1,16 +1,12 @@
 package dmeeuwis.nakama.data;
 
-import android.app.Activity;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import org.apache.tools.ant.filters.StringInputStream;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.io.File;
@@ -18,15 +14,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.nakama.primary.KanjiMasterActivity;
-
-import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class PracticeLogSyncTest {
 
-    private Context ctx;
+    public PracticeLogSyncTest(){
+
+    }
 
     private static class TestDependencies extends PracticeLogSync.ExternalDependencies {
         private final String file;
@@ -40,29 +35,27 @@ public class PracticeLogSyncTest {
         }
     }
 
-
-    @Before
-    public void setUp() throws Exception {
-        Activity activity = Robolectric.buildActivity(KanjiMasterActivity.class).create().resume().get();
-        ctx = activity.getApplicationContext();
-        ctx.deleteDatabase(WriteJapaneseOpenHelper.DB_NAME);
-    }
-
     @Test
     public void testEmptySync() throws IOException {
-        PracticeLogSync sync = new PracticeLogSync(new TestDependencies(ctx, "empty_sync.json"), ctx);
+        PracticeLogSync sync = new PracticeLogSync(
+                new TestDependencies(RuntimeEnvironment.application, "empty_sync.json"),
+                RuntimeEnvironment.application);
         sync.sync();
     }
 
     @Test
     public void testEmptySyncBeforeCharsetEdits() throws IOException {
-        PracticeLogSync sync = new PracticeLogSync(new TestDependencies(ctx, "empty_sync_no_charset_edits.json"), ctx);
+        PracticeLogSync sync = new PracticeLogSync(
+                new TestDependencies(RuntimeEnvironment.application, "empty_sync_no_charset_edits.json"),
+                RuntimeEnvironment.application);
         sync.sync();
     }
 
     @Test
     public void testMultipleCharsetGoalBug() throws IOException {
-        PracticeLogSync sync = new PracticeLogSync(new TestDependencies(ctx, "multiple_charset_goals_sync.json"), ctx);
+        PracticeLogSync sync = new PracticeLogSync(
+                new TestDependencies(RuntimeEnvironment.application, "multiple_charset_goals_sync.json"),
+                RuntimeEnvironment.application);
         sync.sync();
     }
 

@@ -1,5 +1,6 @@
 package dmeeuwis.nakama.kanjidraw;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -43,6 +44,7 @@ public class DrawingComparatorTest {
         assertArrayEquals(new boolean[]{ false, false }, above[1]);
     }
 
+    @Ignore
     @Test
     public void testJustMisOneMatch(){
         // should not mark as above because the y's are really really close, test the 'extra' gap
