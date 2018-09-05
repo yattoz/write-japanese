@@ -24,7 +24,7 @@ public class Settings {
     }
 
     public static Boolean getSRSAcrossSets(Context ctx) {
-        return getBooleanSetting(ctx, IntroActivity.SRS_ACROSS_SETS, null);
+        return getBooleanSetting(ctx, IntroActivity.SRS_ACROSS_SETS, true);
     }
 
     public static void setCrossDeviceSyncAsked(Context applicationContext) {
