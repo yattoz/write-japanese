@@ -661,6 +661,11 @@ public class ProgressTracker {
 			JsonWriter j = new JsonWriter(recordSheet);
 			j.beginObject();
 			for (Map.Entry<Character, Integer> d : this.recordSheet.entrySet()) {
+				if(d.getKey() == null){
+					UncaughtExceptionLogger.backgroundLogError("Not serializing null key in record sheet: " + this.debugHistory(), new RuntimeException());
+					continue;
+				}
+
 				j.name(d.getKey().toString());
 				j.value(d.getValue());
 			}
