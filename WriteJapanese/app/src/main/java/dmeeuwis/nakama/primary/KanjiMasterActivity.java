@@ -989,8 +989,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         boolean shuffle = prefs.getBoolean("shuffleEnabled", false);
         currentCharacterSet.setShuffle(shuffle);
 
-        ProgressTracker pt  = currentCharacterSet.getProgressTracker();
-        new CharacterProgressDataHelper(this, Iid.get(this)).resumeProgressTrackerFromDB(Arrays.asList(pt));
+        List<ProgressTracker> pts =  new ArrayList<>(characterSets.size());
+        for(CharacterStudySet st: characterSets.values()) {
+            pts.add(st.getProgressTracker());
+        }
+        new CharacterProgressDataHelper(this, Iid.get(this)).resumeProgressTrackerFromDB(pts);
     }
 
     @Override
@@ -1018,6 +1021,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         resumeCharacterSets();
         resumeCurrentCharacterSet();
+        resumePracticeLogsCurrentCharset();
 
         LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);

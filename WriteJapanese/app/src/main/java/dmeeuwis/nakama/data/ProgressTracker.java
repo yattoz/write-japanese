@@ -367,40 +367,42 @@ public class ProgressTracker {
 		return rec;
     }
 
-    public String debugHistory(){
-        try {
-            StringWriter sw = new StringWriter();
-            JsonWriter jw = new JsonWriter(sw);
+	public String debugHistory() {
+		try {
+			StringWriter sw = new StringWriter();
+			JsonWriter jw = new JsonWriter(sw);
+			debugHistory(jw);
+			return jw.toString();
 
-            jw.beginArray();
-            for (StudyRecord s : history) {
-                jw.beginObject();
+		} catch (Throwable t) {
+			Log.e("nakama", "Error generating debug history json", t);
+			return t.getMessage();
+		}
+	}
 
-                jw.name("char");
-                jw.value(s.chosenChar.toString());
+    public void debugHistory(JsonWriter jw) throws IOException {
+        jw.beginArray();
+        for (StudyRecord s : history) {
+            jw.beginObject();
 
-                jw.name("prev");
-                jw.value(s.previousChar == null ? "none" : s.previousChar.toString());
+            jw.name("char");
+            jw.value(s.chosenChar.toString());
 
-                jw.name("set");
-                jw.value(s.setId);
+            jw.name("prev");
+            jw.value(s.previousChar == null ? "none" : s.previousChar.toString());
 
-                jw.name("type");
-                jw.value(s.type.toString());
+            jw.name("set");
+            jw.value(s.setId);
 
-                jw.name("pool");
-                jw.value(s.pool);
+            jw.name("type");
+            jw.value(s.type.toString());
 
-                jw.endObject();
-            }
-            jw.endArray();
+            jw.name("pool");
+            jw.value(s.pool);
 
-            return sw.toString();
-
-        } catch(Throwable t){
-            Log.e("nakama", "Error generating debug history json", t);
-            return t.getMessage();
+            jw.endObject();
         }
+        jw.endArray();
     }
 
 	public StudyType isReviewing(Character c){
