@@ -33,7 +33,12 @@ public class SRSQueue {
         globalSRSSets = new ArrayList<>(sets);
     }
 
-    static PriorityQueue<SRSEntry> globalQueue(){
+
+    public static SRSQueue getglobalQueue(){
+        return new SRSQueue("global", globalQueue());
+    }
+
+    private static PriorityQueue<SRSEntry> globalQueue(){
         PriorityQueue<SRSEntry> gq = new PriorityQueue<>(20, new SRSEntryComparator());
         Set<Character> countedChars = new HashSet<>();
         for(CharacterStudySet s: globalSRSSets){
@@ -238,9 +243,15 @@ public class SRSQueue {
         return id + ": " + Util.join(getSrsSchedule(), ": ", ", ");
     }
 
-    public String serializeOut() throws  IOException{
+    public String serializeOut() throws  IOException {
         StringWriter sw = new StringWriter();
-        JsonWriter j = new JsonWriter(sw);
+        JsonWriter jw = new JsonWriter(sw);
+        serializeOut(jw);
+        jw.close();
+        return sw.toString();
+    }
+
+    public void serializeOut(JsonWriter j) throws  IOException{
         SRSEntry[] entries = srsQueue.toArray(new SRSEntry[0]);
         j.beginArray();
         for(SRSEntry s: entries){
@@ -252,8 +263,6 @@ public class SRSQueue {
             j.endObject();
         }
         j.endArray();
-        j.close();
-        return sw.toString();
     }
 
     public static SRSQueue deserializeIn(String id, String queueJSON) throws IOException{

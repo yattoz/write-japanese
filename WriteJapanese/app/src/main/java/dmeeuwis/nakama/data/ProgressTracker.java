@@ -641,6 +641,7 @@ public class ProgressTracker {
 		}
 	}
 
+
 	public ProgressState serializeOut(){
 		if(oldestLogTimestampByDevice.size() == 0){
 			return null;
@@ -719,4 +720,8 @@ public class ProgressTracker {
 	    LocalDateTime nowLocalDateTime();
         LocalDate nowLocalDate();
     }
+
+	public SRSQueue getSrsQueue() {
+		return srsQueue;
+	}
 }

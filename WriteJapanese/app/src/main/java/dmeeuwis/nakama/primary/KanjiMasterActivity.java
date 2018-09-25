@@ -4,19 +4,13 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.StrictMode;
+import android.os.*;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -786,6 +780,71 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
     }
 
+    private void setting(JsonWriter jw, String key, Object b) throws IOException {
+        jw.name(key);
+        if(b == null){
+            jw.value("<null>");
+        } else {
+            if(b instanceof Boolean){
+                jw.value((Boolean)b);
+            } else if(b instanceof String){
+                jw.value((String)b);
+            } else if(b instanceof Long){
+                jw.value((Long)b);
+            } else if(b instanceof Double){
+                jw.value((Double)b);
+            } else {
+                jw.value(b.toString());
+            }
+
+        }
+    }
+
+    private String stateLog() throws IOException {
+        Context ctx = getApplicationContext();
+
+        StringWriter sb = new StringWriter();
+        JsonWriter jw = new JsonWriter(sb);
+
+        jw.beginObject();
+
+        setting(jw, "version", BuildConfig.VERSION_NAME + " " + BuildConfig.VERSION_CODE);
+        setting(jw, "iid", Iid.get(ctx));
+        setting(jw, "lockLevel", lockChecker.getPurchaseStatus().toString());
+        setting(jw, "device", Build.MODEL);
+
+        setting(jw, "srsEnabled", Settings.getSRSEnabled(ctx));
+        setting(jw, "srsGlobal", Settings.getSRSAcrossSets(ctx));
+
+        jw.name("sets");
+        jw.beginArray();
+        for(Map.Entry<String, CharacterStudySet> e: characterSets.entrySet()){
+            jw.beginObject();
+            CharacterStudySet s = e.getValue();
+
+            setting(jw, "id", s.pathPrefix);
+            setting(jw, "name", s.name);
+            setting(jw, "chars", s.charactersAsString());
+            setting(jw, "systemSet", s.systemSet);
+
+            jw.name("sessionHistory");
+            s.getProgressTracker().debugHistory(jw);
+
+            setting(jw, "srsString", s.getSrsScheduleString());
+
+            jw.name("srs");
+            s.getProgressTracker().getSrsQueue().serializeOut(jw);
+            jw.endObject();
+        }
+        jw.endArray();
+
+        jw.name("srsGlobalSet");
+        SRSQueue.getglobalQueue().serializeOut(jw);
+
+        jw.endObject();
+        return sb.toString();
+    }
+
     private boolean loadedInitialVocab = false;
     public void loadNextCharacter(boolean increment) {
         // push before-next character onto back-stack
@@ -1130,8 +1189,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:ClearUpdateNotification");
             menu.add("DEBUG:PrintCharsetsAndSRS");
             menu.add("DEBUG:ClearLogCache");
-            menu.add("DEBUG:DeleteSRSGlobal");
             menu.add("DEBUG:DebugHistory");
+            menu.add("DEBUG:DebugJSON");
         }
 
         return true;
@@ -1369,11 +1428,13 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
             } else if(item.getTitle().equals("DEBUG:DebugHistory")){
                 Toast.makeText(this, currentCharacterSet.getProgressTracker().debugHistory(), Toast.LENGTH_LONG * 5).show();
-            } else if(item.getTitle().equals("DEBUG:DeleteSRSGlobal")){
-                WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this);
-                SQLiteDatabase sqlite = db.getWritableDatabase();
-                DataHelper.selectRecord(sqlite, "DELETE FROM practice_record_cache WHERE set_id = 'globalSRS'");
-                Toast.makeText(this, "globalSRS cleared.", Toast.LENGTH_LONG).show();
+
+            } else if(item.getTitle().equals("DEBUG:DebugJSON")){
+                try {
+                    Log.i("nakama-debug", stateLog());
+                } catch (IOException e) {
+                    Log.e("nakama-debug", "Error doing debug JSON", e);
+                }
             }
         }
 
