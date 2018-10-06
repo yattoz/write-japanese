@@ -51,6 +51,8 @@ public class CharacterStudySet implements Iterable<Character> {
 
     public final String pathPrefix;
 
+    private String lastRowId = null;
+
     private GregorianCalendar studyGoal, goalStarted;
 
     public static class SetProgress {
@@ -336,9 +338,9 @@ public class CharacterStudySet implements Iterable<Character> {
         return tracker.useSRSAcrossSets;
     }
 
-    public void overRideLast() {
+    public String overRideLast() {
         this.tracker.overRideLast();
-        this.dbHelper.overRideLast();
+        return this.dbHelper.overRideLast();
     }
 
 

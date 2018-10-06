@@ -11,14 +11,12 @@ import android.widget.*;
 import dmeeuwis.kanjimaster.*;
 import dmeeuwis.nakama.primary.GradingOverrideListener;
 
-import static android.content.DialogInterface.BUTTON_POSITIVE;
+public class OverrideDialog extends DialogFragment {
 
-public class OverrideDialog extends DialogFragment implements DialogInterface.OnClickListener {
+    public enum OverideType {OVERRIDE_TO_INCORRECT, OVERRIDE_TO_CORRECT}
 
-    public enum OverideType { INCORRECT_OVERRIDE, CORRECT_OVERRIDE }
-
-    private final String incorrectOverrideMessage = "The grading algorithm in Write Japanese can sometimes get things wrong. (Sorry about that!) If you think you drew the character correctly, and wish to override the grading, please click 'Override' below, and you will receive a successful grading.";
-    private final String correctOverrideMessage = "The grading algorithm in Write Japanese can sometimes get things wrong. (Sorry about that!) If you think you drew the character incorrectly, and wish to override the grading, please click 'Override' below, and you will receive a failed grading.";
+    private final String overrideToCorrectMessage = "The grading algorithm in Write Japanese can sometimes get things wrong. (Sorry about that!) If you think you drew the character correctly, and wish to override the grading, please click 'Override' below, and you will receive a successful grading.";
+    private final String overrideToIncorrectMessage = "The grading algorithm in Write Japanese can sometimes get things wrong. (Sorry about that!) If you think you drew the character incorrectly, and wish to override the grading, please click 'Override' below, and you will receive a failed grading.";
 
     public static OverrideDialog make(OverideType type){
         OverrideDialog d = new OverrideDialog();
@@ -37,8 +35,8 @@ public class OverrideDialog extends DialogFragment implements DialogInterface.On
         this.setRetainInstance(true);
 
         Bundle b = getArguments();
-        type = OverideType.valueOf(b.getString("type", OverideType.INCORRECT_OVERRIDE.toString()));
-        String message = type == OverideType.INCORRECT_OVERRIDE ? incorrectOverrideMessage : correctOverrideMessage;
+        type = OverideType.valueOf(b.getString("type", OverideType.OVERRIDE_TO_INCORRECT.toString()));
+        String message = type == OverideType.OVERRIDE_TO_INCORRECT ? overrideToIncorrectMessage : overrideToCorrectMessage;
 
         final FrameLayout frameView = new FrameLayout(getActivity());
 
@@ -48,7 +46,7 @@ public class OverrideDialog extends DialogFragment implements DialogInterface.On
                 .setView(frameView)
                 .setPositiveButton("Override", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
+                        ((GradingOverrideListener)getActivity()).overRide(type, c.isChecked());
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -61,13 +59,5 @@ public class OverrideDialog extends DialogFragment implements DialogInterface.On
 
         // Create the AlertDialog object and return it
         return builder.create();
-    }
-
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        if(which == BUTTON_POSITIVE){
-            ((GradingOverrideListener)getActivity()).overRide(type, c.isChecked());
-        }
-
     }
 }

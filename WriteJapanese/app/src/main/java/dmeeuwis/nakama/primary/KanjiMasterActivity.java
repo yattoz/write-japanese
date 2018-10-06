@@ -97,8 +97,8 @@ import dmeeuwis.nakama.views.translations.ClueCard;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
 
 import static dmeeuwis.nakama.primary.IntroActivity.USE_SRS_SETTING_NAME;
-import static dmeeuwis.nakama.views.OverrideDialog.OverideType.CORRECT_OVERRIDE;
-import static dmeeuwis.nakama.views.OverrideDialog.OverideType.INCORRECT_OVERRIDE;
+import static dmeeuwis.nakama.views.OverrideDialog.OverideType.OVERRIDE_TO_CORRECT;
+import static dmeeuwis.nakama.views.OverrideDialog.OverideType.OVERRIDE_TO_INCORRECT;
 
 public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
@@ -327,7 +327,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 new View.OnClickListener() {
                      @Override
                      public void onClick(View v) {
-                         OverrideDialog od = OverrideDialog.make(INCORRECT_OVERRIDE);
+                         OverrideDialog od = OverrideDialog.make(OVERRIDE_TO_CORRECT);
                          if(!od.isAdded()) {
                              od.show(KanjiMasterActivity.this.getSupportFragmentManager(), "override");
                          }
@@ -339,7 +339,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        OverrideDialog od = OverrideDialog.make(CORRECT_OVERRIDE);
+                        OverrideDialog od = OverrideDialog.make(OVERRIDE_TO_INCORRECT);
                         if(!od.isAdded()) {
                             od.show(KanjiMasterActivity.this.getSupportFragmentManager(), "override");
                         }
@@ -1683,35 +1683,39 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     @Override
     public void overRide(OverrideDialog.OverideType type, boolean logData) {
         if(BuildConfig.DEBUG) Toast.makeText(this, "Override " + lastGradingRow, Toast.LENGTH_LONG).show();
-        currentCharacterSet.overRideLast();
+        String practiceLogId = currentCharacterSet.overRideLast();
 
-        if(type == INCORRECT_OVERRIDE){
+        if(type == OVERRIDE_TO_CORRECT){
             setUiState(State.CORRECT_ANSWER);
         }
-        if(type == CORRECT_OVERRIDE){
+        if(type == OVERRIDE_TO_INCORRECT){
             setUiState(State.REVIEWING);
         }
 
-        try {
-            StringWriter sw = new StringWriter();
-            JsonWriter j = new JsonWriter(sw);
+        if(logData) {
+            try {
+                StringWriter sw = new StringWriter();
+                JsonWriter j = new JsonWriter(sw);
+                j.setLenient(true);
 
-            j.beginObject();
+                j.beginObject();
 
-            j.name("character").value(currentCharacterSet.currentCharacter());
-            j.name("setId").value(currentCharacterSet.pathPrefix);
-            j.name("setName").value(currentCharacterSet.name);
-            j.name("overrideType").value(type.toString());
+                j.name("logId").value(practiceLogId);
+                j.name("character").value(currentCharacterSet.currentCharacter().toString());
+                j.name("setId").value(currentCharacterSet.pathPrefix);
+                j.name("setName").value(currentCharacterSet.name);
+                j.name("overrideType").value(type.toString());
 
-            j.name("drawn");
-            drawPad.getDrawing().serialize(j);
+                j.name("drawn");
+                drawPad.getDrawing().serialize(j);
 
-            j.endObject();
+                j.endObject();
 
-            UncaughtExceptionLogger.backgroundLogOverride(sw.toString());
+                UncaughtExceptionLogger.backgroundLogOverride(sw.toString());
 
-        } catch (Throwable t){
-            UncaughtExceptionLogger.backgroundLogError("Error generating override log", t);
+            } catch (Throwable t) {
+                UncaughtExceptionLogger.backgroundLogError("Error generating override log", t);
+            }
         }
     }
 

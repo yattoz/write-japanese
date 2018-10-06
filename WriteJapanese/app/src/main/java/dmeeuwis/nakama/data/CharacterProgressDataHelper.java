@@ -35,7 +35,7 @@ public class CharacterProgressDataHelper {
     private final UUID iid;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    String lastRowId = null;
+    static String lastRowId = null;
 
     public CharacterProgressDataHelper(Context c, UUID iid){
         this.context = c;
@@ -237,7 +237,7 @@ public class CharacterProgressDataHelper {
         recordPractice(charsetId, character, null, progress.forceResetCode);
     }
 
-    public void overRideLast() {
+    public String overRideLast() {
         if(lastRowId != null) {
             WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
             try {
@@ -246,10 +246,12 @@ public class CharacterProgressDataHelper {
                 Integer next = last == 100 ? 0 : 100;
                 DataHelper.selectRecord(db.getReadableDatabase(),
                         "UPDATE practice_log SET score = ? WHERE id = ?", next, lastRowId);
+                return lastRowId;
             } finally {
                 db.close();
             }
         }
+        return null;
     }
 
     public void clearPracticeRecord() {
