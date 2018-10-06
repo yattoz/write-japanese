@@ -93,14 +93,7 @@ import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.teaching.TeachingStoryFragment;
-import dmeeuwis.nakama.views.Animatable;
-import dmeeuwis.nakama.views.AnimatedCurveView;
-import dmeeuwis.nakama.views.DrawView;
-import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
-import dmeeuwis.nakama.views.OverrideDialog;
-import dmeeuwis.nakama.views.PurchaseDialog;
-import dmeeuwis.nakama.views.ShareStoriesDialog;
-import dmeeuwis.nakama.views.StrictnessDialog;
+import dmeeuwis.nakama.views.*;
 import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.ClueCard;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
@@ -805,6 +798,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         StringWriter sb = new StringWriter();
         JsonWriter jw = new JsonWriter(sb);
+        jw.setIndent("    ");
 
         jw.beginObject();
 
@@ -1329,6 +1323,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_progression_settings) {
             // show criticism selection fragment
             showProgressionSettingsDialog();
+
+        } else if (item.getItemId() == R.id.menu_bug) {
+            // show criticism selection fragment
+            showReportBugDialog();
+
+
         } else if(item.getTitle().equals("Recalculate Progress")) {
             new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext())).clearPracticeRecord();
             initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
@@ -1427,6 +1427,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 }
 
             } else if(item.getTitle().equals("DEBUG:DebugHistory")){
+                Log.d("nakama-debug", currentCharacterSet.getProgressTracker().debugHistory());
                 Toast.makeText(this, currentCharacterSet.getProgressTracker().debugHistory(), Toast.LENGTH_LONG * 5).show();
 
             } else if(item.getTitle().equals("DEBUG:DebugJSON")){
@@ -1439,6 +1440,21 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         return true;
+    }
+
+    private void showReportBugDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        ReportBugDialog d = new ReportBugDialog();
+        Bundle b = new Bundle();
+        try {
+            b.putString("debugData", stateLog());
+        } catch (IOException e) {
+            UncaughtExceptionLogger.backgroundLogError("Error generating debug state", e);
+        }
+        d.setArguments(b);
+        if(!isFinishing()) {
+            d.show(fm, "fragment_report_bug");
+        }
     }
 
     private void showProgressionSettingsDialog() {

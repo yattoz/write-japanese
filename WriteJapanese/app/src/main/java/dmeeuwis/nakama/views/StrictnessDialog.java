@@ -32,10 +32,10 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
 
         LayoutInflater inflater = d.getLayoutInflater();
         View dialogLayout = inflater.inflate(R.layout.fragment_strictness_dialog, frameView);
-        radioGroup = (RadioGroup)dialogLayout.findViewById(R.id.strictness_radio_group);
+        radioGroup = dialogLayout.findViewById(R.id.strictness_radio_group);
 
         {
-            TextView casualDesc = (TextView) dialogLayout.findViewById(R.id.strictness_casual_description);
+            TextView casualDesc = dialogLayout.findViewById(R.id.strictness_casual_description);
             casualDesc.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -45,7 +45,7 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
         }
 
         {
-            TextView casualOrderedDesc = (TextView) dialogLayout.findViewById(R.id.strictness_casual_ordered_description);
+            TextView casualOrderedDesc = dialogLayout.findViewById(R.id.strictness_casual_ordered_description);
             casualOrderedDesc.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -55,7 +55,7 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
         }
 
         {
-            TextView strictDesc = (TextView) dialogLayout.findViewById(R.id.strictness_strict_description);
+            TextView strictDesc = dialogLayout.findViewById(R.id.strictness_strict_description);
             strictDesc.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

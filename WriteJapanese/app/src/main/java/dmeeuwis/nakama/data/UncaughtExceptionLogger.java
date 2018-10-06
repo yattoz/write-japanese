@@ -123,4 +123,49 @@ public class UncaughtExceptionLogger {
         }
     }
 
+    public static void backgroundLogBugReport(final String json){
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                logBugReport(json);
+            }
+        });
+    }
+
+    public static void logBugReport(String json){
+        try {
+            Log.d("nakama", "Will try to send bug report: " + json);
+
+            if (BuildConfig.DEBUG) {
+                Log.e("nakama", "Swallowing error due to DEBUG build");
+                return;
+            }
+
+            URL url = HostFinder.formatURL("/write-japanese/user-bug-report");
+            HttpURLConnection report = (HttpURLConnection) url.openConnection();
+            try {
+                report.setRequestMethod("POST");
+                report.setDoOutput(true);
+                report.setReadTimeout(10_000);
+                report.setConnectTimeout(10_000);
+                report.setRequestProperty("Content-Type", "application/json");
+                OutputStream out = report.getOutputStream();
+                try {
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+                    writer.write(json);
+                    writer.close();
+                } finally {
+                    out.close();
+                }
+                int responseCode = report.getResponseCode();
+                Log.i("nakama", "Response code from writing error to network: " + responseCode);
+            } finally {
+                report.disconnect();
+            }
+
+        } catch (Throwable e) {
+            Log.e("nakama", "Error trying to report error", e);
+        }
+    }
+
 }

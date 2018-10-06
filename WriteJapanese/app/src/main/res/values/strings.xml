@@ -80,6 +80,11 @@
     <string name="srs_settings_menu_item">SRS Settings</string>
     <string name="sync_settings">Sync Settings</string>
     <string name="sync_button_text">SYNC WITH GOOGLE ACCOUNT</string>
+    <string name="menu_report_bug">Report Bug</string>
+
+    <!-- bug report text -->
+    <string name="bug_report_text">Did Write Japanese crash on you? Characters repeating more than you expect? A feature not working as you expect?\n\nDescribe the issue in the text below, and it will be submitted directly to the developer.\n\nIf you know how to cause the bug to occur (and it does not crash the app completely), please reproduce the problem first in the app, and then submit the bug report. The attached debugging state information will then be much more useful.\n\nThank you!</string>
+    <string name="attach_debug_data_check">Attach Current Application State Debug Data</string>
 
     <string-array name="when_to_introduce_incorrect_spinner_values">
         <item>Less than 5 characters are incorrect</item>

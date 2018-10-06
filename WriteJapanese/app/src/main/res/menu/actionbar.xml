@@ -62,4 +62,8 @@
     <item
         android:id="@+id/menu_info"
         android:title="@string/credits_menu_label"/>
+
+    <item
+        android:id="@+id/menu_bug"
+        android:title="@string/menu_report_bug"/>
 </menu>

@@ -186,13 +186,13 @@ public class SRSQueue {
         return false;
     }
 
-    public void removeSRSQueue(Character c){
+    public boolean removeSRSQueue(Character c){
         for (SRSEntry e : srsQueue) {
             if (e.character.equals(c)) {
-                srsQueue.remove(e);
-                break;
+                return srsQueue.remove(e);
             }
         }
+        return false;
     }
 
     private static class SRSEntryComparator implements Comparator<SRSEntry> {

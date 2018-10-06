@@ -80,16 +80,15 @@ public class ProgressTracker {
 	    history.add(new StudyRecord(c, null, setId, StudyType.REVIEW, "init" ));
 	}
 
-	public SRSQueue.SRSEntry checkPresentInSRS(Character c) {
-		return this.srsQueue.find(c);
-	}
-
 	public static class StudyRecord {
         public final Character chosenChar;
         public final Character previousChar;
         public final String setId;
         public final StudyType type;
         public final String pool;
+
+        public String grade;
+        public String nextSRS;
 
         private StudyRecord(Character chosen, Character prev, String setId, StudyType type, String pool) {
             this.chosenChar = chosen;
@@ -98,6 +97,11 @@ public class ProgressTracker {
             this.type = type;
             this.pool = pool;
         }
+
+        public void setGrade(String grade, LocalDate nextSRS){
+        	this.grade = grade;
+        	this.nextSRS = nextSRS == null ? null : nextSRS.toString();
+		}
     }
 
     private static final List<StudyRecord> history = new ArrayList<>();
@@ -371,8 +375,9 @@ public class ProgressTracker {
 		try {
 			StringWriter sw = new StringWriter();
 			JsonWriter jw = new JsonWriter(sw);
+			jw.setIndent("    ");
 			debugHistory(jw);
-			return jw.toString();
+			return sw.toString();
 
 		} catch (Throwable t) {
 			Log.e("nakama", "Error generating debug history json", t);
@@ -399,6 +404,12 @@ public class ProgressTracker {
 
             jw.name("pool");
             jw.value(s.pool);
+
+			jw.name("grade");
+			jw.value(s.grade == null ? "null" : s.grade);
+
+			jw.name("srsNext");
+			jw.value(s.nextSRS == null ? "null" : s.nextSRS);
 
             jw.endObject();
         }
@@ -514,6 +525,7 @@ public class ProgressTracker {
 		// adjust the scoresheet score; not marked 'passed' until the scheduled day has been won.
 		SRSQueue.SRSEntry s = srsQueue.find(c);
 		if(s != null && time.toLocalDate().isBefore(s.nextPractice)){
+			setGrade("SUCCESS-SKIP: current time " + time + " => " + time.toLocalDate() + " is before next practice: " + s.nextPractice, s.nextPractice);
 			return s;
 		}
 
@@ -538,7 +550,14 @@ public class ProgressTracker {
 		recordSheet.put(c, newScore);
 
         SRSQueue.SRSEntry addedToSrs = srsQueue.addToSRSQueue(c, newScore, time, MAX_SCORE);
+		setGrade("SUCCESS: " + c + " at time " + time, addedToSrs == null ? null : addedToSrs.nextPractice);
         return addedToSrs;
+	}
+
+	private void setGrade(String grade, LocalDate nextSrs){
+		if(history.size() >= 1) {
+			history.get(history.size() - 1).setGrade(grade, nextSrs);
+		}
 	}
 
 	public SRSQueue.SRSEntry markFailure(Character c){
@@ -550,6 +569,7 @@ public class ProgressTracker {
         lastCharPrevScore = recordSheet.get(c);
         lastChar = c;
         lastPassed = false;
+		setGrade("FAILED: " + c, null);
 
 		recordSheet.put(c, failScore());
 		return null;
