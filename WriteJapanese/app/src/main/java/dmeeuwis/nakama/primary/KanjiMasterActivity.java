@@ -40,7 +40,6 @@ import org.threeten.bp.LocalDate;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,7 +73,6 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CharacterStudySet.LockLevel;
 import dmeeuwis.nakama.data.ClueExtractor;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
-import dmeeuwis.nakama.data.DataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.data.PracticeLogSync;
 import dmeeuwis.nakama.data.ProgressTracker;
@@ -1683,7 +1681,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
     @Override
-    public void overRide(OverrideDialog.OverideType type) {
+    public void overRide(OverrideDialog.OverideType type, boolean logData) {
         if(BuildConfig.DEBUG) Toast.makeText(this, "Override " + lastGradingRow, Toast.LENGTH_LONG).show();
         currentCharacterSet.overRideLast();
 
@@ -1692,6 +1690,28 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
         if(type == CORRECT_OVERRIDE){
             setUiState(State.REVIEWING);
+        }
+
+        try {
+            StringWriter sw = new StringWriter();
+            JsonWriter j = new JsonWriter(sw);
+
+            j.beginObject();
+
+            j.name("character").value(currentCharacterSet.currentCharacter());
+            j.name("setId").value(currentCharacterSet.pathPrefix);
+            j.name("setName").value(currentCharacterSet.name);
+            j.name("overrideType").value(type.toString());
+
+            j.name("drawn");
+            drawPad.getDrawing().serialize(j);
+
+            j.endObject();
+
+            UncaughtExceptionLogger.backgroundLogOverride(sw.toString());
+
+        } catch (Throwable t){
+            UncaughtExceptionLogger.backgroundLogError("Error generating override log", t);
         }
     }
 

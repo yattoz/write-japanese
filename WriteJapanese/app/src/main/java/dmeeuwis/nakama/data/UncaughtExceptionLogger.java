@@ -132,16 +132,25 @@ public class UncaughtExceptionLogger {
         });
     }
 
+    public static void backgroundLogOverride(final String json){
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                logOverride(json);
+            }
+        });
+    }
+
+
     public static void logBugReport(String json){
+        logJson("/write-japanese/user-bug-report", json);
+    }
+
+    public static void logJson(String path, String json){
         try {
             Log.d("nakama", "Will try to send bug report: " + json);
 
-            if (BuildConfig.DEBUG) {
-                Log.e("nakama", "Swallowing error due to DEBUG build");
-                return;
-            }
-
-            URL url = HostFinder.formatURL("/write-japanese/user-bug-report");
+            URL url = HostFinder.formatURL(path);
             HttpURLConnection report = (HttpURLConnection) url.openConnection();
             try {
                 report.setRequestMethod("POST");
@@ -166,6 +175,10 @@ public class UncaughtExceptionLogger {
         } catch (Throwable e) {
             Log.e("nakama", "Error trying to report error", e);
         }
+    }
+
+    public static void logOverride(String json){
+        logJson("/write-japanese/override-report", json);
     }
 
 }

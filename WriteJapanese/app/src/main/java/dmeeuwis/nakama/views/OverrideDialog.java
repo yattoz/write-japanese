@@ -5,9 +5,15 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.view.*;
+import android.widget.*;
+
+import dmeeuwis.kanjimaster.*;
 import dmeeuwis.nakama.primary.GradingOverrideListener;
 
-public class OverrideDialog extends DialogFragment {
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
+public class OverrideDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     public enum OverideType { INCORRECT_OVERRIDE, CORRECT_OVERRIDE }
 
@@ -22,28 +28,46 @@ public class OverrideDialog extends DialogFragment {
         return d;
     }
 
+
+    OverideType type;
+    CheckBox c;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         this.setRetainInstance(true);
 
         Bundle b = getArguments();
-        final OverideType type = OverideType.valueOf(b.getString("type", OverideType.INCORRECT_OVERRIDE.toString()));
+        type = OverideType.valueOf(b.getString("type", OverideType.INCORRECT_OVERRIDE.toString()));
         String message = type == OverideType.INCORRECT_OVERRIDE ? incorrectOverrideMessage : correctOverrideMessage;
 
+        final FrameLayout frameView = new FrameLayout(getActivity());
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder
-                .setTitle("Override Grading?")
+        Dialog d = builder.setTitle("Override Grading?")
                 .setMessage(message)
+                .setView(frameView)
                 .setPositiveButton("Override", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ((GradingOverrideListener)getActivity()).overRide(type);
+
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                     }
-                });
+                }).create();
+
+        View mView = d.getLayoutInflater().inflate(R.layout.override_fragment_check_data_submit, frameView);
+        c = mView.findViewById(R.id.submit_char_data_on_override);
+
         // Create the AlertDialog object and return it
         return builder.create();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if(which == BUTTON_POSITIVE){
+            ((GradingOverrideListener)getActivity()).overRide(type, c.isChecked());
+        }
+
     }
 }

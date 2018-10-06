@@ -208,30 +208,37 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 		try {
 			Writer sw = new StringWriter();
 			JsonWriter jw = new JsonWriter(sw);
-			jw.beginObject();
-			jw.name("scaleX");
-			jw.value(scaleX);
-			jw.name("scaleY");
-			jw.value(scaleY);
-			jw.name("drawing");
-			jw.beginArray();
-			for (Stroke s : strokes) {
-				jw.beginArray();
-				for (Point p : s.points) {
-					jw.beginArray();
-					jw.value(p.x);
-					jw.value(p.y);
-					jw.endArray();
-				}
-				jw.endArray();
-			}
-			jw.endArray();
-			jw.endObject();
+
+			serialize(jw);
+
 			jw.close();
 			return sw.toString();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+
+	public void serialize(JsonWriter jw) throws IOException {
+        jw.beginObject();
+        jw.name("scaleX");
+        jw.value(scaleX);
+        jw.name("scaleY");
+        jw.value(scaleY);
+        jw.name("drawing");
+        jw.beginArray();
+        for (Stroke s : strokes) {
+            jw.beginArray();
+            for (Point p : s.points) {
+                jw.beginArray();
+                jw.value(p.x);
+                jw.value(p.y);
+                jw.endArray();
+            }
+            jw.endArray();
+        }
+        jw.endArray();
+        jw.endObject();
 	}
 
 	public String toString(){
