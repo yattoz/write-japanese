@@ -662,46 +662,54 @@ public class ProgressTracker {
 	}
 
 
-	public ProgressState serializeOut(){
-		if(oldestLogTimestampByDevice.size() == 0){
-			return null;
-		}
+    public ProgressState serializeOut(){
+        if(oldestLogTimestampByDevice.size() == 0){
+            return null;
+        }
 
-		try {
-
-			// oldest log dates by set
-			StringWriter oldestDates = new StringWriter();
-			JsonWriter jd = new JsonWriter(oldestDates);
-			jd.beginObject();
-			for (Map.Entry<String, LocalDateTime> d : this.oldestLogTimestampByDevice.entrySet()) {
-				jd.name(d.getKey());
-				jd.value(d.getValue().toString());
-			}
-			jd.endObject();
-
-			// record sheet
-			StringWriter recordSheet = new StringWriter();
-			JsonWriter j = new JsonWriter(recordSheet);
-			j.beginObject();
-			for (Map.Entry<Character, Integer> d : this.recordSheet.entrySet()) {
-				if(d.getKey() == null){
-					UncaughtExceptionLogger.backgroundLogError("Not serializing null key in record sheet: " + this.debugHistory(), new RuntimeException());
-					continue;
-				}
-
-				j.name(d.getKey().toString());
-				j.value(d.getValue());
-			}
-			j.endObject();
+        try {
+            // oldest log dates by set
+            StringWriter oldestDates = new StringWriter();
+            JsonWriter jd = new JsonWriter(oldestDates);
+            serializeOutDates(jd);
+            jd.close();
 
 
-			j.close();
+            StringWriter recordSheetJson = new StringWriter();
+            JsonWriter j = new JsonWriter(recordSheetJson);
+            serializeOutRecordSheets(j);
+            j.close();
 
-			return new ProgressState(recordSheet.toString(), srsQueue.serializeOut(), oldestDates.toString());
-		} catch(IOException e){
-			Log.d("nakama", "Error serializing out", e);
-			return null;
-		}
+            return new ProgressState(recordSheetJson.toString(), srsQueue.serializeOut(), oldestDates.toString());
+
+        } catch(IOException e){
+            Log.d("nakama", "Error serializing out", e);
+            return null;
+        }
+    }
+
+	public void serializeOutDates(JsonWriter jd) throws IOException {
+        jd.beginObject();
+        for (Map.Entry<String, LocalDateTime> d : this.oldestLogTimestampByDevice.entrySet()) {
+            jd.name(d.getKey());
+            jd.value(d.getValue().toString());
+        }
+        jd.endObject();
+    }
+
+    public void serializeOutRecordSheets(JsonWriter j) throws IOException {
+        // record sheet
+        j.beginObject();
+        for (Map.Entry<Character, Integer> d : this.recordSheet.entrySet()) {
+            if(d.getKey() == null){
+                UncaughtExceptionLogger.backgroundLogError("Not serializing null key in record sheet: " + this.debugHistory(), new RuntimeException());
+                continue;
+            }
+
+            j.name(d.getKey().toString());
+            j.value(d.getValue());
+        }
+        j.endObject();
     }
 
     public void deserializeIn(String queueJson, String recordJson, String lastLogsByDevice) {

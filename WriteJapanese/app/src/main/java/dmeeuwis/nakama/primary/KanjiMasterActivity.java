@@ -821,8 +821,21 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         setting(jw, "localDate", LocalDate.now().toString());
         setting(jw, "localDateTime", LocalDateTime.now().toString());
 
+        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext()));
+        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+
+        setting(jw, "introIncorrect", p.introIncorrect);
+        setting(jw, "introReviewing", p.introReviewing);
+        setting(jw, "advanceIncorrect", p.advanceIncorrect);
+        setting(jw, "advanceReview", p.advanceReviewing);
+        setting(jw, "skipSRSOnFirstTimeCorrect", p.skipSRSOnFirstTimeCorrect);
+        setting(jw, "characterCooldown", p.characterCooldown);
+
         setting(jw, "srsEnabled", Settings.getSRSEnabled(ctx));
         setting(jw, "srsGlobal", Settings.getSRSAcrossSets(ctx));
+        setting(jw, "strictness", Settings.getStrictness(ctx));
+        setting(jw, "storySharing", Settings.getStorySharing(ctx));
+
 
         jw.name("sets");
         jw.beginArray();
@@ -837,8 +850,15 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
             setting(jw, "srsString", s.getSrsScheduleString());
 
+            jw.name("deviceTimestamps");
+            s.getProgressTracker().serializeOutDates(jw);
+
+            jw.name("recordSheet");
+            s.getProgressTracker().serializeOutRecordSheets(jw);
+
             jw.name("srs");
             s.getProgressTracker().getSrsQueue().serializeOut(jw);
+
             jw.endObject();
         }
         jw.endArray();
