@@ -35,7 +35,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import org.threeten.bp.LocalDate;
+import org.threeten.bp.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -818,6 +818,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         setting(jw, "iid", Iid.get(ctx));
         setting(jw, "lockLevel", lockChecker.getPurchaseStatus().toString());
         setting(jw, "device", Build.MODEL);
+        setting(jw, "localDate", LocalDate.now().toString());
+        setting(jw, "localDateTime", LocalDateTime.now().toString());
 
         setting(jw, "srsEnabled", Settings.getSRSEnabled(ctx));
         setting(jw, "srsGlobal", Settings.getSRSAcrossSets(ctx));
@@ -833,9 +835,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             setting(jw, "chars", s.charactersAsString());
             setting(jw, "systemSet", s.systemSet);
 
-            jw.name("sessionHistory");
-            s.getProgressTracker().debugHistory(jw);
-
             setting(jw, "srsString", s.getSrsScheduleString());
 
             jw.name("srs");
@@ -844,8 +843,15 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
         jw.endArray();
 
+        // session history is static in ProgressTracker, so can get it from any charset.
+        jw.name("sessionHistory");
+        characterSets.get("hiragana").getProgressTracker().debugHistory(jw);
+
         jw.name("srsGlobalSet");
         SRSQueue.getglobalQueue().serializeOut(jw);
+
+        jw.name("recentPracticeLogs");
+        new CharacterProgressDataHelper(this, Iid.get(this)).debugLastNLogs(jw, 50);
 
         jw.endObject();
         return sb.toString();
@@ -1460,7 +1466,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         Bundle b = new Bundle();
         try {
             b.putString("debugData", stateLog());
-        } catch (IOException e) {
+        } catch (Throwable e) {
             UncaughtExceptionLogger.backgroundLogError("Error generating debug state", e);
         }
         d.setArguments(b);

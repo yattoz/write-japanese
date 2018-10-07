@@ -3,8 +3,7 @@ package dmeeuwis.nakama.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.util.Pair;
+import android.util.*;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -135,6 +134,23 @@ public class CharacterProgressDataHelper {
 
     public void resumeProgressTrackerFromDB(List<ProgressTracker> allPts) {
         loadProgressTrackerFromDB(allPts, true, ProgressCacheFlag.USE_RAW_LOGS);
+    }
+
+    public void debugLastNLogs(JsonWriter jw, Integer n) throws IOException {
+        jw.beginArray();
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        List<Map<String, String>> rows = DataHelper.selectRecords(db.getReadableDatabase(), "SELECT * FROM practice_log ORDER BY timestamp DESC LIMIT ?", new String[] { n.toString() });
+        for(Map<String, String> r: rows){
+            jw.beginObject();
+
+            for(Map.Entry<String, String> kv: r.entrySet()){
+                jw.name(kv.getKey()).value(kv.getValue());
+            }
+
+
+            jw.endObject();
+        }
+        jw.endArray();
     }
 
     public enum ProgressCacheFlag { USE_CACHE, USE_RAW_LOGS }
