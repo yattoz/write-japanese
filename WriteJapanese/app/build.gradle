@@ -17,8 +17,8 @@ android {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 180
-        versionName "17.0"
+        versionCode 181
+        versionName "17.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
