@@ -752,4 +752,8 @@ public class ProgressTracker {
 	public SRSQueue getSrsQueue() {
 		return srsQueue;
 	}
+
+	public void correctSRSQueueState(Set<Character> allCharactersSet) {
+		this.srsQueue.correctSRSQueueState(allCharactersSet);
+	}
 }

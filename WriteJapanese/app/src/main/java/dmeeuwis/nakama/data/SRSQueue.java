@@ -1,7 +1,7 @@
 package dmeeuwis.nakama.data;
 
-import android.util.JsonReader;
-import android.util.JsonWriter;
+import android.os.*;
+import android.util.*;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
@@ -38,6 +38,24 @@ public class SRSQueue {
         return new SRSQueue("global", globalQueue());
     }
 
+
+/*
+    private static PriorityQueue<SRSEntry> globalQueue(){
+        PriorityQueue<SRSEntry> gq = new PriorityQueue<>(20, new SRSEntryComparator());
+        Map<Character, SRSEntry> countedChars = new HashMap<>();
+        for(CharacterStudySet s: globalSRSSets){
+            for(SRSEntry e: s.getProgressTracker().srsQueue.srsQueue){
+                SRSEntry existingEntry = countedChars.get(e.character);
+                if(existingEntry == null || existingEntry.nextPractice.isBefore(e.nextPractice)){
+                    gq.remove(existingEntry);
+                    gq.add(e);
+                    countedChars.put(e.character, e);
+                }
+            }
+        }
+        return gq;
+    }
+ */
     private static PriorityQueue<SRSEntry> globalQueue(){
         PriorityQueue<SRSEntry> gq = new PriorityQueue<>(20, new SRSEntryComparator());
         Set<Character> countedChars = new HashSet<>();
@@ -284,4 +302,22 @@ public class SRSQueue {
         jr.close();
         return new SRSQueue(id, queue);
     }
+
+    // There was a bug where a set could save entries in its serialized SRSQueue for characters
+    // not in its set. These would get stuck looping forever. Detect and clear them out here.
+    public void correctSRSQueueState(Set<Character> allCharactersSet) {
+        List<SRSEntry> toRemove = new ArrayList<>();
+        for(SRSEntry s: srsQueue){
+            if(!allCharactersSet.contains(s.character)){
+                toRemove.add(s);
+            }
+        }
+
+        int removed = 0;
+        for(SRSEntry s: toRemove){
+            srsQueue.remove(s);
+            removed++;
+        }
+    }
+
 }

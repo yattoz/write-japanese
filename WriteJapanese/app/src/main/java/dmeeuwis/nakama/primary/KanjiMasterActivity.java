@@ -836,6 +836,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         setting(jw, "strictness", Settings.getStrictness(ctx));
         setting(jw, "storySharing", Settings.getStorySharing(ctx));
 
+        setting(jw, "currentCharacterSet", currentCharacterSet.pathPrefix);
+        setting(jw, "currentCharacterSetName", currentCharacterSet.name);
+        setting(jw, "currentCharacter", currentCharacterSet.currentCharacter());
+
 
         jw.name("sets");
         jw.beginArray();
@@ -1087,6 +1091,13 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         new CharacterProgressDataHelper(this, Iid.get(this)).resumeProgressTrackerFromDB(pts);
     }
 
+
+    private void correctSRSQueueStates(){
+        for(CharacterStudySet st: characterSets.values()) {
+            st.correctSRSQueueState();
+        }
+    }
+
     @Override
     public void onResume() {
         long start = System.currentTimeMillis();
@@ -1113,6 +1124,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         resumeCharacterSets();
         resumeCurrentCharacterSet();
         resumePracticeLogsCurrentCharset();
+        correctSRSQueueStates();
 
         LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);

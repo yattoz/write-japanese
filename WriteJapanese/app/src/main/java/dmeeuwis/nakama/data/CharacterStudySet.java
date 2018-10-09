@@ -343,5 +343,7 @@ public class CharacterStudySet implements Iterable<Character> {
         return this.dbHelper.overRideLast();
     }
 
-
+    public void correctSRSQueueState() {
+        this.tracker.correctSRSQueueState(allCharactersSet);
+    }
 }
