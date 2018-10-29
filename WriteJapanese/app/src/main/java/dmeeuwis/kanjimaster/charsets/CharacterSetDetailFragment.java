@@ -31,7 +31,7 @@ import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.views.AutofitRecyclerView;
-import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
+import dmeeuwis.nakama.billing.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
 
 /**

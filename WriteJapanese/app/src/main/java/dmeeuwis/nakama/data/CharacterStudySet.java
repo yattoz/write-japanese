@@ -8,7 +8,6 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.billing.LockChecker;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.util.Util;
 

@@ -1,4 +1,4 @@
-package dmeeuwis.nakama;
+package dmeeuwis.nakama.billing;
 
 import android.app.Activity;
 import android.content.Intent;

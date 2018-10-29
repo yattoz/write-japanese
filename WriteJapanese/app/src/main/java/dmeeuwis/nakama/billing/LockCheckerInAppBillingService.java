@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.views;
+package dmeeuwis.nakama.billing;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.nakama.LockChecker;
 import dmeeuwis.nakama.data.LoggingRunnable;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 

@@ -3,7 +3,6 @@ package dmeeuwis.nakama.teaching;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
@@ -32,9 +30,6 @@ import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.data.AndroidInputStreamGenerator;
 import dmeeuwis.nakama.data.AssetFinder;
 import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.primary.Iid;
-import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
-import dmeeuwis.util.Util;
 
 public class TeachingActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
 	ActionBar actionBar;

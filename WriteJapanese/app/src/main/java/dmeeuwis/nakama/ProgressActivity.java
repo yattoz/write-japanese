@@ -21,17 +21,16 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import java.util.Map;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.nakama.billing.*;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.ProgressTracker.Progress;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.teaching.TeachingActivity;
 import dmeeuwis.nakama.views.AppColors;
-import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
 import dmeeuwis.nakama.views.PurchaseDialog;
 import dmeeuwis.nakama.views.SingleBarChart;
 import dmeeuwis.nakama.views.SingleBarChart.BarChartEntry;

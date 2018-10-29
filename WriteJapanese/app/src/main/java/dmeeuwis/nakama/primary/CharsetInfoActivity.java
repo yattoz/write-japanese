@@ -11,12 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.billing.LockChecker;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
 import dmeeuwis.nakama.data.CharacterSets;
 import dmeeuwis.nakama.data.CharacterStudySet;
-import dmeeuwis.nakama.data.DictionarySet;
-import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
+import dmeeuwis.nakama.billing.LockCheckerInAppBillingService;
 
 /**
  * On small devices, holds the CharacterSetStatusFragment standardSets by itself.

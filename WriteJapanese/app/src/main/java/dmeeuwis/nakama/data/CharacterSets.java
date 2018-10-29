@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import dmeeuwis.Kana;
 import dmeeuwis.Kanji;
-import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.billing.LockChecker;
 import dmeeuwis.nakama.primary.Iid;
 
 public class CharacterSets  {

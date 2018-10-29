@@ -11,11 +11,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.billing.LockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.data.UncaughtExceptionLogger;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
-import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
+import dmeeuwis.nakama.billing.LockCheckerInAppBillingService;
 
 /**
  * An activity representing a single CharacterSet detail screen. This

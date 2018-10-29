@@ -22,16 +22,14 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.nakama.LockCheckerIabHelper;
+import dmeeuwis.nakama.billing.LockCheckerIabHelper;
 import dmeeuwis.nakama.primary.Iid;
 import dmeeuwis.util.Util;
 

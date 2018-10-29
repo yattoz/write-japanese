@@ -19,16 +19,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.UUID;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.LockChecker;
+import dmeeuwis.nakama.billing.LockChecker;
 import dmeeuwis.nakama.LockCheckerHolder;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.CustomCharacterSetDataHelper;
 import dmeeuwis.nakama.data.DictionarySet;
 import dmeeuwis.nakama.primary.KanjiMasterActivity;
-import dmeeuwis.nakama.views.LockCheckerInAppBillingService;
+import dmeeuwis.nakama.billing.LockCheckerInAppBillingService;
 
 /**
  * An activity representing a list of CharacterSets. This activity
