@@ -1,11 +1,16 @@
 package dmeeuwis.nakama.data;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.JsonWriter;
 import android.util.Log;
+
+import com.android.vending.billing.util.Purchase;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -15,9 +20,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.primary.Iid;
+import dmeeuwis.nakama.primary.KanjiMasterActivity;
 import dmeeuwis.nakama.primary.KanjiMasterApplicaton;
 
 public class UncaughtExceptionLogger {
@@ -181,4 +188,39 @@ public class UncaughtExceptionLogger {
         logJson("/write-japanese/override-report", json);
     }
 
+    public static void backgroundLogPurchase(Activity parentActivity, Purchase info) {
+        try {
+            StringWriter sw = new StringWriter();
+            JsonWriter jw = new JsonWriter(sw);
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(app.getApplicationContext());
+            CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(app.getApplicationContext(), Iid.get(app.getApplicationContext()));
+
+            jw.beginObject();
+
+            jw.name("iid").value(Iid.get(app.getApplicationContext()).toString());
+            jw.name("installed").value(prefs.getString("installTime", null);
+            jw.name("purchaseToken").value(info.getToken());
+
+            jw.name("charsetLogs");
+            jw.beginObject();
+
+            Map<String, String> practiceCounts = jw.value(dbHelper.countPracticeLogs();
+            for(Map.Entry<String, String> e: practiceCounts.entrySet()){
+                jw.name(e.getKey()).value(e.getValue());
+            }
+
+            jw.endObject();
+
+            if(parentActivity instanceof KanjiMasterActivity){
+                KanjiMasterActivity a = (KanjiMasterActivity)parentActivity;
+                jw.name("appState");
+                jw.value(a.stateLog());
+            }
+
+            logJson("write-japanese/purchase", sw.toString());
+        } catch (Throwable e) {
+            UncaughtExceptionLogger.backgroundLogError("Error logging purchase", e);
+        }
+    }
 }

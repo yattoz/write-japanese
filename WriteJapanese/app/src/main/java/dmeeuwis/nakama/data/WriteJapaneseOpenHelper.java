@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.threeten.bp.LocalDateTime;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,7 +42,18 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
         addCharacterSets(dbase);
         addPracticeLogDateIndex(dbase);
         createPracticeLogCache(dbase);
+
+        recordInstallTime();
 	}
+
+    private void recordInstallTime() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs.getString("installTime", null) == null) {
+            SharedPreferences.Editor e = prefs.edit();
+            e.putString("installTime", LocalDateTime.now().toString());
+            e.apply();
+        }
+    }
 
     private void createStoryTables(SQLiteDatabase dbase){
         Log.d("nakama-db", "Creating story table.");

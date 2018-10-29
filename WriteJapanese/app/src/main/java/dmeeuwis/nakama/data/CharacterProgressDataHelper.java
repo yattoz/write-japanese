@@ -153,6 +153,16 @@ public class CharacterProgressDataHelper {
         jw.endArray();
     }
 
+    public Map<String, String> countPracticeLogs() {
+        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(this.context);
+        try {
+            return DataHelper.selectRecord(db.getReadableDatabase(),
+                    "SELECT charset, count(*) from practice_log");
+        } finally {
+            db.close();
+        }
+    }
+
     public enum ProgressCacheFlag { USE_CACHE, USE_RAW_LOGS }
 
     private void loadProgressTrackerFromDB(final List<ProgressTracker> allPtsOrig, boolean resuming, ProgressCacheFlag useCache ){

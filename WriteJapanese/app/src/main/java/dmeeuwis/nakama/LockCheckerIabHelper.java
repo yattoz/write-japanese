@@ -163,6 +163,7 @@ public class LockCheckerIabHelper extends LockChecker implements OnIabSetupFinis
 			iabDebugLog.add(df.format(new Date()) + " iab onPurchaseFinished SUCCESS");
 			Log.d("nakama", "LockCheckerIabHelper: onIabPurchaseFinished isSuccess!");
 			Toast.makeText(parentActivity, "Thank you, your purchase completed! You have full access to standardSets features of Write Japanese. Good luck in your studies!", Toast.LENGTH_LONG).show();
+			UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, info);
 			coreUnlock();
 			parentActivity.recreate();
 		} else {

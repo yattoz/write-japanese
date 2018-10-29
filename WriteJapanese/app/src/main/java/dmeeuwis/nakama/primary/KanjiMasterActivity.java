@@ -123,7 +123,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     protected LockChecker lockChecker;
 
     protected CharacterStudySet currentCharacterSet;
-    protected LinkedHashMap<String, CharacterStudySet> characterSets = new LinkedHashMap<>();
+    public LinkedHashMap<String, CharacterStudySet> characterSets = new LinkedHashMap<>();
     protected List<CharacterStudySet> customSets = null;
 
     protected StoryDataHelper db;
@@ -805,7 +805,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
     }
 
-    private String stateLog() throws IOException {
+    public String stateLog() throws IOException {
         Context ctx = getApplicationContext();
 
         StringWriter sb = new StringWriter();
