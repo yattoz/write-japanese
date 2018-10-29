@@ -199,13 +199,13 @@ public class UncaughtExceptionLogger {
             jw.beginObject();
 
             jw.name("iid").value(Iid.get(app.getApplicationContext()).toString());
-            jw.name("installed").value(prefs.getString("installTime", null);
+            jw.name("installed").value(prefs.getString("installTime", null));
             jw.name("purchaseToken").value(info.getToken());
 
             jw.name("charsetLogs");
             jw.beginObject();
 
-            Map<String, String> practiceCounts = jw.value(dbHelper.countPracticeLogs();
+            Map<String, String> practiceCounts = dbHelper.countPracticeLogs();
             for(Map.Entry<String, String> e: practiceCounts.entrySet()){
                 jw.name(e.getKey()).value(e.getValue());
             }
