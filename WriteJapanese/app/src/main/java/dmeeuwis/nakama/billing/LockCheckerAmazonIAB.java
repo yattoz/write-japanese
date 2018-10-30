@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListener {
 
-    private final static String IN_APP_PURCHASE_KEY = "abcd";
+    private final static String IN_APP_PURCHASE_KEY = "dmeeuwis.writejapanese.unlock";
 
     public LockCheckerAmazonIAB(Activity parent) {
         super(parent);
@@ -30,6 +30,7 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
             Set<String> s = new HashSet<>(1);
             s.add(IN_APP_PURCHASE_KEY);
             PurchasingService.getProductData(s);
+            PurchasingService.getPurchaseUpdates(false);
         }
 
         // request user data
@@ -39,6 +40,7 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
     @Override
     public void runPurchase() {
         final RequestId requestId = PurchasingService.purchase(IN_APP_PURCHASE_KEY);
+        Log.i("nakama-kindle", "Saw requestId as: " + requestId);
     }
 
     @Override
@@ -119,7 +121,8 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
                 + response.getRequestStatus()
                 + ") userId ("
                 + response.getUserData().getUserId()
-                + ")");
+                + ") " + response.getUserData().toJSON()
+             );
         final PurchaseResponse.RequestStatus status = response.getRequestStatus();
         switch (status) {
             case SUCCESSFUL:
