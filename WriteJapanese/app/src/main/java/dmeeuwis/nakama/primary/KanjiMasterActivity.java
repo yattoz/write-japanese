@@ -187,7 +187,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         super.onCreate(savedInstanceState);
 
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
+
         lockChecker = new LockCheckerInAppBillingService(this);
+
+        LockCheckerAmazonIAB amazon = new LockCheckerAmazonIAB(this);
+
         setContentView(R.layout.main);          // pretty heavy, ~900ms
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
 
