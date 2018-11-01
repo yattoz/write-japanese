@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.util.JsonWriter;
 import android.util.Log;
 
+import com.amazon.device.iap.model.*;
 import com.android.vending.billing.util.Purchase;
 
 import java.io.BufferedWriter;
@@ -188,7 +189,17 @@ public class UncaughtExceptionLogger {
         logJson("/write-japanese/override-report", json);
     }
 
+
     public static void backgroundLogPurchase(Activity parentActivity, Purchase info) {
+        backgroundLogPurchase(parentActivity, "GooglePlay", info.getToken());
+    }
+
+
+    public static void backgroundLogPurchase(Activity parentActivity, PurchaseResponse info) {
+        backgroundLogPurchase(parentActivity, "AmazonAppStore", info.getReceipt().getReceiptId());
+    }
+
+    public static void backgroundLogPurchase(Activity parentActivity, String store, String token) {
         try {
             StringWriter sw = new StringWriter();
             JsonWriter jw = new JsonWriter(sw);
@@ -200,7 +211,8 @@ public class UncaughtExceptionLogger {
 
             jw.name("iid").value(Iid.get(app.getApplicationContext()).toString());
             jw.name("installed").value(prefs.getString("installTime", null));
-            jw.name("purchaseToken").value(info.getToken());
+            jw.name("purchaseToken").value(token);
+            jw.name("store").value(store);
 
             jw.name("charsetLogs");
             jw.beginObject();

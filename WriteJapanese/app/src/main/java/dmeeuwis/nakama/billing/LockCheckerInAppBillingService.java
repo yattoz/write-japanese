@@ -238,7 +238,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
             String responseData = data.getStringExtra("INAPP_PURCHASE_DATA");
             // Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase succeeded!" + responseData);
             try {
-                savePurchaseTokenFromPurchaseData(responseData);
+                savePurchaseTokenFromPurchaseData(responseData, "GooglePlay");
             } catch (JSONException e) {
                 UncaughtExceptionLogger.backgroundLogError("Error parsing JSON response from Google Play: " + responseData, e, parent);
                 toast("Error parsing JSON response from Google Play");
@@ -297,7 +297,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
                     String sku = ownedSkus.get(i);
                     //Log.d("nakama-iiab", "Purchase " + i + ": " + purchaseData);
                     if(sku.equals(LockChecker.LICENSE_SKU)){
-                        boolean saved = savePurchaseTokenFromPurchaseData(purchaseData);
+                        boolean saved = savePurchaseTokenFromPurchaseData(purchaseData, "GooglePlay");
                         if(saved) {
                             recreateActivity();
                         }
@@ -314,7 +314,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
         }
     }
 
-    private boolean savePurchaseTokenFromPurchaseData(String purchaseData) throws JSONException {
+    private boolean savePurchaseTokenFromPurchaseData(String purchaseData, String store) throws JSONException {
         // Log.i("nakama-iiab", "Attempt to parse JSON: " + purchaseData);
         JSONObject j = new JSONObject(purchaseData);
         String token = j.getString("purchaseToken");
@@ -323,6 +323,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
         // Log.i("nakama-iiab", "Unlock and recording previous purchase token: " + token);
         coreUnlock();
+        UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, store, purchaseData);
 
         String existing = shared.getString("purchase_token", "");
         if(existing.equals(token)){

@@ -7,15 +7,13 @@ import android.util.Log;
 import com.amazon.device.iap.PurchasingListener;
 import com.amazon.device.iap.PurchasingService;
 import com.amazon.device.iap.ResponseReceiver;
-import com.amazon.device.iap.model.ProductDataResponse;
-import com.amazon.device.iap.model.PurchaseResponse;
-import com.amazon.device.iap.model.PurchaseUpdatesResponse;
-import com.amazon.device.iap.model.Receipt;
-import com.amazon.device.iap.model.RequestId;
-import com.amazon.device.iap.model.UserDataResponse;
+import com.amazon.device.iap.model.*;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import dmeeuwis.kanjimaster.*;
+import dmeeuwis.nakama.data.*;
 
 public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListener {
 
@@ -25,16 +23,15 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
         super(parent);
 
         PurchasingService.registerListener(parent, this);
+        PurchasingService.getUserData();
 
         {   // request product data
             Set<String> s = new HashSet<>(1);
             s.add(IN_APP_PURCHASE_KEY);
             PurchasingService.getProductData(s);
-            PurchasingService.getPurchaseUpdates(false);
         }
 
-        // request user data
-        PurchasingService.getUserData();
+        PurchasingService.getPurchaseUpdates(false);
     }
 
     @Override
@@ -55,7 +52,6 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
 
     @Override
     public void dispose() {
-
     }
 
 
@@ -114,15 +110,15 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
 
     @Override
     public void onPurchaseResponse(PurchaseResponse response) {
-        Log.i("nakama-kindle", "Saw purchase response!");
-
-        Log.d("nakama-kindle", "onPurchaseUpdatesResponse: requestId (" + response.getRequestId()
-                + ") purchaseUpdatesResponseStatus ("
-                + response.getRequestStatus()
-                + ") userId ("
-                + response.getUserData().getUserId()
-                + ") " + response.getUserData().toJSON()
-             );
+        if(BuildConfig.DEBUG){
+            Log.d("nakama-kindle", "onPurchaseUpdatesResponse: requestId (" + response.getRequestId()
+                    + ") purchaseUpdatesResponseStatus ("
+                    + response.getRequestStatus()
+                    + ") userId ("
+                    + response.getUserData().getUserId()
+                    + ") " + response.getUserData().toJSON()
+            );
+        }
         final PurchaseResponse.RequestStatus status = response.getRequestStatus();
         switch (status) {
             case SUCCESSFUL:
@@ -139,7 +135,10 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
                 }
                 */
 
+                UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, response);
+
                 coreUnlock();
+                PurchasingService.notifyFulfillment(response.getReceipt().getReceiptId(), FulfillmentResult.FULFILLED);
                 parentActivity.recreate();
 
                 break;
