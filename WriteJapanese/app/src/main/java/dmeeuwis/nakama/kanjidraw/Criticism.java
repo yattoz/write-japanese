@@ -54,6 +54,10 @@ public class Criticism {
         this.pass = false;
     }
 
+    public String printScoreMatrix() {
+	    return Util.printMatrix(matrix);
+    }
+
     public interface PaintColourInstructions {
         void colour(int stroke, float t, Paint p, int defaultColor);
     }

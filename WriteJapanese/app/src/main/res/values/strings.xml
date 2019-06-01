@@ -12,8 +12,6 @@
     <string name="practice_button">Study</string>
     <string name="next_button">Next</string>
     <string name="trace_message">Trace the character</string>
-    <string name="test_button">Test</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_teaching">Study Mode</string>
     <string name="practice_writing">Practice Writing</string>
     <string name="character_info">Character Information</string>

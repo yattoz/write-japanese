@@ -96,6 +96,7 @@ import dmeeuwis.nakama.views.*;
 import dmeeuwis.nakama.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.nakama.views.translations.ClueCard;
 import dmeeuwis.nakama.views.translations.KanjiVocabRecyclerAdapter;
+import dmeeuwis.util.Util;
 
 import static dmeeuwis.nakama.primary.IntroActivity.USE_SRS_SETTING_NAME;
 import static dmeeuwis.nakama.views.OverrideDialog.OverideType.OVERRIDE_TO_CORRECT;
@@ -154,6 +155,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     protected ArrayAdapter<String> criticismArrayAdapter;
     protected ColorDrawable actionBarBackground;
     protected String lastGradingRow;
+
+    protected Criticism lastCriticism;
 
     private List<Character> studySessionHistory = new ArrayList<>();
 
@@ -253,6 +256,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
                 ComparisonAsyncTask comp = new ComparisonAsyncTask(KanjiMasterActivity.this, currentCharacterSet.currentCharacter(), currentCharacterSet.pathPrefix, comparator, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
                     public void run(Criticism critique, CharacterStudySet.GradingResult entry) {
+
+                        lastCriticism = critique;
 
                         // to support grading override
                         lastGradingRow = entry.rowId;
@@ -1750,6 +1755,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 j.name("setId").value(currentCharacterSet.pathPrefix);
                 j.name("setName").value(currentCharacterSet.name);
                 j.name("overrideType").value(type.toString());
+
+                j.name("critique").value(Util.join(" : ", lastCriticism.critiques));
+                j.name("matrix").value(lastCriticism.printScoreMatrix());
+                j.name("strictness").value(Settings.getStrictness(getApplicationContext()).toString());
 
                 j.name("drawn");
                 drawPad.getDrawing().serialize(j);
