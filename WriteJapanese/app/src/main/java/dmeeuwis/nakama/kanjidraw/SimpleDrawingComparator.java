@@ -181,7 +181,7 @@ class SimpleDrawingComparator implements Comparator {
 
 		if (correctDiagonal) {
 			if(DEBUG) Log.d("nakama", "Correct diagonal detected! Early CORRECT response..");
-			return new Criticism();
+			return checkEasilyConfusedCharacters(c);
 		}
 
 		// calculate score and criticism matrix
@@ -286,6 +286,8 @@ class SimpleDrawingComparator implements Comparator {
 		}
 
 
+		checkEasilyConfusedCharacters(c);
+
 		// special case for hiragana and katakana: find if the user drew katakana version instead of hiragana, and vice-versa
 		if (allowRecursion == Recursion.ALLOW) {
 			if (!c.pass && Kana.isHiragana(target) && target != 'も') {
@@ -307,6 +309,24 @@ class SimpleDrawingComparator implements Comparator {
 					return specific;
 				}
 			}
+		}
+
+		return c;
+	}
+
+	private Criticism checkEasilyConfusedCharacters(Criticism c){
+		if(target == 'ね'){
+			List<Stroke> self = new ArrayList<>(1);
+			self.add(this.drawn.get(1));
+			List<PathCalculator.Intersection> selfHits = PathCalculator.findIntersections(self);
+
+			if(selfHits.size() != 1){
+				c.add("The last stroke of ね should loop over itself; otherwise it looks like 'me' め", Criticism.SKIP, Criticism.SKIP);
+			}
+		}
+
+		if(target == 'る'){
+			// check 3rd stroke croses itself near the end, otherwise looks like ろ
 		}
 
 		return c;

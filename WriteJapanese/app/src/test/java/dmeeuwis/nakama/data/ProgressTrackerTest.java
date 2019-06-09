@@ -236,4 +236,6 @@ public class ProgressTrackerTest {
         assertEquals("After lots of repetitive practice, SRS chars aren't cleared unless they hit their SRS day.", CHARS_4.length, all.size());
     }
 
+
+
 }

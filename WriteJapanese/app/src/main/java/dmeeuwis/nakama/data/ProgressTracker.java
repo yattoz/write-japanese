@@ -638,6 +638,10 @@ public class ProgressTracker {
 	}
 
 	public void overRideLast(){
+		if(lastChar == null) {
+			return;
+		}
+
         recordSheet.put(lastChar, lastCharPrevScore);
         if(lastPassed){
             markFailure(lastChar);
@@ -702,7 +706,7 @@ public class ProgressTracker {
         j.beginObject();
         for (Map.Entry<Character, Integer> d : this.recordSheet.entrySet()) {
             if(d.getKey() == null){
-                UncaughtExceptionLogger.backgroundLogError("Not serializing null key in record sheet: " + this.debugHistory(), new RuntimeException());
+                Log.w("nakama", "Not serializing null key in record sheet: " + this.debugHistory());
                 continue;
             }
 

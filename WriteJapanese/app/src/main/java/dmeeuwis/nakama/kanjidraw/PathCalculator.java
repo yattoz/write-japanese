@@ -1,7 +1,5 @@
 package dmeeuwis.nakama.kanjidraw;
 
-import dmeeuwis.nakama.data.Point;
-import dmeeuwis.nakama.data.Rect;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -10,6 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import dmeeuwis.nakama.data.Point;
+import dmeeuwis.nakama.data.Rect;
 
 public class PathCalculator {
 

@@ -3,6 +3,7 @@ package dmeeuwis.nakama.data;
 import android.os.*;
 import android.util.*;
 
+import org.jetbrains.annotations.NotNull;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.Period;
@@ -135,6 +136,10 @@ public class SRSQueue {
         public final LocalDate nextPractice;
 
         private SRSEntry(Character character, String setId, LocalDate nextPractice) {
+            if(character == null || setId == null || nextPractice == null) {
+                throw new IllegalArgumentException("null character passed to SRSEntry: character="
+                        + character + "; setId=" + setId + "; nextPractice=" + nextPractice);
+            }
             this.character = character;
             this.setId = setId;
             this.nextPractice = nextPractice;
