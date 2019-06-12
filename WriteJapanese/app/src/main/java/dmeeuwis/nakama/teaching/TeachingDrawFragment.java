@@ -27,6 +27,7 @@ import dmeeuwis.nakama.kanjidraw.CurveDrawing;
 import dmeeuwis.nakama.kanjidraw.PointDrawing;
 import dmeeuwis.nakama.views.TracingCurveView;
 import dmeeuwis.nakama.views.TracingCurveView.OnTraceCompleteListener;
+import dmeeuwis.util.Util;
 
 public class TeachingDrawFragment extends Fragment implements OnTraceCompleteListener {
     final static String initialAdvice = "Trace the character";
@@ -38,11 +39,6 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
             "Good! Once more!",
             "Good! Keep practicing, or write a story to remember the kanji with."
     };
-
-    final static String[] badAdvice = {
-            "Not quite! Try again."
-    };
-
 
     // data state
     String character;
@@ -113,7 +109,7 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
             changeCardMessage(goodAdvice[teachingLevel], getResources().getColor(R.color.DarkGreen));
         } else {
             teachingLevel = Math.max(0, Math.min(teachingLevel - 1, goodAdvice.length - 1));
-            changeCardMessage(badAdvice[0], getResources().getColor(R.color.DarkRed));
+            changeCardMessage(Util.join(" ", c.critiques), getResources().getColor(R.color.DarkRed));
         }
         Log.i("nakama", "TeachingDrawFragment onComplete; teachingLevel becomes " + teachingLevel);
 
