@@ -6,15 +6,23 @@ import java.util.Set;
 
 import dmeeuwis.nakama.data.Point;
 
-public class CommonlyConfusedChecker {
+class CommonlyConfusedChecker {
 
-    private static class Confusion {
+    private static class SimilarEndingConfusion {
+        static List<SimilarEndingConfusion> END_LOOPERS = Arrays.asList(
+                // note: mo's stroke order is funny, so check both first and last stroke for self-intersect?
+                new SimilarEndingConfusion('ま', 'も',"ma", "mo", 2, 1),
+                new SimilarEndingConfusion('ね', 'れ',"ne", "re", 1, 1),
+//          new SimilarEndingConfusion('る', 'ろ',"ru", "ro", 0, 1),
+                new SimilarEndingConfusion('ぬ', 'め',"nu", "me", 1, 2)
+        );
+
         char a, b;
         String readingA, readingB;
         int selfIntersect;
         int strokeIndex;
 
-        public Confusion(char a, char b, String readingA, String readingB, int strokeIndex, int selfIntersects) {
+        public SimilarEndingConfusion(char a, char b, String readingA, String readingB, int strokeIndex, int selfIntersects) {
             this.a = a;
             this.b = b;
             this.readingA = readingA;
@@ -24,16 +32,8 @@ public class CommonlyConfusedChecker {
         }
     }
 
-    private static List<Confusion> END_LOOPERS = Arrays.asList(
-            // note: mo's stroke order is funny, so check both first and last stroke for self-intersect?
-            new Confusion('ま', 'も',"ma", "mo", 2, 1),
-            new Confusion('ね', 'れ',"ne", "re", 1, 1),
-//          new Confusion('る', 'ろ',"ru", "ro", 0, 1),
-            new Confusion('ぬ', 'め',"nu", "me", 1, 2)
-    );
-
     public static void checkEasilyConfusedCharacters(char target, PointDrawing drawn, Criticism c){
-        for(Confusion confusion: END_LOOPERS) {
+        for(SimilarEndingConfusion confusion: SimilarEndingConfusion.END_LOOPERS) {
             if (target == confusion.a) {
                 Set<Point> selfHits = PathCalculator.intersections(drawn.get(confusion.strokeIndex), drawn.get(confusion.strokeIndex));
                 if (selfHits.size() <= confusion.selfIntersect - 1) {
