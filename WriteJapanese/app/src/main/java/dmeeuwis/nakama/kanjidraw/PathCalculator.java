@@ -220,7 +220,7 @@ public class PathCalculator {
 	
 	static final public Point segmentIntersection(int x1, int y1, int x2, int y2, 
 	         int x3, int y3, int x4, int y4) {
-		
+
 		Point intersect = intersection(x1, y1, x2, y2, x3, y3, x4, y4);
 		if(intersect == null)
 			return null;
@@ -228,6 +228,15 @@ public class PathCalculator {
 		if(!(inLineSegmentBounds(intersect, x1, y1, x2, y2) && inLineSegmentBounds(intersect, x3, y3, x4, y4))){
 			return null;
 		}
+
+		// ignore intersects that are one line's end meeting the other line's beginning.
+		if(	intersect.x == x1 && intersect.y == y1 ||
+			intersect.x == x2 && intersect.y == y2 ||
+            intersect.x == x3 && intersect.y == y3 ||
+			intersect.x == x4 && intersect.y == y4){
+			return null;
+		}
+
 
 		return intersect;
 	}

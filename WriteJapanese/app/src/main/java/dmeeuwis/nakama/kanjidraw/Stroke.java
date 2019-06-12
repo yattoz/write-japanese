@@ -6,6 +6,7 @@ import dmeeuwis.nakama.data.Rect;
 import android.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,12 @@ public class Stroke implements Iterable<Point> {
 	
 	public Stroke(List<Point> points){
 		this.points = Collections.unmodifiableList(points);
+		this.startPoint = this.points.get(0);
+		this.endPoint = this.points.get(this.points.size() - 1);
+	}
+
+	public Stroke(Point... points){
+		this.points = Collections.unmodifiableList(Arrays.asList(points));
 		this.startPoint = this.points.get(0);
 		this.endPoint = this.points.get(this.points.size() - 1);
 	}
@@ -182,6 +189,12 @@ public class Stroke implements Iterable<Point> {
 		dots.add(Pair.create(points.get(points.size() - 1), Color.CYAN));
 		
 		return dots;
+	}
+
+	public Stroke reverse(){
+		List<Point> copy = new ArrayList<>(this.points);
+		Collections.reverse(copy);
+		return new Stroke(copy);
 	}
 	
 	public ParameterizedEquation toParameterizedEquation(float scaler, float padding){

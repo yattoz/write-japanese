@@ -174,7 +174,8 @@ public class DrawingComparator implements Comparator {
 
         if(correctDiagonal){
             if(DEBUG) Log.d("nakama", "Correct diagonal detected! Going home early.");
-            return new Criticism();
+            CommonlyConfusedChecker.checkEasilyConfusedCharacters(target, drawn, c);
+            return c;
         }
 
 		// calculate score and criticism matrix
@@ -297,6 +298,7 @@ public class DrawingComparator implements Comparator {
 			c.add(message, Criticism.SKIP, colours);
 		}
 
+		CommonlyConfusedChecker.checkEasilyConfusedCharacters(target, drawn, c);
 
 		// special case for hiragana and katakana: find if the user drew katakana version instead of hiragana, and vice-versa
 		if(allowRecursion == Recursion.ALLOW){

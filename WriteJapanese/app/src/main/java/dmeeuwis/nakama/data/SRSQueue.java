@@ -1,9 +1,7 @@
 package dmeeuwis.nakama.data;
 
-import android.os.*;
 import android.util.*;
 
-import org.jetbrains.annotations.NotNull;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.Period;

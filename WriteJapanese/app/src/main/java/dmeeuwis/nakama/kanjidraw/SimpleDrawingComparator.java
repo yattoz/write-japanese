@@ -13,8 +13,6 @@ import java.util.Set;
 import dmeeuwis.Kana;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.nakama.data.AssetFinder;
-import dmeeuwis.nakama.data.CharacterSets;
-import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.data.Point;
 import dmeeuwis.nakama.data.Rect;
 import dmeeuwis.util.Util;
@@ -181,7 +179,8 @@ class SimpleDrawingComparator implements Comparator {
 
 		if (correctDiagonal) {
 			if(DEBUG) Log.d("nakama", "Correct diagonal detected! Early CORRECT response..");
-			return checkEasilyConfusedCharacters(c);
+			CommonlyConfusedChecker.checkEasilyConfusedCharacters(target, drawn, c);
+			return c;
 		}
 
 		// calculate score and criticism matrix
@@ -286,7 +285,7 @@ class SimpleDrawingComparator implements Comparator {
 		}
 
 
-		checkEasilyConfusedCharacters(c);
+		CommonlyConfusedChecker.checkEasilyConfusedCharacters(target, drawn, c);
 
 		// special case for hiragana and katakana: find if the user drew katakana version instead of hiragana, and vice-versa
 		if (allowRecursion == Recursion.ALLOW) {
@@ -314,23 +313,6 @@ class SimpleDrawingComparator implements Comparator {
 		return c;
 	}
 
-	private Criticism checkEasilyConfusedCharacters(Criticism c){
-		if(target == 'ね'){
-			List<Stroke> self = new ArrayList<>(1);
-			self.add(this.drawn.get(1));
-			List<PathCalculator.Intersection> selfHits = PathCalculator.findIntersections(self);
-
-			if(selfHits.size() != 1){
-				c.add("The last stroke of ね should loop over itself; otherwise it looks like 'me' め", Criticism.SKIP, Criticism.SKIP);
-			}
-		}
-
-		if(target == 'る'){
-			// check 3rd stroke croses itself near the end, otherwise looks like ろ
-		}
-
-		return c;
-	}
 
 	static List<StrokeResult> findBestPairings(double[][] matrix){
 		HungarianAlgorithm al = new HungarianAlgorithm(matrix);
