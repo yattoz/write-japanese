@@ -159,6 +159,13 @@ public class SRSQueue {
     }
 
     public SRSEntry addToSRSQueue(Character character, int score, LocalDateTime timestamp, int knownScoreValue){
+
+        if(character == null){
+            UncaughtExceptionLogger.backgroundLogError("Error: trying to add null character to SRS queue; rejecting.",
+                    new RuntimeException());
+            return null;
+        }
+
         if(timestamp.equals(lastLocalDateTime) && character.equals(lastCharacter)){
             return null;
         }

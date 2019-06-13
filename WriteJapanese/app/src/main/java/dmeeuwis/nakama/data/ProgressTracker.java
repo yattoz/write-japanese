@@ -353,10 +353,12 @@ public class ProgressTracker {
 
         if(n == null){
             // I think this case can never happen? If nothing else was available, do completely random char.
-            UncaughtExceptionLogger.backgroundLogError(
-                    "Error: no char found. Set is: " + Util.join("", rawAvailSet) +
-                            " and history is: " + Util.join("", history),
-                        new RuntimeException());
+			if(availSet.size() > prog.characterCooldown) {
+				UncaughtExceptionLogger.backgroundLogError(
+						"Error: no char found. Set is: " + Util.join("", rawAvailSet) +
+								" and history is: " + Util.join("", history),
+						new RuntimeException());
+			}
 
             n = rawAvailSet.toArray(new Character[0])[(int)(rawAvailSet.size() * Math.random())];
             pool = "random-raw-avail";
