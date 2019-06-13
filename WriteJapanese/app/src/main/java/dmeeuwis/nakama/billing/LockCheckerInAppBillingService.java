@@ -239,12 +239,14 @@ public class LockCheckerInAppBillingService extends LockChecker {
             // Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase succeeded!" + responseData);
             try {
                 savePurchaseTokenFromPurchaseData(responseData, "GooglePlay");
+                UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, "GooglePlay", responseData);
             } catch (JSONException e) {
                 UncaughtExceptionLogger.backgroundLogError("Error parsing JSON response from Google Play: " + responseData, e, parent);
                 toast("Error parsing JSON response from Google Play");
                 return true;
             }
-            toast("Thank you, your purchase completed! You have full access to standardSets features of Write Japanese. Good luck in your studies!");
+            toast("Thank you, your purchase completed! You have full access to all features of Write Japanese. Good luck in your studies!");
+
             parent.recreate();
         } else if(resultCode == Activity.RESULT_CANCELED){
             Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase cancelled");
@@ -323,7 +325,6 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
         // Log.i("nakama-iiab", "Unlock and recording previous purchase token: " + token);
         coreUnlock();
-        UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, store, purchaseData);
 
         String existing = shared.getString("purchase_token", "");
         if(existing.equals(token)){

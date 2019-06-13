@@ -13,6 +13,8 @@ import android.util.Log;
 import com.amazon.device.iap.model.*;
 import com.android.vending.billing.util.Purchase;
 
+import org.threeten.bp.LocalDateTime;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -156,7 +158,7 @@ public class UncaughtExceptionLogger {
 
     public static void logJson(String path, String json){
         try {
-            Log.d("nakama", "Will try to send bug report: " + json);
+            Log.d("nakama", "Will try to send json to " + path + ": " + json);
 
             URL url = HostFinder.formatURL(path);
             HttpURLConnection report = (HttpURLConnection) url.openConnection();
@@ -181,7 +183,7 @@ public class UncaughtExceptionLogger {
             }
 
         } catch (Throwable e) {
-            Log.e("nakama", "Error trying to report error", e);
+            Log.e("nakama", "Error trying to log " + path + ": " + e.getMessage(), e);
         }
     }
 
@@ -190,16 +192,21 @@ public class UncaughtExceptionLogger {
     }
 
 
-    public static void backgroundLogPurchase(Activity parentActivity, Purchase info) {
-        backgroundLogPurchase(parentActivity, "GooglePlay", info.getToken());
-    }
-
-
-    public static void backgroundLogPurchase(Activity parentActivity, PurchaseResponse info) {
+    // Amazon Support
+    public static void backgroundLogPurchase(final Activity parentActivity, final PurchaseResponse info) {
         backgroundLogPurchase(parentActivity, "AmazonAppStore", info.getReceipt().getReceiptId());
     }
 
-    public static void backgroundLogPurchase(Activity parentActivity, String store, String token) {
+    public static void backgroundLogPurchase(final Activity parentActivity, final String store, final String token) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                backgroundLogPurchaseImpl(parentActivity, store, token);
+            }
+        });
+    }
+
+    private static void backgroundLogPurchaseImpl(Activity parentActivity, String store, String token) {
         try {
             StringWriter sw = new StringWriter();
             JsonWriter jw = new JsonWriter(sw);
@@ -209,28 +216,31 @@ public class UncaughtExceptionLogger {
 
             jw.beginObject();
 
-            jw.name("iid").value(Iid.get(app.getApplicationContext()).toString());
-            jw.name("installed").value(prefs.getString("installTime", null));
-            jw.name("purchaseToken").value(token);
-            jw.name("store").value(store);
+                jw.name("iid").value(Iid.get(app.getApplicationContext()).toString());
+                jw.name("installed").value(prefs.getString("installTime", null));
+                jw.name("purchased").value(LocalDateTime.now().toString());
+                jw.name("purchaseToken").value(token);
+                jw.name("store").value(store);
 
-            jw.name("charsetLogs");
-            jw.beginObject();
+                jw.name("charsetLogs");
+                jw.beginObject();
 
-            Map<String, String> practiceCounts = dbHelper.countPracticeLogs();
-            for(Map.Entry<String, String> e: practiceCounts.entrySet()){
-                jw.name(e.getKey()).value(e.getValue());
-            }
+                    Map<String, String> practiceCounts = dbHelper.countPracticeLogs();
+                    for(Map.Entry<String, String> e: practiceCounts.entrySet()){
+                        jw.name(e.getKey()).value(e.getValue());
+                    }
+
+                jw.endObject();
+
+                if(parentActivity instanceof KanjiMasterActivity){
+                    KanjiMasterActivity a = (KanjiMasterActivity)parentActivity;
+                    jw.name("appState");
+                    a.stateLog(jw);
+                }
 
             jw.endObject();
 
-            if(parentActivity instanceof KanjiMasterActivity){
-                KanjiMasterActivity a = (KanjiMasterActivity)parentActivity;
-                jw.name("appState");
-                jw.value(a.stateLog());
-            }
-
-            logJson("write-japanese/purchase", sw.toString());
+            logJson("/write-japanese/purchase", sw.toString());
         } catch (Throwable e) {
             UncaughtExceptionLogger.backgroundLogError("Error logging purchase", e);
         }

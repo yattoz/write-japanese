@@ -8,7 +8,7 @@ import java.net.URL;
 import dmeeuwis.kanjimaster.BuildConfig;
 
 public class HostFinder {
-    private static boolean DEBUG_NETWORK = false;
+    private static boolean DEBUG_NETWORK = true;
 
     public static URL formatURL(String url){
         try {
@@ -23,7 +23,7 @@ public class HostFinder {
             if(isEmulator()) {
                 return "http://10.0.2.2:8080";
             }
-            return "http://192.168.1.99:8080";
+            return "http://192.168.1.52:8080";
         }
         return "https://dmeeuwis.com";
     }

@@ -818,11 +818,15 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     }
 
     public String stateLog() throws IOException {
-        Context ctx = getApplicationContext();
-
         StringWriter sb = new StringWriter();
         JsonWriter jw = new JsonWriter(sb);
         jw.setIndent("    ");
+        stateLog(jw);
+        return sb.toString();
+    }
+
+    public void stateLog(JsonWriter jw) throws IOException {
+        Context ctx = getApplicationContext();
 
         jw.beginObject();
 
@@ -886,11 +890,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         jw.name("srsGlobalSet");
         SRSQueue.getglobalQueue().serializeOut(jw);
 
-        jw.name("recentPracticeLogs");
-        new CharacterProgressDataHelper(this, Iid.get(this)).debugLastNLogs(jw, 50);
+//      jw.name("recentPracticeLogs");
+//      new CharacterProgressDataHelper(this, Iid.get(this)).debugLastNLogs(jw, 50);
 
         jw.endObject();
-        return sb.toString();
     }
 
     private boolean loadedInitialVocab = false;
@@ -1247,6 +1250,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:ClearLogCache");
             menu.add("DEBUG:DebugHistory");
             menu.add("DEBUG:DebugJSON");
+            menu.add("DEBUG:PurchaseLog");
         }
 
         return true;
@@ -1498,6 +1502,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 } catch (IOException e) {
                     Log.e("nakama-debug", "Error doing debug JSON", e);
                 }
+            } else if(item.getTitle().equals("DEBUG:PurchaseLog")){
+                UncaughtExceptionLogger.backgroundLogPurchase(this, "DEBUG", "FakePurchaseToken");
             }
         }
 
