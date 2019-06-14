@@ -236,6 +236,7 @@ public class ClueCard extends CardView {
                 currentMeaningsClueIndex = (currentMeaningsClueIndex + 1) % clues.length;
                 target.setText(clues[currentMeaningsClueIndex]);
                 instructionsLabel.setText(clueExtractor.meaningsInstructionsText(currentCharacter, currentMeaningsClueIndex));
+                instructionsLabel.setContentDescription(clueExtractor.meaningsInstructionsText(currentCharacter, currentMeaningsClueIndex));
             }
         });
 
@@ -247,7 +248,9 @@ public class ClueCard extends CardView {
                 String[] clues = clueExtractor.readingClues(currentCharacter);
                 currentReadingsClueIndex = (currentReadingsClueIndex + 1) % clues.length;
                 readingsTarget.setText(clues[currentReadingsClueIndex]);
+                readingsTarget.setContentDescription(clues[currentReadingsClueIndex]);
                 readingsInstructionLabel.setText(clueExtractor.readingsInstructionsText(clues, currentReadingsClueIndex));
+                readingsInstructionLabel.setContentDescription(clueExtractor.readingsInstructionsText(clues, currentReadingsClueIndex));
             }
         });
 

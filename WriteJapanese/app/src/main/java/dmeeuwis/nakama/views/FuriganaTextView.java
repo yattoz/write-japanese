@@ -88,6 +88,8 @@ public class FuriganaTextView extends View {
 		this.indivCharacterPadding = new int[this.parts.length];
         this.furiWidths = new int[this.parts.length];
 
+        this.setContentDescription(t.toKanjiString());
+
         calculateTextBounds();
         this.requestLayout();
 	}

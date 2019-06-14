@@ -39,8 +39,8 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
         super(view);
         this.view = view;
         this.engTextSize = engTextSize;
-        this.furigana = (FuriganaTextView) view.findViewById(kanji);
-        this.englishText = (FlowTextView) view.findViewById(R.id.english);
+        this.furigana = view.findViewById(kanji);
+        this.englishText = view.findViewById(R.id.english);
         this.headerSmall = view.findViewById(R.id.translation_collapsed_header);
         this.headerBig = view.findViewById(R.id.translation_first_header);
 
@@ -52,7 +52,6 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
             }
         };
         view.findViewById(R.id.translation_layout).setOnClickListener(touch);
-        view.findViewById(R.id.englishMask).setOnClickListener(touch);
         this.expandButton.setOnClickListener(touch);
         this.furigana.setOnClickListener(touch);
         this.englishText.setOnClickListener(touch);
@@ -88,7 +87,7 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
 
     private void expand(){
         View expansion = LayoutInflater.from(view.getContext()).inflate(R.layout.translation_expansion, null, false);
-        RelativeLayout parent = (RelativeLayout) view.findViewById(R.id.translation_layout);
+        RelativeLayout parent = view.findViewById(R.id.translation_layout);
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -101,30 +100,29 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
         TextView character_3, character_3_meanings, character_3_other_meanings, character_3_yomi, character_3_commoness;
         TextView character_4, character_4_meanings, character_4_other_meanings, character_4_yomi, character_4_commoness;
 
+        character_1 = expansion.findViewById(R.id.kanji_character_1);
+        character_1_meanings = expansion.findViewById(R.id.kanji_meanings_1);
+        character_1_commoness = expansion.findViewById(R.id.kanji_commoness_1);
+        character_1_other_meanings = expansion.findViewById(R.id.kanji_other_meanings_1);
+        character_1_yomi = expansion.findViewById(R.id.kanji_yomi_1);
 
-        character_1 = (TextView) expansion.findViewById(R.id.kanji_character_1);
-        character_1_meanings = (TextView) expansion.findViewById(R.id.kanji_meanings_1);
-        character_1_commoness = (TextView) expansion.findViewById(R.id.kanji_commoness_1);
-        character_1_other_meanings = (TextView) expansion.findViewById(R.id.kanji_other_meanings_1);
-        character_1_yomi = (TextView) expansion.findViewById(R.id.kanji_yomi_1);
+        character_2 = expansion.findViewById(R.id.kanji_character_2);
+        character_2_meanings = expansion.findViewById(R.id.kanji_meanings_2);
+        character_2_other_meanings = expansion.findViewById(R.id.kanji_other_meanings_2);
+        character_2_commoness = expansion.findViewById(R.id.kanji_commoness_2);
+        character_2_yomi = expansion.findViewById(R.id.kanji_yomi_2);
 
-        character_2 = (TextView) expansion.findViewById(R.id.kanji_character_2);
-        character_2_meanings = (TextView) expansion.findViewById(R.id.kanji_meanings_2);
-        character_2_other_meanings = (TextView) expansion.findViewById(R.id.kanji_other_meanings_2);
-        character_2_commoness = (TextView) expansion.findViewById(R.id.kanji_commoness_2);
-        character_2_yomi = (TextView) expansion.findViewById(R.id.kanji_yomi_2);
+        character_3 = expansion.findViewById(R.id.kanji_character_3);
+        character_3_meanings = expansion.findViewById(R.id.kanji_meanings_3);
+        character_3_other_meanings = expansion.findViewById(R.id.kanji_other_meanings_3);
+        character_3_commoness = expansion.findViewById(R.id.kanji_commoness_3);
+        character_3_yomi = expansion.findViewById(R.id.kanji_yomi_3);
 
-        character_3 = (TextView) expansion.findViewById(R.id.kanji_character_3);
-        character_3_meanings = (TextView) expansion.findViewById(R.id.kanji_meanings_3);
-        character_3_other_meanings = (TextView) expansion.findViewById(R.id.kanji_other_meanings_3);
-        character_3_commoness = (TextView) expansion.findViewById(R.id.kanji_commoness_3);
-        character_3_yomi = (TextView) expansion.findViewById(R.id.kanji_yomi_3);
-
-        character_4 = (TextView) expansion.findViewById(R.id.kanji_character_4);
-        character_4_meanings = (TextView) expansion.findViewById(R.id.kanji_meanings_4);
-        character_4_other_meanings = (TextView) expansion.findViewById(R.id.kanji_other_meanings_4);
-        character_4_commoness = (TextView) expansion.findViewById(R.id.kanji_commoness_4);
-        character_4_yomi = (TextView) expansion.findViewById(R.id.kanji_yomi_4);
+        character_4 = expansion.findViewById(R.id.kanji_character_4);
+        character_4_meanings = expansion.findViewById(R.id.kanji_meanings_4);
+        character_4_other_meanings = expansion.findViewById(R.id.kanji_other_meanings_4);
+        character_4_commoness = expansion.findViewById(R.id.kanji_commoness_4);
+        character_4_yomi = expansion.findViewById(R.id.kanji_yomi_4);
 
         TextView[][] textViews = new TextView[][]{
                 new TextView[]{character_1, character_1_meanings, character_1_other_meanings, character_1_commoness, character_1_yomi},

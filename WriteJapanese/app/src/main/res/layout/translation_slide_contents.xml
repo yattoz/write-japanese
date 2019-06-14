@@ -36,16 +36,13 @@
 
         </uk.co.deanwild.flowtextview.FlowTextView>
 
-        <View android:id="@+id/englishMask"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
     </FrameLayout>
 
     <!-- expansion goes here -->
 
     <TextView
         android:id="@+id/translation_card_expand"
+        android:contentDescription="@string/show_kanji_meanings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="▼"

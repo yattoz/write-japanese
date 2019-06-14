@@ -30,6 +30,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/remindStoryButton"
+        android:contentDescription="@string/show_character_story"
         android:layout_width="@dimen/fab_custom_size"
         android:layout_height="@dimen/fab_custom_size"
         android:layout_gravity="bottom|start"
@@ -44,6 +45,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/teachButton"
+        android:contentDescription="@string/study_character"
         android:layout_width="@dimen/fab_custom_size"
         android:layout_height="@dimen/fab_custom_size"
         android:layout_gravity="bottom|start"
@@ -57,6 +59,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/undoStrokeButton"
+        android:contentDescription="@string/undo_stroke"
         android:layout_width="@dimen/fab_custom_size"
         android:layout_height="@dimen/fab_custom_size"
         android:layout_gravity="bottom|start"
@@ -71,6 +74,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/finishedButton"
+        android:contentDescription="@string/finished_drawing_character"
         android:layout_width="@dimen/fab_custom_size"
         android:layout_height="@dimen/fab_custom_size"
         android:layout_gravity="bottom|end"
@@ -178,6 +182,7 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/overrideButton"
+            android:contentDescription="@string/override_grading"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|start"
@@ -190,6 +195,7 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/practiceButton"
+            android:contentDescription="@string/practice_this_character"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
             android:layout_gravity="bottom|start"
@@ -202,6 +208,7 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/nextButton"
+            android:contentDescription="@string/go_to_next_character"
             android:layout_width="@dimen/fab_custom_size"
             android:layout_height="@dimen/fab_custom_size"
             android:layout_marginBottom="12dp"
@@ -292,6 +299,7 @@
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/correctOverrideButton"
+                android:contentDescription="@string/override_grading"
                 android:layout_width="@dimen/fab_custom_size"
                 android:layout_height="@dimen/fab_custom_size"
                 android:layout_gravity="bottom|start"
@@ -304,6 +312,7 @@
             
             <android.support.design.widget.FloatingActionButton
                 android:id="@id/correctNextButton"
+                android:contentDescription="@string/go_to_next_character"
                 android:layout_width="@dimen/fab_custom_size"
                 android:layout_height="@dimen/fab_custom_size"
                 android:layout_gravity="bottom|end"
