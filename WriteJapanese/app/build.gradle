@@ -17,7 +17,7 @@ android {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 182
+        versionCode 183
         versionName "18.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -80,7 +80,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.1'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     implementation 'agency.tango.android:material-intro-screen:0.0.5'
-    
+
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:1.10.19'
     testImplementation 'org.robolectric:robolectric:3.6.1'
