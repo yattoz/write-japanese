@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,8 +41,6 @@ import java.util.Locale;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.nakama.OnFragmentInteractionListener;
-import dmeeuwis.nakama.ReminderManager;
-import dmeeuwis.nakama.data.CharacterProgressDataHelper;
 import dmeeuwis.nakama.data.CharacterStudySet;
 import dmeeuwis.nakama.views.AppColors;
 
@@ -61,7 +58,7 @@ public class CharacterSetStatusFragment extends Fragment implements CompoundButt
         JLPT5(R.color.DarkCyan),
         JLPT4(R.color.RoyalBlue),
         JLPT3(R.color.DarkGreen),
-        JLPT2(R.color.DarkGreen),
+        JLPT2(R.color.Gray),
         JLPT1(R.color.DarkGray),
 
         CUSTOM(R.color.DarkGoldenrod);

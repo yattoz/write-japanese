@@ -92,10 +92,9 @@
     <string name="override_grading">Override Grading</string>
     <string name="practice_this_character">Practice this Character</string>
     <string name="go_to_next_character">Go to Next Character</string>
-    <string name="override_grading">Override Grading</string>
-    <string name="go_to_next_character">Go to Next Character</string>
     <string name="describe_the_problem_here">Describe the problem here</string>
     <string name="show_kanji_meanings">Show Kanji Meanings</string>
+    <string name="kanji_meanings_button">Kanji Meanings</string>
 
     <string-array name="when_to_introduce_incorrect_spinner_values">
         <item>Less than 5 characters are incorrect</item>
