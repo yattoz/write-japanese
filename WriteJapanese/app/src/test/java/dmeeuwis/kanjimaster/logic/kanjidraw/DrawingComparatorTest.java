@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.kanjidraw;
+package dmeeuwis.kanjimaster.logic.kanjidraw;
 
 import org.junit.Ignore;
 import org.junit.Test;

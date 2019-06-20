@@ -1,4 +1,4 @@
-package dmeeuwis.nakama.kanjidraw;
+package dmeeuwis.kanjimaster.logic.kanjidraw;
 
 import android.util.Log;
 

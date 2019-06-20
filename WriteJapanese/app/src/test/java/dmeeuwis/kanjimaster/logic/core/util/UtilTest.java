@@ -1,4 +1,4 @@
-package dmeeuwis.util;
+package dmeeuwis.kanjimaster.logic.core.util;
 
 import org.junit.Test;
 
