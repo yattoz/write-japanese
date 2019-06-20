@@ -7,7 +7,7 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
-import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.logic.core.Kanji;
 import dmeeuwis.kanjimaster.ui.views.KanjiWithMeaningView;
 
 public class RadicalAdapter extends ArrayAdapter<Kanji> {

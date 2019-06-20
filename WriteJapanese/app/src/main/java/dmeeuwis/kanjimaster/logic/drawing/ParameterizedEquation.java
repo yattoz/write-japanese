@@ -7,7 +7,7 @@ import java.util.List;
 
 import dmeeuwis.kanjimaster.logic.data.Point;
 import dmeeuwis.kanjimaster.logic.data.Rect;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public abstract class ParameterizedEquation {
 	public abstract float x(float t);

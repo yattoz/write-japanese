@@ -21,8 +21,8 @@ import android.widget.ViewSwitcher;
 
 import java.util.List;
 
-import dmeeuwis.Kana;
-import dmeeuwis.Translation;
+import dmeeuwis.kanjimaster.logic.core.Kana;
+import dmeeuwis.kanjimaster.logic.core.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.ClueExtractor;

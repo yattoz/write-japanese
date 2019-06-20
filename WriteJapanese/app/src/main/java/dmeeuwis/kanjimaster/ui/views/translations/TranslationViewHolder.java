@@ -12,11 +12,11 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.Arrays;
 
-import dmeeuwis.Kana;
-import dmeeuwis.Kanji;
-import dmeeuwis.KanjiElement;
-import dmeeuwis.Translation;
-import dmeeuwis.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.logic.core.Kana;
+import dmeeuwis.kanjimaster.logic.core.Kanji;
+import dmeeuwis.kanjimaster.logic.core.KanjiElement;
+import dmeeuwis.kanjimaster.logic.core.Translation;
+import dmeeuwis.kanjimaster.logic.core.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.ui.views.FuriganaTextView;
 import uk.co.deanwild.flowtextview.FlowTextView;

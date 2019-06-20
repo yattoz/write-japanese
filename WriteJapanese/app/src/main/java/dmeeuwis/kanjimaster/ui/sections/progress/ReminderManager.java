@@ -36,7 +36,7 @@ import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class ReminderManager extends BroadcastReceiver {
 

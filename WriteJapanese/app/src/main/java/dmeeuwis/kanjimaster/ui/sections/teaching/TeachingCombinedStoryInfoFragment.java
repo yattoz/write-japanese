@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import dmeeuwis.Kanji;
-import dmeeuwis.Translation;
+import dmeeuwis.kanjimaster.logic.core.Kanji;
+import dmeeuwis.kanjimaster.logic.core.Translation;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
 import dmeeuwis.kanjimaster.logic.data.DictionarySet;

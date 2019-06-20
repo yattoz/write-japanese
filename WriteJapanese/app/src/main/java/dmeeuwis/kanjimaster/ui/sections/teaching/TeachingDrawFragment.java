@@ -27,7 +27,7 @@ import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
 import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
 import dmeeuwis.kanjimaster.ui.views.TracingCurveView;
 import dmeeuwis.kanjimaster.ui.views.TracingCurveView.OnTraceCompleteListener;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class TeachingDrawFragment extends Fragment implements OnTraceCompleteListener {
     final static String initialAdvice = "Trace the character";

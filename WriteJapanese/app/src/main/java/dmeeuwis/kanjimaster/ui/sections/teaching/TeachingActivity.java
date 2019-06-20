@@ -22,8 +22,8 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.IOException;
 
-import dmeeuwis.Kana;
-import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.logic.core.Kana;
+import dmeeuwis.kanjimaster.logic.core.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.Constants;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;

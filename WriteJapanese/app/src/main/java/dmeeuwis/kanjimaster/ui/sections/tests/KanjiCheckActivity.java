@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.logic.core.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;

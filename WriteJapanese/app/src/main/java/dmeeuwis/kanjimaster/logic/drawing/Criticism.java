@@ -5,7 +5,7 @@ import android.graphics.Paint;
 import java.util.ArrayList;
 import java.util.List;
 
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class Criticism {
     public static final int CORRECT_COLOUR = 0xFF0EA10E;

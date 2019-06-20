@@ -7,7 +7,7 @@ import android.util.Log;
 
 import java.io.InputStream;
 
-import dmeeuwis.Translation;
+import dmeeuwis.kanjimaster.logic.core.Translation;
 import dmeeuwis.kanjimaster.logic.data.TranslationsFromXml;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
