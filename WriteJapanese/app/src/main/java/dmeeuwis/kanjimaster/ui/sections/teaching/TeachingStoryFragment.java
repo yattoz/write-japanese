@@ -25,7 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.logic.core.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.LoadRadicalsFile;
 import dmeeuwis.kanjimaster.logic.data.RadicalAdapter;

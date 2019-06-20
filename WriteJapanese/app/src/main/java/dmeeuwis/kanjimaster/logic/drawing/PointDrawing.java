@@ -17,7 +17,7 @@ import java.util.List;
 import dmeeuwis.kanjimaster.logic.data.Point;
 import dmeeuwis.kanjimaster.logic.data.Rect;
 import dmeeuwis.kanjimaster.logic.drawing.PathCalculator.Intersection;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class PointDrawing implements Iterable<Stroke>, Drawing {
 	static final private float MIN_POINT_DISTANCE_DP = 25;

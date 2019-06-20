@@ -46,8 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import dmeeuwis.Kana;
-import dmeeuwis.Translation;
+import dmeeuwis.kanjimaster.logic.core.Kana;
+import dmeeuwis.kanjimaster.logic.core.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.ui.sections.progress.CharacterSetStatusFragment;
@@ -96,7 +96,7 @@ import dmeeuwis.kanjimaster.ui.views.*;
 import dmeeuwis.kanjimaster.ui.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
 import dmeeuwis.kanjimaster.ui.views.translations.KanjiVocabRecyclerAdapter;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 import static dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity.USE_SRS_SETTING_NAME;
 import static dmeeuwis.kanjimaster.ui.views.OverrideDialog.OverideType.OVERRIDE_TO_CORRECT;

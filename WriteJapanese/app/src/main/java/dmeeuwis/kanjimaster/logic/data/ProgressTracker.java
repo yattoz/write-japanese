@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 /**
  * Scores:

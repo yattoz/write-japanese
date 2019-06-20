@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class Stroke implements Iterable<Point> {
 

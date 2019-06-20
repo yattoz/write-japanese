@@ -19,7 +19,7 @@ import java.util.UUID;
 
 import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 /**
  * Holds a set of characters to study, and standardSets current user study progress on those characters.

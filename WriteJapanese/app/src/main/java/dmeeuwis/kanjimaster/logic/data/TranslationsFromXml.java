@@ -7,7 +7,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
 
-import dmeeuwis.Translation;
+import dmeeuwis.kanjimaster.logic.core.Translation;
 
 public class TranslationsFromXml {
 

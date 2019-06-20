@@ -15,8 +15,8 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import dmeeuwis.Translation;
-import dmeeuwis.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.logic.core.Translation;
+import dmeeuwis.kanjimaster.logic.core.indexer.KanjiFinder;
 
 public class DictionarySet {
 

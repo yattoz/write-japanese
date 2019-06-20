@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import dmeeuwis.Kana;
+import dmeeuwis.kanjimaster.logic.core.Kana;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.Point;
 import dmeeuwis.kanjimaster.logic.data.Rect;
 import dmeeuwis.kanjimaster.logic.drawing.PathCalculator.Intersection;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class DrawingComparator implements Comparator {
 	

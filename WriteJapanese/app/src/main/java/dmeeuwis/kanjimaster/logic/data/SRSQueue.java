@@ -11,7 +11,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.*;
 
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class SRSQueue {
     public static boolean useSRSGlobal = true;

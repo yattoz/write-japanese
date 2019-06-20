@@ -4,8 +4,8 @@ import android.content.Context;
 
 import java.util.UUID;
 
-import dmeeuwis.Kana;
-import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.logic.core.Kana;
+import dmeeuwis.kanjimaster.logic.core.Kanji;
 import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
 

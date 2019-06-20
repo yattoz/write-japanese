@@ -31,7 +31,7 @@ import java.util.Map;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.ui.billing.*;
 import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
-import dmeeuwis.util.Util;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class PracticeLogSync {
 
