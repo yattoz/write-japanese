@@ -16,8 +16,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import dmeeuwis.nakama.data.AssetFinder;
-import dmeeuwis.nakama.data.Point;
+import dmeeuwis.kanjimaster.logic.drawing.Criticism;
+import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
+import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
+import dmeeuwis.kanjimaster.logic.drawing.SimpleDrawingComparator;
+import dmeeuwis.kanjimaster.logic.drawing.StrokeResult;
+import dmeeuwis.kanjimaster.logic.data.AssetFinder;
+import dmeeuwis.kanjimaster.logic.data.Point;
 
 import static org.junit.Assert.assertEquals;
 

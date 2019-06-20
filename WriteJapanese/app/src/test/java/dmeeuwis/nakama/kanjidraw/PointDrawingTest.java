@@ -13,7 +13,8 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
-import dmeeuwis.nakama.data.Rect;
+import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
+import dmeeuwis.kanjimaster.logic.data.Rect;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Log.class})

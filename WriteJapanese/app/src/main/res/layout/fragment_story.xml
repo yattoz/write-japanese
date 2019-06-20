@@ -24,7 +24,7 @@
                 android:orientation="horizontal"
                 >
 
-                <dmeeuwis.nakama.views.AnimatedCurveView
+                <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                     android:id="@+id/kanji_animation"
                     android:layout_width="0dp"
                     android:layout_height="170sp"
@@ -134,7 +134,7 @@
                 android:textSize="12sp"
                 />
 
-            <dmeeuwis.nakama.views.TallGridView
+            <dmeeuwis.kanjimaster.ui.views.TallGridView
                 android:id="@+id/radicalsGrid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

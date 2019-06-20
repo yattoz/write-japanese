@@ -4,7 +4,7 @@
                                                  android:id="@+id/characterset_detail_container"
                                                  android:layout_width="match_parent"
                                                  android:layout_height="match_parent"
-                                                 tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetDetailActivity"
+                                                 tools:context="dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailActivity"
                                                  >
 <!--
     <android.support.design.widget.FloatingActionButton

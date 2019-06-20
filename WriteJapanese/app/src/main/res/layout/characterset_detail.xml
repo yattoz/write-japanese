@@ -1,4 +1,4 @@
-<dmeeuwis.nakama.views.AutofitRecyclerView
+<dmeeuwis.kanjimaster.ui.views.AutofitRecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,5 +10,5 @@
     android:clipToPadding="false"
     android:columnWidth="36sp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetDetailFragment"
+    tools:context="dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailFragment"
     />

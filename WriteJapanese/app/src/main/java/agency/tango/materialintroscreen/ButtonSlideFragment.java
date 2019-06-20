@@ -1,27 +1,18 @@
 package agency.tango.materialintroscreen;
 
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.VideoView;
 
-import dmeeuwis.kanjimaster.*;
-import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.nakama.data.Settings;
 
 public class ButtonSlideFragment extends SlideFragment {
 

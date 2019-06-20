@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <application
-        android:name="dmeeuwis.nakama.primary.KanjiMasterApplicaton"
+        android:name=".ui.KanjiMasterApplicaton"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:hardwareAccelerated="true"
@@ -18,7 +18,7 @@
         tools:replace="android:icon"
         tools:ignore="GoogleAppIndexingWarning">
         <provider
-            android:name="dmeeuwis.nakama.data.StubContentProvider"
+            android:name="dmeeuwis.kanjimaster.logic.data.StubContentProvider"
             android:authorities="dmeeuwis.com"
             android:exported="false"
             android:label="WriteJapanese"
@@ -26,7 +26,7 @@
             android:syncable="true"/>
 
         <activity
-            android:name="dmeeuwis.nakama.primary.KanjiMasterActivity"
+            android:name=".ui.sections.primary.KanjiMasterActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask">
 
@@ -38,7 +38,7 @@
         </activity>
 
         <receiver
-            android:name="dmeeuwis.nakama.ReminderManager"
+            android:name=".ui.sections.progress.ReminderManager"
             android:icon="@mipmap/ic_launcher_adaptive"
             />
 
@@ -51,23 +51,23 @@
 
 
         <activity
-            android:name="dmeeuwis.nakama.primary.CharsetInfoActivity"
+            android:name=".ui.sections.progress.CharsetInfoActivity"
             android:label="Study Goals"
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="dmeeuwis.nakama.primary.KanjiMasterActivity" />
+                android:value=".ui.sections.primary.KanjiMasterActivity" />
         </activity>
         <activity
-            android:name="dmeeuwis.nakama.teaching.TeachingActivity"
+            android:name=".ui.sections.teaching.TeachingActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask" />
         <activity
-            android:name="dmeeuwis.nakama.ProgressActivity"
+            android:name=".ui.sections.progress.ProgressActivity"
             android:label="@string/title_activity_progress"
             android:launchMode="singleTask" />
         <activity
-            android:name="dmeeuwis.nakama.CreditsActivity"
+            android:name=".ui.sections.credits.CreditsActivity"
             android:label="@string/title_activity_credits"
             android:launchMode="singleTask" />
 
@@ -99,7 +99,7 @@
             android:value="598.0dip" />
 
         <service
-            android:name="dmeeuwis.nakama.data.SyncService"
+            android:name="dmeeuwis.kanjimaster.logic.data.SyncService"
             android:exported="true"
             android:process=":sync">
             <intent-filter>
@@ -112,31 +112,31 @@
         </service>
 
         <activity
-            android:name="dmeeuwis.nakama.TestDrawActivity"
+            android:name=".ui.sections.tests.TestDrawActivity"
             android:label="@string/title_activity_test_draw" />
         <activity
-            android:name="dmeeuwis.nakama.KanjiCheckActivity"
+            android:name=".ui.sections.tests.KanjiCheckActivity"
             android:label="@string/title_activity_kanji_check" />
         <activity
-            android:name="dmeeuwis.nakama.SpenDrawActivity"
+            android:name=".ui.sections.tests.SpenDrawActivity"
             android:label="@string/title_activity_spen_draw" />
         <activity
-            android:name="dmeeuwis.nakama.DrawViewTestActivity"
+            android:name=".ui.sections.tests.DrawViewTestActivity"
             android:label="@string/title_activity_draw_view_test" />
-        <activity android:name="dmeeuwis.nakama.ReleaseNotesActivity"/>
+        <activity android:name=".ui.sections.credits.ReleaseNotesActivity"/>
         <activity
-            android:name=".charsets.CharacterSetListActivity"
+            android:name=".ui.sections.seteditor.CharacterSetListActivity"
             android:label="@string/title_characterset_list"/>
         <activity
-            android:name=".charsets.CharacterSetDetailActivity"
+            android:name=".ui.sections.seteditor.CharacterSetDetailActivity"
             android:label="@string/title_characterset_detail"
-            android:parentActivityName=".charsets.CharacterSetListActivity">
+            android:parentActivityName=".ui.sections.seteditor.CharacterSetListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="dmeeuwis.kanjimaster.charsets.CharacterSetListActivity" />
+                android:value="dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetListActivity" />
         </activity>
         <activity
-            android:name="dmeeuwis.nakama.primary.IntroActivity"
+            android:name=".ui.sections.primary.IntroActivity"
             android:theme="@style/Theme.Intro" />
     </application>
 

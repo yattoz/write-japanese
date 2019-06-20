@@ -10,5 +10,5 @@
                                         android:layout_marginRight="16dp"
                                         android:paddingTop="10dp"
                                         app:layoutManager="LinearLayoutManager"
-                                        tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetListActivity"
+                                        tools:context="dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetListActivity"
                                         tools:listitem="@layout/characterset_list_content"/>

@@ -7,7 +7,7 @@
     android:layout_height="fill_parent"
     android:background="#e5e5e5">
 
-    <dmeeuwis.nakama.primary.SafeViewFlipper
+    <dmeeuwis.kanjimaster.ui.sections.primary.SafeViewFlipper
         android:id="@+id/viewflipper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
@@ -18,13 +18,13 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
 
-            <dmeeuwis.nakama.views.DrawView
+            <dmeeuwis.kanjimaster.ui.views.DrawView
                 android:id="@+id/drawPad"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 nakama:gridPaddingTop="50dp" />
 
-            <dmeeuwis.nakama.views.translations.ClueCard
+            <dmeeuwis.kanjimaster.ui.views.translations.ClueCard
                 android:id="@+id/clueCard"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
@@ -143,7 +143,7 @@
                         android:clickable="true"
                         card_view:contentPadding="0dp">
 
-                        <dmeeuwis.nakama.views.AnimatedCurveView
+                        <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                             android:id="@+id/animatedDrawnReplay"
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
@@ -181,7 +181,7 @@
                                 android:text="@string/known_label"
                                 android:textColor="#FFFFFF" />
 
-                            <dmeeuwis.nakama.views.AnimatedCurveView
+                            <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                                 android:id="@+id/animatedKnownReplay"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
@@ -293,7 +293,7 @@
                 android:layout_marginBottom="12dp"
                 android:elevation="@dimen/elevation_low" />
         </FrameLayout>
-    </dmeeuwis.nakama.primary.SafeViewFlipper>
+    </dmeeuwis.kanjimaster.ui.sections.primary.SafeViewFlipper>
 
     <View
         android:id="@+id/maskView"

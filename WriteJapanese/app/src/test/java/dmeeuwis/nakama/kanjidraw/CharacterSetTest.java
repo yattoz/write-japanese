@@ -11,8 +11,9 @@ import java.util.UUID;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.Kanji;
-import dmeeuwis.nakama.data.CharacterProgressDataHelper;
-import dmeeuwis.nakama.data.CharacterStudySet;
+import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
+import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
+import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.util.Util;
 
 import static junit.framework.Assert.*;

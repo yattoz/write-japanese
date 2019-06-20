@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     android:background="#e5e5e5">
 
-    <dmeeuwis.nakama.views.DrawView
+    <dmeeuwis.kanjimaster.ui.views.DrawView
         android:id="@+id/drawPad"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         android:paddingLeft="240dp">
 
-        <dmeeuwis.nakama.views.translations.ClueCard
+        <dmeeuwis.kanjimaster.ui.views.translations.ClueCard
             android:id="@+id/clueCard"
             android:layout_width="340dp"
             android:layout_height="140dp"
@@ -117,7 +117,7 @@
                     android:text="Drawn"
                     android:textColor="#FFFFFF" />
 
-                <dmeeuwis.nakama.views.AnimatedCurveView
+                <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                     android:id="@+id/animatedDrawnReplay"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -145,7 +145,7 @@
                     android:text="Correct"
                     android:textColor="#FFFFFF" />
 
-                <dmeeuwis.nakama.views.AnimatedCurveView
+                <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                     android:id="@+id/animatedKnownReplay"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -244,7 +244,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <dmeeuwis.nakama.views.AnimatedCurveView
+                <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                     android:id="@+id/correctKnownView"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -267,7 +267,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1">
 
-                <dmeeuwis.nakama.views.AnimatedCurveView
+                <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                     android:id="@+id/correctDrawnView"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -344,7 +344,7 @@
 
                 <fragment
                     android:id="@+id/charSetInfoFragment"
-                    class="dmeeuwis.nakama.primary.CharacterSetStatusFragment"
+                    class="dmeeuwis.kanjimaster.ui.sections.progress.CharacterSetStatusFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </android.support.v7.widget.CardView>
