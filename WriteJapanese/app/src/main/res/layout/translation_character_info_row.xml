@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <dmeeuwis.nakama.views.AnimatedCurveView
+        <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
             android:id="@+id/kanji_animation"
             android:layout_width="match_parent"
             android:layout_height="170sp"

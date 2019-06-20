@@ -11,7 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.nakama.data.Point;
+import dmeeuwis.kanjimaster.logic.drawing.DrawingComparator;
+import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
+import dmeeuwis.kanjimaster.logic.drawing.Stroke;
+import dmeeuwis.kanjimaster.logic.drawing.StrokeResult;
+import dmeeuwis.kanjimaster.logic.data.Point;
 import dmeeuwis.util.Util;
 
 import static org.junit.Assert.*;

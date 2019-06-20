@@ -5,15 +5,15 @@
     android:background="@color/White"
     android:orientation="vertical"
     android:padding="4dp"
-    tools:context="dmeeuwis.nakama.DrawViewTestActivity">
+    tools:context=".ui.sections.tests.DrawViewTestActivity">
 
-    <dmeeuwis.nakama.views.DrawView
+    <dmeeuwis.kanjimaster.ui.views.DrawView
         android:id="@+id/testDrawView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <dmeeuwis.nakama.views.SquareSignatureView
+    <dmeeuwis.kanjimaster.ui.views.SquareSignatureView
         android:id="@+id/testAlternate"
         android:layout_width="match_parent"
         android:layout_height="0dp"

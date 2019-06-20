@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <dmeeuwis.nakama.views.FuriganaSwitcher
+        <dmeeuwis.kanjimaster.ui.views.FuriganaSwitcher
             android:id="@+id/translationTarget"
             android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"

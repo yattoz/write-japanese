@@ -9,7 +9,7 @@
               android:divider="?android:attr/dividerHorizontal"
               android:orientation="horizontal"
               android:showDividers="middle"
-              tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetListActivity">
+              tools:context="dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetListActivity">
 
     <!--
     This layout is a two-pane layout for the CharacterSets
@@ -26,7 +26,7 @@
                                             android:layout_marginLeft="5dp"
                                             android:layout_marginRight="5dp"
                                             app:layoutManager="LinearLayoutManager"
-                                            tools:context="dmeeuwis.kanjimaster.charsets.CharacterSetListActivity"
+                                            tools:context="dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetListActivity"
                                             tools:listitem="@layout/characterset_list_content"/>
 
     <FrameLayout

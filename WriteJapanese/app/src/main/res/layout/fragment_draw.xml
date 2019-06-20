@@ -5,7 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <dmeeuwis.nakama.views.TracingCurveView
+    <dmeeuwis.kanjimaster.ui.views.TracingCurveView
         android:id="@+id/tracingPad"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

@@ -5,7 +5,7 @@
              android:layout_height="fill_parent"
              android:background="#e5e5e5">
 
-    <dmeeuwis.nakama.primary.SafeViewFlipper
+    <dmeeuwis.kanjimaster.ui.sections.primary.SafeViewFlipper
         android:id="@+id/viewflipper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -18,13 +18,13 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
 
-            <dmeeuwis.nakama.views.DrawView
+            <dmeeuwis.kanjimaster.ui.views.DrawView
                 android:id="@+id/drawPad"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 app:gridPaddingLeft="240dp"/>
 
-            <dmeeuwis.nakama.views.translations.ClueCard
+            <dmeeuwis.kanjimaster.ui.views.translations.ClueCard
                 android:id="@+id/clueCard"
                 android:layout_width="240dp"
                 android:layout_height="match_parent"
@@ -144,7 +144,7 @@
                         android:text="Drawn"
                         android:textColor="#FFFFFF"/>
 
-                    <dmeeuwis.nakama.views.AnimatedCurveView
+                    <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                         android:id="@+id/animatedDrawnReplay"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -170,7 +170,7 @@
                         android:text="Correct"
                         android:textColor="#FFFFFF"/>
 
-                    <dmeeuwis.nakama.views.AnimatedCurveView
+                    <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                         android:id="@+id/animatedKnownReplay"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -277,7 +277,7 @@
                         android:text="Correct"
                         android:textColor="#FFFFFF"/>
 
-                    <dmeeuwis.nakama.views.AnimatedCurveView
+                    <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                         android:id="@+id/correctKnownView"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
@@ -299,7 +299,7 @@
                         android:text="Drawn"
                         android:textColor="#FFFFFF"/>
 
-                    <dmeeuwis.nakama.views.AnimatedCurveView
+                    <dmeeuwis.kanjimaster.ui.views.AnimatedCurveView
                         android:id="@+id/correctDrawnView"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
@@ -350,7 +350,7 @@
                     android:elevation="@dimen/elevation_low"/>
             </FrameLayout>
         </LinearLayout>
-    </dmeeuwis.nakama.primary.SafeViewFlipper>
+    </dmeeuwis.kanjimaster.ui.sections.primary.SafeViewFlipper>
 
     <View
         android:id="@+id/maskView"
