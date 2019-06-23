@@ -1,7 +1,9 @@
 package dmeeuwis.kanjimaster.charsets;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -90,8 +92,12 @@ public class CharacterSetDetailActivity extends AppCompatActivity implements Loc
             if(f != null){
                 boolean saveSuccess = f.save();
                 if(saveSuccess) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor ed = prefs.edit();
+                    ed.putString(CHARSET_SWITCH_BUNDLE_KEY, f.getEditingSet().pathPrefix);
+                    ed.commit();
+
                     Intent i = new Intent(this, KanjiMasterActivity.class);
-                    i.putExtra(CHARSET_SWITCH_BUNDLE_KEY, f.getEditingSet().pathPrefix);
                     NavUtils.navigateUpTo(this, i);
                     return true;
                 }
