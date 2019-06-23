@@ -1123,12 +1123,16 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             this.charSetFrag.setCharset(characterSets.get("j1"));
         }
 
-        String charsetSwitch = getIntent().getStringExtra("CHARSET_SWITCH");
-        if(charsetSwitch != null){
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String charsetSwitch = prefs.getString(CharacterSetDetailActivity.CHARSET_SWITCH_BUNDLE_KEY, null);
+        if (charsetSwitch != null) {
             Editor ed = prefs.edit();
             ed.putString(CHAR_SET, charsetSwitch);
+            ed.remove(CharacterSetDetailActivity.CHARSET_SWITCH_BUNDLE_KEY);
             ed.apply();
+
+            // and reload charsets in case one has been edited
+            initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);
         }
 
         SRSQueue.useSRSGlobal = Settings.getSRSAcrossSets(getApplicationContext());
