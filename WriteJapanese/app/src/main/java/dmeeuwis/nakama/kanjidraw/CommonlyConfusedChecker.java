@@ -34,7 +34,9 @@ class CommonlyConfusedChecker {
 
     public static void checkEasilyConfusedCharacters(char target, PointDrawing drawn, Criticism c){
         for(SimilarEndingConfusion confusion: SimilarEndingConfusion.END_LOOPERS) {
-            if (target == confusion.a) {
+            boolean hasEnoughStrokes = drawn.strokeCount() > confusion.strokeIndex;
+
+            if (target == confusion.a && hasEnoughStrokes) {
                 Set<Point> selfHits = PathCalculator.intersections(drawn.get(confusion.strokeIndex), drawn.get(confusion.strokeIndex));
                 if (selfHits.size() <= confusion.selfIntersect - 1) {
                     c.add(String.format("The last stroke of %s should loop over itself; otherwise it looks like %s '%s'",
@@ -43,7 +45,7 @@ class CommonlyConfusedChecker {
                 }
             }
 
-            if (target == confusion.b) {
+            if (target == confusion.b && hasEnoughStrokes) {
                 Set<Point> selfHits = PathCalculator.intersections(drawn.get(confusion.strokeIndex), drawn.get(confusion.strokeIndex));
                 if (selfHits.size() > confusion.selfIntersect - 1) {
                     c.add(String.format("The last stroke of %s should not loop over itself; otherwise it becomes %s '%s'",
