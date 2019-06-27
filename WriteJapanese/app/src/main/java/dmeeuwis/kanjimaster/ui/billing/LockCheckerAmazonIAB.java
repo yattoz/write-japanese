@@ -3,6 +3,7 @@ package dmeeuwis.kanjimaster.ui.billing;
 import android.app.*;
 import android.content.*;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.amazon.device.iap.PurchasingListener;
 import com.amazon.device.iap.PurchasingService;
@@ -29,8 +30,6 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
             s.add(IN_APP_PURCHASE_KEY);
             PurchasingService.getProductData(s);
         }
-
-        PurchasingService.getPurchaseUpdates(false);
     }
 
     @Override
@@ -76,8 +75,9 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
                 break;
 
             case FAILED:
+                Log.e("nakama-kindle", "onUserDataResponse failed, status code is " + status);
             case NOT_SUPPORTED:
-                Log.d("nakama-kindle", "onUserDataResponse failed, status code is " + status);
+                Log.e("nakama-kindle", "onUserDataResponse failed, status code is " + status);
                 //iapManager.setAmazonUserId(null, null);
                 break;
         }
@@ -100,8 +100,12 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
 
                 break;
             case FAILED:
+                Toast.makeText(parentActivity, "Failed to contact Kindle App Store; please retry later.", Toast.LENGTH_SHORT).show();
+                Log.e("nakama-kindle", "onProductDataResponse: failed, should retry request");
+                break;
             case NOT_SUPPORTED:
-                Log.d("nakama-kindle", "onProductDataResponse: failed, should retry request");
+                Toast.makeText(parentActivity, "This device is not supported by the Kindle App Store.", Toast.LENGTH_SHORT).show();
+                Log.e("nakama-kindle", "onProductDataResponse: not supported device.");
                 //iapManager.disableAllPurchases();
                 break;
         }
@@ -120,39 +124,59 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
         }
         final PurchaseResponse.RequestStatus status = response.getRequestStatus();
         switch (status) {
-            case SUCCESSFUL:
-
-                String userId = response.getUserData().getUserId();
-                String market = response.getUserData().getMarketplace();
-
-                /*
-                for (final Receipt receipt : response.getReceipts()) {
-                    iapManager.handleReceipt(response.getRequestId().toString(), receipt, response.getUserData());
-                }
-                if (response.hasMore()) {
-                    PurchasingService.getPurchaseUpdates(false);
-                }
-                */
-
-                UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, response);
-
+            case ALREADY_PURCHASED:
+                Toast.makeText(parentActivity, "Already purchased, now unlocking.", Toast.LENGTH_SHORT).show();
                 coreUnlock();
-                PurchasingService.notifyFulfillment(response.getReceipt().getReceiptId(), FulfillmentResult.FULFILLED);
                 parentActivity.recreate();
-
                 break;
+
+            case SUCCESSFUL:
+                Receipt receipt = response.getReceipt();
+                doUnlock(receipt);
+                break;
+
             case FAILED:
+                Toast.makeText(parentActivity, "Failed to contact Kindle App Store; please retry later.", Toast.LENGTH_SHORT).show();
+                Log.d("nakama-kindle", "onPurchaseDataResponse: failed, should retry request");
+                break;
             case NOT_SUPPORTED:
-                Log.d("nakama-kindle", "onProductDataResponse: failed, should retry request");
+                Log.d("nakama-kindle", "onPurchaseDataResponse: failed, device not supported");
+                Toast.makeText(parentActivity, "Failed to contact Kindle App Store; please retry later.", Toast.LENGTH_SHORT).show();
                 // iapManager.disableAllPurchases();
                 break;
         }
-
     }
 
     @Override
     public void onPurchaseUpdatesResponse(PurchaseUpdatesResponse purchaseUpdatesResponse) {
         Log.i("nakama-kindle", "Saw purchase updates!");
+        for(Receipt r: purchaseUpdatesResponse.getReceipts()){
+            if(r.getProductType() == ProductType.CONSUMABLE){
+                doUnlock(r);
+            }
+        }
 
+    }
+
+    private void doUnlock(Receipt receipt){
+        String receiptId = null;
+        if(receipt != null){
+            receiptId = receipt.getReceiptId();
+        }
+
+        try {
+            UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, receiptId);
+        } catch(Throwable t){
+            UncaughtExceptionLogger.backgroundLogError("Error logging backround purchase", t);
+        }
+
+        coreUnlock();
+        try {
+            PurchasingService.notifyFulfillment(receiptId, FulfillmentResult.FULFILLED);
+        } catch (Throwable t){
+            UncaughtExceptionLogger.backgroundLogError("Error notifying fullfillment", t);
+        }
+
+        parentActivity.recreate();
     }
 }

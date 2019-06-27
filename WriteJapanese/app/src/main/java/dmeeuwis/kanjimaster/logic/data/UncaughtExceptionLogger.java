@@ -192,8 +192,8 @@ public class UncaughtExceptionLogger {
 
 
     // Amazon Support
-    public static void backgroundLogPurchase(final Activity parentActivity, final PurchaseResponse info) {
-        backgroundLogPurchase(parentActivity, "AmazonAppStore", info.getReceipt().getReceiptId());
+    public static void backgroundLogPurchase(final Activity parentActivity, final String receiptId) {
+        backgroundLogPurchase(parentActivity, "AmazonAppStore", receiptId);
     }
 
     public static void backgroundLogPurchase(final Activity parentActivity, final String store, final String token) {

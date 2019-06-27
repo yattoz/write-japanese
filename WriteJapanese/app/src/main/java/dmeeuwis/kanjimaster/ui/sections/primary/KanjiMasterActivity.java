@@ -4,13 +4,21 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.*;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.*;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -35,7 +43,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import org.threeten.bp.*;
+import com.amazon.device.iap.PurchasingService;
+
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -46,26 +57,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import dmeeuwis.kanjimaster.logic.core.Kana;
-import dmeeuwis.kanjimaster.logic.core.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.ui.sections.progress.CharacterSetStatusFragment;
-import dmeeuwis.kanjimaster.ui.sections.progress.CharsetInfoActivity;
-import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailActivity;
-import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailFragment;
-import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetListActivity;
 import dmeeuwis.kanjimaster.logic.Constants;
-import dmeeuwis.kanjimaster.ui.sections.credits.CreditsActivity;
-import dmeeuwis.kanjimaster.ui.sections.tests.DrawViewTestActivity;
-import dmeeuwis.kanjimaster.ui.sections.tests.KanjiCheckActivity;
-import dmeeuwis.kanjimaster.ui.billing.LockChecker;
-import dmeeuwis.kanjimaster.ui.sections.progress.ProgressActivity;
-import dmeeuwis.kanjimaster.ui.sections.credits.ReleaseNotesActivity;
-import dmeeuwis.kanjimaster.ui.sections.progress.ReminderManager;
-import dmeeuwis.kanjimaster.ui.sections.tests.SpenDrawActivity;
-import dmeeuwis.kanjimaster.ui.sections.tests.TestDrawActivity;
-import dmeeuwis.kanjimaster.ui.billing.*;
+import dmeeuwis.kanjimaster.logic.core.Kana;
+import dmeeuwis.kanjimaster.logic.core.Translation;
+import dmeeuwis.kanjimaster.logic.core.util.Util;
 import dmeeuwis.kanjimaster.logic.data.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
@@ -90,13 +87,35 @@ import dmeeuwis.kanjimaster.logic.drawing.ComparisonFactory;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
 import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
+import dmeeuwis.kanjimaster.ui.billing.LockChecker;
+import dmeeuwis.kanjimaster.ui.billing.LockCheckerAmazonIAB;
+import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
+import dmeeuwis.kanjimaster.ui.sections.credits.CreditsActivity;
+import dmeeuwis.kanjimaster.ui.sections.credits.ReleaseNotesActivity;
+import dmeeuwis.kanjimaster.ui.sections.progress.CharacterSetStatusFragment;
+import dmeeuwis.kanjimaster.ui.sections.progress.CharsetInfoActivity;
+import dmeeuwis.kanjimaster.ui.sections.progress.ProgressActivity;
+import dmeeuwis.kanjimaster.ui.sections.progress.ReminderManager;
+import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailActivity;
+import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailFragment;
+import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetListActivity;
 import dmeeuwis.kanjimaster.ui.sections.teaching.TeachingActivity;
 import dmeeuwis.kanjimaster.ui.sections.teaching.TeachingStoryFragment;
-import dmeeuwis.kanjimaster.ui.views.*;
+import dmeeuwis.kanjimaster.ui.sections.tests.DrawViewTestActivity;
+import dmeeuwis.kanjimaster.ui.sections.tests.KanjiCheckActivity;
+import dmeeuwis.kanjimaster.ui.sections.tests.SpenDrawActivity;
+import dmeeuwis.kanjimaster.ui.sections.tests.TestDrawActivity;
+import dmeeuwis.kanjimaster.ui.views.Animatable;
+import dmeeuwis.kanjimaster.ui.views.AnimatedCurveView;
+import dmeeuwis.kanjimaster.ui.views.DrawView;
+import dmeeuwis.kanjimaster.ui.views.OverrideDialog;
+import dmeeuwis.kanjimaster.ui.views.PurchaseDialog;
+import dmeeuwis.kanjimaster.ui.views.ReportBugDialog;
+import dmeeuwis.kanjimaster.ui.views.ShareStoriesDialog;
+import dmeeuwis.kanjimaster.ui.views.StrictnessDialog;
 import dmeeuwis.kanjimaster.ui.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
 import dmeeuwis.kanjimaster.ui.views.translations.KanjiVocabRecyclerAdapter;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 import static dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity.USE_SRS_SETTING_NAME;
 import static dmeeuwis.kanjimaster.ui.views.OverrideDialog.OverideType.OVERRIDE_TO_CORRECT;
@@ -1117,6 +1136,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     public void onResume() {
         long start = System.currentTimeMillis();
         Log.i("nakama", "KanjiMasterActivity.onResume");
+
+        if (Build.MANUFACTURER.equals("Amazon")) {
+            PurchasingService.getPurchaseUpdates(true);
+        }
 
         this.charSetFrag = (CharacterSetStatusFragment) getSupportFragmentManager().findFragmentById(R.id.charSetInfoFragment);
         if (this.charSetFrag != null) {
