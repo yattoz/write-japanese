@@ -28,7 +28,7 @@ public class Iid {
         if(existingInstallId == null){
             // try the previous shared prefs format, that used the global prefs for iid
             SharedPreferences oldPrefs = PreferenceManager.getDefaultSharedPreferences(app);
-            existingInstallId = oldPrefs.getString("iid", null);
+            existingInstallId = oldPrefs.getString("iid", UUID.randomUUID().toString());
 
             if(existingInstallId != null){
                 Log.i("nakama", "Migrating IID to new shared prefs storage");
