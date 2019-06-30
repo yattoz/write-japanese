@@ -54,7 +54,6 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
 
 
     // Purchasing Listener
-
     @Override
     public void onUserDataResponse(UserDataResponse response) {
         Log.i("nakama-kindle", "Saw user data!");
@@ -136,15 +135,14 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
                 break;
 
             case FAILED:
-                Toast.makeText(parentActivity, "Failed to contact Kindle App Store; please retry later.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(parentActivity, "Failed to complete Kindle App Store purchase; please try again later.", Toast.LENGTH_SHORT).show();
                 Log.d("nakama-kindle", "onPurchaseDataResponse: failed, should retry request");
                 break;
             case NOT_SUPPORTED:
                 Log.d("nakama-kindle", "onPurchaseDataResponse: failed, device not supported");
                 Toast.makeText(parentActivity, "Failed to contact Kindle App Store; please retry later.", Toast.LENGTH_SHORT).show();
                 // iapManager.disableAllPurchases();
-                break;
-        }
+                break; }
     }
 
     @Override

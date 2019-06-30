@@ -3,6 +3,7 @@ package dmeeuwis.kanjimaster.ui.sections.primary;
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -59,7 +60,9 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
 
         Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
         boolean syncRequested = intent != null && intent.getBooleanExtra(REQUEST_SYNC_SETTINGS, false);
-        boolean showSync = !syncStatus.asked || syncRequested;
+
+        boolean isKindle = Build.MANUFACTURER.equals("Amazon");
+        boolean showSync = (!syncStatus.asked || syncRequested) && !isKindle;
 
         int slideCount = (showSrs ? 1 : 0) + (showSync ? 1 : 0);
 

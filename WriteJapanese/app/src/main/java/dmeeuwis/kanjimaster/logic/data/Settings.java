@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 
+import org.threeten.bp.LocalDateTime;
+
 import java.util.Map;
 import java.util.UUID;
 
@@ -13,6 +15,8 @@ import dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity;
 import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
 
 public class Settings {
+    private static final String INSTALL_TIME_PREF_NAME = "INSTALL_TIME";
+
     public static Boolean getSRSEnabled(Context ctx) {
         return getBooleanSetting(ctx, IntroActivity.USE_SRS_SETTING_NAME, null);
     }
@@ -45,6 +49,35 @@ public class Settings {
     public static void clearSRSSettings(Context applicationContext) {
         Settings.setSetting(IntroActivity.USE_SRS_SETTING_NAME, "clear", applicationContext);
         Settings.setSetting(IntroActivity.SRS_ACROSS_SETS, "clear", applicationContext);
+    }
+
+    public static void setInstallDate(Context applicationContext){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        String installDate = prefs.getString(INSTALL_TIME_PREF_NAME, null);
+        if(installDate == null) {
+            WriteJapaneseOpenHelper dbh = new WriteJapaneseOpenHelper(applicationContext);
+            String time ;
+            try {
+                SQLiteDatabase db = dbh.getReadableDatabase();
+                Map<String, String> v = DataHelper.selectRecord(
+                        db,
+                        "SELECT min(timestamp) as min FROM practice_logs");
+                time = v.get("min") ;
+            } finally {
+                dbh.close();
+            }
+            if(time == null){
+                time = LocalDateTime.now().toString();
+            }
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putString(INSTALL_TIME_PREF_NAME, time);
+            ed.apply();
+        }
+    }
+
+    public static Object getInstallDate(Context applicationContext) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        return prefs.getString(INSTALL_TIME_PREF_NAME, null);
     }
 
     public static class SyncStatus {
@@ -146,6 +179,19 @@ public class Settings {
             Map<String, String> v = DataHelper.selectRecord(db,
                     "INSERT INTO settings_log(id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
                     UUID.randomUUID().toString(), Iid.get(appContext).toString(), key, value);
+        } finally {
+            dbh.close();
+        }
+    }
+
+
+    public static void deleteSetting(String key, Context appContext){
+        WriteJapaneseOpenHelper dbh = new WriteJapaneseOpenHelper(appContext);
+        try {
+            SQLiteDatabase db = dbh.getWritableDatabase();
+            Map<String, String> v = DataHelper.selectRecord(db,
+                    "DELETE FROM settings_log WHERE setting = ?",
+                    key);
         } finally {
             dbh.close();
         }

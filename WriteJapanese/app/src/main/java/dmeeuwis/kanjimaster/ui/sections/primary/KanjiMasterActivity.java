@@ -216,6 +216,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             lockChecker = new LockCheckerInAppBillingService(this);
         }
 
+        Settings.setInstallDate(getApplicationContext());
+
         setContentView(R.layout.main);          // pretty heavy, ~900ms
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
 
@@ -855,6 +857,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         setting(jw, "device", Build.MODEL);
         setting(jw, "localDate", LocalDate.now().toString());
         setting(jw, "localDateTime", LocalDateTime.now().toString());
+        setting(jw, "installTime", Settings.getInstallDate(getApplicationContext()));
 
         CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext()));
         CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
@@ -1250,6 +1253,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.findItem(R.id.menu_set_goals).setVisible(false);
         }
 
+        boolean isKindle = Build.MANUFACTURER.equals("Amazon");
+        if (isKindle) {
+            menu.findItem(R.id.menu_network_sync).setVisible(false);
+        }
+
         if (BuildConfig.DEBUG && DEBUG_MENU) {
             menu.add("DEBUG:DrawTest");
             menu.add("DEBUG:DrawViewComparison");
@@ -1278,6 +1286,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:DebugHistory");
             menu.add("DEBUG:DebugJSON");
             menu.add("DEBUG:PurchaseLog");
+            menu.add("DEBUG:ClearSkipIntro");
         }
 
         return true;
@@ -1531,6 +1540,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 }
             } else if(item.getTitle().equals("DEBUG:PurchaseLog")){
                 UncaughtExceptionLogger.backgroundLogPurchase(this, "DEBUG", "FakePurchaseToken");
+            } else if(item.getTitle().equals("DEBUG:ClearSkipIntro")){
+                SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+                ed.remove(SKIP_INTRO_CHECK);
+                ed.remove(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY);
+                ed.commit();
+                Settings.deleteSetting(USE_SRS_SETTING_NAME, getApplicationContext());
             }
         }
 
