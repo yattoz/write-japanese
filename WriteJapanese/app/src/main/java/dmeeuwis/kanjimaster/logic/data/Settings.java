@@ -15,7 +15,7 @@ import dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity;
 import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
 
 public class Settings {
-    private static final String INSTALL_TIME_PREF_NAME = "INSTALL_TIME";
+    public static final String INSTALL_TIME_PREF_NAME = "INSTALL_TIME";
 
     public static Boolean getSRSEnabled(Context ctx) {
         return getBooleanSetting(ctx, IntroActivity.USE_SRS_SETTING_NAME, null);
@@ -61,7 +61,7 @@ public class Settings {
                 SQLiteDatabase db = dbh.getReadableDatabase();
                 Map<String, String> v = DataHelper.selectRecord(
                         db,
-                        "SELECT min(timestamp) as min FROM practice_logs");
+                        "SELECT min(timestamp) as min FROM practice_log");
                 time = v.get("min") ;
             } finally {
                 dbh.close();

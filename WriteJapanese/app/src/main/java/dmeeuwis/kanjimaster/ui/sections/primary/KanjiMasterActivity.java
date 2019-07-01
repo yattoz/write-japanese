@@ -1543,6 +1543,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             } else if(item.getTitle().equals("DEBUG:ClearSkipIntro")){
                 SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                 ed.remove(SKIP_INTRO_CHECK);
+                ed.remove(Settings.INSTALL_TIME_PREF_NAME);
                 ed.remove(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY);
                 ed.commit();
                 Settings.deleteSetting(USE_SRS_SETTING_NAME, getApplicationContext());
