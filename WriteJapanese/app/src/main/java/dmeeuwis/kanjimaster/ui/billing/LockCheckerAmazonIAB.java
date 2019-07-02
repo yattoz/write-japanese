@@ -99,7 +99,7 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
 
                 break;
             case FAILED:
-                Toast.makeText(parentActivity, "Failed to contact Kindle App Store; please retry later.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(parentActivity, "Failed to contact Kindle App Store; please retry later.", Toast.LENGTH_SHORT).show();
                 Log.e("nakama-kindle", "onProductDataResponse: failed, should retry request");
                 break;
             case NOT_SUPPORTED:
