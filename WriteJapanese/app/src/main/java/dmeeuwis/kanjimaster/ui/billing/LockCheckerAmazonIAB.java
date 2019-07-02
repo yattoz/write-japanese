@@ -135,7 +135,7 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
                 break;
 
             case FAILED:
-                Toast.makeText(parentActivity, "Failed to complete Kindle App Store purchase; please try again later.", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(parentActivity, "Failed to complete Kindle App Store purchase; please try again later.", Toast.LENGTH_SHORT).show();
                 Log.d("nakama-kindle", "onPurchaseDataResponse: failed, should retry request");
                 break;
             case NOT_SUPPORTED:
@@ -157,6 +157,7 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
     }
 
     private void doUnlock(Receipt receipt){
+        Log.i("nakama-kindle", "doUnlock called");
         String receiptId = null;
         if(receipt != null){
             receiptId = receipt.getReceiptId();
