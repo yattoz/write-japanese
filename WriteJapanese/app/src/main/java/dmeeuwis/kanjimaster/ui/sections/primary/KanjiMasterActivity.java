@@ -63,7 +63,7 @@ import dmeeuwis.kanjimaster.logic.Constants;
 import dmeeuwis.kanjimaster.logic.core.Kana;
 import dmeeuwis.kanjimaster.logic.core.Translation;
 import dmeeuwis.kanjimaster.logic.core.util.Util;
-import dmeeuwis.kanjimaster.logic.data.AndroidInputStreamGenerator;
+import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
 import dmeeuwis.kanjimaster.logic.data.CharacterSets;

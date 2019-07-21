@@ -17,7 +17,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.logic.data.AndroidInputStreamGenerator;
+import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.drawing.Comparator;

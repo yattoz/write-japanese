@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import dmeeuwis.kanjimaster.logic.core.Kanji;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.logic.data.AndroidInputStreamGenerator;
+import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;

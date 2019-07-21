@@ -27,7 +27,7 @@ import dmeeuwis.kanjimaster.logic.core.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.Constants;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
-import dmeeuwis.kanjimaster.logic.data.AndroidInputStreamGenerator;
+import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 
