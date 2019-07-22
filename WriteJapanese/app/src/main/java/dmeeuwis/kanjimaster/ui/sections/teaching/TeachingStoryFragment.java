@@ -33,7 +33,8 @@ import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 import dmeeuwis.kanjimaster.ui.views.AnimatedCurveView;
 import dmeeuwis.kanjimaster.ui.views.NetworkStoriesAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.NetworkStorySaveAsyncTask;
@@ -93,7 +94,7 @@ public class TeachingStoryFragment extends Fragment {
         this.character = parent.getCharacter().charAt(0);
         this.kanji = parent.getKanji();
 
-        this.iid = Iid.get();
+        this.iid = IidFactory.get();
         //Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
 
         StoryDataHelper db = new StoryDataHelper();

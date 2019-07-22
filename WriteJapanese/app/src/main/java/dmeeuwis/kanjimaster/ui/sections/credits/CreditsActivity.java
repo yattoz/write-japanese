@@ -12,7 +12,8 @@ import android.widget.TextView;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 
 public class CreditsActivity extends AppCompatActivity {
@@ -46,7 +47,7 @@ public class CreditsActivity extends AppCompatActivity {
 				DIAGRAMS_THANKS +
 				String.format("<div>Version: %s %d, code: %s</div>",
 						BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
-						Iid.get().toString())));
+						IidFactory.get().toString())));
 	}
 	
 	@Override

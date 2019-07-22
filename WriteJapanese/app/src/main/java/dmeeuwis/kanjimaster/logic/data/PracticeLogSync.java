@@ -31,8 +31,9 @@ import java.util.Map;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.ui.billing.*;
 import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
 import dmeeuwis.kanjimaster.core.util.Util;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 
 public class PracticeLogSync {
 
@@ -112,7 +113,7 @@ public class PracticeLogSync {
 
     public Map<String, Integer> sync() throws IOException {
         long startTime = System.currentTimeMillis();
-        String iid = Iid.get().toString();
+        String iid = IidFactory.get().toString();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(extDeps.context);
         String lastSyncServerTimestamp1 = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");

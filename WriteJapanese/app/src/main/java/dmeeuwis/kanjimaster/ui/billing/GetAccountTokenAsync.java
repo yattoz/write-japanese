@@ -15,7 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import dmeeuwis.kanjimaster.logic.data.HostFinder;
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 
 public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
     final Activity mActivity;
@@ -65,7 +66,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
 
             jw.beginObject();
             jw.name("account").value(mEmail);
-            jw.name("iid").value(Iid.get().toString());
+            jw.name("iid").value(IidFactory.get().toString());
             jw.name("authcode").value(token);
             jw.name("device").value(android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT);
             jw.endObject();

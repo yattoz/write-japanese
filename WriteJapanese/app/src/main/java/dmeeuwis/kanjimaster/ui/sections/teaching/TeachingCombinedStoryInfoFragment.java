@@ -32,12 +32,13 @@ import java.util.UUID;
 import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
 import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 import dmeeuwis.kanjimaster.logic.data.LoadRadicalsFile;
 import dmeeuwis.kanjimaster.logic.data.RadicalAdapter;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
 import dmeeuwis.kanjimaster.ui.views.NetworkStoriesAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.NetworkStorySaveAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.ShareStoriesDialog;
@@ -218,7 +219,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
     private UUID getIid(){
         if(this.iid == null) {
-            this.iid = Iid.get();
+            this.iid = IidFactory.get();
         }
         return this.iid;
 

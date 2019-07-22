@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.Map;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.ui.KanjiMasterApplicaton;
 
@@ -80,7 +80,7 @@ public class UncaughtExceptionLogger {
             jw.name("exception");
             jw.value((message == null ? "" : message + ": ") + ex.toString());
             jw.name("iid");
-            jw.value(applicationContext == null ? "?" : Iid.get().toString());
+            jw.value(applicationContext == null ? "?" : IidFactory.get().toString());
             jw.name("version");
             jw.value(String.valueOf(BuildConfig.VERSION_CODE));
             jw.name("device");
@@ -209,11 +209,11 @@ public class UncaughtExceptionLogger {
             JsonWriter jw = new JsonWriter(sw);
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(app.getApplicationContext());
-            CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(Iid.get());
+            CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(IidFactory.get());
 
             jw.beginObject();
 
-                jw.name("iid").value(Iid.get().toString());
+                jw.name("iid").value(IidFactory.get().toString());
                 jw.name("installed").value(prefs.getString("installTime", null));
                 jw.name("purchased").value(LocalDateTime.now().toString());
                 jw.name("purchaseToken").value(token);

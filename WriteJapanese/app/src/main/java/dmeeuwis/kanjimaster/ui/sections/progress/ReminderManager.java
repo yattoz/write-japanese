@@ -34,7 +34,8 @@ import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
 import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.core.util.Util;
 
@@ -93,7 +94,7 @@ public class ReminderManager extends BroadcastReceiver {
             for (CharacterStudySet set : allSets) {
                 trackers.add(set.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
             }
-            new CharacterProgressDataHelper(Iid.get())
+            new CharacterProgressDataHelper(IidFactory.get())
                     .loadProgressTrackerFromDB(trackers, CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);
 
             Log.i("nakama", "Loaded Progress for reminder");

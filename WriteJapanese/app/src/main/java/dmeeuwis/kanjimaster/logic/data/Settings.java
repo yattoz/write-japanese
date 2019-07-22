@@ -9,7 +9,8 @@ import org.threeten.bp.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity;
 import dmeeuwis.kanjimaster.ui.sections.primary.ProgressSettingsDialog;
 import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
@@ -166,7 +167,7 @@ public class Settings {
     public static void setSetting(String key, String value){
         DataHelperFactory.get().execSQL(
                 "INSERT INTO settings_log(id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
-                new String[] { UUID.randomUUID().toString(), Iid.get().toString(), key, value });
+                new String[] { UUID.randomUUID().toString(), IidFactory.get().toString(), key, value });
     }
 
     public static void deleteSetting(String key){

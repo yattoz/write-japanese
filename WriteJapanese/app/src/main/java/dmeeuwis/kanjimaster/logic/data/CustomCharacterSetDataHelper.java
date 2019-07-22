@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 
 public class CustomCharacterSetDataHelper {
     public void recordEdit(String id, String name, String desc, String set) {
-        recordRemoteEdit(UUID.randomUUID().toString(), id, name, desc, set, Iid.get().toString(), null, Boolean.FALSE);
+        recordRemoteEdit(UUID.randomUUID().toString(), id, name, desc, set, IidFactory.get().toString(), null, Boolean.FALSE);
     }
 
     void recordRemoteEdit(String editId, String charsetId, String name, String desc, String set, String installId, String timestamp, Boolean deleted) {
@@ -22,7 +23,7 @@ public class CustomCharacterSetDataHelper {
     public void delete(CharacterStudySet c){
         DataHelperFactory.get().execSQL(
                 "INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)",
-                new String[]{ UUID.randomUUID().toString(), c.pathPrefix, c.name, c.description, c.charactersAsString(), Iid.get().toString(), Boolean.TRUE.toString()});
+                new String[]{ UUID.randomUUID().toString(), c.pathPrefix, c.name, c.description, c.charactersAsString(), IidFactory.get().toString(), Boolean.TRUE.toString()});
     }
 
     public void unDelete(CharacterStudySet doomed) {
@@ -50,7 +51,7 @@ public class CustomCharacterSetDataHelper {
                 sets.remove(r.get("charset_id"));
             } else {
                 CharacterStudySet s = new CharacterStudySet(r.get("name"), r.get("name"), r.get("description"),
-                        r.get("charset_id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, Iid.get(), false);
+                        r.get("charset_id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, IidFactory.get(), false);
                 sets.put(r.get("charset_id"), s);
             }
         }

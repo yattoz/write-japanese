@@ -15,6 +15,8 @@ import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.drawing.Constants;
 import dmeeuwis.kanjimaster.ui.data.ProcessLogRowAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 
 public class KanjiMasterApplicaton extends Application {
     @Override
@@ -36,5 +38,7 @@ public class KanjiMasterApplicaton extends Application {
         ProcessLogRowFactory.initialize(processor);
 
         Settings.initialize(appContext);
+
+        IidFactory.initialize(new IidAndroid(appContext));
     }
 }

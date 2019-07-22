@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -517,7 +516,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         // record only once in db, not once per set.
-        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(Iid.get());
+        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(IidFactory.get());
         String rowId = dbHelper.recordPractice(setId, currChar.toString(), drawn, pass ? 100 : -100);
 
         return new CharacterStudySet.GradingResult(rowId, s);
@@ -568,7 +567,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         for(CharacterStudySet c: this.characterSets.values()){
             trackers.add(c.load(loadType));
         }
-        CharacterProgressDataHelper ch = new CharacterProgressDataHelper(Iid.get());
+        CharacterProgressDataHelper ch = new CharacterProgressDataHelper(IidFactory.get());
         ch.loadProgressTrackerFromDB(trackers, progressCacheFlag);
     }
 
@@ -848,12 +847,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     }
 
     public void stateLog(JsonWriter jw) throws IOException {
-        Context ctx = getApplicationContext();
-
         jw.beginObject();
 
         setting(jw, "version", BuildConfig.VERSION_NAME + " " + BuildConfig.VERSION_CODE);
-        setting(jw, "iid", Iid.get());
+        setting(jw, "iid", IidFactory.get());
         setting(jw, "lockLevel", lockChecker.getPurchaseStatus().toString());
         setting(jw, "device", Build.MODEL);
         setting(jw, "localDate", LocalDate.now().toString());
@@ -1125,7 +1122,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         for(CharacterStudySet st: characterSets.values()) {
             pts.add(st.getProgressTracker());
         }
-        new CharacterProgressDataHelper(Iid.get()).resumeProgressTrackerFromDB(pts);
+        new CharacterProgressDataHelper(IidFactory.get()).resumeProgressTrackerFromDB(pts);
     }
 
 
@@ -1214,7 +1211,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         saveCurrentCharacterSet();
         instructionCard.saveCurrentClueType(getApplicationContext());
 
-        CharacterProgressDataHelper d = new CharacterProgressDataHelper(Iid.get());
+        CharacterProgressDataHelper d = new CharacterProgressDataHelper(IidFactory.get());
         for(CharacterStudySet c: this.characterSets.values()){
             try {
                 ProgressTracker.ProgressState serialize = c.getProgressTracker().serializeOut();
@@ -1432,7 +1429,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
         } else if(item.getTitle().equals("Recalculate Progress")) {
-            new CharacterProgressDataHelper(Iid.get()).clearPracticeRecord();
+            new CharacterProgressDataHelper(IidFactory.get()).clearPracticeRecord();
             initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
         }
 
