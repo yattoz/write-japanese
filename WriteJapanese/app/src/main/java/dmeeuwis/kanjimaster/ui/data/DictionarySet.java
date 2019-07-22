@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -15,8 +15,9 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import dmeeuwis.kanjimaster.logic.core.Translation;
-import dmeeuwis.kanjimaster.logic.core.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.core.Translation;
+import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.logic.data.TranslationsFromXml;
 
 public class DictionarySet {
 

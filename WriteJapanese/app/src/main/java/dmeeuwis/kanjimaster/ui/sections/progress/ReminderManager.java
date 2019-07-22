@@ -36,7 +36,7 @@ import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
+import dmeeuwis.kanjimaster.core.util.Util;
 
 public class ReminderManager extends BroadcastReceiver {
 
@@ -91,15 +91,15 @@ public class ReminderManager extends BroadcastReceiver {
 
             List<ProgressTracker> trackers = new ArrayList<>();
             for (CharacterStudySet set : allSets) {
-                trackers.add(set.load(context, CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
+                trackers.add(set.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
             }
-            new CharacterProgressDataHelper(context, Iid.get(context))
+            new CharacterProgressDataHelper(Iid.get(context))
                     .loadProgressTrackerFromDB(trackers, CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);
 
             Log.i("nakama", "Loaded Progress for reminder");
 
-            Boolean srsEnabled = Settings.getSRSEnabled(context);
-            Boolean notificationsEnabled = Settings.getSRSNotifications(context);
+            Boolean srsEnabled = Settings.getSRSEnabled();
+            Boolean notificationsEnabled = Settings.getSRSNotifications();
 
             srsEnabled = srsEnabled == null ? false : srsEnabled;
             notificationsEnabled = notificationsEnabled == null ? false : notificationsEnabled;

@@ -1,9 +1,7 @@
 package dmeeuwis.kanjimaster.ui.sections.primary;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.media.audiofx.PresetReverb;
 import android.preference.PreferenceManager;
 import android.util.Log;
 

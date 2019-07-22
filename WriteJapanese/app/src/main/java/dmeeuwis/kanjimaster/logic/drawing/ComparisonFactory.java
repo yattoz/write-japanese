@@ -9,11 +9,11 @@ import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 public class ComparisonFactory {
     public static Comparator getUsersComparator(Context ctx, AssetFinder assetFinder){
         try {
-            if (Settings.getStrictness(ctx) == Settings.Strictness.CASUAL) {
+            if (Settings.getStrictness() == Settings.Strictness.CASUAL) {
                 return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.DISCOUNT);
-            } else if (Settings.getStrictness(ctx) == Settings.Strictness.CASUAL_ORDERED) {
+            } else if (Settings.getStrictness() == Settings.Strictness.CASUAL_ORDERED) {
                 return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.COUNT);
-            } else if (Settings.getStrictness(ctx) == Settings.Strictness.STRICT) {
+            } else if (Settings.getStrictness() == Settings.Strictness.STRICT) {
                 return new DrawingComparator(assetFinder);
             } else {
                 return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.DISCOUNT);

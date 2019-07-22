@@ -54,11 +54,11 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
         Intent intent = getIntent();
 
         // show SRS screen if not yet shown, or if specifically requested
-        boolean srsNotYetShow = Settings.getBooleanSetting(getApplicationContext(), USE_SRS_SETTING_NAME, null) == null;
+        boolean srsNotYetShow = Settings.getBooleanSetting(USE_SRS_SETTING_NAME, null) == null;
         boolean srsRequested = intent != null && intent.getBooleanExtra(REQUEST_SRS_SETTINGS, false);
         boolean showSrs = srsNotYetShow || srsRequested;
 
-        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
+        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled();
         boolean syncRequested = intent != null && intent.getBooleanExtra(REQUEST_SYNC_SETTINGS, false);
 
         boolean isKindle = Build.MANUFACTURER.equals("Amazon");
@@ -86,9 +86,9 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
 
             // on first view, set defaults
             if(srsNotYetShow) {
-                Settings.setBooleanSetting(getApplicationContext(), USE_SRS_SETTING_NAME, true);
-                Settings.setBooleanSetting(getApplicationContext(), SRS_ACROSS_SETS, true);
-                Settings.setBooleanSetting(getApplicationContext(), SRS_NOTIFICATION_SETTING_NAME, false);
+                Settings.setBooleanSetting(USE_SRS_SETTING_NAME, true);
+                Settings.setBooleanSetting(SRS_ACROSS_SETS, true);
+                Settings.setBooleanSetting(SRS_NOTIFICATION_SETTING_NAME, false);
             }
         }
 
@@ -106,7 +106,7 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
                             "Sync Across Google Account");
             addSlide(s);
             addedSlides.add(s);
-            Settings.setCrossDeviceSyncAsked(getApplicationContext());
+            Settings.setCrossDeviceSyncAsked();
         }
 
         Log.i("nakama-intro", "After slides, slidesShown is: " + addedSlides.size());

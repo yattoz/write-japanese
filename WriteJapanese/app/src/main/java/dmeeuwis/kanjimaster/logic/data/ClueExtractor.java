@@ -5,10 +5,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.List;
 
-import dmeeuwis.kanjimaster.logic.core.Kana;
-import dmeeuwis.kanjimaster.logic.core.Kanji;
-import dmeeuwis.kanjimaster.logic.core.Translation;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
+import dmeeuwis.kanjimaster.core.Kana;
+import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.core.Translation;
+import dmeeuwis.kanjimaster.core.util.Util;
+import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 
 public class ClueExtractor {
 

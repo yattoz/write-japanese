@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.billing;
 
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -14,6 +14,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import dmeeuwis.kanjimaster.logic.data.HostFinder;
 import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
 
 public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {

@@ -22,14 +22,14 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import java.io.IOException;
 
-import dmeeuwis.kanjimaster.logic.core.Kana;
-import dmeeuwis.kanjimaster.logic.core.Kanji;
+import dmeeuwis.kanjimaster.core.Kana;
+import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.Constants;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
 import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
-import dmeeuwis.kanjimaster.logic.data.DictionarySet;
+import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 
 public class TeachingActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
 	ActionBar actionBar;

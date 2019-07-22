@@ -4,8 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ViewSwitcher;
 
-import dmeeuwis.kanjimaster.logic.core.Translation;
-import dmeeuwis.kanjimaster.logic.core.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.core.Translation;
+import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
 
 public class FuriganaSwitcher extends ViewSwitcher {
     public FuriganaSwitcher(Context context) {

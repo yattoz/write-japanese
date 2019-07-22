@@ -11,11 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import dmeeuwis.kanjimaster.logic.core.Kanji;
-import dmeeuwis.kanjimaster.logic.core.Translation;
-import dmeeuwis.kanjimaster.logic.core.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.core.Translation;
+import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.logic.data.DictionarySet;
+import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
 import dmeeuwis.kanjimaster.ui.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.translations.CharacterTranslationListAsyncTask.AddTranslation;

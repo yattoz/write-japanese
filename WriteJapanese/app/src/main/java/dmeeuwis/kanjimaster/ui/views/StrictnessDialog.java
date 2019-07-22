@@ -64,7 +64,7 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
             });
         }
 
-        Settings.Strictness selected = Settings.getStrictness(getActivity().getApplicationContext());
+        Settings.Strictness selected = Settings.getStrictness();
         if(selected == Settings.Strictness.CASUAL) {
             radioGroup.check(R.id.strictness_casual_button);
         } else if(selected == Settings.Strictness.CASUAL_ORDERED){
@@ -79,11 +79,11 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
         if(radioGroup.getCheckedRadioButtonId() == R.id.strictness_casual_button){
-            Settings.setStrictness(Settings.Strictness.CASUAL, getActivity().getApplicationContext());
+            Settings.setStrictness(Settings.Strictness.CASUAL);
         } else  if(radioGroup.getCheckedRadioButtonId() == R.id.strictness_casual_ordered_button){
-            Settings.setStrictness(Settings.Strictness.CASUAL_ORDERED, getActivity().getApplicationContext());
+            Settings.setStrictness(Settings.Strictness.CASUAL_ORDERED);
         } else {
-            Settings.setStrictness(Settings.Strictness.STRICT, getActivity().getApplicationContext());
+            Settings.setStrictness(Settings.Strictness.STRICT);
         }
     }
 }

@@ -1,6 +1,5 @@
 package dmeeuwis.kanjimaster.logic.data;
 
-import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
@@ -19,7 +18,7 @@ import java.util.UUID;
 
 import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
+import dmeeuwis.kanjimaster.core.util.Util;
 
 /**
  * Holds a set of characters to study, and standardSets current user study progress on those characters.
@@ -111,8 +110,8 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
 
-    public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet, Context context) {
-        this(name, shortName, description, pathPrefix, locked, allCharacters, freeCharacters, LockChecker, iid, systemSet, new CharacterProgressDataHelper(context, iid));
+    public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet) {
+        this(name, shortName, description, pathPrefix, locked, allCharacters, freeCharacters, LockChecker, iid, systemSet, new CharacterProgressDataHelper(iid));
     }
 
     public CharacterStudySet(String name, String shortName, String description, String pathPrefix, LockLevel locked, String allCharacters, String freeCharacters, LockChecker LockChecker, UUID iid, boolean systemSet, CharacterProgressDataHelper db) {
@@ -229,8 +228,8 @@ public class CharacterStudySet implements Iterable<Character> {
         return this.shuffling;
     }
 
-    public void progressReset(Context context) {
-        this.tracker.progressReset(context, pathPrefix);
+    public void progressReset() {
+        this.tracker.progressReset(pathPrefix);
         dbHelper.clearProgress(pathPrefix);
     }
 
@@ -248,7 +247,7 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public ProgressTracker.StudyRecord nextCharacter() {
-        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+        CharacterProgressDataHelper.ProgressionSettings p = Settings.getProgressionSettings();
         return nextCharacter(p);
     }
 
@@ -280,16 +279,16 @@ public class CharacterStudySet implements Iterable<Character> {
         return tracker;
     }
 
-    public ProgressTracker load(Context ctx, LoadProgress loadProgress) {
-        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+    public ProgressTracker load(LoadProgress loadProgress) {
+        CharacterProgressDataHelper.ProgressionSettings p = Settings.getProgressionSettings();
         Pair<GregorianCalendar, GregorianCalendar> goals = dbHelper.getExistingGoals(pathPrefix);
         if (goals != null) {
             this.goalStarted = goals.first;
             this.studyGoal = goals.second;
         }
 
-        Boolean srsEnabled = Settings.getSRSEnabled(ctx);
-        Boolean srsAcrossSets = Settings.getSRSAcrossSets(ctx);
+        Boolean srsEnabled = Settings.getSRSEnabled();
+        Boolean srsAcrossSets = Settings.getSRSAcrossSets();
 
         // these 2 should only happen on first view, and then the IntroActivity should spring up
         // before the user can interact with this charset anyways.

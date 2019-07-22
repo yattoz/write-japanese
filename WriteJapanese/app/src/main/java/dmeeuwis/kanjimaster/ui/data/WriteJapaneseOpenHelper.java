@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import dmeeuwis.kanjimaster.logic.data.DataHelper;
+import dmeeuwis.kanjimaster.logic.data.DataHelperFactory;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
 import dmeeuwis.kanjimaster.ui.sections.teaching.TeachingStoryFragment;
 
@@ -117,7 +120,8 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
     }
 
     private void migratePracticeTrackerToPracticeLogs(SQLiteDatabase sqlite){
-        List<Map<String, String>> rows = DataHelper.selectRecords(sqlite, "SELECT * FROM character_progress");
+	    DataHelper dh = DataHelperFactory.get();
+        List<Map<String, String>> rows = dh.selectRecords("SELECT * FROM character_progress");
         for(Map<String, String> r: rows){
             String charset = r.get("charset");
             String record = r.get("progress");
@@ -131,12 +135,12 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
                     Integer value = Integer.parseInt(parts[1]);
 
                     if(value == -2){
-                        sqlite.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "-200"});
+                        dh.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "-200"});
                     } else if (value == -1){
-                        sqlite.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "-200"});
-                        sqlite.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "100"});
+                        dh.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "-200"});
+                        dh.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "100"});
                     } else if (value >= 1){
-                        sqlite.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "100"});
+                        dh.execSQL("INSERT INTO practice_log(id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)", new String[]{UUID.randomUUID().toString(), iid, character, charset, "100"});
                     }
                 } catch(Throwable t){
                     Log.e("nakama", "Error parsing record line: " + line, t);

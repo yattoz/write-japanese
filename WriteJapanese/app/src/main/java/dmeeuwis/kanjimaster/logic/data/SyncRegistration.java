@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import dmeeuwis.kanjimaster.BuildConfig;
+import dmeeuwis.kanjimaster.ui.billing.GetAccountTokenAsync;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 
 public class SyncRegistration {

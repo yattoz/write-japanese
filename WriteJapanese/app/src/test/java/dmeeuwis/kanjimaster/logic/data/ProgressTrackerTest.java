@@ -129,12 +129,12 @@ public class ProgressTrackerTest {
 
         ProgressTracker p1 = new ProgressTracker(
                 CHARS_SET, 2, 2, true, true, false, "test-1");
-        CharacterStudySet s1 = new CharacterStudySet("test1", "test1", "test", "test1", CharacterStudySet.LockLevel.UNLOCKED, "a", "xz", null, UUID.randomUUID(), true, RuntimeEnvironment.application);
+        CharacterStudySet s1 = new CharacterStudySet("test1", "test1", "test", "test1", CharacterStudySet.LockLevel.UNLOCKED, "a", "xz", null, UUID.randomUUID(), true);
         s1.load(p1);
 
         ProgressTracker p2 = new ProgressTracker(
                 CHARS_SET_2, 2, 2, true, true, false, "test-2");
-        CharacterStudySet s2 = new CharacterStudySet("test2", "test2", "test", "test2", CharacterStudySet.LockLevel.UNLOCKED, "xz", "xz", null, UUID.randomUUID(), true, RuntimeEnvironment.application);
+        CharacterStudySet s2 = new CharacterStudySet("test2", "test2", "test", "test2", CharacterStudySet.LockLevel.UNLOCKED, "xz", "xz", null, UUID.randomUUID(), true);
         s2.load(p2);
 
         SRSQueue.registerSetsForGlobalSRS(Arrays.asList(s1, s2));

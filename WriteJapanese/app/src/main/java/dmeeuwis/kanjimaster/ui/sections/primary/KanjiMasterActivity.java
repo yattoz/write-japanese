@@ -60,9 +60,9 @@ import java.util.Set;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.Constants;
-import dmeeuwis.kanjimaster.logic.core.Kana;
-import dmeeuwis.kanjimaster.logic.core.Translation;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
+import dmeeuwis.kanjimaster.core.Kana;
+import dmeeuwis.kanjimaster.core.Translation;
+import dmeeuwis.kanjimaster.core.util.Util;
 import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
@@ -71,7 +71,7 @@ import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet.LockLevel;
 import dmeeuwis.kanjimaster.logic.data.ClueExtractor;
 import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
-import dmeeuwis.kanjimaster.logic.data.DictionarySet;
+import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 import dmeeuwis.kanjimaster.logic.data.PracticeLogSync;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
 import dmeeuwis.kanjimaster.logic.data.SRSQueue;
@@ -80,7 +80,7 @@ import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
 import dmeeuwis.kanjimaster.logic.data.SyncRegistration;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
-import dmeeuwis.kanjimaster.logic.data.WriteJapaneseOpenHelper;
+import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.logic.drawing.Comparator;
 import dmeeuwis.kanjimaster.logic.drawing.ComparisonAsyncTask;
 import dmeeuwis.kanjimaster.logic.drawing.ComparisonFactory;
@@ -216,7 +216,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             lockChecker = new LockCheckerInAppBillingService(this);
         }
 
-        Settings.setInstallDate(getApplicationContext());
+
+        Settings.setInstallDate();
 
         setContentView(R.layout.main);          // pretty heavy, ~900ms
         this.dictionarySet = DictionarySet.get(this.getApplicationContext());
@@ -480,9 +481,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         ReminderManager.scheduleRemindersFor(getApplicationContext());
         Log.i("nakama-timing", "MainActivity: timing 5 " + (System.currentTimeMillis() - start) + "ms");
 
-        Boolean srsEnabled = Settings.getSRSEnabled(getApplicationContext());
+        Boolean srsEnabled = Settings.getSRSEnabled();
         boolean srsAsked = srsEnabled != null;
-        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
+        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled();
 
         boolean skipIntro = false;
         try {
@@ -516,7 +517,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         // record only once in db, not once per set.
-        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext()));
+        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(Iid.get(getApplicationContext()));
         String rowId = dbHelper.recordPractice(setId, currChar.toString(), drawn, pass ? 100 : -100);
 
         return new CharacterStudySet.GradingResult(rowId, s);
@@ -565,9 +566,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     private void reloadPracticeLogs(CharacterStudySet.LoadProgress loadType, CharacterProgressDataHelper.ProgressCacheFlag progressCacheFlag){
         List<ProgressTracker> trackers = new ArrayList<>(characterSets.size());
         for(CharacterStudySet c: this.characterSets.values()){
-            trackers.add(c.load(this.getApplicationContext(), loadType));
+            trackers.add(c.load(loadType));
         }
-        CharacterProgressDataHelper ch = new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(getApplicationContext()));
+        CharacterProgressDataHelper ch = new CharacterProgressDataHelper(Iid.get(getApplicationContext()));
         ch.loadProgressTrackerFromDB(trackers, progressCacheFlag);
     }
 
@@ -857,10 +858,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         setting(jw, "device", Build.MODEL);
         setting(jw, "localDate", LocalDate.now().toString());
         setting(jw, "localDateTime", LocalDateTime.now().toString());
-        setting(jw, "installTime", Settings.getInstallDate(getApplicationContext()));
+        setting(jw, "installTime", Settings.getInstallDate());
 
-        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext()));
-        CharacterProgressDataHelper.ProgressionSettings p = dbHelper.getProgressionSettings();
+        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(Iid.get(getApplicationContext()));
+        CharacterProgressDataHelper.ProgressionSettings p = Settings.getProgressionSettings();
 
         setting(jw, "introIncorrect", p.introIncorrect);
         setting(jw, "introReviewing", p.introReviewing);
@@ -869,10 +870,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         setting(jw, "skipSRSOnFirstTimeCorrect", p.skipSRSOnFirstTimeCorrect);
         setting(jw, "characterCooldown", p.characterCooldown);
 
-        setting(jw, "srsEnabled", Settings.getSRSEnabled(ctx));
-        setting(jw, "srsGlobal", Settings.getSRSAcrossSets(ctx));
-        setting(jw, "strictness", Settings.getStrictness(ctx));
-        setting(jw, "storySharing", Settings.getStorySharing(ctx));
+        setting(jw, "srsEnabled", Settings.getSRSEnabled());
+        setting(jw, "srsGlobal", Settings.getSRSAcrossSets());
+        setting(jw, "strictness", Settings.getStrictness());
+        setting(jw, "storySharing", Settings.getStorySharing());
 
         setting(jw, "currentCharacterSet", currentCharacterSet.pathPrefix);
         setting(jw, "currentCharacterSetName", currentCharacterSet.name);
@@ -1054,7 +1055,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 Log.i("nakama-sets", "Loading new character set " + s.pathPrefix + ": " + s.name);
                 characterSets.put(s.pathPrefix, s);
                 customSets.add(s);
-                s.load(this.getApplicationContext(), CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
+                s.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
             }
         }
         Set<String> priorSets = new HashSet<>();
@@ -1125,7 +1126,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         for(CharacterStudySet st: characterSets.values()) {
             pts.add(st.getProgressTracker());
         }
-        new CharacterProgressDataHelper(this, Iid.get(this)).resumeProgressTrackerFromDB(pts);
+        new CharacterProgressDataHelper(Iid.get(this)).resumeProgressTrackerFromDB(pts);
     }
 
 
@@ -1161,7 +1162,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);
         }
 
-        SRSQueue.useSRSGlobal = Settings.getSRSAcrossSets(getApplicationContext());
+        SRSQueue.useSRSGlobal = Settings.getSRSAcrossSets();
         if(BuildConfig.DEBUG){
             //Toast.makeText(this, "Global SRS: " + SRSQueue.useSRSGlobal, Toast.LENGTH_LONG).show();
         }
@@ -1196,10 +1197,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
         // detect if user changed SRS settings, and need to reload charsets
-        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled(getApplicationContext());
-        boolean srsAsked = Settings.getBooleanSetting(getApplicationContext(), USE_SRS_SETTING_NAME, null) != null;
+        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled();
+        boolean srsAsked = Settings.getBooleanSetting(USE_SRS_SETTING_NAME, null) != null;
         if(syncStatus.asked && srsAsked &&
-                currentCharacterSet.srsAcrossSets() != Settings.getSRSAcrossSets(getApplicationContext())){
+                currentCharacterSet.srsAcrossSets() != Settings.getSRSAcrossSets()){
             Log.i("nakama-intro", "Restarting activity due to change in SRS settings");
             this.recreate();
         }
@@ -1214,7 +1215,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         saveCurrentCharacterSet();
         instructionCard.saveCurrentClueType(getApplicationContext());
 
-        CharacterProgressDataHelper d = new CharacterProgressDataHelper(this.getApplicationContext(), Iid.get(this.getApplicationContext()));
+        CharacterProgressDataHelper d = new CharacterProgressDataHelper(Iid.get(this.getApplicationContext()));
         for(CharacterStudySet c: this.characterSets.values()){
             try {
                 ProgressTracker.ProgressState serialize = c.getProgressTracker().serializeOut();
@@ -1432,7 +1433,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
         } else if(item.getTitle().equals("Recalculate Progress")) {
-            new CharacterProgressDataHelper(getApplicationContext(), Iid.get(getApplicationContext())).clearPracticeRecord();
+            new CharacterProgressDataHelper(Iid.get(getApplicationContext())).clearPracticeRecord();
             initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
         }
 
@@ -1462,10 +1463,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 e.apply();
 
             } else if (item.getTitle().equals("DEBUG:ClearSyncSettings")) {
-                Settings.clearCrossDeviceSync(getApplicationContext());
+                Settings.clearCrossDeviceSync();
 
             } else if (item.getTitle().equals("DEBUG:ClearSRSSettings")) {
-                Settings.clearSRSSettings(getApplicationContext());
+                Settings.clearSRSSettings();
 
             } else if (item.getTitle().equals("DEBUG:PrintSRSQueues")) {
                 for(Map.Entry<String, CharacterStudySet> s: characterSets.entrySet()){
@@ -1546,7 +1547,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 ed.remove(Settings.INSTALL_TIME_PREF_NAME);
                 ed.remove(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY);
                 ed.commit();
-                Settings.deleteSetting(USE_SRS_SETTING_NAME, getApplicationContext());
+                Settings.deleteSetting(USE_SRS_SETTING_NAME);
             }
         }
 
@@ -1599,7 +1600,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         builder.setPositiveButton("Reset Progress", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                currentCharacterSet.progressReset(getApplicationContext());
+                currentCharacterSet.progressReset();
                 loadNextCharacter(true);
 
                 dialog.dismiss();
@@ -1674,12 +1675,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
 
-        this.currentSetClueType = Settings.getCharsetClueType(this.currentCharacterSet.pathPrefix, getApplicationContext());
+        this.currentSetClueType = Settings.getCharsetClueType(this.currentCharacterSet.pathPrefix);
         instructionCard.setClueType(this.currentSetClueType);
         instructionCard.setClueTypeChangeListener(new ClueCard.ClueTypeChangeListener() {
             @Override public void onClueTypeChange(ClueCard.ClueType c) {
                 Log.i("nakama", "Setting clue type for set " + currentCharacterSet.name + " to " + c);
-                Settings.setCharsetClueType(currentCharacterSet.pathPrefix, c, getApplicationContext());
+                Settings.setCharsetClueType(currentCharacterSet.pathPrefix, c);
             }
 
         });
@@ -1807,7 +1808,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
                 j.name("critique").value(Util.join(" : ", lastCriticism.critiques));
                 j.name("matrix").value(lastCriticism.printScoreMatrix());
-                j.name("strictness").value(Settings.getStrictness(getApplicationContext()).toString());
+                j.name("strictness").value(Settings.getStrictness().toString());
 
                 j.name("drawn");
                 drawPad.getDrawing().serialize(j);

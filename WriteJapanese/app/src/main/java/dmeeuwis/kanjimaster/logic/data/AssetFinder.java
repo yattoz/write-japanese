@@ -3,7 +3,7 @@ package dmeeuwis.kanjimaster.logic.data;
 import java.io.IOException;
 import java.io.InputStream;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
+import dmeeuwis.kanjimaster.core.util.Util;
 
 public class AssetFinder {
 

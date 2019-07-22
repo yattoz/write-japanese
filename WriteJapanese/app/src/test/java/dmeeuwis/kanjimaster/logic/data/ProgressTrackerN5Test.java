@@ -42,14 +42,14 @@ public class ProgressTrackerN5Test {
     @Test
     public void testNullBeforeCallingNext() {
         CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
-        s.load(RuntimeEnvironment.application, CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
+        s.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
         assertEquals("Null until .nextCharacter is called", null, s.currentCharacter());
     }
 
     @Test
     public void testResetLast() {
         CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
-        s.load(RuntimeEnvironment.application, CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
+        s.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
         s.nextCharacter();
 
         s.markCurrent(s.currentCharacter(), null, false);
@@ -292,7 +292,7 @@ public class ProgressTrackerN5Test {
     @Test
     public void testProgression(){
         CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
-        s.load(RuntimeEnvironment.application, CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
+        s.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
 
         CharacterProgressDataHelper.ProgressionSettings prog =
                 new CharacterProgressDataHelper.ProgressionSettings(

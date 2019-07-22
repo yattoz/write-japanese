@@ -25,7 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import dmeeuwis.kanjimaster.logic.core.Kanji;
+import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.LoadRadicalsFile;
 import dmeeuwis.kanjimaster.logic.data.RadicalAdapter;
@@ -62,7 +62,7 @@ public class TeachingStoryFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser){
-            String value = Settings.getStorySharing(this.getActivity().getApplicationContext());
+            String value = Settings.getStorySharing();
             if("true".equals(value)) {
                 loadRemoteStories();
             } else if("false".equals(value)){
@@ -71,14 +71,14 @@ public class TeachingStoryFragment extends Fragment {
                 ShareStoriesDialog.show(getActivity(), new Runnable() {
                     @Override
                     public void run() {
-                        Settings.setStorySharing("true", getActivity().getApplicationContext());
+                        Settings.setStorySharing("true");
                         loadRemoteStories();
                     }
                 }, new Runnable(){
 
                     @Override
                     public void run() {
-                        Settings.setStorySharing("false", getActivity().getApplicationContext());
+                        Settings.setStorySharing("false");
                     }
                 });
             }

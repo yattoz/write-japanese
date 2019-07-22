@@ -29,11 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import dmeeuwis.kanjimaster.logic.core.Kanji;
-import dmeeuwis.kanjimaster.logic.core.Translation;
+import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
-import dmeeuwis.kanjimaster.logic.data.DictionarySet;
+import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 import dmeeuwis.kanjimaster.logic.data.LoadRadicalsFile;
 import dmeeuwis.kanjimaster.logic.data.RadicalAdapter;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;

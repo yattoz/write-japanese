@@ -104,7 +104,7 @@ public class CheckboxSlideFragment extends SlideFragment {
     }
 
     private void setPref(String pref, boolean value){
-        Settings.setBooleanSetting(getContext().getApplicationContext(), pref, value);
+        Settings.setBooleanSetting(pref, value);
     }
 
     private void updateViewWithValues() {
@@ -116,7 +116,7 @@ public class CheckboxSlideFragment extends SlideFragment {
 
         if(check1Text != null && check1Prop != null) {
             check1.setText(check1Text);
-            check1.setChecked(Settings.getBooleanSetting(getContext().getApplicationContext(), check1Prop, true));
+            check1.setChecked(Settings.getBooleanSetting(check1Prop, true));
             check1.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     boolean checked = ((CheckBox)v).isChecked();
@@ -146,7 +146,7 @@ public class CheckboxSlideFragment extends SlideFragment {
 
         if(check2Text != null && check2Prop != null) {
             check2.setText(check2Text);
-            check2.setChecked(Settings.getBooleanSetting(getContext().getApplicationContext(), check2Prop, true));
+            check2.setChecked(Settings.getBooleanSetting(check2Prop, true));
             check2.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     setPref(check2Prop, ((CheckBox)v).isChecked());
@@ -158,7 +158,7 @@ public class CheckboxSlideFragment extends SlideFragment {
 
         if(check3Text != null && check3Prop != null) {
             check3.setText(check3Text);
-            check3.setChecked(Settings.getBooleanSetting(getContext().getApplicationContext(), check3Prop, true));
+            check3.setChecked(Settings.getBooleanSetting(check3Prop, true));
             check3.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     setPref(check3Prop, ((CheckBox)v).isChecked());

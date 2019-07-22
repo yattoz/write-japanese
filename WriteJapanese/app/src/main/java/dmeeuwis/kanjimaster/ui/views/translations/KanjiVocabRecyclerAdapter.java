@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dmeeuwis.kanjimaster.logic.core.Kanji;
-import dmeeuwis.kanjimaster.logic.core.Translation;
-import dmeeuwis.kanjimaster.logic.core.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.core.Translation;
+import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.SRSQueue;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;

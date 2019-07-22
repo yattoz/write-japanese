@@ -155,7 +155,7 @@ public class DrawView extends View implements OnTouchListener {
 	}
 
 	public PointDrawing getDrawing(){
-		return PointDrawing.fromDetailedPoints(screenWidth, screenHeight, convertPoints(this.linesToDraw), this.getContext());
+		return PointDrawing.fromDetailedPoints(screenWidth, screenHeight, convertPoints(this.linesToDraw));
 	}
 
     private List<List<dmeeuwis.kanjimaster.logic.data.Point>> convertPoints(List<List<Point>> drawing){

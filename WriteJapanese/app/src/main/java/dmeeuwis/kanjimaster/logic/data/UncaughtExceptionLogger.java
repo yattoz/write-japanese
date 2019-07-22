@@ -10,8 +10,6 @@ import android.preference.PreferenceManager;
 import android.util.JsonWriter;
 import android.util.Log;
 
-import com.amazon.device.iap.model.*;
-
 import org.threeten.bp.LocalDateTime;
 
 import java.io.BufferedWriter;
@@ -211,7 +209,7 @@ public class UncaughtExceptionLogger {
             JsonWriter jw = new JsonWriter(sw);
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(app.getApplicationContext());
-            CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(app.getApplicationContext(), Iid.get(app.getApplicationContext()));
+            CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(Iid.get(app.getApplicationContext()));
 
             jw.beginObject();
 

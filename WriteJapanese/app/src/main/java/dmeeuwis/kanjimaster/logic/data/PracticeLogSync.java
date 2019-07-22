@@ -30,8 +30,9 @@ import java.util.Map;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.ui.billing.*;
+import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
+import dmeeuwis.kanjimaster.core.util.Util;
 
 public class PracticeLogSync {
 
@@ -94,30 +95,18 @@ public class PracticeLogSync {
         e.apply();
     }
 
-    public String maxTimestamp(WriteJapaneseOpenHelper db){
-        SQLiteDatabase d = db.getReadableDatabase();
-        try {
-            return DataHelper.selectString(d,
-                    "SELECT MAX(timestamp) FROM " +
-                            "(SELECT MAX(timestamp) as timestamp FROM practice_log UNION " +
-                            "SELECT MAX(timestamp) as timestamp FROM charset_goals UNION " +
-                            "SELECT MAX(timestamp) as timestamp FROM kanji_stories UNION " +
-                            "SELECT MAX(timestamp) as timestamp FROM character_set_edits)"  );
-        } finally {
-            d.close();
-        }
+    public String maxTimestamp(){
+        return DataHelperFactory.get().selectString(
+                "SELECT MAX(timestamp) FROM " +
+                        "(SELECT MAX(timestamp) as timestamp FROM practice_log UNION " +
+                        "SELECT MAX(timestamp) as timestamp FROM charset_goals UNION " +
+                        "SELECT MAX(timestamp) as timestamp FROM kanji_stories UNION " +
+                        "SELECT MAX(timestamp) as timestamp FROM character_set_edits)"  );
     }
 
-    public void debugPrintLog(){
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
-        SQLiteDatabase sqlite = db.getReadableDatabase();
-
-        try {
-            for(Map<String, String> r:DataHelper.selectRecords(sqlite, "SELECT * FROM practice_log")){
-                Log.i("nakama-sync", new JSONObject(r).toString());
-            }
-        } finally {
-            sqlite.close();
+    public void debugPrintLog() {
+        for (Map<String, String> r : DataHelperFactory.get().selectRecords("SELECT * FROM practice_log")) {
+            Log.i("nakama-sync", new JSONObject(r).toString());
         }
     }
 
@@ -212,7 +201,7 @@ public class PracticeLogSync {
                             values.get("device_timestamp"), values.get("drawing")};
                     //Log.i("nakama-sync", "Inserting remote log: " + Util.join(", ", insert));
                     practiceLogCount++;
-                    DataHelper.selectRecord(sqlite, "INSERT INTO practice_log(id, install_id, charset, character, score, timestamp, drawing) VALUES(?, ?, ?, ?, ?, ?, ?)", (Object[])insert);
+                    DataHelperFactory.get().selectRecord("INSERT INTO practice_log(id, install_id, charset, character, score, timestamp, drawing) VALUES(?, ?, ?, ?, ?, ?, ?)", (Object[])insert);
                 } catch (SQLiteConstraintException t) {
                     Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
                 }
@@ -258,10 +247,10 @@ public class PracticeLogSync {
                 Log.i("nakama", "Inserting charset goal from record: " + Util.join(values, "=>", ", "));
 
                 try {
-                    DataHelper.selectRecord(sqlite, "UPDATE OR IGNORE charset_goals SET goal=?, goal_start=? WHERE charset = ? AND timestamp < ?",
+                    DataHelperFactory.get().selectRecord("UPDATE OR IGNORE charset_goals SET goal=?, goal_start=? WHERE charset = ? AND timestamp < ?",
                         (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("device_timestamp")}));
 
-                    DataHelper.selectRecord(sqlite, "INSERT OR IGNORE INTO charset_goals(goal, goal_start, charset, timestamp) VALUES(?, ?, ?, ?)",
+                    DataHelperFactory.get().selectRecord("INSERT OR IGNORE INTO charset_goals(goal, goal_start, charset, timestamp) VALUES(?, ?, ?, ?)",
                         (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("device_timestamp")}));
                     charsetGoalsCount++;
 
@@ -307,7 +296,7 @@ public class PracticeLogSync {
             inStream.close();
 
             SharedPreferences.Editor ed = prefs.edit();
-            ed.putString(DEVICE_SYNC_PREFS_KEY, maxTimestamp(db));
+            ed.putString(DEVICE_SYNC_PREFS_KEY, maxTimestamp());
             ed.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
             ed.apply();
 

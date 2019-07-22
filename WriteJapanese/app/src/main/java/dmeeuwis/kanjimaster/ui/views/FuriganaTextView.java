@@ -10,10 +10,10 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
-import dmeeuwis.kanjimaster.logic.core.KanjiElement;
-import dmeeuwis.kanjimaster.logic.core.KanjiElement.Furigana;
-import dmeeuwis.kanjimaster.logic.core.Translation;
-import dmeeuwis.kanjimaster.logic.core.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.core.KanjiElement;
+import dmeeuwis.kanjimaster.core.KanjiElement.Furigana;
+import dmeeuwis.kanjimaster.core.Translation;
+import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
 
 public class FuriganaTextView extends View {

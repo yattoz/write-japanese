@@ -13,8 +13,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import dmeeuwis.kanjimaster.logic.core.Kanji;
-import dmeeuwis.kanjimaster.logic.core.KanjiRadicalFinder;
+import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.core.KanjiRadicalFinder;
+import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 
 public class LoadRadicalsFile extends AsyncTask<Void, Void, List<Kanji>> {
     final Activity parent;

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.logic.data.Rect;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
+import dmeeuwis.kanjimaster.core.util.Util;
 
 public class CurveDrawing implements Drawing {
 

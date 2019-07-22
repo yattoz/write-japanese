@@ -24,7 +24,7 @@ public class CharacterSetTest {
 
     static class TestCharacterProgressDataHelper extends CharacterProgressDataHelper {
         public TestCharacterProgressDataHelper() {
-            super(null, null);
+            super(null);
         }
 
         @Override public ProgressionSettings getProgressionSettings(){

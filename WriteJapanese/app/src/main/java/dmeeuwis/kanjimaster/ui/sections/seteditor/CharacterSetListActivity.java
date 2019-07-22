@@ -25,7 +25,7 @@ import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.ui.sections.primary.LockCheckerHolder;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
-import dmeeuwis.kanjimaster.logic.data.DictionarySet;
+import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
 

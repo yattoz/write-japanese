@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
 
 public class CustomCharacterSetDataHelper {
@@ -65,7 +66,7 @@ public class CustomCharacterSetDataHelper {
         Map<String, CharacterStudySet> sets = new LinkedHashMap<>();
         try {
             List<Map<String, String>> records =
-                DataHelper.selectRecords(db.getReadableDatabase(),
+                DataHelperFactory.get().selectRecords(
                         "SELECT charset_id, name, description, characters, deleted FROM character_set_edits ORDER BY timestamp");
 
             for(Map<String, String> r: records){
@@ -73,7 +74,7 @@ public class CustomCharacterSetDataHelper {
                     sets.remove(r.get("charset_id"));
                 } else {
                     CharacterStudySet s = new CharacterStudySet(r.get("name"), r.get("name"), r.get("description"),
-                            r.get("charset_id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, Iid.get(context), false, context);
+                            r.get("charset_id"), CharacterStudySet.LockLevel.UNLOCKED, r.get("characters"), r.get("characters"), null, Iid.get(context), false);
                     sets.put(r.get("charset_id"), s);
                 }
             }

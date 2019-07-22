@@ -1,10 +1,7 @@
 package dmeeuwis.kanjimaster.logic.drawing;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.util.JsonWriter;
 import android.util.Log;
-import android.util.TypedValue;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -14,14 +11,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import dmeeuwis.kanjimaster.core.util.Util;
 import dmeeuwis.kanjimaster.logic.data.Point;
 import dmeeuwis.kanjimaster.logic.data.Rect;
 import dmeeuwis.kanjimaster.logic.drawing.PathCalculator.Intersection;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
 
 public class PointDrawing implements Iterable<Stroke>, Drawing {
-	static final private float MIN_POINT_DISTANCE_DP = 25;
-	static final private float MIN_POINT_DISTANCE_FOR_DIRECTION_DP = 10;
 	private final static double DIRECTION_LIMIT = Math.PI / 8;
 
 	private final List<Stroke> strokes;
@@ -34,11 +29,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 		return new PointDrawing(scaleX, scaleY, strokes);
 	}
 
-	public static PointDrawing fromDetailedPoints(int scaleX, int scaleY, List<List<Point>> points, Context context){
-		Resources r = context.getResources();
-		float MIN_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_POINT_DISTANCE_DP, r.getDisplayMetrics());
-		float MIN_POINT_DISTANCE_FOR_DIRECTION_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, MIN_POINT_DISTANCE_FOR_DIRECTION_DP, r.getDisplayMetrics());
-
+	public static PointDrawing fromDetailedPoints(int scaleX, int scaleY, List<List<Point>> points){
 		List<Stroke> gradeLines = new ArrayList<>(points.size());
 		for(List<Point> line: points){
 			Point lastGrade = line.get(0);
@@ -51,9 +42,9 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 
 				final double gradeDistance = PathCalculator.distance(lastGrade.x, lastGrade.y, p1.x, p1.y);
 				final double direction = PathCalculator.angle(p0.x, p0.y, p1.x, p1.y);
-				final boolean directionInclude = gradeDistance >= MIN_POINT_DISTANCE_FOR_DIRECTION_PX && Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
-				final boolean gradeDistanceInclude = gradeDistance >= MIN_POINT_DISTANCE_PX;
-				final boolean lastPointBonusDistanceInclude = (i == (line.size()-1)) && gradeDistance >= (MIN_POINT_DISTANCE_PX / 2);
+				final boolean directionInclude = gradeDistance >= Constants.MIN_POINT_DISTANCE_FOR_DIRECTION_PX && Math.abs(lastDirection - direction) >= DIRECTION_LIMIT;
+				final boolean gradeDistanceInclude = gradeDistance >= Constants.MIN_POINT_DISTANCE_PX;
+				final boolean lastPointBonusDistanceInclude = (i == (line.size()-1)) && gradeDistance >= (Constants.MIN_POINT_DISTANCE_PX / 2);
 
 				if (!lastGrade.equals(p1) && (directionInclude || gradeDistanceInclude || lastPointBonusDistanceInclude)) {
 					gradeLine.add(p1);

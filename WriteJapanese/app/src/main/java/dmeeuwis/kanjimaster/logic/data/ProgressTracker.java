@@ -1,6 +1,5 @@
 package dmeeuwis.kanjimaster.logic.data;
 
-import android.content.Context;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.JsonWriter;
@@ -23,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.kanjimaster.logic.core.util.Util;
+import dmeeuwis.kanjimaster.core.util.Util;
 
 /**
  * Scores:
@@ -472,7 +471,7 @@ public class ProgressTracker {
 		return passed.size() == allowedChars.size();
 	}
 	
-	public void progressReset(Context ctx, String setName){
+	public void progressReset(String setName){
 		if(!this.setId.equals(setName)) {
 			return;
 		}

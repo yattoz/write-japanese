@@ -1,6 +1,8 @@
 package dmeeuwis.kanjimaster.logic.data;
 import android.content.Context;
 
+import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
+
 public class StoryDataHelper {
     private final Context context;
 
@@ -29,7 +31,7 @@ public class StoryDataHelper {
     public String getStory(char character){
         WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
         try {
-            return DataHelper.selectStringOrNull(db.getReadableDatabase(), "SELECT story FROM kanji_stories WHERE character = ?", Character.toString(character));
+            return DataHelperFactory.get().selectStringOrNull("SELECT story FROM kanji_stories WHERE character = ?", Character.toString(character));
         } finally {
             db.close();
         }
