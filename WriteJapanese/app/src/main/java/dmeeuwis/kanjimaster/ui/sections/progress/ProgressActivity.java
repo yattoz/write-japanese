@@ -93,7 +93,7 @@ public class ProgressActivity extends AppCompatActivity implements OnItemClickLi
         if(lc != null){ lc.dispose(); }
         lc = new LockCheckerInAppBillingService(this);
 
-        charSet = CharacterSets.fromName(this, callingPath, lc);
+        charSet = CharacterSets.fromName(callingPath, lc);
         charSet.load(CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS);
         scores = charSet.getProgress();
         characterList = charSet.charactersAsString();

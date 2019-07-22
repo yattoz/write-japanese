@@ -5,7 +5,6 @@ import android.util.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
@@ -41,14 +40,14 @@ public class ProgressTrackerN5Test {
 
     @Test
     public void testNullBeforeCallingNext() {
-        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN5(null);
         s.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
         assertEquals("Null until .nextCharacter is called", null, s.currentCharacter());
     }
 
     @Test
     public void testResetLast() {
-        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN5(null);
         s.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
         s.nextCharacter();
 
@@ -291,7 +290,7 @@ public class ProgressTrackerN5Test {
 
     @Test
     public void testProgression(){
-        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN5(null);
         s.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS);
 
         CharacterProgressDataHelper.ProgressionSettings prog =
@@ -362,7 +361,7 @@ public class ProgressTrackerN5Test {
 
     private void iterateOverAllTestImpl(boolean skipSRSOnFirstCorrect, ProgressTracker.Progress expected){
         ProgressTracker t = simpleTestTracker(2, 1, skipSRSOnFirstCorrect);
-        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN5(null);
         s.load(t);
 
         s.nextCharacter();
@@ -381,7 +380,7 @@ public class ProgressTrackerN5Test {
     public void showReviewAfterHISTORYEntries(){
         int characterCooldown = 4;
         ProgressTracker t = simpleTestTracker(2, 1, true);
-        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN5(null);
         s.load(t);
 
         s.nextCharacter();
@@ -415,7 +414,7 @@ public class ProgressTrackerN5Test {
         ProgressTracker t = new ProgressTracker(
                 charSet, 2, 1, true, false, false, "jlpt5");
         t.clearGlobalState();
-        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN5(null);
         s.setShuffle(true);
         s.load(t);
 
@@ -451,7 +450,7 @@ public class ProgressTrackerN5Test {
 
     @Test
     public void testGettingIntoPassedStateAfterSRS() {
-        CharacterStudySet s = CharacterSets.jlptN5(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN5(null);
         ProgressTracker t = new ProgressTracker(
                 charSet, 2, 1, true, false, false,"jlpt5");
         t.clearGlobalState();

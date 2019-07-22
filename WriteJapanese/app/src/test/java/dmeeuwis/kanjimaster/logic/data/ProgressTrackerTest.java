@@ -3,7 +3,6 @@ package dmeeuwis.kanjimaster.logic.data;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
@@ -68,7 +67,7 @@ public class ProgressTrackerTest {
 
     @Test
     public void testSingleChar(){
-        CharacterStudySet s = CharacterSets.jlptN1(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN1(null);
         ProgressTracker p = new ProgressTracker(
                 CHARS_SET, 2, 2, true, false, false,"test-set");
         s.load(p);
@@ -170,7 +169,7 @@ public class ProgressTrackerTest {
     @Test
     public void testCompletedSRSSet(){
 
-        CharacterStudySet s = CharacterSets.jlptN1(null, RuntimeEnvironment.application);
+        CharacterStudySet s = CharacterSets.jlptN1(null);
         ProgressTracker p1 = new ProgressTracker(
                 CHARS_SET_4, 2, 2, true, false, false, "test-1");
         s.load(p1);

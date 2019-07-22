@@ -93,7 +93,7 @@ public class TeachingStoryFragment extends Fragment {
         this.character = parent.getCharacter().charAt(0);
         this.kanji = parent.getKanji();
 
-        this.iid = Iid.get(parent.getApplicationContext());
+        this.iid = Iid.get();
         //Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
 
         StoryDataHelper db = new StoryDataHelper();

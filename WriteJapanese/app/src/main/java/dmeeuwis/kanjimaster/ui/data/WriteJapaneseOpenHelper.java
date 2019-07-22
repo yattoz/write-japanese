@@ -30,7 +30,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 	public WriteJapaneseOpenHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
-        this.iid = Iid.get(context).toString();
+        this.iid = Iid.get().toString();
     }
 
 	@Override
@@ -173,7 +173,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             if (value != null) {
                 Log.d("nakama", "Importing existing SharedPreference story_sharing into db as " + value);
                 sqlite.execSQL("INSERT INTO settings_log (id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
-                        new Object[]{UUID.randomUUID().toString(), Iid.get(context), "story_sharing", value});
+                        new Object[]{UUID.randomUUID().toString(), Iid.get(), "story_sharing", value});
             }
         } catch (SQLiteException e) {
             if(e.getMessage().contains("already exists")) {
@@ -213,7 +213,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
 
         try {
             sqlite.execSQL("INSERT INTO practice_log (id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)",
-                    new Object[]{UUID.randomUUID().toString(), Iid.get(context), "S", "all", 0 } );
+                    new Object[]{UUID.randomUUID().toString(), Iid.get(), "S", "all", 0 } );
         } catch (SQLiteException e) {
             UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception writing srs tombstone", e, context);
         }

@@ -112,7 +112,7 @@ public class PracticeLogSync {
 
     public Map<String, Integer> sync() throws IOException {
         long startTime = System.currentTimeMillis();
-        String iid = Iid.get(extDeps.context).toString();
+        String iid = Iid.get().toString();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(extDeps.context);
         String lastSyncServerTimestamp1 = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
@@ -275,7 +275,7 @@ public class PracticeLogSync {
                     Log.i("nakama", "Inserting character set edit from record: " + Util.join(values, "=>", ", "));
 
                     try {
-                        CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper(context);
+                        CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper();
                         h.recordRemoteEdit(values.get("id"), values.get("charset_id"), values.get("name"), values.get("description"),
                                 values.get("characters"), values.get("install_id"), values.get("timestamp"), Boolean.parseBoolean(values.get("deleted")));
                         charsetEditCount++;

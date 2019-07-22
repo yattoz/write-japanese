@@ -65,7 +65,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
 
             jw.beginObject();
             jw.name("account").value(mEmail);
-            jw.name("iid").value(Iid.get(mActivity.getApplicationContext()).toString());
+            jw.name("iid").value(Iid.get().toString());
             jw.name("authcode").value(token);
             jw.name("device").value(android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT);
             jw.endObject();

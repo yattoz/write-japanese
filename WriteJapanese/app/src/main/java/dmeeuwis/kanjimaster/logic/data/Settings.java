@@ -166,7 +166,7 @@ public class Settings {
     public static void setSetting(String key, String value){
         DataHelperFactory.get().execSQL(
                 "INSERT INTO settings_log(id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
-                new String[] { UUID.randomUUID().toString(), Iid.get(appContext).toString(), key, value });
+                new String[] { UUID.randomUUID().toString(), Iid.get().toString(), key, value });
     }
 
     public static void deleteSetting(String key){

@@ -157,7 +157,7 @@ public class CharacterSetListActivity extends AppCompatActivity implements LockC
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        List<CharacterStudySet> sets = new CustomCharacterSetDataHelper(this).getSets();
+        List<CharacterStudySet> sets = new CustomCharacterSetDataHelper().getSets();
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(sets));
     }
 
@@ -236,7 +236,7 @@ public class CharacterSetListActivity extends AppCompatActivity implements LockC
                 public void onClick(View v) {
                     int position = viewHolder.getAdapterPosition();
                     final CharacterStudySet doomed = sets.get(position);
-                    new CustomCharacterSetDataHelper(getApplicationContext()).delete(doomed);
+                    new CustomCharacterSetDataHelper().delete(doomed);
                     sets.remove(position);
                     notifyDataSetChanged();
 
@@ -262,7 +262,7 @@ public class CharacterSetListActivity extends AppCompatActivity implements LockC
                             .setAction("Undo", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper(getApplication());
+                                    CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper();
                                     h.unDelete(doomed);
                                     sets.clear();
                                     sets.addAll(h.getSets());

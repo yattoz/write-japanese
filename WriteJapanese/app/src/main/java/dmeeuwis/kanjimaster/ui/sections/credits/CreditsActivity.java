@@ -46,7 +46,7 @@ public class CreditsActivity extends AppCompatActivity {
 				DIAGRAMS_THANKS +
 				String.format("<div>Version: %s %d, code: %s</div>",
 						BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
-						Iid.get(getApplicationContext()).toString())));
+						Iid.get().toString())));
 	}
 	
 	@Override

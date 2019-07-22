@@ -78,9 +78,9 @@ public class CharacterSetDetailFragment extends Fragment {
             // for small devices, this fragment gets loaded into a otherwise-empty activity, and "create"
             // is passed as id. On large layouts, this fragment is beside the list, and setCharacterStudySet is called instead
             if(name.equals("create")){
-                studySet = CharacterSets.createCustom(getActivity().getApplicationContext());
+                studySet = CharacterSets.createCustom();
             } else {
-                studySet = CharacterSets.fromName(getActivity(), name, new LockCheckerInAppBillingService(getActivity()));
+                studySet = CharacterSets.fromName(name, new LockCheckerInAppBillingService(getActivity()));
             }
         }
     }
@@ -109,7 +109,7 @@ public class CharacterSetDetailFragment extends Fragment {
             return false;
         }
 
-        new CustomCharacterSetDataHelper(getActivity()).recordEdit(studySet.pathPrefix, editName, editDesc, characters);
+        new CustomCharacterSetDataHelper().recordEdit(studySet.pathPrefix, editName, editDesc, characters);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         SharedPreferences.Editor ed = prefs.edit();
@@ -133,8 +133,8 @@ public class CharacterSetDetailFragment extends Fragment {
             grid = rootView.findViewById(R.id.charset_detail_grid);
             grid.setAdapter(new CharacterGridAdapter(
                     CharacterSets.standardSets(
-                            new LockCheckerInAppBillingService(getActivity()),
-                            getActivity().getApplicationContext())));
+                            new LockCheckerInAppBillingService(getActivity())
+                    )));
         }
 
         return rootView;

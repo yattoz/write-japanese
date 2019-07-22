@@ -517,7 +517,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         // record only once in db, not once per set.
-        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(Iid.get(getApplicationContext()));
+        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(Iid.get());
         String rowId = dbHelper.recordPractice(setId, currChar.toString(), drawn, pass ? 100 : -100);
 
         return new CharacterStudySet.GradingResult(rowId, s);
@@ -529,24 +529,24 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         this.customSets = new ArrayList<>();
         this.characterSets.clear();
-        this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker, getApplicationContext()));
-        this.characterSets.put("katakana", CharacterSets.katakana(lockChecker, getApplicationContext()));
+        this.characterSets.put("hiragana", CharacterSets.hiragana(lockChecker));
+        this.characterSets.put("katakana", CharacterSets.katakana(lockChecker));
 
-        this.characterSets.put("j1", CharacterSets.joyouG1(lockChecker, getApplicationContext()));
-        this.characterSets.put("j2", CharacterSets.joyouG2(lockChecker, getApplicationContext()));
-        this.characterSets.put("j3", CharacterSets.joyouG3(lockChecker, getApplicationContext()));
-        this.characterSets.put("j4", CharacterSets.joyouG4(lockChecker, getApplicationContext()));
-        this.characterSets.put("j5", CharacterSets.joyouG5(lockChecker, getApplicationContext()));
-        this.characterSets.put("j6", CharacterSets.joyouG6(lockChecker, getApplicationContext()));
-        this.characterSets.put("jhs", CharacterSets.joyouHS(lockChecker, getApplicationContext()));
+        this.characterSets.put("j1", CharacterSets.joyouG1(lockChecker));
+        this.characterSets.put("j2", CharacterSets.joyouG2(lockChecker));
+        this.characterSets.put("j3", CharacterSets.joyouG3(lockChecker));
+        this.characterSets.put("j4", CharacterSets.joyouG4(lockChecker));
+        this.characterSets.put("j5", CharacterSets.joyouG5(lockChecker));
+        this.characterSets.put("j6", CharacterSets.joyouG6(lockChecker));
+        this.characterSets.put("jhs", CharacterSets.joyouHS(lockChecker));
 
-        this.characterSets.put("jlpt5", CharacterSets.jlptN5(lockChecker, getApplicationContext()));
-        this.characterSets.put("jlpt4", CharacterSets.jlptN4(lockChecker, getApplicationContext()));
-        this.characterSets.put("jlpt3", CharacterSets.jlptN3(lockChecker, getApplicationContext()));
-        this.characterSets.put("jlpt2", CharacterSets.jlptN2(lockChecker, getApplicationContext()));
-        this.characterSets.put("jlpt1", CharacterSets.jlptN1(lockChecker, getApplicationContext()));
+        this.characterSets.put("jlpt5", CharacterSets.jlptN5(lockChecker));
+        this.characterSets.put("jlpt4", CharacterSets.jlptN4(lockChecker));
+        this.characterSets.put("jlpt3", CharacterSets.jlptN3(lockChecker));
+        this.characterSets.put("jlpt2", CharacterSets.jlptN2(lockChecker));
+        this.characterSets.put("jlpt1", CharacterSets.jlptN1(lockChecker));
 
-        CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper(this);
+        CustomCharacterSetDataHelper helper = new CustomCharacterSetDataHelper();
         for(CharacterStudySet c: helper.getSets()){
             this.customSets.add(c);
             this.characterSets.put(c.pathPrefix, c);
@@ -568,7 +568,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         for(CharacterStudySet c: this.characterSets.values()){
             trackers.add(c.load(loadType));
         }
-        CharacterProgressDataHelper ch = new CharacterProgressDataHelper(Iid.get(getApplicationContext()));
+        CharacterProgressDataHelper ch = new CharacterProgressDataHelper(Iid.get());
         ch.loadProgressTrackerFromDB(trackers, progressCacheFlag);
     }
 
@@ -853,7 +853,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         jw.beginObject();
 
         setting(jw, "version", BuildConfig.VERSION_NAME + " " + BuildConfig.VERSION_CODE);
-        setting(jw, "iid", Iid.get(ctx));
+        setting(jw, "iid", Iid.get());
         setting(jw, "lockLevel", lockChecker.getPurchaseStatus().toString());
         setting(jw, "device", Build.MODEL);
         setting(jw, "localDate", LocalDate.now().toString());
@@ -1047,7 +1047,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
      * for these sets.
      */
     private void resumeCharacterSets() {
-        List<CharacterStudySet> sets = new CustomCharacterSetDataHelper(getApplicationContext()).getSets();
+        List<CharacterStudySet> sets = new CustomCharacterSetDataHelper().getSets();
         // load any newly created sets
         for (CharacterStudySet s : sets) {
             if (!characterSets.containsKey(s.pathPrefix)) {
@@ -1125,7 +1125,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         for(CharacterStudySet st: characterSets.values()) {
             pts.add(st.getProgressTracker());
         }
-        new CharacterProgressDataHelper(Iid.get(this)).resumeProgressTrackerFromDB(pts);
+        new CharacterProgressDataHelper(Iid.get()).resumeProgressTrackerFromDB(pts);
     }
 
 
@@ -1214,7 +1214,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         saveCurrentCharacterSet();
         instructionCard.saveCurrentClueType(getApplicationContext());
 
-        CharacterProgressDataHelper d = new CharacterProgressDataHelper(Iid.get(this.getApplicationContext()));
+        CharacterProgressDataHelper d = new CharacterProgressDataHelper(Iid.get());
         for(CharacterStudySet c: this.characterSets.values()){
             try {
                 ProgressTracker.ProgressState serialize = c.getProgressTracker().serializeOut();
@@ -1432,7 +1432,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
         } else if(item.getTitle().equals("Recalculate Progress")) {
-            new CharacterProgressDataHelper(Iid.get(getApplicationContext())).clearPracticeRecord();
+            new CharacterProgressDataHelper(Iid.get()).clearPracticeRecord();
             initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
         }
 

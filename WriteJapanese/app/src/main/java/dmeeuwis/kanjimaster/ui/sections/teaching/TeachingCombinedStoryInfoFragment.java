@@ -218,7 +218,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
     private UUID getIid(){
         if(this.iid == null) {
-            this.iid = Iid.get(getActivity().getApplicationContext());
+            this.iid = Iid.get();
         }
         return this.iid;
 

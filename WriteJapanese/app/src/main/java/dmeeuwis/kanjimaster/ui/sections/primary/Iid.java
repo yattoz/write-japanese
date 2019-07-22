@@ -11,11 +11,17 @@ public class Iid {
 
     private static UUID cachedIid;
 
+    private static Context app;
+
+    public static void initialize(Context ctx){
+        app = ctx;
+    }
+
     /**
      * Returns an install id, creating it and putting it into SharedPreferences if necessary.
      * Not thread-safe, call from ui thread.
      */
-    public static UUID get(Context app){
+    public static UUID get(){
         if(cachedIid != null){
             return cachedIid;
         }

@@ -81,9 +81,9 @@ public class ReminderManager extends BroadcastReceiver {
 
 
             // load the data for all notifications
-            CustomCharacterSetDataHelper customHelper = new CustomCharacterSetDataHelper(context);
+            CustomCharacterSetDataHelper customHelper = new CustomCharacterSetDataHelper();
             List<CharacterStudySet> customSets = customHelper.getSets();
-            List<CharacterStudySet> standardSets = Arrays.asList(CharacterSets.standardSets(null, context));
+            List<CharacterStudySet> standardSets = Arrays.asList(CharacterSets.standardSets(null));
 
             List<CharacterStudySet> allSets = new ArrayList<>();
             allSets.addAll(customSets);
@@ -93,7 +93,7 @@ public class ReminderManager extends BroadcastReceiver {
             for (CharacterStudySet set : allSets) {
                 trackers.add(set.load(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS));
             }
-            new CharacterProgressDataHelper(Iid.get(context))
+            new CharacterProgressDataHelper(Iid.get())
                     .loadProgressTrackerFromDB(trackers, CharacterProgressDataHelper.ProgressCacheFlag.USE_CACHE);
 
             Log.i("nakama", "Loaded Progress for reminder");
