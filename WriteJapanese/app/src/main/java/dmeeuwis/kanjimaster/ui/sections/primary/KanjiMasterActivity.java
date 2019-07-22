@@ -336,7 +336,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             }
         });
 
-        db = new StoryDataHelper(getApplicationContext());
+        db = new StoryDataHelper();
         remindStoryButton = findViewById(R.id.remindStoryButton);
         remindStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -860,7 +860,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         setting(jw, "localDateTime", LocalDateTime.now().toString());
         setting(jw, "installTime", Settings.getInstallDate());
 
-        CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(Iid.get(getApplicationContext()));
         CharacterProgressDataHelper.ProgressionSettings p = Settings.getProgressionSettings();
 
         setting(jw, "introIncorrect", p.introIncorrect);

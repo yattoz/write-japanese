@@ -96,7 +96,7 @@ public class TeachingStoryFragment extends Fragment {
         this.iid = Iid.get(parent.getApplicationContext());
         //Log.i("nakama", "TeachingStoryFragment: init iid to " + this.iid);
 
-        StoryDataHelper db = new StoryDataHelper(parent);
+        StoryDataHelper db = new StoryDataHelper();
         String s = db.getStory(this.character);
         if(s == null){ s = ""; }
 
@@ -217,7 +217,7 @@ public class TeachingStoryFragment extends Fragment {
 	
 	public void saveStory(Activity act) {
 		if (storyEditor != null && storyEditor.getText() != null && !storyEditor.getText().toString().trim().equals("")){
-            StoryDataHelper db = new StoryDataHelper(act);
+            StoryDataHelper db = new StoryDataHelper();
             String story = storyEditor.getText().toString();
 			db.recordStory(this.character, story);
 

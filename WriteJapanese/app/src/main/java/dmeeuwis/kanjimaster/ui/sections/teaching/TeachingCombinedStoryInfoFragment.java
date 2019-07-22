@@ -281,7 +281,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
 
     public void saveStory(Activity act) {
         if (storyEditor != null && storyEditor.getText() != null && !storyEditor.getText().toString().trim().equals("")){
-            StoryDataHelper db = new StoryDataHelper(act);
+            StoryDataHelper db = new StoryDataHelper();
             String story = storyEditor.getText().toString();
             db.recordStory(this.character, story);
 

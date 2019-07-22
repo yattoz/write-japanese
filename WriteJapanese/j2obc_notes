@@ -1,0 +1,21 @@
+Notes for blog post:
+
+Many data classes had Context, due to Database or SharedPreferences access
+I refactored some of them to have static initialize methods, then passed the context in then
+Then I extracted the Class out to an Interface, and passed the Context to the interface
+I setup a series of initialize calls in Application onCreate, instead of in Activity.onCreate
+Android documentation seems to prefer Activity of using Application, but when porting code to IOS, Application comesin handy.
+
+General workflow:
+
+	Run j2obc
+	Look at class of first error
+	Remove all android classes (esp. Context)
+	Repeat
+
+Commonly used generic android classes:
+	JsonReader
+	JsonWriter
+	SharedPreferences
+	Color
+	Paint
