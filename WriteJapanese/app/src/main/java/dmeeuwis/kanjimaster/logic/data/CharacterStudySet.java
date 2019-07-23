@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import dmeeuwis.kanjimaster.ui.billing.LockChecker;
+import dmeeuwis.kanjimaster.logic.LockChecker;
 import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
 import dmeeuwis.kanjimaster.core.util.Util;
 

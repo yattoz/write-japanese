@@ -28,7 +28,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,6 +42,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.amazon.device.iap.PurchasingService;
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;

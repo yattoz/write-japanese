@@ -9,7 +9,6 @@ import org.threeten.bp.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity;
 import dmeeuwis.kanjimaster.ui.sections.primary.ProgressSettingsDialog;

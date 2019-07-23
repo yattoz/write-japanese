@@ -7,8 +7,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.util.JsonWriter;
 import android.util.Log;
+
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import org.threeten.bp.LocalDateTime;
 

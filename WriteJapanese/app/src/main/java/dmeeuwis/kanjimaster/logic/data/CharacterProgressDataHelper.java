@@ -1,13 +1,11 @@
 package dmeeuwis.kanjimaster.logic.data;
 
-import android.util.JsonWriter;
 import android.util.Log;
 import android.util.Pair;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;

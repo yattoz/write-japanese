@@ -6,10 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
-import android.util.JsonReader;
-import android.util.JsonToken;
-import android.util.JsonWriter;
 import android.util.Log;
+
+import dmeeuwis.kanjimaster.logic.util.JsonReader;
+import dmeeuwis.kanjimaster.logic.util.JsonToken;
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import org.json.JSONObject;
 
@@ -32,7 +33,6 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.ui.billing.*;
 import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.core.util.Util;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 
 public class PracticeLogSync {

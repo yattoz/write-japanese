@@ -1,7 +1,8 @@
 package dmeeuwis.kanjimaster.logic.drawing;
 
-import android.util.JsonWriter;
 import android.util.Log;
+
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import java.io.IOException;
 import java.io.StringWriter;

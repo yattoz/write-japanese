@@ -19,3 +19,8 @@ Commonly used generic android classes:
 	SharedPreferences
 	Color
 	Paint
+
+
+
+Wrap all settings / preferences behind a Settings class
+	subclass to Android / IOS

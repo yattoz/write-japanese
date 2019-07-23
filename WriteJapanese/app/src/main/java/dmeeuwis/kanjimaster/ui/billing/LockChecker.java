@@ -12,25 +12,24 @@ import java.security.NoSuchAlgorithmException;
 
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 
-public abstract class LockChecker {
-	public static final String GOOGLE_PLAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu/V3i9u59KOUHFYLUch6MDhSIqrRmj44iQNf5zIwlldj+3oL4QNeB0xI44XgKW/D4Uomg/dma0zQqfWMqen1BjAdt9bXyoSaGbHy8sPPMGrZqbAagz59ms2PzyP+o/Y+FEr2/OAsUxBG9CMUCo1cM4YktNDNQ5wRUXTURLmW4b9bhxksX/PFEZFmGA8wH5eHAJFTlnOUmVqsCePVgh6mKBxublfi9xwrQlHYReVbX05whRb8UI8UCZpKQasYbeskwbYGw61F0Z6K3TNAlip+20Ad18rH2VoBHxM5RXnItx+GBPE3f/Uj3QUsshD09IuqSpapl344f9pNUS+yiq/XqwIDAQAB";
-	public static final String LICENSE_SKU = "write_japanese_unlock"; // "android.test.purchased";
-	public static final int REQUEST_CODE = 837;
+public abstract class LockChecker implements dmeeuwis.kanjimaster.logic.LockChecker {
+	static final String GOOGLE_PLAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu/V3i9u59KOUHFYLUch6MDhSIqrRmj44iQNf5zIwlldj+3oL4QNeB0xI44XgKW/D4Uomg/dma0zQqfWMqen1BjAdt9bXyoSaGbHy8sPPMGrZqbAagz59ms2PzyP+o/Y+FEr2/OAsUxBG9CMUCo1cM4YktNDNQ5wRUXTURLmW4b9bhxksX/PFEZFmGA8wH5eHAJFTlnOUmVqsCePVgh6mKBxublfi9xwrQlHYReVbX05whRb8UI8UCZpKQasYbeskwbYGw61F0Z6K3TNAlip+20Ad18rH2VoBHxM5RXnItx+GBPE3f/Uj3QUsshD09IuqSpapl344f9pNUS+yiq/XqwIDAQAB";
+	static final String LICENSE_SKU = "write_japanese_unlock"; // "android.test.purchased";
+	static final int REQUEST_CODE = 837;
 
 	private static final String PREFS_KEY = "unlockKey";
 
-	public final Activity parentActivity;
+	final Activity parentActivity;
 
-	abstract public void runPurchase();
-	abstract public void startConsume();
-	abstract public boolean handleActivityResult(int requestCode, int resultCode, Intent data);
+    abstract public boolean handleActivityResult(int requestCode, int resultCode, Intent data);
 	abstract public void dispose();
 
 	public LockChecker(Activity parent){
 		this.parentActivity = parent;
 	}
 
-	public void coreLock(){
+	@Override
+    public void coreLock(){
 		Log.d("nakama", "LockChecker: coreLock");
 
 		SharedPreferences prefs = getSharedPrefs();
@@ -39,7 +38,8 @@ public abstract class LockChecker {
 		ed.apply();
 	}
 
-	public void coreUnlock(){
+	@Override
+    public void coreUnlock(){
 		Log.d("nakama", "LockChecker: coreUnlock");
 
 		SharedPreferences prefs = getSharedPrefs();
@@ -52,7 +52,8 @@ public abstract class LockChecker {
 		return PreferenceManager.getDefaultSharedPreferences(parentActivity.getApplicationContext());
 	}
 
-	public CharacterStudySet.LockLevel getPurchaseStatus(){
+	@Override
+    public CharacterStudySet.LockLevel getPurchaseStatus(){
 		SharedPreferences prefs = getSharedPrefs();
 		return getPurchaseStatus(prefs);
 	}

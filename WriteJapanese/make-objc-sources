@@ -1,1 +1,1 @@
-~/j2objc-2.4/j2objc -sourcepath shared-sources `find -L ./shared-sources/ |grep .java`
+~/j2objc-2.4/j2objc -sourcepath "shared-sources;../../threetenbp/src/main/java" `find -L ./shared-sources/ |grep .java` `find -L ../../threetenbp/src/main/java/ |grep '\.java'`

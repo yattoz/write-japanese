@@ -4,8 +4,7 @@ import java.util.UUID;
 
 import dmeeuwis.kanjimaster.core.Kana;
 import dmeeuwis.kanjimaster.core.Kanji;
-import dmeeuwis.kanjimaster.ui.billing.LockChecker;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
+import dmeeuwis.kanjimaster.logic.LockChecker;
 import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 
 public class CharacterSets  {

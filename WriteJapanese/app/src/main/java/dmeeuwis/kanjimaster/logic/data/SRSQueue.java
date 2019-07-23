@@ -1,6 +1,7 @@
 package dmeeuwis.kanjimaster.logic.data;
 
-import android.util.*;
+import dmeeuwis.kanjimaster.logic.util.JsonReader;
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
