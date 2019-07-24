@@ -1,6 +1,8 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.util.Log;
+
+import dmeeuwis.kanjimaster.logic.data.LogWrap;
 
 public class LogWrapAndroid implements LogWrap {
     private final String tag;

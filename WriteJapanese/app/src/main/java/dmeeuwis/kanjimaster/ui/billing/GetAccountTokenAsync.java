@@ -15,8 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import dmeeuwis.kanjimaster.logic.data.HostFinder;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.IidFactory;
 
 public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
     final Activity mActivity;

@@ -15,7 +15,7 @@ import android.widget.Toast;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.ui.sections.primary.LockCheckerHolder;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
 

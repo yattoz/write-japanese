@@ -11,7 +11,7 @@ import android.widget.*;
 import org.json.*;
 
 import dmeeuwis.kanjimaster.*;
-import dmeeuwis.kanjimaster.logic.data.*;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 

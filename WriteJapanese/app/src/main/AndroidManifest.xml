@@ -18,7 +18,7 @@
         tools:replace="android:icon"
         tools:ignore="GoogleAppIndexingWarning">
         <provider
-            android:name="dmeeuwis.kanjimaster.logic.data.StubContentProvider"
+            android:name="dmeeuwis.kanjimaster.ui.data.StubContentProvider"
             android:authorities="dmeeuwis.com"
             android:exported="false"
             android:label="WriteJapanese"
@@ -99,7 +99,7 @@
             android:value="598.0dip" />
 
         <service
-            android:name="dmeeuwis.kanjimaster.logic.data.SyncService"
+            android:name="dmeeuwis.kanjimaster.ui.data.SyncService"
             android:exported="true"
             android:process=":sync">
             <intent-filter>

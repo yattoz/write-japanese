@@ -17,7 +17,7 @@ import agency.tango.materialintroscreen.MaterialIntroActivity;
 import agency.tango.materialintroscreen.SlideFragment;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.Settings;
-import dmeeuwis.kanjimaster.logic.data.SyncRegistration;
+import dmeeuwis.kanjimaster.ui.data.SyncRegistration;
 
 public class IntroActivity extends MaterialIntroActivity implements View.OnClickListener {
 

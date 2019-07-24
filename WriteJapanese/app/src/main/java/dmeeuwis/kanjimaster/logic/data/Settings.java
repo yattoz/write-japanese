@@ -9,7 +9,8 @@ import org.threeten.bp.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
+import dmeeuwis.kanjimaster.ui.data.SyncRegistration;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity;
 import dmeeuwis.kanjimaster.ui.sections.primary.ProgressSettingsDialog;
 import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;

@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.*;
-import dmeeuwis.kanjimaster.logic.data.*;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListener {
 

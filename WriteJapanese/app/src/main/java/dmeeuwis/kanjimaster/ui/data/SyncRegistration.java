@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;

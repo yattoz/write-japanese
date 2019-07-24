@@ -1,9 +1,7 @@
 package dmeeuwis.kanjimaster.logic.drawing;
 
-import android.graphics.Color;
 import dmeeuwis.kanjimaster.logic.data.Point;
 import dmeeuwis.kanjimaster.logic.data.Rect;
-import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,16 +179,6 @@ public class Stroke implements Iterable<Point> {
 		return new Stroke(newLine);
 	}
 	
-	public List<Pair<Point, Integer>> createDebugDots(){
-		List<Pair<Point, Integer>> dots = new ArrayList<Pair<Point, Integer>>(2);
-		
-		// start and end points
-		dots.add(Pair.create(points.get(0), Color.CYAN));
-		dots.add(Pair.create(points.get(points.size() - 1), Color.CYAN));
-		
-		return dots;
-	}
-
 	public Stroke reverse(){
 		List<Point> copy = new ArrayList<>(this.points);
 		Collections.reverse(copy);

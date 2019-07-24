@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.content.Context;
 import android.view.View;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.views.KanjiWithMeaningView;
 
 public class RadicalAdapter extends ArrayAdapter<Kanji> {

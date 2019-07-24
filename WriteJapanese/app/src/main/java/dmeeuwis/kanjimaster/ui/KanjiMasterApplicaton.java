@@ -8,15 +8,15 @@ import android.util.TypedValue;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import dmeeuwis.kanjimaster.logic.data.DataHelper;
-import dmeeuwis.kanjimaster.logic.data.DataHelperAndroid;
+import dmeeuwis.kanjimaster.ui.data.DataHelperAndroid;
 import dmeeuwis.kanjimaster.logic.data.DataHelperFactory;
 import dmeeuwis.kanjimaster.logic.data.ProcessLogRowFactory;
 import dmeeuwis.kanjimaster.logic.data.Settings;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.drawing.Constants;
 import dmeeuwis.kanjimaster.ui.data.ProcessLogRowAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.IidFactory;
 
 public class KanjiMasterApplicaton extends Application {
     @Override

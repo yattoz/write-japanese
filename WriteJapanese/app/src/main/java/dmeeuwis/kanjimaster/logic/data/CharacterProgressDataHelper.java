@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class CharacterProgressDataHelper {
     public final static int DEFAULT_INTRO_INCORRECT = 5;

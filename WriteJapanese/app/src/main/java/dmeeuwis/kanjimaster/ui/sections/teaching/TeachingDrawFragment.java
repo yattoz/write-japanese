@@ -19,7 +19,7 @@ import java.io.IOException;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.drawing.Comparator;
 import dmeeuwis.kanjimaster.logic.drawing.ComparisonFactory;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;

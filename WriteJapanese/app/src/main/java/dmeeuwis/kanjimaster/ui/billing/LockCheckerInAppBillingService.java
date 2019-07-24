@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.LoggingRunnable;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE;
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR;

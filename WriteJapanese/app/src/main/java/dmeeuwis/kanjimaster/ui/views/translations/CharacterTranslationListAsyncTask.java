@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.logic.data.TranslationsFromXml;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class CharacterTranslationListAsyncTask extends AsyncTask<Void, Translation, Void> {
 	final private Context context;

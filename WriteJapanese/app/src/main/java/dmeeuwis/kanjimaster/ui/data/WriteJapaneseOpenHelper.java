@@ -16,8 +16,7 @@ import java.util.UUID;
 
 import dmeeuwis.kanjimaster.logic.data.DataHelper;
 import dmeeuwis.kanjimaster.logic.data.DataHelperFactory;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {

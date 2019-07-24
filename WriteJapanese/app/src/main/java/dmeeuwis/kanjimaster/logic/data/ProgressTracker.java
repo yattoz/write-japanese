@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.core.util.Util;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 /**
  * Scores:
@@ -41,8 +41,8 @@ import dmeeuwis.kanjimaster.core.util.Util;
 public class ProgressTracker {
 
 	final static public int MAX_SCORE = SRSQueue.SRSTable.length;
-	private static final boolean DEBUG_SRS = BuildConfig.DEBUG && false;
-	private static final boolean DEBUG_PROGRESS = BuildConfig.DEBUG && false;
+	private static final boolean DEBUG_SRS = false;
+	private static final boolean DEBUG_PROGRESS = false;
 
 	private final boolean useSRS;
     private final boolean skipSrsIfFirstCorrect;
@@ -270,7 +270,7 @@ public class ProgressTracker {
 		List<Character> passed = sets.get(3);
 		List<Character> unknown = sets.get(4);
 
-		if(DEBUG_PROGRESS && BuildConfig.DEBUG) {
+		if(DEBUG_PROGRESS) {
 			Log.d("nakama-progression", "Character progression: reviewing sets");
 
 			Log.d("nakama-progression", "Failed set is: " + Util.join(", ", failed));
@@ -363,10 +363,6 @@ public class ProgressTracker {
             pool = "random-raw-avail";
         }
 
-		if(BuildConfig.DEBUG) {
-			Log.d("nakama-progression", "Picked: " + n + (isReview ? ", review" : ", fresh, current score: " + getScoreSheet().get(n)));
-		}
-
 		StudyRecord rec = new StudyRecord(n, prev, setId, isReview ? StudyType.REVIEW : StudyType.NEW_CHAR, pool);
 		history.add(rec);
 		return rec;
@@ -426,7 +422,7 @@ public class ProgressTracker {
 		List<Character> reviewing = sets.get(1);
 
 		boolean r = failed.contains(c) || reviewing.contains(c);
-		if(BuildConfig.DEBUG) {
+		if(DEBUG_PROGRESS) {
 			Log.i("nakama-progression", "Failed set is: " + Util.join(", ", failed));
 			Log.i("nakama-progression", "Reviewing set is: " + Util.join(", ", reviewing));
 			Log.i("nakama-progression", "Character progression: is " + c + " reviewing? " + r);

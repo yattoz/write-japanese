@@ -10,7 +10,7 @@ import java.net.URLEncoder;
 import java.util.UUID;
 
 import dmeeuwis.kanjimaster.logic.data.HostFinder;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class NetworkStorySaveAsyncTask extends AsyncTask<Character, String, Void> {
 

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.Settings;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class ComparisonFactory {
     public static Comparator getUsersComparator(Context ctx, AssetFinder assetFinder){

@@ -12,8 +12,7 @@ import android.widget.TextView;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 
 public class CreditsActivity extends AppCompatActivity {

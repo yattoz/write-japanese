@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.io.IOException;
+
+import dmeeuwis.kanjimaster.logic.data.PracticeLogSync;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     final Context context;

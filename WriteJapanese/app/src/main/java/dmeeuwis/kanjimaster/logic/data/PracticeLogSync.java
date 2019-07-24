@@ -33,7 +33,6 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.ui.billing.*;
 import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.core.util.Util;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
 
 public class PracticeLogSync {
 

@@ -13,9 +13,7 @@ import java.util.Map;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
 import dmeeuwis.kanjimaster.logic.data.DataHelper;
-import dmeeuwis.kanjimaster.logic.data.DataHelperAndroid;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class ProcessLogRowAndroid implements DataHelper.ProcessRow {
     private Context context;

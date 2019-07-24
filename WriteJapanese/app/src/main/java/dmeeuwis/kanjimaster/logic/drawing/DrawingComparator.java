@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import dmeeuwis.kanjimaster.core.Kana;
-import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.Point;
 import dmeeuwis.kanjimaster.logic.data.Rect;
@@ -29,7 +28,7 @@ public class DrawingComparator implements Comparator {
 	static private final double STROKE_DIRECTION_LIMIT_RADIANS = Math.PI / 2;
 	static private final int PERCENTAGE_DISTANCE_DIFF_LIMIT = 100;
 
-	private static final boolean DEBUG = BuildConfig.DEBUG && false;
+	private static final boolean DEBUG = false;
 
 	private final AssetFinder assetFinder;
 

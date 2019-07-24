@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
+import dmeeuwis.kanjimaster.logic.data.DataHelper;
 
 public class DataHelperAndroid implements DataHelper {
 

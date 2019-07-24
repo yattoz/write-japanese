@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 

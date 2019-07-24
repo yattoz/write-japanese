@@ -2,6 +2,8 @@ package dmeeuwis.kanjimaster.logic.data;
 
 import android.content.Context;
 
+import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
+
 public abstract class LoggingRunnable implements Runnable {
 
     final Context context;

@@ -1,9 +1,11 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+
+import dmeeuwis.kanjimaster.ui.data.SyncAdapter;
 
 /**
  * Define a Service that returns an IBinder for the

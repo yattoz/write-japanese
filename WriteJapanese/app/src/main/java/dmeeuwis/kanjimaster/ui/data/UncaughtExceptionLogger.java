@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 import android.app.Activity;
 import android.app.Application;
@@ -9,6 +9,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
+import dmeeuwis.kanjimaster.logic.data.HostFinder;
 import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import org.threeten.bp.LocalDateTime;
@@ -24,7 +26,7 @@ import java.net.URL;
 import java.util.Map;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.IidFactory;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.ui.KanjiMasterApplicaton;
 

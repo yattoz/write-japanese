@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
-import dmeeuwis.kanjimaster.ui.sections.primary.IidFactory;
-
 public class CustomCharacterSetDataHelper {
     public void recordEdit(String id, String name, String desc, String set) {
         recordRemoteEdit(UUID.randomUUID().toString(), id, name, desc, set, IidFactory.get().toString(), null, Boolean.FALSE);
