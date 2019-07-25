@@ -1,16 +1,6 @@
 package dmeeuwis.kanjimaster.logic.data;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import dmeeuwis.kanjimaster.logic.util.JsonReader;
-import dmeeuwis.kanjimaster.logic.util.JsonToken;
-import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import org.json.JSONObject;
 
@@ -29,26 +19,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.kanjimaster.ui.billing.*;
-import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.core.util.Util;
+import dmeeuwis.kanjimaster.logic.util.JsonReader;
+import dmeeuwis.kanjimaster.logic.util.JsonToken;
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 public class PracticeLogSync {
 
-    final public static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
-    final public static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
     final private static String SYNC_URL = "/write-japanese/progress-sync";
 
     final ExternalDependencies extDeps;
-    final Context context;
 
     public static class ExternalDependencies {
-        private final Context context;
-
-        public ExternalDependencies(Context c){
-            context = c;
-        }
 
         public InputStream sendPost(String jsonPost) throws Exception {
             URL syncUrl = HostFinder.formatURL(SYNC_URL);
@@ -77,22 +59,16 @@ public class PracticeLogSync {
 
     }
 
-    public PracticeLogSync(Context c) {
-        this.extDeps = new ExternalDependencies(c);
-        this.context = c;
+    public PracticeLogSync() {
+        this.extDeps = new ExternalDependencies();
     }
 
-    public PracticeLogSync(ExternalDependencies extDeps, Context c) {
+    public PracticeLogSync(ExternalDependencies extDeps) {
         this.extDeps = extDeps;
-        this.context = c;
     }
 
     public void clearSync(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(extDeps.context);
-        SharedPreferences.Editor e = prefs.edit();
-        e.putString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
-        e.putString(DEVICE_SYNC_PREFS_KEY, "0");
-        e.apply();
+        Settings.clearSyncSettingsDebug();
     }
 
     public String maxTimestamp(){
@@ -114,49 +90,41 @@ public class PracticeLogSync {
         long startTime = System.currentTimeMillis();
         String iid = IidFactory.get().toString();
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(extDeps.context);
-        String lastSyncServerTimestamp1 = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
-        String lastSyncDeviceTimestamp1 = prefs.getString(DEVICE_SYNC_PREFS_KEY, "0");
-        Log.i("nakama-sync", "Doing sync with last-server-sync: " + lastSyncServerTimestamp1 + "; last device sync: " + lastSyncDeviceTimestamp1);
-
-        Map<String, Object> syncDetails = Util.makeObjectMap(SERVER_SYNC_PREFS_KEY, lastSyncServerTimestamp1, DEVICE_SYNC_PREFS_KEY, lastSyncDeviceTimestamp1);
-        String lastSyncServerTimestamp = (String)syncDetails.get(SERVER_SYNC_PREFS_KEY);
-        String lastSyncDeviceTimestamp = (String)syncDetails.get(DEVICE_SYNC_PREFS_KEY);
-        Log.i("nakama-sync", "Doing sync with last-server-sync: " + lastSyncServerTimestamp + "; last device sync: " + lastSyncDeviceTimestamp);
+        Settings.SyncSettings sync = Settings.getSyncSettings();
+        Log.i("nakama-sync", "Doing sync with last-server-sync: " + sync.lastSyncServerTimestamp + "; last device sync: " + sync.lastSyncDeviceTimestamp);
 
         Writer netWriter = new StringWriter();
         JsonWriter jw = new JsonWriter(netWriter);
 
         jw.beginObject();
         jw.name("install_id").value(iid);
-        jw.name("level").value(LockCheckerInAppBillingService.getPurchaseStatus(prefs).toString());
+//      jw.name("level").value(LockCheckerInAppBillingService.getPurchaseStatus(prefs).toString());
 
         String jsonResponse = null;
         String jsonPost = null;
 
-        WriteJapaneseOpenHelper db = new WriteJapaneseOpenHelper(context);
-        SQLiteDatabase sqlite = db.getWritableDatabase();
+        DataHelper db = DataHelperFactory.get();
         try {
-            jw.name("prev_sync_timestamp").value(lastSyncServerTimestamp);
+            jw.name("prev_sync_timestamp").value(sync.lastSyncServerTimestamp);
 
-            jw.name("app_version").value(BuildConfig.VERSION_CODE);
+            jw.name("app_version").value(Settings.version());
 
-            queryToJsonArray("practice_logs", sqlite,
+            db.queryToJsonArray("practice_logs",
                     "SELECT id, install_id, character, charset, timestamp, score, drawing " +
                             "FROM practice_log WHERE timestamp > ? AND install_id = ?",
-                    new String[]{lastSyncDeviceTimestamp, iid}, jw);
+                    new String[]{sync.lastSyncDeviceTimestamp, iid}, jw);
 
-            queryToJsonArray("charset_goals", sqlite,
+            db.queryToJsonArray("charset_goals",
                     "SELECT charset, timestamp, goal_start, goal FROM charset_goals WHERE timestamp > ?",
-                    new String[]{lastSyncDeviceTimestamp}, jw);
+                    new String[]{sync.lastSyncDeviceTimestamp}, jw);
 
-            queryToJsonArray("kanji_stories", sqlite,
+            db.queryToJsonArray("kanji_stories",
                     "SELECT character, story, timestamp FROM kanji_stories WHERE timestamp > ?",
-                    new String[]{lastSyncDeviceTimestamp}, jw);
+                    new String[]{sync.lastSyncDeviceTimestamp}, jw);
 
-            queryToJsonArray("character_set_edits", sqlite,
+            db.queryToJsonArray("character_set_edits",
                     "SELECT id, charset_id, name, description, characters, timestamp as device_timestamp, deleted FROM character_set_edits WHERE timestamp > ? AND install_id = ?",
-                    new String[]{lastSyncDeviceTimestamp, iid}, jw);
+                    new String[]{sync.lastSyncDeviceTimestamp, iid}, jw);
 
             jw.endObject();
             jw.close();
@@ -202,7 +170,7 @@ public class PracticeLogSync {
                     //Log.i("nakama-sync", "Inserting remote log: " + Util.join(", ", insert));
                     practiceLogCount++;
                     DataHelperFactory.get().selectRecord("INSERT INTO practice_log(id, install_id, charset, character, score, timestamp, drawing) VALUES(?, ?, ?, ?, ?, ?, ?)", (Object[])insert);
-                } catch (SQLiteConstraintException t) {
+                } catch (Exception t) {
                     Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
                 }
                 jr.endObject();
@@ -255,7 +223,7 @@ public class PracticeLogSync {
                     charsetGoalsCount++;
 
                     Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
-                } catch (SQLiteConstraintException t) {
+                } catch (Exception t) {
                     Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
                 }
                 jr.endObject();
@@ -281,7 +249,7 @@ public class PracticeLogSync {
                         charsetEditCount++;
 
                         Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
-                    } catch (SQLiteConstraintException t) {
+                    } catch (Exception t) {
                         Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
                     }
                     jr.endObject();
@@ -295,10 +263,8 @@ public class PracticeLogSync {
             rin.close();
             inStream.close();
 
-            SharedPreferences.Editor ed = prefs.edit();
-            ed.putString(DEVICE_SYNC_PREFS_KEY, maxTimestamp());
-            ed.putString(SERVER_SYNC_PREFS_KEY, syncTimestampValue);
-            ed.apply();
+            Settings.SyncSettings set = new Settings.SyncSettings(syncTimestampName, maxTimestamp());
+            Settings.setSyncSettings(set);
 
             Log.i("nakama-sync", "Sync complete!");
 
@@ -313,39 +279,15 @@ public class PracticeLogSync {
             message.append("response was: " + (jsonResponse == null ? "<null>" : jsonResponse));
             message.append("; time in sync was " + (System.currentTimeMillis() - startTime) + "ms");
             throw new RuntimeException(message.toString(), t);
-        } finally {
-            sqlite.close();
-            db.close();
         }
     }
 
     public static void largeLog(String tag, String content) {
-        if (content.length() > 4000 && !BuildConfig.DEBUG) {
+        if (content.length() > 4000 && Settings.debug()) {
             Log.d(tag, content.substring(0, 4000));
         } else {
             Log.d(tag, content);
         }
-    }
-
-    private void queryToJsonArray(String name, SQLiteDatabase sqlite, String sql, String[] args, JsonWriter jw) throws IOException {
-        Log.i("nakama-sync", sql + ": " + Util.join(", ", args));
-        Cursor c = sqlite.rawQuery(sql, args);
-        try {
-            // stream over standardSets rows since that time
-            jw.name(name);
-            jw.beginArray();
-            while (c.moveToNext()) {
-                jw.beginObject();
-                for (int i = 0; i < c.getColumnCount(); i++) {
-                    jw.name(c.getColumnName(i));
-                    jw.value(c.getString(i));
-                }
-                jw.endObject();
-            }
-        } finally {
-            c.close();
-        }
-        jw.endArray();
     }
 
     private static String nextStringOrNull(JsonReader jr) throws IOException {

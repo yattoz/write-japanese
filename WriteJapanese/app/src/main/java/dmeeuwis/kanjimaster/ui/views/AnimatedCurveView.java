@@ -345,7 +345,7 @@ public class AnimatedCurveView extends View implements Animatable {
 		for(int i = 0; i < pathsToDraw.size(); i++){
             Path p = pathsToDraw.get(i);
             for(Criticism.PaintColourInstructions colour: knownPaintInstructions){
-                colour.colour(i, 0, paint, Color.BLACK);
+                colour.colour(i, 0, Color.BLACK);
             }
 	    	canvas.drawPath(p, paint);
 		}

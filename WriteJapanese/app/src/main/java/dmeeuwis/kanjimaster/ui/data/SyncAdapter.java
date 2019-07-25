@@ -11,7 +11,7 @@ import android.util.Log;
 import java.io.IOException;
 
 import dmeeuwis.kanjimaster.logic.data.PracticeLogSync;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     final Context context;
@@ -38,14 +38,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.i("nakama-sync", "onPerformSync!");
         try {
-            PracticeLogSync sync = new PracticeLogSync(context);
+            PracticeLogSync sync = new PracticeLogSync();
             sync.sync();
         } catch (Throwable e){
             if( (e instanceof  IOException) || (e.getCause() != null && e.getCause() instanceof IOException)){
                 Log.i("nakama", "Ignoring IOException during background sync");
                 return;
             }
-            UncaughtExceptionLogger.backgroundLogError("Error during background sync", e, getContext());
+            UncaughtExceptionLogger.backgroundLogError("Error during background sync", e);
         }
     }
 }

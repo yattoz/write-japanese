@@ -13,7 +13,6 @@ import java.io.StringWriter;
 import java.util.*;
 
 import dmeeuwis.kanjimaster.core.util.Util;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class SRSQueue {
     public static boolean useSRSGlobal = true;

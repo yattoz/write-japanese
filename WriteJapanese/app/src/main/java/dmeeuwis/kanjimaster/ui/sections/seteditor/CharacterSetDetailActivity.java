@@ -13,9 +13,9 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.ui.sections.primary.LockCheckerHolder;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
 
@@ -104,7 +104,7 @@ public class CharacterSetDetailActivity extends AppCompatActivity implements Loc
 
             } else {
                 Toast.makeText(this, "Error connecting to fragment", Toast.LENGTH_SHORT);
-                UncaughtExceptionLogger.backgroundLogError("Error connecting to CharsetDetailFragment", new RuntimeException(), this);
+                UncaughtExceptionLogger.backgroundLogError("Error connecting to CharsetDetailFragment", new RuntimeException());
             }
             return true;
         }

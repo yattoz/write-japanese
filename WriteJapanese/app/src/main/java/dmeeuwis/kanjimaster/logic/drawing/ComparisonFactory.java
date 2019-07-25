@@ -1,13 +1,11 @@
 package dmeeuwis.kanjimaster.logic.drawing;
 
-import android.content.Context;
-
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.Settings;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class ComparisonFactory {
-    public static Comparator getUsersComparator(Context ctx, AssetFinder assetFinder){
+    public static Comparator getUsersComparator(AssetFinder assetFinder){
         try {
             if (Settings.getStrictness() == Settings.Strictness.CASUAL) {
                 return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.DISCOUNT);
@@ -19,7 +17,7 @@ public class ComparisonFactory {
                 return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.DISCOUNT);
             }
         } catch(Throwable t){
-            UncaughtExceptionLogger.backgroundLogError("HACK: exception while getting ComparisonFactory! Returning default instead.", t, ctx);
+            UncaughtExceptionLogger.backgroundLogError("HACK: exception while getting ComparisonFactory! Returning default instead.", t);
             return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.DISCOUNT);
         }
     }

@@ -1,7 +1,5 @@
 package dmeeuwis.kanjimaster.logic.drawing;
 
-import android.graphics.Paint;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,12 +57,12 @@ public class Criticism {
     }
 
     public interface PaintColourInstructions {
-        void colour(int stroke, float t, Paint p, int defaultColor);
+        int colour(int stroke, float t, int defaultColor);
     }
 
     public static class NoColours implements PaintColourInstructions {
-        public void colour(int stroke, float t, Paint p, int defaultColor){
-            p.setColor(defaultColor);
+        public int colour(int stroke, float t, int defaultColor){
+            return defaultColor;
         }
     }
 
@@ -76,11 +74,11 @@ public class Criticism {
             this.colour = colour;
         }
 
-        public void colour(int stroke, float t, Paint p, int defaultColor){
+        public int colour(int stroke, float t, int defaultColor){
             if(stroke == drawn){
-                p.setColor(colour);
+                return colour;
             } else {
-                p.setColor(defaultColor);
+                return defaultColor;
             }
         }
     }
@@ -114,7 +112,7 @@ public class Criticism {
             this.strokes = stroke;
         }
 
-        public void colour(int stroke, float t, Paint p, int defaultColor){
+        public int colour(int stroke, float t, int defaultColor){
             boolean contains = false;
             for(int s: strokes) {
                 if (stroke == s) {
@@ -123,9 +121,9 @@ public class Criticism {
             }
 
             if(contains){
-                p.setColor(colour);
+                return colour;
             } else {
-                p.setColor(defaultColor);
+                return defaultColor;
             }
         }
     }

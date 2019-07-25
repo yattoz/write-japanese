@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.core.Kanji;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.views.KanjiWithMeaningView;
 
 public class RadicalAdapter extends ArrayAdapter<Kanji> {
@@ -24,7 +24,7 @@ public class RadicalAdapter extends ArrayAdapter<Kanji> {
         Kanji k = getItem(position);
         String meaning;
         if(k.meanings.length == 0){
-            UncaughtExceptionLogger.backgroundLogError("Error: cannot find meanings for kanji: " + k.toString(), new RuntimeException(), getContext());
+            UncaughtExceptionLogger.backgroundLogError("Error: cannot find meanings for kanji: " + k.toString(), new RuntimeException());
             meaning = "";
         } else {
             meaning = k.meanings[0];

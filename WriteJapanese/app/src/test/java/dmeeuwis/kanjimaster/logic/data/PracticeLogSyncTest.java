@@ -26,7 +26,7 @@ public class PracticeLogSyncTest {
     private static class TestDependencies extends PracticeLogSync.ExternalDependencies {
         private final String file;
         public TestDependencies(Context ctx, String jsonFile){
-            super(ctx);
+            super();
             this.file = jsonFile;
         }
         @Override
@@ -38,24 +38,24 @@ public class PracticeLogSyncTest {
     @Test
     public void testEmptySync() throws IOException {
         PracticeLogSync sync = new PracticeLogSync(
-                new TestDependencies(RuntimeEnvironment.application, "empty_sync.json"),
-                RuntimeEnvironment.application);
+                new TestDependencies(RuntimeEnvironment.application, "empty_sync.json")
+        );
         sync.sync();
     }
 
     @Test
     public void testEmptySyncBeforeCharsetEdits() throws IOException {
         PracticeLogSync sync = new PracticeLogSync(
-                new TestDependencies(RuntimeEnvironment.application, "empty_sync_no_charset_edits.json"),
-                RuntimeEnvironment.application);
+                new TestDependencies(RuntimeEnvironment.application, "empty_sync_no_charset_edits.json")
+        );
         sync.sync();
     }
 
     @Test
     public void testMultipleCharsetGoalBug() throws IOException {
         PracticeLogSync sync = new PracticeLogSync(
-                new TestDependencies(RuntimeEnvironment.application, "multiple_charset_goals_sync.json"),
-                RuntimeEnvironment.application);
+                new TestDependencies(RuntimeEnvironment.application, "multiple_charset_goals_sync.json")
+        );
         sync.sync();
     }
 

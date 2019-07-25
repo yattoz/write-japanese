@@ -14,6 +14,7 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
 import dmeeuwis.kanjimaster.logic.data.DataHelper;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class ProcessLogRowAndroid implements DataHelper.ProcessRow {
     private Context context;
@@ -62,7 +63,7 @@ public class ProcessLogRowAndroid implements DataHelper.ProcessRow {
             try {
                 t = LocalDateTime.parse(timestampStr.replace(' ', 'T'), CharacterProgressDataHelper.formatter);
             } catch (DateTimeParseException x) {
-                UncaughtExceptionLogger.backgroundLogError("Error caught parsing timestamp on practice log: " + timestampStr, x, context);
+                UncaughtExceptionLogger.backgroundLogError("Error caught parsing timestamp on practice log: " + timestampStr, x);
                 return;
             }
         }

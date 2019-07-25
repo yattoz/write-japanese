@@ -1,7 +1,10 @@
 package dmeeuwis.kanjimaster.logic.data;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 public interface DataHelper {
 
@@ -15,6 +18,8 @@ public interface DataHelper {
     List<Map<String, String>> selectRecords(String sql, Object... params);
     Map<String, Map<String, String>> selectRecordsIndexedByFirst(String sql, String indexKey, Object... params);
     Map<String, String> selectRecord(String sql, Object... params);
+
+    void queryToJsonArray(String name, String sql, String[] args, JsonWriter jw) throws IOException;
 
     void execSQL(String s, String[] strings);
     void execSQL(String s);

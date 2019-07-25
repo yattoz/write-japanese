@@ -1,9 +1,11 @@
 package dmeeuwis.kanjimaster.ui.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import dmeeuwis.kanjimaster.logic.data.DataHelper;
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 public class DataHelperAndroid implements DataHelper {
 
@@ -201,5 +204,29 @@ public class DataHelperAndroid implements DataHelper {
         }
         return sparams;
     }
+
+    @Override
+    public void queryToJsonArray(String name, String sql, String[] args, JsonWriter jw) throws IOException {
+        WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(context);
+        SQLiteDatabase sqlite = woh.getReadableDatabase();
+        Cursor c = sqlite.rawQuery(sql, args);
+        try {
+            // stream over standardSets rows since that time
+            jw.name(name);
+            jw.beginArray();
+            while (c.moveToNext()) {
+                jw.beginObject();
+                for (int i = 0; i < c.getColumnCount(); i++) {
+                    jw.name(c.getColumnName(i));
+                    jw.value(c.getString(i));
+                }
+                jw.endObject();
+            }
+        } finally {
+            c.close();
+        }
+        jw.endArray();
+    }
+
 }
 

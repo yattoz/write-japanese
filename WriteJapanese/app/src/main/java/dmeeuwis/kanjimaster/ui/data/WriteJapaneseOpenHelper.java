@@ -17,6 +17,7 @@ import java.util.UUID;
 import dmeeuwis.kanjimaster.logic.data.DataHelper;
 import dmeeuwis.kanjimaster.logic.data.DataHelperFactory;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.teaching.TeachingStoryFragment;
 
 public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
@@ -178,7 +179,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             if(e.getMessage().contains("already exists")) {
                 Log.i("nakama", "Saw settings log already exists errror, its OK");
             } else {
-                UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception creating settings log table", e, context);
+                UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception creating settings log table", e);
             }
 
         }
@@ -202,7 +203,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             if (e.getMessage().contains("already exists")) {
                 Log.i("nakama", "Saw character_set_edits already exists error, its OK");
             } else {
-                UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception creating settings log table", e, context);
+                UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception creating settings log table", e);
             }
         }
     }
@@ -214,7 +215,7 @@ public class WriteJapaneseOpenHelper extends SQLiteOpenHelper {
             sqlite.execSQL("INSERT INTO practice_log (id, install_id, character, charset, score) VALUES(?, ?, ?, ?, ?)",
                     new Object[]{UUID.randomUUID().toString(), IidFactory.get(), "S", "all", 0 } );
         } catch (SQLiteException e) {
-            UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception writing srs tombstone", e, context);
+            UncaughtExceptionLogger.logError(Thread.currentThread(), "Caught exception writing srs tombstone", e);
         }
     }
 

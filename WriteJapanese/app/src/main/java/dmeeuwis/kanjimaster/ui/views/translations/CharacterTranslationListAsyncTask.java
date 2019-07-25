@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.logic.data.TranslationsFromXml;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class CharacterTranslationListAsyncTask extends AsyncTask<Void, Translation, Void> {
 	final private Context context;
@@ -51,7 +51,7 @@ public class CharacterTranslationListAsyncTask extends AsyncTask<Void, Translati
             if(this.isCancelled()) {
                 Log.d("nakama", "Caught exception in translation background thread, but isCancelled anyways", e);
             } else {
-                UncaughtExceptionLogger.backgroundLogError("Error during (non-cancelled) background translation", e, context);
+                UncaughtExceptionLogger.backgroundLogError("Error during (non-cancelled) background translation", e);
             }
         }
         Log.i("nakama", "Completed background translation work for " + kanji);

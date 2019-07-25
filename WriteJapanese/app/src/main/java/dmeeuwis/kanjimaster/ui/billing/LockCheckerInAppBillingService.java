@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.LoggingRunnable;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE;
 import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR;
@@ -168,7 +168,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
                     }
                 } catch (IntentSender.SendIntentException|RemoteException e) {
-                    UncaughtExceptionLogger.backgroundLogError(e.getMessage(), e, parent);
+                    UncaughtExceptionLogger.backgroundLogError(e.getMessage(), e);
                     toast("Error in contacting Google Play; please try again later.");
                 }
             }
@@ -239,9 +239,9 @@ public class LockCheckerInAppBillingService extends LockChecker {
             // Log.d("nakama-iiab", "LockCHeckerIInAppBillingService.handleActivityResult Purchase succeeded!" + responseData);
             try {
                 savePurchaseTokenFromPurchaseData(responseData, "GooglePlay");
-                UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, "GooglePlay", responseData);
+                UncaughtExceptionLogger.backgroundLogPurchase("GooglePlay", responseData);
             } catch (JSONException e) {
-                UncaughtExceptionLogger.backgroundLogError("Error parsing JSON response from Google Play: " + responseData, e, parent);
+                UncaughtExceptionLogger.backgroundLogError("Error parsing JSON response from Google Play: " + responseData, e);
                 toast("Error parsing JSON response from Google Play");
                 return true;
             }
@@ -287,7 +287,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
                         sb.append(ownedItems.get(k));
                         sb.append("; ");
                     }
-                    UncaughtExceptionLogger.backgroundLogError(sb.toString(), new RuntimeException(), parent);
+                    UncaughtExceptionLogger.backgroundLogError(sb.toString(), new RuntimeException());
                     return;
                 }
 
@@ -309,7 +309,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
                 Log.d("nakama-iiab", "Unknown response code for past purchases: " + response);
             }
         } catch (JSONException e) {
-            UncaughtExceptionLogger.backgroundLogError("Error parsing JSON response from Google Play", e, parent);
+            UncaughtExceptionLogger.backgroundLogError("Error parsing JSON response from Google Play", e);
             toast("Error parsing JSON response from Google Play");
         } catch (RemoteException e) {
             badConnection = true;

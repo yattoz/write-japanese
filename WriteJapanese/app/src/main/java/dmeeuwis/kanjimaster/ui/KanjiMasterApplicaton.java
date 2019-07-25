@@ -12,7 +12,6 @@ import dmeeuwis.kanjimaster.ui.data.DataHelperAndroid;
 import dmeeuwis.kanjimaster.logic.data.DataHelperFactory;
 import dmeeuwis.kanjimaster.logic.data.ProcessLogRowFactory;
 import dmeeuwis.kanjimaster.logic.data.Settings;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.drawing.Constants;
 import dmeeuwis.kanjimaster.ui.data.ProcessLogRowAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
@@ -23,7 +22,6 @@ public class KanjiMasterApplicaton extends Application {
     public void onCreate() {
         super.onCreate();
         AndroidThreeTen.init(this);
-        UncaughtExceptionLogger.init(this);
 
         Resources r = getResources();
         Constants.MIN_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Constants.MIN_POINT_DISTANCE_DP, r.getDisplayMetrics());

@@ -44,6 +44,7 @@ import android.widget.ViewFlipper;
 import com.amazon.device.iap.PurchasingService;
 
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import org.threeten.bp.LocalDate;
@@ -80,7 +81,6 @@ import dmeeuwis.kanjimaster.logic.data.SRSScheduleHtmlGenerator;
 import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
 import dmeeuwis.kanjimaster.ui.data.SyncRegistration;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.logic.drawing.Comparator;
 import dmeeuwis.kanjimaster.logic.drawing.ComparisonAsyncTask;
@@ -191,7 +191,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         public void uncaughtException(final Thread thread, final Throwable ex) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
-            UncaughtExceptionLogger.logError(thread, "Uncaught top level error: ", ex, KanjiMasterActivity.this.getApplicationContext());
+            UncaughtExceptionLogger.logError(thread, "Uncaught top level error: ", ex);
         }
     }
 
@@ -264,7 +264,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 } catch(Throwable t){
                     // should never happen, but error logs indicate it can.
 
-                    UncaughtExceptionLogger.backgroundLogError("Caught error parsing svg CurveDrawing for " + currentCharacterSet.currentCharacter(), t, KanjiMasterActivity.this);
+                    UncaughtExceptionLogger.backgroundLogError("Caught error parsing svg CurveDrawing for " + currentCharacterSet.currentCharacter(), t);
                     Toast.makeText(KanjiMasterActivity.this, "Error: failed to parse curve data for " + currentCharacterSet.currentCharacter(), Toast.LENGTH_LONG).show();
 
                     loadNextCharacter(true);
@@ -275,7 +275,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 final CurveDrawing known = curve;
 
                 AndroidInputStreamGenerator is = new AndroidInputStreamGenerator(KanjiMasterActivity.this.getAssets());
-                Comparator comparator = ComparisonFactory.getUsersComparator(getApplicationContext(), new AssetFinder(is));
+                Comparator comparator = ComparisonFactory.getUsersComparator(new AssetFinder(is));
 
                 ComparisonAsyncTask comp = new ComparisonAsyncTask(KanjiMasterActivity.this, currentCharacterSet.currentCharacter(), currentCharacterSet.pathPrefix, comparator, challenger, known, new ComparisonAsyncTask.OnCriticismDone(){
                     public void run(Criticism critique, CharacterStudySet.GradingResult entry) {
@@ -1373,7 +1373,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                     @Override
                     public void run() {
                         try {
-                            Map<String, Integer> counts = new PracticeLogSync(KanjiMasterActivity.this).sync();
+                            Map<String, Integer> counts = new PracticeLogSync().sync();
                             StringBuffer message = new StringBuffer("Sync completed!");
                             if(counts.get("practiceLogs") != null){
                                 message.append(" " + counts.get("practiceLogs") + " practice logs. ");
@@ -1393,7 +1393,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                                 }
                             });
                         } catch (Throwable e) {
-                            UncaughtExceptionLogger.backgroundLogError("Error on menu-option network sync", e, KanjiMasterActivity.this);
+                            UncaughtExceptionLogger.backgroundLogError("Error on menu-option network sync", e);
                             Handler handler = new Handler(Looper.getMainLooper());
                             handler.post(new Runnable() {
                                 @Override public void run() {
@@ -1479,7 +1479,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 }
 
             } else if (item.getTitle().equals("DEBUG:ClearSync")) {
-                new PracticeLogSync(KanjiMasterActivity.this).clearSync();
+                new PracticeLogSync().clearSync();
             } else if (item.getTitle().equals("DEBUG:ClearSharedPrefs")) {
                 Log.i("nakama", "DEBUG clearing standardSets shared prefs");
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -1487,7 +1487,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 e.clear();
                 e.apply();
             } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
-                new PracticeLogSync(KanjiMasterActivity.this).debugPrintLog();
+                new PracticeLogSync().debugPrintLog();
             } else if(item.getTitle().equals("DEBUG:ClearRegisteredAccount")){
                 SyncRegistration.clearAccount(this);
             } else if(item.getTitle().equals("DEBUG:SyncNow")){
@@ -1500,11 +1500,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 throw new RuntimeException("Practicing error catching!");
             } else if(item.getTitle().equals("DEBUG:LogBackgroundException")){
                 UncaughtExceptionLogger.backgroundLogError("Practicing background error catching!",
-                        new RuntimeException("BOOM!", new RuntimeException("CRASH!", new RuntimeException("THUNK!"))), getApplicationContext());
+                        new RuntimeException("BOOM!", new RuntimeException("CRASH!", new RuntimeException("THUNK!"))));
             } else if(item.getTitle().equals("DEBUG:ClearSyncTimestamp")){
                 SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
-                ed.remove(PracticeLogSync.DEVICE_SYNC_PREFS_KEY);
-                ed.remove(PracticeLogSync.SERVER_SYNC_PREFS_KEY);
+                ed.remove(Settings.DEVICE_SYNC_PREFS_KEY);
+                ed.remove(Settings.SERVER_SYNC_PREFS_KEY);
                 ed.apply();
             } else if (item.getTitle().equals("DEBUG:ClearUpdateNotification")) {
                 UpdateNotifier.debugClearNotified(this);
@@ -1538,7 +1538,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                     Log.e("nakama-debug", "Error doing debug JSON", e);
                 }
             } else if(item.getTitle().equals("DEBUG:PurchaseLog")){
-                UncaughtExceptionLogger.backgroundLogPurchase(this, "DEBUG", "FakePurchaseToken");
+                UncaughtExceptionLogger.backgroundLogPurchase("DEBUG", "FakePurchaseToken");
             } else if(item.getTitle().equals("DEBUG:ClearSkipIntro")){
                 SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                 ed.remove(SKIP_INTRO_CHECK);

@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.*;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListener {
 
@@ -164,7 +164,7 @@ public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListe
         }
 
         try {
-            UncaughtExceptionLogger.backgroundLogPurchase(parentActivity, receiptId);
+            UncaughtExceptionLogger.backgroundLogPurchase(receiptId);
         } catch(Throwable t){
             UncaughtExceptionLogger.backgroundLogError("Error logging backround purchase", t);
         }

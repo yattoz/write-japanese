@@ -6,9 +6,9 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 
 public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
 
@@ -39,7 +39,7 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
         try {
             return comparator.compare(currChar, drawn, known);
         } catch (IOException e) {
-            UncaughtExceptionLogger.backgroundLogError("IO error from comparator", e, appContext);
+            UncaughtExceptionLogger.backgroundLogError("IO error from comparator", e);
             return null;
         }
     }
@@ -51,7 +51,7 @@ public class ComparisonAsyncTask extends AsyncTask<Void, Void, Criticism> {
             entry = appContext.mark(currChar, setId, drawn, criticism.pass);
         } catch(SQLiteFullException e){
             Toast.makeText(appContext, "Could not record progress: disk is full.", Toast.LENGTH_SHORT).show();
-            UncaughtExceptionLogger.backgroundLogError("Could not record progress: disk is full", e, appContext);
+            UncaughtExceptionLogger.backgroundLogError("Could not record progress: disk is full", e);
         }
 
         onDone.run(criticism, entry);

@@ -1,17 +1,7 @@
-package dmeeuwis.kanjimaster.ui.data;
+package dmeeuwis.kanjimaster.logic.data;
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
-import dmeeuwis.kanjimaster.logic.data.HostFinder;
-import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import org.threeten.bp.LocalDateTime;
 
@@ -25,33 +15,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
-import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.kanjimaster.logic.data.IidFactory;
-import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
-import dmeeuwis.kanjimaster.ui.KanjiMasterApplicaton;
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
-public class UncaughtExceptionLogger {
-
-    static Application app;
-
-    public static void init(KanjiMasterApplicaton kanjiMasterApplicaton) {
-        app = kanjiMasterApplicaton;
-    }
+public abstract class UncaughtExceptionLogger {
 
     public static void backgroundLogError(final String message, final Throwable ex){
-        if(app == null){
-            Log.e("nakama", "Error: UncaughtExceptionLogger not initialized! Can't log.", ex);
-            return;
-        }
-        backgroundLogError(message, ex, app);
-    }
-
-    public static void backgroundLogError(final String message, final Throwable ex, final Context applicationContext){
         final Thread t = Thread.currentThread();
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                logError(t, message, ex, applicationContext);
+                logError(t, message, ex);
             }
         });
     }
@@ -68,7 +41,7 @@ public class UncaughtExceptionLogger {
         }
     }
 
-    public static void logError(Thread thread, String message, Throwable ex, Context applicationContext){
+    public static void logError(Thread thread, String message, Throwable ex){
         Log.e("nakama", "Logging error in background: " + "message", ex);
         try {
             Writer netWriter = new StringWriter();
@@ -83,13 +56,13 @@ public class UncaughtExceptionLogger {
             jw.name("exception");
             jw.value((message == null ? "" : message + ": ") + ex.toString());
             jw.name("iid");
-            jw.value(applicationContext == null ? "?" : IidFactory.get().toString());
+            jw.value(IidFactory.get().toString());
             jw.name("version");
-            jw.value(String.valueOf(BuildConfig.VERSION_CODE));
+            jw.value(String.valueOf(Settings.version()));
             jw.name("device");
-            jw.value(Build.MANUFACTURER + ": " + Build.MODEL);
+            jw.value(Settings.device());
             jw.name("os-version");
-            jw.value(Build.VERSION.RELEASE);
+            jw.value(Settings.osVersion());
 
             jw.name("stack");
             jw.beginArray();
@@ -101,7 +74,7 @@ public class UncaughtExceptionLogger {
             String json = netWriter.toString();
             Log.i("nakama", "Will try to send error report: " + json);
 
-            if (BuildConfig.DEBUG) {
+            if (Settings.debug()) {
                 Log.e("nakama", "Swallowing error due to DEBUG build");
                 return;
             }
@@ -193,50 +166,46 @@ public class UncaughtExceptionLogger {
 
 
     // Amazon Support
-    public static void backgroundLogPurchase(final Activity parentActivity, final String receiptId) {
-        backgroundLogPurchase(parentActivity, "AmazonAppStore", receiptId);
+    public static void backgroundLogPurchase(final String receiptId) {
+        backgroundLogPurchase("AmazonAppStore", receiptId);
     }
 
-    public static void backgroundLogPurchase(final Activity parentActivity, final String store, final String token) {
+    public static void backgroundLogPurchase(final String store, final String token) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                backgroundLogPurchaseImpl(parentActivity, store, token);
+                backgroundLogPurchaseImpl(store, token);
             }
         });
     }
 
-    private static void backgroundLogPurchaseImpl(Activity parentActivity, String store, String token) {
+    private static void backgroundLogPurchaseImpl(String store, String token) {
         try {
             StringWriter sw = new StringWriter();
             JsonWriter jw = new JsonWriter(sw);
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(app.getApplicationContext());
             CharacterProgressDataHelper dbHelper = new CharacterProgressDataHelper(IidFactory.get());
-
             jw.beginObject();
 
-                jw.name("iid").value(IidFactory.get().toString());
-                jw.name("installed").value(prefs.getString("installTime", null));
-                jw.name("purchased").value(LocalDateTime.now().toString());
-                jw.name("purchaseToken").value(token);
-                jw.name("store").value(store);
+            jw.name("iid").value(IidFactory.get().toString());
+            jw.name("installed").value(Settings.getInstallDate().toString());
+            jw.name("purchased").value(LocalDateTime.now().toString());
+            jw.name("purchaseToken").value(token);
+            jw.name("store").value(store);
 
-                jw.name("charsetLogs");
-                jw.beginObject();
+            jw.name("charsetLogs");
+            jw.beginObject();
 
-                    Map<String, String> practiceCounts = dbHelper.countPracticeLogs();
-                    for(Map.Entry<String, String> e: practiceCounts.entrySet()){
-                        jw.name(e.getKey()).value(e.getValue());
-                    }
+            Map<String, String> practiceCounts = dbHelper.countPracticeLogs();
+            for(Map.Entry<String, String> e: practiceCounts.entrySet()){
+                jw.name(e.getKey()).value(e.getValue());
+            }
 
-                jw.endObject();
+            jw.endObject();
 
-                if(parentActivity instanceof KanjiMasterActivity){
-                    KanjiMasterActivity a = (KanjiMasterActivity)parentActivity;
-                    jw.name("appState");
-                    a.stateLog(jw);
-                }
+//          TODO: break appState into own class, OS dependant
+//            jw.name("appState");
+//            a.stateLog(jw);
 
             jw.endObject();
 

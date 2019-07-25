@@ -17,9 +17,9 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.drawing.Comparator;
 import dmeeuwis.kanjimaster.logic.drawing.ComparisonFactory;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;
@@ -93,14 +93,14 @@ public class TeachingDrawFragment extends Fragment implements OnTraceCompleteLis
     @Override
     public void onComplete(PointDrawing pointDrawing) {
         AssetFinder.InputStreamGenerator is = new AndroidInputStreamGenerator(parent.getAssets());
-        Comparator comp = ComparisonFactory.getUsersComparator(getActivity().getApplicationContext(),
+        Comparator comp = ComparisonFactory.getUsersComparator(
                 new AssetFinder(is));
         Criticism c;
         try {
             c = comp.compare(character.charAt(0), pointDrawing, curveDrawing);
         } catch (IOException e) {
             Toast.makeText(getActivity(), "Error accessing comparison data for " + character.charAt(0), Toast.LENGTH_LONG).show();
-            UncaughtExceptionLogger.backgroundLogError("IOError from comparator", e, getContext());
+            UncaughtExceptionLogger.backgroundLogError("IOError from comparator", e);
             return;
         }
 

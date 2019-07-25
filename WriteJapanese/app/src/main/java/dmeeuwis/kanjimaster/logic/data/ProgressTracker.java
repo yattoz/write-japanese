@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.core.util.Util;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 /**
  * Scores:

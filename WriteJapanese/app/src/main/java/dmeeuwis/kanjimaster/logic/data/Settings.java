@@ -2,6 +2,7 @@ package dmeeuwis.kanjimaster.logic.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 import org.threeten.bp.LocalDateTime;
@@ -9,19 +10,21 @@ import org.threeten.bp.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.ui.data.SyncRegistration;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity;
 import dmeeuwis.kanjimaster.ui.sections.primary.ProgressSettingsDialog;
 import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
 
 public class Settings {
     public static final String INSTALL_TIME_PREF_NAME = "INSTALL_TIME";
+    final public static String SERVER_SYNC_PREFS_KEY = "progress-server-sync-time";
+    final public static String DEVICE_SYNC_PREFS_KEY = "progress-device-sync-time";
 
     public static Context appContext;
 
-    public static void initialize(Context ctx){
-       appContext = ctx;
+    public static void initialize(Context ctx) {
+        appContext = ctx;
     }
 
     public static Boolean getSRSEnabled() {
@@ -58,14 +61,14 @@ public class Settings {
         Settings.setSetting(IntroActivity.SRS_ACROSS_SETS, "clear");
     }
 
-    public static void setInstallDate(){
+    public static void setInstallDate() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         String installDate = prefs.getString(INSTALL_TIME_PREF_NAME, null);
-        if(installDate == null) {
+        if (installDate == null) {
             Map<String, String> v = DataHelperFactory.get().selectRecord(
                     "SELECT min(timestamp) as min FROM practice_log");
-            String time = v.get("min") ;
-            if(time == null){
+            String time = v.get("min");
+            if (time == null) {
                 time = LocalDateTime.now().toString();
             }
             SharedPreferences.Editor ed = prefs.edit();
@@ -79,16 +82,20 @@ public class Settings {
         return prefs.getString(INSTALL_TIME_PREF_NAME, null);
     }
 
+    public static String osVersion() {
+        return Build.VERSION.RELEASE;
+    }
+
     public static class SyncStatus {
         public final boolean asked;
         public final String authcode;
 
-        SyncStatus(boolean asked, String authcode){
+        SyncStatus(boolean asked, String authcode) {
             this.asked = asked;
             this.authcode = authcode;
         }
 
-        public String toString(){
+        public String toString() {
             return String.format("[SyncStatus asked=%b authcode=%s]", asked, authcode);
         }
     }
@@ -100,83 +107,83 @@ public class Settings {
         return new SyncStatus(asked, authcode);
     }
 
-    public enum Strictness { CASUAL, CASUAL_ORDERED, STRICT }
+    public enum Strictness {CASUAL, CASUAL_ORDERED, STRICT}
 
-    public static Strictness getStrictness(){
+    public static Strictness getStrictness() {
         try {
             return Strictness.valueOf(getSetting("strictness", Strictness.CASUAL.toString()));
-        } catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return Strictness.CASUAL_ORDERED;
         }
     }
 
-    public static void setStrictness(Strictness s){
+    public static void setStrictness(Strictness s) {
         setSetting("strictness", s.toString());
     }
 
-    public static void setCharsetClueType(String charsetId, ClueCard.ClueType clueType){
+    public static void setCharsetClueType(String charsetId, ClueCard.ClueType clueType) {
         setSetting("cluetype_" + charsetId, clueType.toString());
     }
 
-    public static ClueCard.ClueType getCharsetClueType(String charsetId){
+    public static ClueCard.ClueType getCharsetClueType(String charsetId) {
         try {
             return ClueCard.ClueType.valueOf(getSetting("cluetype_" + charsetId, ClueCard.ClueType.MEANING.toString()));
-        } catch(Throwable t){
+        } catch (Throwable t) {
             UncaughtExceptionLogger.backgroundLogError("Error parsing clue type for charset", t);
             return ClueCard.ClueType.MEANING;
         }
     }
 
-    public static String getStorySharing(){
+    public static String getStorySharing() {
         return getSetting("story_sharing", null);
 
     }
 
-    public static void setStorySharing(String value){
+    public static void setStorySharing(String value) {
         setSetting("story_sharing", value);
     }
 
 
     // -----------------------
 
-    public static void setBooleanSetting(String name, Boolean value){
+    public static void setBooleanSetting(String name, Boolean value) {
         setSetting(name, value == null ? null : Boolean.toString(value));
     }
 
-    public static Boolean getBooleanSetting(String name, Boolean def){
+    public static Boolean getBooleanSetting(String name, Boolean def) {
         String s = getSetting(name, def == null ? null : Boolean.toString(def));
-        if("clear".equals(s)){
+        if ("clear".equals(s)) {
             return null;
         }
-        if(s != null){
+        if (s != null) {
             return Boolean.parseBoolean(s);
         }
         return null;
     }
 
-    public static String getSetting(String key, String defaultValue){
+    public static String getSetting(String key, String defaultValue) {
         Map<String, String> v = DataHelperFactory.get().selectRecord(
                 "SELECT value FROM settings_log WHERE setting = ? ORDER BY timestamp DESC LIMIT 1",
                 key);
-        if(v == null){
+        if (v == null) {
             return defaultValue;
         }
         return v.get("value");
     }
 
-    public static void setSetting(String key, String value){
+    public static void setSetting(String key, String value) {
         DataHelperFactory.get().execSQL(
                 "INSERT INTO settings_log(id, install_id, timestamp, setting, value) VALUES(?, ?, CURRENT_TIMESTAMP, ?, ?)",
-                new String[] { UUID.randomUUID().toString(), IidFactory.get().toString(), key, value });
+                new String[]{UUID.randomUUID().toString(), IidFactory.get().toString(), key, value});
     }
 
-    public static void deleteSetting(String key){
+    public static void deleteSetting(String key) {
         DataHelperFactory.get().execSQL(
                 "DELETE FROM settings_log WHERE setting = ?",
-                new String[] { key });
+                new String[]{key});
     }
 
-    public static CharacterProgressDataHelper.ProgressionSettings getProgressionSettings(){
+    public static CharacterProgressDataHelper.ProgressionSettings getProgressionSettings() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         return new CharacterProgressDataHelper.ProgressionSettings(
                 prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_INTRO_INCORRECT, CharacterProgressDataHelper.DEFAULT_INTRO_INCORRECT),
@@ -186,4 +193,51 @@ public class Settings {
                 prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_CHAR_COOLDOWN, CharacterProgressDataHelper.DEFAULT_CHAR_COOLDOWN),
                 prefs.getBoolean(ProgressSettingsDialog.SHARED_PREFS_KEY_SKIP_SRS_ON_FIRST_CORRECT, CharacterProgressDataHelper.DEFAULT_SKIP_SRS_ON_FIRST_CORRECT));
     }
+
+    public static void clearSyncSettingsDebug() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor e = prefs.edit();
+        e.putString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
+        e.putString(DEVICE_SYNC_PREFS_KEY, "0");
+        e.apply();
+    }
+
+    public static class SyncSettings {
+
+        String lastSyncServerTimestamp;
+        String lastSyncDeviceTimestamp;
+
+        public SyncSettings(String serverTimestamp, String deviceTimestamp){
+            this.lastSyncServerTimestamp = serverTimestamp;
+            this.lastSyncDeviceTimestamp = deviceTimestamp;
+        }
+    }
+
+    public static SyncSettings getSyncSettings() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String lastSyncServerTimestamp = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
+        String lastSyncDeviceTimestamp = prefs.getString(DEVICE_SYNC_PREFS_KEY, "0");
+        return new SyncSettings(lastSyncServerTimestamp, lastSyncDeviceTimestamp);
+    }
+
+    public static void setSyncSettings(SyncSettings set) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(DEVICE_SYNC_PREFS_KEY, set.lastSyncDeviceTimestamp);
+        ed.putString(SERVER_SYNC_PREFS_KEY, set.lastSyncServerTimestamp);
+        ed.apply();
+    }
+
+    public static int version(){
+        return BuildConfig.VERSION_CODE;
+    }
+
+    public static boolean debug() {
+        return BuildConfig.DEBUG;
+    }
+
+    public static String device(){
+        return Build.MANUFACTURER + ": " + Build.MODEL;
+    }
+
 }

@@ -33,8 +33,8 @@ import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
 import dmeeuwis.kanjimaster.logic.data.Settings;
-import dmeeuwis.kanjimaster.ui.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.core.util.Util;
 
@@ -188,7 +188,7 @@ public class ReminderManager extends BroadcastReceiver {
             scheduleRemindersFor(context);
 
         } catch(Throwable t){
-            UncaughtExceptionLogger.backgroundLogError("Caught error in reminder service onReceive", t, context);
+            UncaughtExceptionLogger.backgroundLogError("Caught error in reminder service onReceive", t);
         }
     }
 
