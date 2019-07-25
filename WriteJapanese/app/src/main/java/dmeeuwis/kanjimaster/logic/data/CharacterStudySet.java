@@ -247,7 +247,7 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public ProgressTracker.StudyRecord nextCharacter() {
-        CharacterProgressDataHelper.ProgressionSettings p = Settings.getProgressionSettings();
+        CharacterProgressDataHelper.ProgressionSettings p = SettingsFactory.get().getProgressionSettings();
         return nextCharacter(p);
     }
 
@@ -280,15 +280,15 @@ public class CharacterStudySet implements Iterable<Character> {
     }
 
     public ProgressTracker load(LoadProgress loadProgress) {
-        CharacterProgressDataHelper.ProgressionSettings p = Settings.getProgressionSettings();
+        CharacterProgressDataHelper.ProgressionSettings p = SettingsFactory.get().getProgressionSettings();
         Pair<GregorianCalendar, GregorianCalendar> goals = dbHelper.getExistingGoals(pathPrefix);
         if (goals != null) {
             this.goalStarted = goals.first;
             this.studyGoal = goals.second;
         }
 
-        Boolean srsEnabled = Settings.getSRSEnabled();
-        Boolean srsAcrossSets = Settings.getSRSAcrossSets();
+        Boolean srsEnabled = SettingsFactory.get().getSRSEnabled();
+        Boolean srsAcrossSets = SettingsFactory.get().getSRSAcrossSets();
 
         // these 2 should only happen on first view, and then the IntroActivity should spring up
         // before the user can interact with this charset anyways.

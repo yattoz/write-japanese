@@ -29,7 +29,7 @@ import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.LoadRadicalsFile;
 import dmeeuwis.kanjimaster.ui.data.RadicalAdapter;
-import dmeeuwis.kanjimaster.logic.data.Settings;
+import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
@@ -62,7 +62,7 @@ public class TeachingStoryFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser){
-            String value = Settings.getStorySharing();
+            String value = SettingsFactory.get().getStorySharing();
             if("true".equals(value)) {
                 loadRemoteStories();
             } else if("false".equals(value)){
@@ -71,14 +71,14 @@ public class TeachingStoryFragment extends Fragment {
                 ShareStoriesDialog.show(getActivity(), new Runnable() {
                     @Override
                     public void run() {
-                        Settings.setStorySharing("true");
+                        SettingsFactory.get().setStorySharing("true");
                         loadRemoteStories();
                     }
                 }, new Runnable(){
 
                     @Override
                     public void run() {
-                        Settings.setStorySharing("false");
+                        SettingsFactory.get().setStorySharing("false");
                     }
                 });
             }

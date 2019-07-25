@@ -17,6 +17,7 @@ import agency.tango.materialintroscreen.MaterialIntroActivity;
 import agency.tango.materialintroscreen.SlideFragment;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.Settings;
+import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.ui.data.SyncRegistration;
 
 public class IntroActivity extends MaterialIntroActivity implements View.OnClickListener {
@@ -54,11 +55,11 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
         Intent intent = getIntent();
 
         // show SRS screen if not yet shown, or if specifically requested
-        boolean srsNotYetShow = Settings.getBooleanSetting(USE_SRS_SETTING_NAME, null) == null;
+        boolean srsNotYetShow = SettingsFactory.get().getBooleanSetting(USE_SRS_SETTING_NAME, null) == null;
         boolean srsRequested = intent != null && intent.getBooleanExtra(REQUEST_SRS_SETTINGS, false);
         boolean showSrs = srsNotYetShow || srsRequested;
 
-        Settings.SyncStatus syncStatus = Settings.getCrossDeviceSyncEnabled();
+        Settings.SyncStatus syncStatus = SettingsFactory.get().getCrossDeviceSyncEnabled();
         boolean syncRequested = intent != null && intent.getBooleanExtra(REQUEST_SYNC_SETTINGS, false);
 
         boolean isKindle = Build.MANUFACTURER.equals("Amazon");
@@ -86,9 +87,9 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
 
             // on first view, set defaults
             if(srsNotYetShow) {
-                Settings.setBooleanSetting(USE_SRS_SETTING_NAME, true);
-                Settings.setBooleanSetting(SRS_ACROSS_SETS, true);
-                Settings.setBooleanSetting(SRS_NOTIFICATION_SETTING_NAME, false);
+                SettingsFactory.get().setBooleanSetting(USE_SRS_SETTING_NAME, true);
+                SettingsFactory.get().setBooleanSetting(SRS_ACROSS_SETS, true);
+                SettingsFactory.get().setBooleanSetting(SRS_NOTIFICATION_SETTING_NAME, false);
             }
         }
 
@@ -106,7 +107,7 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
                             "Sync Across Google Account");
             addSlide(s);
             addedSlides.add(s);
-            Settings.setCrossDeviceSyncAsked();
+            SettingsFactory.get().setCrossDeviceSyncAsked();
         }
 
         Log.i("nakama-intro", "After slides, slidesShown is: " + addedSlides.size());

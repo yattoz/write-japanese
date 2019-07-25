@@ -2,16 +2,17 @@ package dmeeuwis.kanjimaster.logic.drawing;
 
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.Settings;
+import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class ComparisonFactory {
     public static Comparator getUsersComparator(AssetFinder assetFinder){
         try {
-            if (Settings.getStrictness() == Settings.Strictness.CASUAL) {
+            if (SettingsFactory.get().getStrictness() == Settings.Strictness.CASUAL) {
                 return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.DISCOUNT);
-            } else if (Settings.getStrictness() == Settings.Strictness.CASUAL_ORDERED) {
+            } else if (SettingsFactory.get().getStrictness() == Settings.Strictness.CASUAL_ORDERED) {
                 return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.COUNT);
-            } else if (Settings.getStrictness() == Settings.Strictness.STRICT) {
+            } else if (SettingsFactory.get().getStrictness() == Settings.Strictness.STRICT) {
                 return new DrawingComparator(assetFinder);
             } else {
                 return new SimpleDrawingComparator(assetFinder, SimpleDrawingComparator.StrokeOrder.DISCOUNT);

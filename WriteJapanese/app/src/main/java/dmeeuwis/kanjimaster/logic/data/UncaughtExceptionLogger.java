@@ -58,11 +58,11 @@ public abstract class UncaughtExceptionLogger {
             jw.name("iid");
             jw.value(IidFactory.get().toString());
             jw.name("version");
-            jw.value(String.valueOf(Settings.version()));
+            jw.value(String.valueOf(SettingsFactory.get().version()));
             jw.name("device");
-            jw.value(Settings.device());
+            jw.value(SettingsFactory.get().device());
             jw.name("os-version");
-            jw.value(Settings.osVersion());
+            jw.value(SettingsFactory.get().osVersion());
 
             jw.name("stack");
             jw.beginArray();
@@ -74,7 +74,7 @@ public abstract class UncaughtExceptionLogger {
             String json = netWriter.toString();
             Log.i("nakama", "Will try to send error report: " + json);
 
-            if (Settings.debug()) {
+            if (SettingsFactory.get().debug()) {
                 Log.e("nakama", "Swallowing error due to DEBUG build");
                 return;
             }
@@ -188,7 +188,7 @@ public abstract class UncaughtExceptionLogger {
             jw.beginObject();
 
             jw.name("iid").value(IidFactory.get().toString());
-            jw.name("installed").value(Settings.getInstallDate().toString());
+            jw.name("installed").value(SettingsFactory.get().getInstallDate().toString());
             jw.name("purchased").value(LocalDateTime.now().toString());
             jw.name("purchaseToken").value(token);
             jw.name("store").value(store);

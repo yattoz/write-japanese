@@ -11,9 +11,10 @@ import dmeeuwis.kanjimaster.logic.data.DataHelper;
 import dmeeuwis.kanjimaster.ui.data.DataHelperAndroid;
 import dmeeuwis.kanjimaster.logic.data.DataHelperFactory;
 import dmeeuwis.kanjimaster.logic.data.ProcessLogRowFactory;
-import dmeeuwis.kanjimaster.logic.data.Settings;
+import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.logic.drawing.Constants;
 import dmeeuwis.kanjimaster.ui.data.ProcessLogRowAndroid;
+import dmeeuwis.kanjimaster.ui.data.SettingsAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
 
@@ -35,7 +36,7 @@ public class KanjiMasterApplicaton extends Application {
         DataHelper.ProcessRow processor = new ProcessLogRowAndroid(appContext);
         ProcessLogRowFactory.initialize(processor);
 
-        Settings.initialize(appContext);
+        SettingsFactory.initialize(new SettingsAndroid(appContext));
 
         IidFactory.initialize(new IidAndroid(appContext));
     }

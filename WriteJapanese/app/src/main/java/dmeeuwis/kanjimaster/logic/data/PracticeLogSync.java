@@ -68,7 +68,7 @@ public class PracticeLogSync {
     }
 
     public void clearSync(){
-        Settings.clearSyncSettingsDebug();
+        SettingsFactory.get().clearSyncSettingsDebug();
     }
 
     public String maxTimestamp(){
@@ -90,7 +90,7 @@ public class PracticeLogSync {
         long startTime = System.currentTimeMillis();
         String iid = IidFactory.get().toString();
 
-        Settings.SyncSettings sync = Settings.getSyncSettings();
+        Settings.SyncSettings sync = SettingsFactory.get().getSyncSettings();
         Log.i("nakama-sync", "Doing sync with last-server-sync: " + sync.lastSyncServerTimestamp + "; last device sync: " + sync.lastSyncDeviceTimestamp);
 
         Writer netWriter = new StringWriter();
@@ -107,7 +107,7 @@ public class PracticeLogSync {
         try {
             jw.name("prev_sync_timestamp").value(sync.lastSyncServerTimestamp);
 
-            jw.name("app_version").value(Settings.version());
+            jw.name("app_version").value(SettingsFactory.get().version());
 
             db.queryToJsonArray("practice_logs",
                     "SELECT id, install_id, character, charset, timestamp, score, drawing " +
@@ -264,7 +264,7 @@ public class PracticeLogSync {
             inStream.close();
 
             Settings.SyncSettings set = new Settings.SyncSettings(syncTimestampName, maxTimestamp());
-            Settings.setSyncSettings(set);
+            SettingsFactory.get().setSyncSettings(set);
 
             Log.i("nakama-sync", "Sync complete!");
 
@@ -283,7 +283,7 @@ public class PracticeLogSync {
     }
 
     public static void largeLog(String tag, String content) {
-        if (content.length() > 4000 && Settings.debug()) {
+        if (content.length() > 4000 && SettingsFactory.get().debug()) {
             Log.d(tag, content.substring(0, 4000));
         } else {
             Log.d(tag, content);

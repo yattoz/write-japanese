@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.Settings;
+import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 
 public class StrictnessDialog extends DialogFragment implements DialogInterface.OnClickListener{
     RadioGroup radioGroup;
@@ -64,7 +65,7 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
             });
         }
 
-        Settings.Strictness selected = Settings.getStrictness();
+        Settings.Strictness selected = SettingsFactory.get().getStrictness();
         if(selected == Settings.Strictness.CASUAL) {
             radioGroup.check(R.id.strictness_casual_button);
         } else if(selected == Settings.Strictness.CASUAL_ORDERED){
@@ -79,11 +80,11 @@ public class StrictnessDialog extends DialogFragment implements DialogInterface.
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
         if(radioGroup.getCheckedRadioButtonId() == R.id.strictness_casual_button){
-            Settings.setStrictness(Settings.Strictness.CASUAL);
+            SettingsFactory.get().setStrictness(Settings.Strictness.CASUAL);
         } else  if(radioGroup.getCheckedRadioButtonId() == R.id.strictness_casual_ordered_button){
-            Settings.setStrictness(Settings.Strictness.CASUAL_ORDERED);
+            SettingsFactory.get().setStrictness(Settings.Strictness.CASUAL_ORDERED);
         } else {
-            Settings.setStrictness(Settings.Strictness.STRICT);
+            SettingsFactory.get().setStrictness(Settings.Strictness.STRICT);
         }
     }
 }
