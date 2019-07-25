@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.logic.data;
+package dmeeuwis.kanjimaster.ui.data;
 
 
 import android.app.Activity;
@@ -15,7 +15,7 @@ import java.util.List;
 
 import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.core.KanjiRadicalFinder;
-import dmeeuwis.kanjimaster.ui.data.DictionarySet;
+import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 
 public class LoadRadicalsFile extends AsyncTask<Void, Void, List<Kanji>> {
     final Activity parent;
@@ -33,7 +33,7 @@ public class LoadRadicalsFile extends AsyncTask<Void, Void, List<Kanji>> {
     @Override
     protected List<Kanji> doInBackground(Void... v) {
         Thread.currentThread().setName("LoadRadicalsFile");
-        DictionarySet dicts = DictionarySet.get(parent);
+        DictionarySet dicts = DictionarySetAndroid.get(parent);
         List<Kanji> retRadicals = null;
         try {
 

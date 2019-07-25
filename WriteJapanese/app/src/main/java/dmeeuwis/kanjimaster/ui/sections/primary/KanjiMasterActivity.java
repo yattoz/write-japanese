@@ -43,6 +43,7 @@ import android.widget.ViewFlipper;
 
 import com.amazon.device.iap.PurchasingService;
 
+import dmeeuwis.kanjimaster.logic.data.ClueType;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
 import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
@@ -66,6 +67,8 @@ import dmeeuwis.kanjimaster.logic.Constants;
 import dmeeuwis.kanjimaster.core.Kana;
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.core.util.Util;
+import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
+import dmeeuwis.kanjimaster.ui.data.SRSSScheduleDialog;
 import dmeeuwis.kanjimaster.ui.data.SettingsAndroid;
 import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
@@ -75,11 +78,10 @@ import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet.LockLevel;
 import dmeeuwis.kanjimaster.logic.data.ClueExtractor;
 import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
-import dmeeuwis.kanjimaster.ui.data.DictionarySet;
+import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 import dmeeuwis.kanjimaster.logic.data.PracticeLogSync;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
 import dmeeuwis.kanjimaster.logic.data.SRSQueue;
-import dmeeuwis.kanjimaster.logic.data.SRSScheduleHtmlGenerator;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
 import dmeeuwis.kanjimaster.ui.data.SyncRegistration;
@@ -223,7 +225,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         SettingsFactory.get().setInstallDate();
 
         setContentView(R.layout.main);          // pretty heavy, ~900ms
-        this.dictionarySet = DictionarySet.get(this.getApplicationContext());
+        this.dictionarySet = DictionarySetAndroid.get(this.getApplicationContext());
 
         Log.i("nakama-timing", "MainActivity: timing 1 " + (System.currentTimeMillis() - start) + "ms");
 
@@ -1421,7 +1423,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             showStrictnessDialog();
         } else if (item.getItemId() == R.id.menu_srs){
             Map<LocalDate, List<Character>> schedule = currentCharacterSet.getSrsSchedule();
-            SRSScheduleHtmlGenerator.displayScheduleDialog(this, schedule);
+            SRSSScheduleDialog.displayScheduleDialog(this, schedule);
 
         } else if (item.getItemId() == R.id.menu_progression_settings) {
             // show criticism selection fragment
@@ -1621,7 +1623,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
     private int currentNavigationItem = -1;
-    private ClueCard.ClueType currentSetClueType = ClueCard.ClueType.MEANING;
+    private ClueType currentSetClueType = ClueType.MEANING;
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -1678,7 +1680,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         this.currentSetClueType = SettingsFactory.get().getCharsetClueType(this.currentCharacterSet.pathPrefix);
         instructionCard.setClueType(this.currentSetClueType);
         instructionCard.setClueTypeChangeListener(new ClueCard.ClueTypeChangeListener() {
-            @Override public void onClueTypeChange(ClueCard.ClueType c) {
+            @Override public void onClueTypeChange(ClueType c) {
                 Log.i("nakama", "Setting clue type for set " + currentCharacterSet.name + " to " + c);
                 SettingsFactory.get().setCharsetClueType(currentCharacterSet.pathPrefix, c);
             }

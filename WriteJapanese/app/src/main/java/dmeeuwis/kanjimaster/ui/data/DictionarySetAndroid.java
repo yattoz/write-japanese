@@ -17,9 +17,10 @@ import java.util.List;
 
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 import dmeeuwis.kanjimaster.logic.data.TranslationsFromXml;
 
-public class DictionarySet {
+public class DictionarySetAndroid implements DictionarySet {
 
 	public static final String KANJIDICT_FILE = "kanjidic.utf8.awb";
 	public static final String KANJIDICT_INDEX = "kanjidic.index.awb";
@@ -40,11 +41,11 @@ public class DictionarySet {
         if(singleton != null){
             return singleton;
         }
-        singleton = new DictionarySet(context);
+        singleton = new DictionarySetAndroid(context);
         return singleton;
     }
 
-    public DictionarySet(Context context) {
+    public DictionarySetAndroid(Context context) {
 	   	long start = System.currentTimeMillis();
 	   	asm = context.getAssets();
         
@@ -63,7 +64,8 @@ public class DictionarySet {
 		}
 	}
 
-	synchronized public KanjiFinder kanjiFinder(){
+	@Override
+    synchronized public KanjiFinder kanjiFinder(){
 		if(kanjiFinder == null){
 			long kanjiDictOffset = kanjiDictFd.getStartOffset();
 			try {
@@ -75,7 +77,8 @@ public class DictionarySet {
 		return kanjiFinder;
 	}
 
-	public List<Translation> loadTranslations(Character kanji, int limit) throws IOException, XmlPullParserException {
+	@Override
+    public List<Translation> loadTranslations(Character kanji, int limit) throws IOException, XmlPullParserException {
 		String filename = Integer.toHexString(((Character)kanji).charValue());
 		InputStream in = asm.open("char_vocab/" + filename + "_trans.xml");
 		final List<Translation> collect = new ArrayList<>();
@@ -90,7 +93,8 @@ public class DictionarySet {
 		return collect;
 	}
 
-	public void close(){
+	@Override
+    public void close(){
 		safeClose(kanjiDictStream);
 		safeClose(kanjiDictFd);
         safeClose(kanjiDictCh);

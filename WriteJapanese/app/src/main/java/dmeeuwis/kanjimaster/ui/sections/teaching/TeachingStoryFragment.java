@@ -27,7 +27,7 @@ import android.widget.Toast;
 
 import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.logic.data.LoadRadicalsFile;
+import dmeeuwis.kanjimaster.ui.data.LoadRadicalsFile;
 import dmeeuwis.kanjimaster.ui.data.RadicalAdapter;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;

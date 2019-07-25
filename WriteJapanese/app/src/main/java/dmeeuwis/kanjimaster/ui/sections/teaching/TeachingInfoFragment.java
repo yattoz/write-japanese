@@ -15,8 +15,9 @@ import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.ui.data.DictionarySet;
+import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
+import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
 import dmeeuwis.kanjimaster.ui.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.translations.CharacterTranslationListAsyncTask.AddTranslation;
 import dmeeuwis.kanjimaster.ui.views.translations.KanjiVocabRecyclerAdapter;
@@ -42,7 +43,7 @@ public class TeachingInfoFragment extends Fragment {
         Resources r = getActivity().getResources();
         this.engTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
 
-        DictionarySet d = DictionarySet.get(getContext());
+        DictionarySet d = DictionarySetAndroid.get(getContext());
         KanjiFinder kf = d.kanjiFinder();
 
         RecyclerView rec = (RecyclerView)view.findViewById(R.id.teaching_recycler);

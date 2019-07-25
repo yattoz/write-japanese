@@ -7,6 +7,8 @@ import android.util.Log;
 
 import java.util.UUID;
 
+import dmeeuwis.kanjimaster.logic.data.Iid;
+
 public class IidAndroid implements Iid {
 
     private static UUID cachedIid;

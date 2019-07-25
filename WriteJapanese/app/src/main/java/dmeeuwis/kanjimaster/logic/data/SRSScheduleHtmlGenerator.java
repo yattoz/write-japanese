@@ -1,10 +1,5 @@
 package dmeeuwis.kanjimaster.logic.data;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.text.Html;
-
 import org.threeten.bp.LocalDate;
 
 import java.util.List;
@@ -15,21 +10,6 @@ public class SRSScheduleHtmlGenerator {
     public final static String MESSAGE = "SRS repeats correctly " +
             "drawn characters after a scheduled time delay. With each correct response, the delay time is increased. " +
             "From your previous practice, here is your customized review schedule: ";
-
-    public static void displayScheduleDialog(Context ctx, Map<LocalDate, List<Character>> schedule){
-        AlertDialog.Builder b = new AlertDialog.Builder(ctx);
-        b.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //do things
-                    }
-                });
-
-        AlertDialog d = b.create();
-        String html = generateHtml(schedule);
-        d.setMessage(Html.fromHtml(html));
-        d.show();
-    }
-
 
     public static String generateHtml(Map<LocalDate, List<Character>> schedule){
         StringBuilder sb = new StringBuilder();

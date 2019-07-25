@@ -26,6 +26,7 @@ import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.ClueExtractor;
+import dmeeuwis.kanjimaster.logic.data.ClueType;
 import dmeeuwis.kanjimaster.ui.views.FuriganaSwitcher;
 import dmeeuwis.kanjimaster.ui.views.FuriganaTextView;
 
@@ -40,8 +41,6 @@ public class ClueCard extends CardView {
     final static private boolean DEBUG = BuildConfig.DEBUG && false;
 
     private View reviewBug, srsBug;
-
-    public enum ClueType { MEANING, READING, TRANSLATION }
 
     // ui references
 

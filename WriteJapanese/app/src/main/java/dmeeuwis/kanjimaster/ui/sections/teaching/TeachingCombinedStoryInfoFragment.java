@@ -33,9 +33,10 @@ import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
+import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
-import dmeeuwis.kanjimaster.ui.data.DictionarySet;
-import dmeeuwis.kanjimaster.logic.data.LoadRadicalsFile;
+import dmeeuwis.kanjimaster.logic.data.DictionarySet;
+import dmeeuwis.kanjimaster.ui.data.LoadRadicalsFile;
 import dmeeuwis.kanjimaster.ui.data.RadicalAdapter;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
 import dmeeuwis.kanjimaster.ui.views.NetworkStoriesAsyncTask;
@@ -126,7 +127,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
         this.combinedStoriesLayout = (LinearLayout)v.findViewById(R.id.combined_stories);
         this.combinedStoriesCard = (CardView)v.findViewById(R.id.combined_stories_card);
 
-        DictionarySet df = DictionarySet.get(getActivity().getApplicationContext());
+        DictionarySet df = DictionarySetAndroid.get(getActivity().getApplicationContext());
         this.combinedExamples = (RecyclerView)v.findViewById(R.id.combined_examples);
         this.combinedExamples.setNestedScrollingEnabled(false);
         this.combinedExamplesAdapter = new KanjiVocabRecyclerAdapter(this.getActivity(), df.kanjiFinder());
@@ -147,7 +148,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
     public void onResume() {
         Log.i("nakama", "TeachingCombinedStoryInfoFragment.setCharacter " + this.character);
         try {
-            final DictionarySet dictionarySet = new DictionarySet(getActivity());
+            final DictionarySet dictionarySet = new DictionarySetAndroid(getActivity());
             Kanji k = dictionarySet.kanjiFinder().find(this.character);
 
             CharacterTranslationListAsyncTask.AddTranslation adder = new CharacterTranslationListAsyncTask.AddTranslation(){

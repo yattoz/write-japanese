@@ -2,8 +2,6 @@ package dmeeuwis.kanjimaster.logic.data;
 
 import java.util.UUID;
 
-import dmeeuwis.kanjimaster.ui.sections.primary.Iid;
-
 public class IidFactory {
     static Iid iid;
 

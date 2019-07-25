@@ -26,10 +26,11 @@ import dmeeuwis.kanjimaster.core.Kana;
 import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.Constants;
+import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
 import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
-import dmeeuwis.kanjimaster.ui.data.DictionarySet;
+import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 
 public class TeachingActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
 	ActionBar actionBar;
@@ -69,7 +70,7 @@ public class TeachingActivity extends AppCompatActivity implements ViewPager.OnP
         long startTime = System.currentTimeMillis();
 
         this.setContentView(R.layout.teaching_activity);
-        this.dictSet = DictionarySet.get(this);
+        this.dictSet = DictionarySetAndroid.get(this);
 
         actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -131,7 +132,7 @@ public class TeachingActivity extends AppCompatActivity implements ViewPager.OnP
 
         this.character = kanjiIn.toString();
 
-        DictionarySet sd = DictionarySet.get(this);
+        DictionarySet sd = DictionarySetAndroid.get(this);
         try {
             this.kanji = sd.kanjiFinder().find(getCharacter().charAt(0));
         } catch (IOException e) {

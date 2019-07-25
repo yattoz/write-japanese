@@ -21,11 +21,12 @@ import android.widget.TextView;
 import java.util.List;
 
 import dmeeuwis.kanjimaster.R;
+import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 import dmeeuwis.kanjimaster.ui.billing.LockChecker;
+import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.LockCheckerHolder;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
-import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
 
@@ -56,7 +57,7 @@ public class CharacterSetListActivity extends AppCompatActivity implements LockC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_characterset_list);
 
-        set = DictionarySet.get(getApplicationContext());
+        set = DictionarySetAndroid.get(getApplicationContext());
 
         ActionBar actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);

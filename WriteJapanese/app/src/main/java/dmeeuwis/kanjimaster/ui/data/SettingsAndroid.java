@@ -12,13 +12,13 @@ import java.util.UUID;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
+import dmeeuwis.kanjimaster.logic.data.ClueType;
 import dmeeuwis.kanjimaster.logic.data.DataHelperFactory;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
 import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity;
 import dmeeuwis.kanjimaster.ui.sections.primary.ProgressSettingsDialog;
-import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
 
 public class SettingsAndroid implements Settings {
     public static final String INSTALL_TIME_PREF_NAME = "INSTALL_TIME";
@@ -122,17 +122,17 @@ public class SettingsAndroid implements Settings {
     }
 
     @Override
-    public void setCharsetClueType(String charsetId, ClueCard.ClueType clueType) {
+    public void setCharsetClueType(String charsetId, ClueType clueType) {
         setSetting("cluetype_" + charsetId, clueType.toString());
     }
 
     @Override
-    public ClueCard.ClueType getCharsetClueType(String charsetId) {
+    public ClueType getCharsetClueType(String charsetId) {
         try {
-            return ClueCard.ClueType.valueOf(getSetting("cluetype_" + charsetId, ClueCard.ClueType.MEANING.toString()));
+            return ClueType.valueOf(getSetting("cluetype_" + charsetId, ClueType.MEANING.toString()));
         } catch (Throwable t) {
             UncaughtExceptionLogger.backgroundLogError("Error parsing clue type for charset", t);
-            return ClueCard.ClueType.MEANING;
+            return ClueType.MEANING;
         }
     }
 
@@ -245,5 +245,15 @@ public class SettingsAndroid implements Settings {
         return Build.MANUFACTURER + ": " + Build.MODEL;
     }
 
+    @Override
+    public boolean isEmulator(){
+        return Build.FINGERPRINT.startsWith("generic")
+                || Build.FINGERPRINT.startsWith("unknown")
+                || Build.MODEL.contains("google_sdk")
+                || Build.MODEL.contains("Emulator")
+                || Build.MODEL.contains("Android SDK built for x86")
+                || Build.MANUFACTURER.contains("Genymotion")
+                || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+                || "google_sdk".equals(Build.PRODUCT);
+    }
 }
-

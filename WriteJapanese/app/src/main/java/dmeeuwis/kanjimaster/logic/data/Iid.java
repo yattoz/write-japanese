@@ -1,4 +1,4 @@
-package dmeeuwis.kanjimaster.ui.sections.primary;
+package dmeeuwis.kanjimaster.logic.data;
 
 import java.util.UUID;
 

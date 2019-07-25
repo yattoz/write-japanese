@@ -9,7 +9,6 @@ import dmeeuwis.kanjimaster.core.Kana;
 import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.core.util.Util;
-import dmeeuwis.kanjimaster.ui.data.DictionarySet;
 
 public class ClueExtractor {
 

@@ -1,14 +1,6 @@
 package dmeeuwis.kanjimaster.logic.data;
 
-import android.content.Context;
-
 public abstract class LoggingRunnable implements Runnable {
-
-    final Context context;
-
-    public LoggingRunnable(Context context){
-        this.context = context;
-    }
 
     @Override
     public void run() {

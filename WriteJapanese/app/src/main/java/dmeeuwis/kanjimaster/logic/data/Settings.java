@@ -1,7 +1,5 @@
 package dmeeuwis.kanjimaster.logic.data;
 
-import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
-
 public interface Settings {
     Boolean getSRSEnabled();
 
@@ -27,9 +25,9 @@ public interface Settings {
 
     void setStrictness(Strictness s);
 
-    void setCharsetClueType(String charsetId, ClueCard.ClueType clueType);
+    void setCharsetClueType(String charsetId, ClueType clueType);
 
-    ClueCard.ClueType getCharsetClueType(String charsetId);
+    ClueType getCharsetClueType(String charsetId);
 
     String getStorySharing();
 
@@ -58,6 +56,8 @@ public interface Settings {
     boolean debug();
 
     String device();
+
+    boolean isEmulator();
 
     enum Strictness {CASUAL, CASUAL_ORDERED, STRICT}
 
