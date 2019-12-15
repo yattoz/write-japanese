@@ -92,7 +92,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
                     }
                 }
 
-                commsExec.execute(new LoggingRunnable(parent) {
+                commsExec.execute(new LoggingRunnable() {
                     public void runCore() {
                         checkPastPurchases();
                     }
@@ -114,7 +114,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
         }
 
         Log.d("nakama-iiab", "LockCheckerIInAppBilling: queuing purchase run");
-        addJob(new LoggingRunnable(parent) {
+        addJob(new LoggingRunnable() {
             public void runCore() {
                 try {
                     Log.d("nakama-iiab", "LockCheckerIInAppBilling: doing purchase run");
@@ -177,7 +177,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
     private void toast(final String msg){
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new LoggingRunnable(parent) {
+        handler.post(new LoggingRunnable() {
                  public void runCore() {
                      Toast.makeText(parent, msg, Toast.LENGTH_LONG).show();
                  }
@@ -187,7 +187,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
     private void recreateActivity(){
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new LoggingRunnable(parent) {
+        handler.post(new LoggingRunnable() {
                          public void runCore() {
                              parent.recreate();
                          }
