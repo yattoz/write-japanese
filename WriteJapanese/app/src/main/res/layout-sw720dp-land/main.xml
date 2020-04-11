@@ -80,7 +80,7 @@
         android:layout_gravity="bottom|end"
         android:elevation="@dimen/elevation_low"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_right_arrow"
+        android:src="@drawable/outline_done_white_24"
         android:layout_marginRight="12dp"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="12dp"
@@ -217,7 +217,7 @@
             android:layout_gravity="bottom|end"
             android:elevation="@dimen/elevation_low"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_right_arrow"
+            android:src="@drawable/baseline_arrow_forward_white_24"
             app:backgroundTint="@color/DarkGreen" />
     </FrameLayout>
 
@@ -321,7 +321,7 @@
                 android:layout_marginRight="12dp"
                 android:elevation="@dimen/elevation_low"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_right_arrow"
+                android:src="@drawable/baseline_arrow_forward_white_24"
                 app:backgroundTint="@color/DarkGreen" />
         </FrameLayout>
     </LinearLayout>
