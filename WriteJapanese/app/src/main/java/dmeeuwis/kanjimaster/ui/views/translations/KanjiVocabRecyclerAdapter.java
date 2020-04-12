@@ -36,6 +36,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     private PointDrawing drawnCharacter;
 
     private String character, meanings, onyomi, kunyomi;
+    private boolean showingSrsTime = false;
 
     private final static int DRAWN_CORRECTLY_HEADER = 0;
     private final static int TRANSLATION_HEADER = 1;
@@ -178,6 +179,11 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             String dateText = srsNextPractice.nextPractice.toString();
             holder.nextSrsTextView.setText("Next scheduled timed review: " + dateText);
             Log.d("nakama-srs", "Setting SRS text header to " + dateText);
+            showingSrsTime = true;
+        }
+
+        if(p == 0) {
+            showingSrsTime = h instanceof SrsNextPracticeViewHolder;
         }
     }
 
@@ -201,6 +207,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
                 (meanings != null ? 1 : 0) -
                 (character != null ? 1 : 0) -
                 (onyomi != null ? 1 : 0) -
+                (showingSrsTime ? 1 : 0) -
                 (drawnCharacter != null ? 1 : 0);
     }
 
@@ -209,6 +216,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
                 (meanings != null ? 1 : 0) +
                 (character != null ? 1 : 0) +
                 (onyomi != null ? 1 : 0) +
+                (showingSrsTime ? 1 : 0) +
                 (drawnCharacter != null ? 1 : 0);
     }
 
