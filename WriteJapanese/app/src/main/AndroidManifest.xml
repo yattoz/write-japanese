@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="dmeeuwis.kanjimaster">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="dmeeuwis.kanjimaster">
 
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,23 +15,28 @@
         android:icon="@mipmap/ic_launcher_adaptive"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        tools:replace="android:icon"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:icon">
+        <activity
+            android:name=".ui.sections.progress.ProgressLogActivity"
+            android:label="@string/title_activity_progress_log"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
         <provider
-            android:name="dmeeuwis.kanjimaster.ui.data.StubContentProvider"
+            android:name=".ui.data.StubContentProvider"
             android:authorities="dmeeuwis.com"
             android:exported="false"
             android:label="WriteJapanese"
             android:multiprocess="true"
-            android:syncable="true"/>
+            android:syncable="true" />
 
         <activity
             android:name=".ui.sections.primary.KanjiMasterActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
             </intent-filter>
@@ -39,16 +44,14 @@
 
         <receiver
             android:name=".ui.sections.progress.ReminderManager"
-            android:icon="@mipmap/ic_launcher_adaptive"
-            />
-
-        <receiver android:name = "com.amazon.device.iap.ResponseReceiver" >
+            android:icon="@mipmap/ic_launcher_adaptive" />
+        <receiver android:name="com.amazon.device.iap.ResponseReceiver">
             <intent-filter>
-                <action android:name = "com.amazon.inapp.purchasing.NOTIFY"
-                    android:permission = "com.amazon.inapp.purchasing.Permission.NOTIFY" />
+                <action
+                    android:name="com.amazon.inapp.purchasing.NOTIFY"
+                    android:permission="com.amazon.inapp.purchasing.Permission.NOTIFY" />
             </intent-filter>
         </receiver>
-
 
         <activity
             android:name=".ui.sections.progress.CharsetInfoActivity"
@@ -78,7 +81,6 @@
         <meta-data
             android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
             android:value="false" />
-
         <meta-data
             android:name="com.sec.android.support.multiwindow"
             android:value="true" />
@@ -99,7 +101,7 @@
             android:value="598.0dip" />
 
         <service
-            android:name="dmeeuwis.kanjimaster.ui.data.SyncService"
+            android:name=".ui.data.SyncService"
             android:exported="true"
             android:process=":sync">
             <intent-filter>
@@ -123,10 +125,10 @@
         <activity
             android:name=".ui.sections.tests.DrawViewTestActivity"
             android:label="@string/title_activity_draw_view_test" />
-        <activity android:name=".ui.sections.credits.ReleaseNotesActivity"/>
+        <activity android:name=".ui.sections.credits.ReleaseNotesActivity" />
         <activity
             android:name=".ui.sections.seteditor.CharacterSetListActivity"
-            android:label="@string/title_characterset_list"/>
+            android:label="@string/title_characterset_list" />
         <activity
             android:name=".ui.sections.seteditor.CharacterSetDetailActivity"
             android:label="@string/title_characterset_detail"
