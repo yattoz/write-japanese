@@ -33,7 +33,7 @@ class TranslationViewHolder extends RecyclerView.ViewHolder {
 
     private KanjiFinder kanjiFinder;
 
-    int assignedCharacters = 0;
+    private int assignedCharacters = 0;
 
     TranslationViewHolder(View view, float engTextSize) {
         super(view);

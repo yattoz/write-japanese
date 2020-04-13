@@ -70,6 +70,7 @@ import dmeeuwis.kanjimaster.core.util.Util;
 import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
 import dmeeuwis.kanjimaster.ui.data.SRSSScheduleDialog;
 import dmeeuwis.kanjimaster.ui.data.SettingsAndroid;
+import dmeeuwis.kanjimaster.ui.sections.progress.ProgressLogActivity;
 import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
@@ -1315,7 +1316,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.menu_progress) {
-            Intent teachIntent = new Intent(this, ProgressActivity.class);
+            Intent teachIntent = new Intent(this, ProgressLogActivity.class);
             Bundle params = new Bundle();
             params.putString("parent", this.getClass().getName());
             params.putString(Constants.KANJI_PATH_PARAM, this.currentCharacterSet.pathPrefix);

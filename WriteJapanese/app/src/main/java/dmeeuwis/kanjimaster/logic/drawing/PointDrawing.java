@@ -2,9 +2,11 @@ package dmeeuwis.kanjimaster.logic.drawing;
 
 import android.util.Log;
 
+import dmeeuwis.kanjimaster.logic.util.JsonReader;
 import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -231,6 +233,45 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
         }
         jw.endArray();
         jw.endObject();
+	}
+
+	public static PointDrawing deserialize(String json) throws IOException {
+		if(json == null){
+			return null;
+		}
+
+		JsonReader jr = new JsonReader(new StringReader(json));
+		jr.beginObject();
+
+		String scaleXName = jr.nextName();
+		int scaleX = jr.nextInt();
+
+		String scaleYName = jr.nextName();
+		int scaleY = jr.nextInt();
+
+		String drawingName = jr.nextName();
+		jr.beginArray();
+
+		List<Stroke> strokes = new ArrayList<>();
+		while(jr.hasNext()) {
+			while (jr.hasNext()) {
+				List<Point> l = new ArrayList<>();
+				jr.beginArray();
+				while (jr.hasNext()) {
+					jr.beginArray();
+					int x = jr.nextInt();
+					int y = jr.nextInt();
+					jr.endArray();
+					l.add(new Point(x, y));
+				}
+				strokes.add(new Stroke(l));
+			}
+			jr.endArray();
+		}
+		jr.endArray();
+		jr.endObject();
+
+		return new PointDrawing(scaleX, scaleY, strokes);
 	}
 
 	public String toString(){
