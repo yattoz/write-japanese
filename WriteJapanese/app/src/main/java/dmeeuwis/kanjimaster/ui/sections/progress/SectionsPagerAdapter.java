@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dmeeuwis.kanjimaster.R;
 
 /**
@@ -19,26 +22,23 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
     private final Context mContext;
 
+    private final FragmentManager fm;
+    private final List<Fragment> fragments;
+
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
-        mContext = context;
+        this.mContext = context;
+        this.fm = fm;
+        this.fragments = new ArrayList<>(2);
     }
-
-    Fragment first;
-    Fragment second;
 
     @Override
     public Fragment getItem(int position) {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
+        return fragments.get(position);
+    }
 
-        if(position == 0){
-            first = ProgressFragment.newInstance(0);
-            return first;
-        }
-
-        second = PracticeLogFragment.newInstance(position);
-        return second;
+    public void addFragment(Fragment f){
+        fragments.add(f);
     }
 
     @Nullable
@@ -49,13 +49,10 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return fragments.size();
     }
 
     public Fragment itemAt(int i) {
-        if(i == 0){
-            return first;
-        }
-        return second;
+        return fragments.get(i);
     }
 }

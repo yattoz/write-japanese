@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -35,7 +36,11 @@ public class ProgressLogActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress_log);
-        sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        FragmentManager man = getSupportFragmentManager();
+        sectionsPagerAdapter = new SectionsPagerAdapter(this, man);
+        sectionsPagerAdapter.addFragment(ProgressFragment.newInstance(0));
+        sectionsPagerAdapter.addFragment(PracticeLogFragment.newInstance(1));
+
         viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
