@@ -51,11 +51,13 @@ public class MyPracticeLogRecyclerViewAdapter extends RecyclerView.Adapter<MyPra
 
             int color = Color.parseColor("#c4ffcd");
             holder.mView.setBackgroundColor(color);
+            holder.curveView.setBackgroundColor(color);
 
         } else {
             holder.passText.setText("X");
             int color = Color.parseColor("#ffc4c4");
             holder.mView.setBackgroundColor(color);
+            holder.curveView.setBackgroundColor(color);
         }
 
         PointDrawing drawing = mValues.get(position).drawing;

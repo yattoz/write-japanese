@@ -86,7 +86,6 @@ public class ProgressFragment extends Fragment implements AdapterView.OnItemClic
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.activity_progress, container, false);
-        final TextView textView = root.findViewById(R.id.section_label);
 
         characterGrid = root.findViewById(R.id.character_grid);
         chart = root.findViewById(R.id.barChart);

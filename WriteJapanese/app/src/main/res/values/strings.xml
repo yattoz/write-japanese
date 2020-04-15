@@ -156,7 +156,7 @@
         <item>Character drawn correctly on first try</item>
         <item>Never (when SRS enabled)</item>
     </string-array>
-    <string name="title_activity_progress_log">ProgressLogActivity</string>
+    <string name="title_activity_progress_log">Set Progress and Log</string>
     <string name="tab_text_1">Set Progress</string>
     <string name="tab_text_2">Practice Log</string>
 

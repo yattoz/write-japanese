@@ -14,6 +14,7 @@ import java.util.List;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.Constants;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
@@ -43,9 +44,7 @@ public class ProgressLogActivity extends AppCompatActivity
         lc = new LockCheckerInAppBillingService(this);
 
         ActionBar actionBar = this.getSupportActionBar();
-        if(actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         Bundle params;
         Intent intent = getIntent();
@@ -142,6 +141,11 @@ public class ProgressLogActivity extends AppCompatActivity
     public void onCompletion(List<PracticeLogAsyncTask.PracticeLog> logs) {
         Fragment f = sectionsPagerAdapter.itemAt(1);
         PracticeLogFragment plf = (PracticeLogFragment) f;
+
+        if(plf == null){
+            UncaughtExceptionLogger.backgroundLogError("Error: null PracticeLogFragment", new RuntimeException());
+            return;
+        }
         plf.setData(logs);
     }
 }

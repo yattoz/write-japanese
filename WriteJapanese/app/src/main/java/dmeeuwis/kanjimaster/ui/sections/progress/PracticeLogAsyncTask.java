@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
@@ -56,7 +58,7 @@ class PracticeLogAsyncTask extends AsyncTask<String, String, List<PracticeLogAsy
 
             List<PracticeLog> out = new ArrayList<>(rows.size());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            DateTimeFormatter display = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            DateTimeFormatter display = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
             for(Map<String, String> r: rows){
                 try {
                     String json = r.get("drawing");
@@ -69,8 +71,10 @@ class PracticeLogAsyncTask extends AsyncTask<String, String, List<PracticeLogAsy
 
                     String date = "";
                     try {
-                        LocalDateTime dateTime = LocalDateTime.parse((String)r.get("timestamp"), formatter);
-                        date = dateTime.format(display);
+                        date = LocalDateTime.parse((String)r.get("timestamp"), formatter)
+                                .atOffset(ZoneOffset.UTC)
+                                .atZoneSameInstant(ZoneId.systemDefault())
+                                .format(display);
                     } catch (Throwable t){
                         Log.e("nakama", "Error parsing timestamp", t);
                     }

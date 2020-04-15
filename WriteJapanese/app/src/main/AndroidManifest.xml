@@ -17,10 +17,12 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon">
+
         <activity
             android:name=".ui.sections.progress.ProgressLogActivity"
             android:label="@string/title_activity_progress_log"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:launchMode="singleTask"
+            />
 
         <provider
             android:name=".ui.data.StubContentProvider"
