@@ -51,8 +51,6 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
         Log.i("nakama-intro", "IntroActivity.onCreate");
         Resources r = getResources();
 
-        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
-
         List<SlideFragment> addedSlides = new ArrayList<>();
 
         Intent intent = getIntent();

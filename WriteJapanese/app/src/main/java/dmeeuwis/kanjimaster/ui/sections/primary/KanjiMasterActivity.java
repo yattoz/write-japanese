@@ -204,8 +204,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         Log.i("nakama-intro", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
-
         if (Build.MANUFACTURER.equals("Amazon")) {
             lockChecker = new LockCheckerAmazonIAB(this);
         } else {

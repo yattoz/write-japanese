@@ -37,8 +37,6 @@ public class CharacterSetDetailActivity extends AppCompatActivity implements Loc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_characterset_detail);
 
-        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
-
         ActionBar actionBar = this.getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Edit Custom Character Set");

@@ -58,8 +58,6 @@ public class CharacterSetListActivity extends AppCompatActivity implements LockC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_characterset_list);
 
-        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
-
         set = DictionarySetAndroid.get(getApplicationContext());
 
         ActionBar actionBar = this.getSupportActionBar();

@@ -34,8 +34,6 @@ public class CharsetInfoActivity extends AppCompatActivity implements OnGoalPick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charset_info);
 
-        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
-
         if (savedInstanceState == null) {
             CharacterSetStatusFragment frag = new CharacterSetStatusFragment();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

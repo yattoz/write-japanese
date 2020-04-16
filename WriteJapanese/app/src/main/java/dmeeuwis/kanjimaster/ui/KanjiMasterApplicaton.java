@@ -17,12 +17,15 @@ import dmeeuwis.kanjimaster.ui.data.ProcessLogRowAndroid;
 import dmeeuwis.kanjimaster.ui.data.SettingsAndroid;
 import dmeeuwis.kanjimaster.ui.sections.primary.IidAndroid;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
+import dmeeuwis.kanjimaster.ui.util.KanjiMasterUncaughtExceptionHandler;
 
 public class KanjiMasterApplicaton extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
         AndroidThreeTen.init(this);
+
+        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
 
         Resources r = getResources();
         Constants.MIN_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Constants.MIN_POINT_DISTANCE_DP, r.getDisplayMetrics());
