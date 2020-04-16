@@ -20,6 +20,7 @@ import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
 import dmeeuwis.kanjimaster.ui.sections.primary.KanjiMasterActivity;
 import dmeeuwis.kanjimaster.ui.sections.primary.LockCheckerHolder;
+import dmeeuwis.kanjimaster.ui.util.KanjiMasterUncaughtExceptionHandler;
 
 public class ProgressLogActivity extends AppCompatActivity
         implements LockCheckerHolder, PracticeLogFragment.OnListFragmentInteractionListener, PracticeLogAsyncTask.PracticeLogAsyncCallback {
@@ -35,6 +36,9 @@ public class ProgressLogActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
+
         setContentView(R.layout.activity_progress_log);
         FragmentManager man = getSupportFragmentManager();
         sectionsPagerAdapter = new SectionsPagerAdapter(this, man);

@@ -68,10 +68,6 @@
             android:label="@string/app_name"
             android:launchMode="singleTask" />
         <activity
-            android:name=".ui.sections.progress.ProgressActivity"
-            android:label="@string/title_activity_progress"
-            android:launchMode="singleTask" />
-        <activity
             android:name=".ui.sections.credits.CreditsActivity"
             android:label="@string/title_activity_credits"
             android:launchMode="singleTask" />

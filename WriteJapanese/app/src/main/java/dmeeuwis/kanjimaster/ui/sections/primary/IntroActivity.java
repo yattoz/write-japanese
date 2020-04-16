@@ -19,6 +19,7 @@ import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.ui.data.SyncRegistration;
+import dmeeuwis.kanjimaster.ui.util.KanjiMasterUncaughtExceptionHandler;
 
 public class IntroActivity extends MaterialIntroActivity implements View.OnClickListener {
 
@@ -49,6 +50,8 @@ public class IntroActivity extends MaterialIntroActivity implements View.OnClick
 
         Log.i("nakama-intro", "IntroActivity.onCreate");
         Resources r = getResources();
+
+        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
 
         List<SlideFragment> addedSlides = new ArrayList<>();
 

@@ -53,7 +53,7 @@ public class ProgressFragment extends Fragment implements AdapterView.OnItemClic
     CharacterStudySet charSet;
 
     GridView characterGrid;
-    ProgressActivity.CharacterGridAdapter gridAdapter;
+    CharacterGridAdapter gridAdapter;
     SingleBarChart chart;
     TextView chartLegend;
 
@@ -114,7 +114,7 @@ public class ProgressFragment extends Fragment implements AdapterView.OnItemClic
             strings[i] = Character.toString(chars[i]);
         }
 
-        gridAdapter = new ProgressActivity.CharacterGridAdapter(getContext(), characterList, charSet.availableCharactersSet(), scores);
+        gridAdapter = new CharacterGridAdapter(getContext(), characterList, charSet.availableCharactersSet(), scores);
         characterGrid.setAdapter(gridAdapter);
         characterGrid.setOnItemClickListener(this);
 

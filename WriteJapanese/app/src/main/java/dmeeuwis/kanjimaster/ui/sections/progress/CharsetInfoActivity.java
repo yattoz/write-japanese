@@ -17,6 +17,7 @@ import dmeeuwis.kanjimaster.logic.data.CharacterSets;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnGoalPickListener;
+import dmeeuwis.kanjimaster.ui.util.KanjiMasterUncaughtExceptionHandler;
 
 /**
  * On small devices, holds the CharacterSetStatusFragment standardSets by itself.
@@ -32,6 +33,8 @@ public class CharsetInfoActivity extends AppCompatActivity implements OnGoalPick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charset_info);
+
+        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
 
         if (savedInstanceState == null) {
             CharacterSetStatusFragment frag = new CharacterSetStatusFragment();

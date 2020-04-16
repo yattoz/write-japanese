@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -100,7 +99,6 @@ import dmeeuwis.kanjimaster.ui.sections.credits.CreditsActivity;
 import dmeeuwis.kanjimaster.ui.sections.credits.ReleaseNotesActivity;
 import dmeeuwis.kanjimaster.ui.sections.progress.CharacterSetStatusFragment;
 import dmeeuwis.kanjimaster.ui.sections.progress.CharsetInfoActivity;
-import dmeeuwis.kanjimaster.ui.sections.progress.ProgressActivity;
 import dmeeuwis.kanjimaster.ui.sections.progress.ReminderManager;
 import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailActivity;
 import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailFragment;
@@ -111,6 +109,7 @@ import dmeeuwis.kanjimaster.ui.sections.tests.DrawViewTestActivity;
 import dmeeuwis.kanjimaster.ui.sections.tests.KanjiCheckActivity;
 import dmeeuwis.kanjimaster.ui.sections.tests.SpenDrawActivity;
 import dmeeuwis.kanjimaster.ui.sections.tests.TestDrawActivity;
+import dmeeuwis.kanjimaster.ui.util.KanjiMasterUncaughtExceptionHandler;
 import dmeeuwis.kanjimaster.ui.views.Animatable;
 import dmeeuwis.kanjimaster.ui.views.AnimatedCurveView;
 import dmeeuwis.kanjimaster.ui.views.DrawView;
@@ -191,15 +190,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
     protected CharacterSetStatusFragment charSetFrag;
 
-    private class KanjiMasterUncaughtHandler implements Thread.UncaughtExceptionHandler {
-        @Override
-        public void uncaughtException(final Thread thread, final Throwable ex) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-            UncaughtExceptionLogger.logError(thread, "Uncaught top level error: ", ex);
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("nakama", "KanjiMasterActivity.onActivityResult(" + requestCode + "," + resultCode + "," + data);
@@ -214,7 +204,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         Log.i("nakama-intro", "MainActivity: onCreate starting.");
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtHandler());
+        Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
 
         if (Build.MANUFACTURER.equals("Amazon")) {
             lockChecker = new LockCheckerAmazonIAB(this);

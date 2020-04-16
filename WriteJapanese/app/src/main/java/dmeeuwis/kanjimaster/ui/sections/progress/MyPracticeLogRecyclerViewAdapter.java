@@ -49,13 +49,13 @@ public class MyPracticeLogRecyclerViewAdapter extends RecyclerView.Adapter<MyPra
         if(mValues.get(position).correct){
             holder.passText.setText("O");
 
-            int color = Color.parseColor("#c4ffcd");
+            int color = Color.parseColor("#e7ffe0");
             holder.mView.setBackgroundColor(color);
             holder.curveView.setBackgroundColor(color);
 
         } else {
             holder.passText.setText("X");
-            int color = Color.parseColor("#ffc4c4");
+            int color = Color.parseColor("#ffe0e0");
             holder.mView.setBackgroundColor(color);
             holder.curveView.setBackgroundColor(color);
         }
