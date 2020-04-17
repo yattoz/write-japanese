@@ -236,7 +236,7 @@ public class PointDrawing implements Iterable<Stroke>, Drawing {
 	}
 
 	public static PointDrawing deserialize(String json) throws IOException {
-		if(json == null){
+		if(json == null || json.isEmpty()){
 			return null;
 		}
 

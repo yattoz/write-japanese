@@ -1518,6 +1518,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                     Toast.makeText(this, "Recalculated!", Toast.LENGTH_LONG).show();
                 } finally {
                     sqlite.close();
+                    db.close();
                 }
 
             } else if(item.getTitle().equals("DEBUG:DebugHistory")){

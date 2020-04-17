@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class HostFinder {
-    private static boolean DEBUG_NETWORK = true;
+    private static boolean DEBUG_NETWORK = false;
 
     public static URL formatURL(String url){
         try {

@@ -47,14 +47,24 @@ public class DataHelperAndroid implements DataHelper {
     public void execSQL(String s, String[] strings) {
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase db = woh.getWritableDatabase();
-        db.execSQL(s, strings);
+        try {
+            db.execSQL(s, strings);
+        } finally {
+            db.close();
+            woh.close();
+        }
     }
 
     @Override
     public void execSQL(String s) {
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase db = woh.getWritableDatabase();
-        db.execSQL(s);
+        try {
+            db.execSQL(s);
+        } finally {
+            db.close();
+            woh.close();
+        }
     }
 
     interface ProcessRow {
@@ -65,26 +75,31 @@ public class DataHelperAndroid implements DataHelper {
     public int applyToResults(ProcessRow rowProcessor, String sql, Object ... params){
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(this.context);
         SQLiteDatabase db = woh.getReadableDatabase();
-
-        String[] sparams = asStringArray(params);
-        Cursor c = db.rawQuery(sql,sparams);
-        int count = 0;
         try {
-            int columnCount = c.getColumnCount();
-            while(c.moveToNext()){
-                count++;
-                Map<String, String> m = new HashMap<String, String>();
-                for(int i = 0; i < columnCount; i++){
-                    String colName = c.getColumnName(i);
-                    String rowColValue = c.getString(i);
-                    m.put(colName, rowColValue);
+
+            String[] sparams = asStringArray(params);
+            Cursor c = db.rawQuery(sql, sparams);
+            int count = 0;
+            try {
+                int columnCount = c.getColumnCount();
+                while (c.moveToNext()) {
+                    count++;
+                    Map<String, String> m = new HashMap<String, String>();
+                    for (int i = 0; i < columnCount; i++) {
+                        String colName = c.getColumnName(i);
+                        String rowColValue = c.getString(i);
+                        m.put(colName, rowColValue);
+                    }
+                    rowProcessor.process(m);
                 }
-                rowProcessor.process(m);
+            } finally {
+                if (c != null) c.close();
             }
+            return count;
         } finally {
-            if(c != null) c.close();
+            db.close();
+            woh.close();
         }
-        return count;
     }
 
 
@@ -92,37 +107,47 @@ public class DataHelperAndroid implements DataHelper {
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(this.context);
         SQLiteDatabase db = woh.getReadableDatabase();
 
-        List<Map<String, String>> result;
-        String[] sparams = asStringArray(params);
-        Cursor c = db.rawQuery(sql,sparams);
         try {
-            result = new ArrayList<>(c.getCount());
-            int columnCount = c.getColumnCount();
-            while(c.moveToNext()){
-                Map<String, String> m = new HashMap<String, String>();
-                for(int i = 0; i < columnCount; i++){
-                    String colName = c.getColumnName(i);
-                    String rowColValue = c.getString(i);
-                    m.put(colName, rowColValue);
+            List<Map<String, String>> result;
+            String[] sparams = asStringArray(params);
+            Cursor c = db.rawQuery(sql, sparams);
+            try {
+                result = new ArrayList<>(c.getCount());
+                int columnCount = c.getColumnCount();
+                while (c.moveToNext()) {
+                    Map<String, String> m = new HashMap<String, String>();
+                    for (int i = 0; i < columnCount; i++) {
+                        String colName = c.getColumnName(i);
+                        String rowColValue = c.getString(i);
+                        m.put(colName, rowColValue);
+                    }
+                    result.add(m);
                 }
-                result.add(m);
+                return result;
+            } finally {
+                if (c != null) c.close();
             }
         } finally {
-            if(c != null) c.close();
+            db.close();
+            woh.close();
         }
-        return result;
     }
 
     public Integer selectInteger(String sql, Object ... params){
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(this.context);
         SQLiteDatabase db = woh.getReadableDatabase();
 
-        Cursor c = db.rawQuery(sql, asStringArray(params));
         try {
-            if(c.moveToFirst())
-                return c.getInt(0);
+            Cursor c = db.rawQuery(sql, asStringArray(params));
+            try {
+                if (c.moveToFirst())
+                    return c.getInt(0);
+            } finally {
+                c.close();
+            }
         } finally {
-            c.close();
+            db.close();
+            woh.close();
         }
         throw new RuntimeException("Could not find id from newly created vocab list.");
     }
@@ -131,26 +156,36 @@ public class DataHelperAndroid implements DataHelper {
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(this.context);
         SQLiteDatabase db = woh.getReadableDatabase();
 
-        Cursor c = db.rawQuery(sql, asStringArray(params));
         try {
-            if(c.moveToFirst())
-                return c.getString(0);
+            Cursor c = db.rawQuery(sql, asStringArray(params));
+            try {
+                if (c.moveToFirst())
+                    return c.getString(0);
+            } finally {
+                c.close();
+            }
+            throw new RuntimeException("Could not find id from newly created vocab list.");
         } finally {
-            c.close();
+            db.close();
+            woh.close();
         }
-        throw new RuntimeException("Could not find id from newly created vocab list.");
     }
 
     public String selectStringOrNull(String sql, Object ... params){
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(this.context);
         SQLiteDatabase db = woh.getReadableDatabase();
 
-        Cursor c = db.rawQuery(sql, asStringArray(params));
         try {
-            if(c.moveToFirst())
-                return c.getString(0);
+            Cursor c = db.rawQuery(sql, asStringArray(params));
+            try {
+                if (c.moveToFirst())
+                    return c.getString(0);
+            } finally {
+                c.close();
+            }
         } finally {
-            c.close();
+            db.close();
+            woh.close();
         }
         return null;
     }
@@ -159,38 +194,48 @@ public class DataHelperAndroid implements DataHelper {
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(this.context);
         SQLiteDatabase db = woh.getReadableDatabase();
 
-        List<String> entries = new LinkedList<String>();
-        Cursor c =  db.rawQuery(sql, asStringArray(params));
         try {
-            if(c.moveToFirst()){
-                do {
-                    String value = c.getString(0);
-                    entries.add(value);
-                } while(c.moveToNext());
+            List<String> entries = new LinkedList<String>();
+            Cursor c = db.rawQuery(sql, asStringArray(params));
+            try {
+                if (c.moveToFirst()) {
+                    do {
+                        String value = c.getString(0);
+                        entries.add(value);
+                    } while (c.moveToNext());
+                }
+
+                return entries;
+            } finally {
+                c.close();
             }
         } finally {
-            c.close();
+            db.close();
+            woh.close();
         }
-        return entries;
     }
 
     public List<Integer> selectIntegerList(String sql, Object ... params){
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(this.context);
         SQLiteDatabase db = woh.getReadableDatabase();
-
-        List<Integer> entries = new LinkedList<Integer>();
-        Cursor c =  db.rawQuery(sql, asStringArray(params));
         try {
-            if(c.moveToFirst()){
-                do {
-                    Integer value = c.getInt(0);
-                    entries.add(value);
-                } while(c.moveToNext());
+            List<Integer> entries = new LinkedList<Integer>();
+            Cursor c = db.rawQuery(sql, asStringArray(params));
+            try {
+                if (c.moveToFirst()) {
+                    do {
+                        Integer value = c.getInt(0);
+                        entries.add(value);
+                    } while (c.moveToNext());
+                }
+                return entries;
+            } finally {
+                c.close();
             }
         } finally {
-            c.close();
+            db.close();
+            woh.close();
         }
-        return entries;
     }
 
     public String[] asStringArray(Object[] params){
@@ -209,24 +254,28 @@ public class DataHelperAndroid implements DataHelper {
     public void queryToJsonArray(String name, String sql, String[] args, JsonWriter jw) throws IOException {
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase sqlite = woh.getReadableDatabase();
-        Cursor c = sqlite.rawQuery(sql, args);
         try {
-            // stream over standardSets rows since that time
-            jw.name(name);
-            jw.beginArray();
-            while (c.moveToNext()) {
-                jw.beginObject();
-                for (int i = 0; i < c.getColumnCount(); i++) {
-                    jw.name(c.getColumnName(i));
-                    jw.value(c.getString(i));
+            Cursor c = sqlite.rawQuery(sql, args);
+            try {
+                // stream over standardSets rows since that time
+                jw.name(name);
+                jw.beginArray();
+                while (c.moveToNext()) {
+                    jw.beginObject();
+                    for (int i = 0; i < c.getColumnCount(); i++) {
+                        jw.name(c.getColumnName(i));
+                        jw.value(c.getString(i));
+                    }
+                    jw.endObject();
                 }
-                jw.endObject();
+            } finally {
+                c.close();
             }
+            jw.endArray();
         } finally {
-            c.close();
+            sqlite.close();
+            woh.close();
         }
-        jw.endArray();
     }
-
 }
 

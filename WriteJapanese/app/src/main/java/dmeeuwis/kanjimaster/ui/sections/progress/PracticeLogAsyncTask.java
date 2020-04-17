@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONObject;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZoneOffset;
@@ -50,10 +51,10 @@ class PracticeLogAsyncTask extends AsyncTask<String, String, List<PracticeLogAsy
 
     @Override
     protected List<PracticeLog> doInBackground(String... strings) {
+        DataHelper dw = new DataHelperAndroid(ctx);
         try {
-            DataHelper dw = new DataHelperAndroid(ctx);
             List<Map<String, String>> rows = dw.selectRecords(
-                    "SELECT character, timestamp, score, drawing FROM practice_log WHERE charset = ? ORDER BY timestamp DESC LIMIT 5000",
+                    "SELECT character, timestamp, score, drawing FROM practice_log WHERE charset = ? ORDER BY timestamp DESC LIMIT 1000",
                     setName);
 
             List<PracticeLog> out = new ArrayList<>(rows.size());
@@ -63,10 +64,16 @@ class PracticeLogAsyncTask extends AsyncTask<String, String, List<PracticeLogAsy
                 try {
                     String json = r.get("drawing");
                     PointDrawing pd = null;
-                    try {
-                        pd = PointDrawing.deserialize(json);
-                    } catch (Throwable t){
-                        Log.e("nakama", "Error parsing practice log drawing", t);
+                    if(json != null && !json.isEmpty()) {
+                        if(json.startsWith("\"")){
+                            json = json.replace("\\\"", "\"");
+                            json = json.substring(1, json.length());
+                        }
+                        try {
+                            pd = PointDrawing.deserialize(json);
+                        } catch (Throwable t) {
+                            Log.e("nakama", "Error parsing practice log drawing: " + json, t);
+                        }
                     }
 
                     String date = "";

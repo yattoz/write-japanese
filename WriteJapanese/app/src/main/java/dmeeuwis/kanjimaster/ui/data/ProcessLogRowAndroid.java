@@ -26,26 +26,32 @@ public class ProcessLogRowAndroid implements DataHelper.ProcessRow {
     public int applyToResults(String sql, ProgressTracker pt, Object... params){
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase db = woh.getReadableDatabase();
-        String[] sparams = new DataHelperAndroid(context).asStringArray(params);
 
-        Cursor c = db.rawQuery(sql,sparams);
-        int count = 0;
         try {
-            int columnCount = c.getColumnCount();
-            while(c.moveToNext()){
-                count++;
-                Map<String, String> m = new HashMap<String, String>();
-                for(int i = 0; i < columnCount; i++){
-                    String colName = c.getColumnName(i);
-                    String rowColValue = c.getString(i);
-                    m.put(colName, rowColValue);
+            String[] sparams = new DataHelperAndroid(context).asStringArray(params);
+
+            Cursor c = db.rawQuery(sql, sparams);
+            int count = 0;
+            try {
+                int columnCount = c.getColumnCount();
+                while (c.moveToNext()) {
+                    count++;
+                    Map<String, String> m = new HashMap<String, String>();
+                    for (int i = 0; i < columnCount; i++) {
+                        String colName = c.getColumnName(i);
+                        String rowColValue = c.getString(i);
+                        m.put(colName, rowColValue);
+                    }
+                    process(m, pt);
                 }
-                process(m, pt);
+            } finally {
+                if (c != null) c.close();
             }
+            return count;
         } finally {
-            if(c != null) c.close();
+            db.close();
+            woh.close();
         }
-        return count;
     }
 
     @Override
