@@ -3,6 +3,7 @@ package dmeeuwis.kanjimaster.ui;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.StrictMode;
 import android.util.TypedValue;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
@@ -25,21 +26,36 @@ public class KanjiMasterApplicaton extends Application {
         super.onCreate();
         AndroidThreeTen.init(this);
 
+        Context appContext = getApplicationContext();
+
+        SettingsFactory.initialize(new SettingsAndroid(appContext));
+
+        if (SettingsFactory.get().debug()) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                 .detectDiskReads()
+                 .detectDiskWrites()
+                 .detectNetwork()   // or .detectAll() for all detectable problems
+                 .penaltyLog()
+                 .build());
+         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                 .detectLeakedSqlLiteObjects()
+                 .detectLeakedClosableObjects()
+                 .penaltyLog()
+                 .penaltyDeath()
+                 .build());
+        }
+
         Thread.setDefaultUncaughtExceptionHandler(new KanjiMasterUncaughtExceptionHandler());
 
         Resources r = getResources();
         Constants.MIN_POINT_DISTANCE_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Constants.MIN_POINT_DISTANCE_DP, r.getDisplayMetrics());
         Constants.MIN_POINT_DISTANCE_FOR_DIRECTION_PX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Constants.MIN_POINT_DISTANCE_FOR_DIRECTION_DP, r.getDisplayMetrics());
 
-        Context appContext = getApplicationContext();
-
         DataHelper dh = new DataHelperAndroid(appContext);
         DataHelperFactory.initialize(dh);
 
         DataHelper.ProcessRow processor = new ProcessLogRowAndroid(appContext);
         ProcessLogRowFactory.initialize(processor);
-
-        SettingsFactory.initialize(new SettingsAndroid(appContext));
 
         IidFactory.initialize(new IidAndroid(appContext));
     }
