@@ -53,6 +53,9 @@ public class Criticism {
     }
 
     public String printScoreMatrix() {
+	    if(matrix == null){
+	        return "null";
+        }
 	    return Util.printMatrix(matrix);
     }
 
