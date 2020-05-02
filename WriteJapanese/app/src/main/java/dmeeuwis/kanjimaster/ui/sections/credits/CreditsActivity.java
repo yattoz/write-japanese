@@ -19,6 +19,7 @@ public class CreditsActivity extends AppCompatActivity {
 
 	private final String EDICT_THANKS = "<p>This software uses the EDICT, KANJIDIC, and kradfile-u dictionary files. These files are the property of the Electronic Dictionary Research and Development Group, and are used in conformance with the Group's licence. For further information, see <a href='http://www.edrdg.org/'>the Electronic Dictionary Research and Development Group homepage</a></p>";
 	private final String DIAGRAMS_THANKS = "<p>This software also uses the KanjiVG project's SVG files that describe the shape of each kanji. The KanjiVG is copyright © 2009-2013 Ulrich Apel and released under the Creative Commons Attribution-Share Alike 3.0 license. For more information, see the <a href='http://kanjivg.tagaini.net/'>KanjiVG homepage.</p>";
+	private final String PRIVACY_POLICY = "<p>The current version of the privacy policy for this app can be found <a href='https://dmeeuwis.com/write-japanese-privacy-policy.html'>here</a>.</p>";
 
 	String callingClass;
 	
@@ -44,6 +45,7 @@ public class CreditsActivity extends AppCompatActivity {
 		thanks.setText(Html.fromHtml(
 				EDICT_THANKS +
 				DIAGRAMS_THANKS +
+				PRIVACY_POLICY +
 				String.format("<div>Version: %s %d, code: %s</div>",
 						BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE,
 						IidFactory.get().toString())));

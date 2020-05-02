@@ -47,7 +47,7 @@
     <string name="shuffle_order_menu_label">Shuffle Order</string>
     <string name="share_kanji_stories">Share Stories</string>
     <string name="reset_progress_menu_label">Reset Progress</string>
-    <string name="credits_menu_label">Credits</string>
+    <string name="credits_menu_label">Credits and Privacy</string>
     <string name="title_activity_spen_draw">SpenDrawActivity</string>
     <string name="title_activity_draw_view_test">DrawViewTestActivity</string>
 
