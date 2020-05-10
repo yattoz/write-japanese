@@ -51,7 +51,7 @@ public class CharacterTranslationListAsyncTask extends AsyncTask<Void, Translati
             if(this.isCancelled()) {
                 Log.d("nakama", "Caught exception in translation background thread, but isCancelled anyways", e);
             } else {
-                UncaughtExceptionLogger.backgroundLogError("Error during (non-cancelled) background translation", e);
+                UncaughtExceptionLogger.backgroundLogError("Error during (non-cancelled) background translation for " + kanji, e);
             }
         }
         Log.i("nakama", "Completed background translation work for " + kanji);
