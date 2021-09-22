@@ -19,7 +19,14 @@ public class CreditsActivity extends AppCompatActivity {
 
 	private final String EDICT_THANKS = "<p>This software uses the EDICT, KANJIDIC, and kradfile-u dictionary files. These files are the property of the Electronic Dictionary Research and Development Group, and are used in conformance with the Group's licence. For further information, see <a href='http://www.edrdg.org/'>the Electronic Dictionary Research and Development Group homepage</a></p>";
 	private final String DIAGRAMS_THANKS = "<p>This software also uses the KanjiVG project's SVG files that describe the shape of each kanji. The KanjiVG is copyright © 2009-2013 Ulrich Apel and released under the Creative Commons Attribution-Share Alike 3.0 license. For more information, see the <a href='http://kanjivg.tagaini.net/'>KanjiVG homepage.</p>";
-	private final String PRIVACY_POLICY = "<p>The current version of the privacy policy for this app can be found <a href='https://dmeeuwis.com/write-japanese-privacy-policy.html'>here</a>.</p>";
+	private final String PRIVACY_POLICY = "<h1>Write Japanese Privacy Policy</h1>" +
+		"<p>Write Japanese uses some personal information to directly support the app's functionality. It is never given to third parties, and never used for marketing.</p>" +
+		"<p>If the user opts into multi-device sync, then the user's google account email will be used to sync between the users devices. This will mean the the email address will be uploaded to the Write Japanese server at dmeeuwis.com. It will be used only for the purpose of syncing data across devices, and never for any other purpose. It will never be given away to third parties. If the user does not opt into multi-device sync, then this information is never requested or transmitted.</p>" +
+		"<p>If the opts into Story Sharing, users' character stories will be transmitted to the server at dmeeuwis.com, and shared with other users. No personally identifiable information is used, or transmitted to other users. If the Story Sharing option is not opted into, then no information is sent.</p>" +
+		"<p>If the user opts into reporting grading overrides, then the users drawing data and grading result will be sent ot the server at dmeeuwis.com. If the user does not opt in, then this data is never transmitted.</p>" +
+		"<p>In the event of an application crash, some forensics data is sent to the server at dmeeuwis.com. The crash data does not include personally identifiable information.</p>" +
+		"<p>The app owner is David Meeuwis, reachable at dmeeuwis@gmail.com.</p>";
+
 
 	String callingClass;
 	
