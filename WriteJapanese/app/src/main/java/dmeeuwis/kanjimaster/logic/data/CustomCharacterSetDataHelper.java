@@ -44,7 +44,7 @@ public class CustomCharacterSetDataHelper {
                     "SELECT charset_id, name, description, characters, deleted FROM character_set_edits ORDER BY timestamp");
 
         for(Map<String, String> r: records){
-            if(r.get("deleted").equals("1")){
+            if(r.get("deleted").equals("true")){
                 sets.remove(r.get("charset_id"));
             } else {
                 CharacterStudySet s = new CharacterStudySet(r.get("name"), r.get("name"), r.get("description"),
