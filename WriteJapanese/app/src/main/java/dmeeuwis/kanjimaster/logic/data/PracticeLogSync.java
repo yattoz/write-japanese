@@ -86,7 +86,7 @@ public class PracticeLogSync {
         }
     }
 
-    public Map<String, Integer> sync() throws IOException {
+    public SyncCounts sync() throws IOException {
         long startTime = System.currentTimeMillis();
         String iid = IidFactory.get().toString();
 
@@ -105,24 +105,25 @@ public class PracticeLogSync {
 
         DataHelper db = DataHelperFactory.get();
         try {
+            Log.i("nakama-sync", "Sync using: " + sync + " and iid " + iid);
             jw.name("prev_sync_timestamp").value(sync.lastSyncServerTimestamp);
 
             jw.name("app_version").value(SettingsFactory.get().version());
 
-            db.queryToJsonArray("practice_logs",
+            int sendingLogs = db.queryToJsonArray("practice_logs",
                     "SELECT id, install_id, character, charset, timestamp, score, drawing " +
                             "FROM practice_log WHERE timestamp > ? AND install_id = ?",
                     new String[]{sync.lastSyncDeviceTimestamp, iid}, jw);
 
-            db.queryToJsonArray("charset_goals",
+            int sendingGoals = db.queryToJsonArray("charset_goals",
                     "SELECT charset, timestamp, goal_start, goal FROM charset_goals WHERE timestamp > ?",
                     new String[]{sync.lastSyncDeviceTimestamp}, jw);
 
-            db.queryToJsonArray("kanji_stories",
+            int sendingStories = db.queryToJsonArray("kanji_stories",
                     "SELECT character, story, timestamp FROM kanji_stories WHERE timestamp > ?",
                     new String[]{sync.lastSyncDeviceTimestamp}, jw);
 
-            db.queryToJsonArray("character_set_edits",
+            int sendingSetEdits = db.queryToJsonArray("character_set_edits",
                     "SELECT id, charset_id, name, description, characters, timestamp as device_timestamp, deleted FROM character_set_edits WHERE timestamp > ? AND install_id = ?",
                     new String[]{sync.lastSyncDeviceTimestamp, iid}, jw);
 
@@ -240,7 +241,7 @@ public class PracticeLogSync {
                     while (jr.hasNext()) {
                         values.put(jr.nextName(), nextStringOrNull(jr));
                     }
-                    Log.i("nakama", "Inserting character set edit from record: " + Util.join(values, "=>", ", "));
+                    Log.i("nakama-sync", "Inserting character set edit from record: " + Util.join(values, "=>", ", "));
 
                     try {
                         CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper();
@@ -250,7 +251,7 @@ public class PracticeLogSync {
 
                         Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
                     } catch (Exception t) {
-                        Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                        Log.e("nakama-sync", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
                     }
                     jr.endObject();
                 }
@@ -263,22 +264,46 @@ public class PracticeLogSync {
             rin.close();
             inStream.close();
 
-            Settings.SyncSettings set = new Settings.SyncSettings(syncTimestampName, maxTimestamp());
+            Settings.SyncSettings set = new Settings.SyncSettings(syncTimestampValue, maxTimestamp());
             SettingsFactory.get().setSyncSettings(set);
 
-            Log.i("nakama-sync", "Sync complete!");
+            Log.i("nakama-sync", "Sync complete! Set lastSyncDeviceTimestamp to " + set.lastSyncDeviceTimestamp + " and lastSyncServerTimestamp to " + set.lastSyncServerTimestamp);
 
-            return Util.makeCountMap("practiceLogs", practiceLogCount, "charsetGoals", charsetGoalsCount, "charsetEdits", charsetEditCount);
+            return new SyncCounts(practiceLogCount, kanjiStoriesCount, charsetGoalsCount, charsetEditCount,
+                                    sendingLogs,                 sendingStories,        sendingGoals,         sendingSetEdits);
 
         } catch(IOException t) {
-            Log.e("nakama", "Network error during sync. Ignoring, will try again next sync.");
-            return Util.makeCountMap("practiceLogs", -1, "charsetGoals", -1, "charsetEdits", -1);
+            Log.e("nakama-sync", "Network error during sync. Ignoring, will try again next sync.");
+            return new SyncCounts(-1, -1, -1, -1, -1, -1, -1, -1);
         } catch(Throwable t) {
             StringBuilder message = new StringBuilder();
             message.append("Error when parsing sync; request was: " + (jsonPost == null ? "<null>" : jsonPost));
             message.append("response was: " + (jsonResponse == null ? "<null>" : jsonResponse));
             message.append("; time in sync was " + (System.currentTimeMillis() - startTime) + "ms");
             throw new RuntimeException(message.toString(), t);
+        }
+    }
+
+    public static class SyncCounts {
+        public final int practiceLogsReceived;
+        public final int storiesReceived;
+        public final int charsetGoalsReceived;
+        public final int charsetEditsReceived;
+
+        public final int practiceLogsSent;
+        public final int storiesSent;
+        public final int charsetGoalsSent;
+        public final int charsetEditsSent;
+
+        public SyncCounts(int practiceLogsReceived, int storiesReceived, int charsetGoalsReceived, int charsetEditsReceived, int practiceLogsSent, int storiesSent, int charsetGoalsSent, int charsetEditsSent) {
+            this.practiceLogsReceived = practiceLogsReceived;
+            this.storiesReceived = storiesReceived;
+            this.charsetGoalsReceived = charsetGoalsReceived;
+            this.charsetEditsReceived = charsetEditsReceived;
+            this.practiceLogsSent = practiceLogsSent;
+            this.storiesSent = storiesSent;
+            this.charsetGoalsSent = charsetGoalsSent;
+            this.charsetEditsSent = charsetEditsSent;
         }
     }
 

@@ -1366,17 +1366,34 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                     @Override
                     public void run() {
                         try {
-                            Map<String, Integer> counts = new PracticeLogSync().sync();
+                            PracticeLogSync.SyncCounts counts = new PracticeLogSync().sync();
                             StringBuffer message = new StringBuffer("Sync completed!");
-                            if(counts.get("practiceLogs") != null){
-                                message.append(" " + counts.get("practiceLogs") + " practice logs. ");
+                            if(counts.practiceLogsReceived > 0){
+                                message.append(" Received " + counts.practiceLogsReceived + " practice logs.");
                             }
-                            if(counts.get("charsetEdits") != null){
-                                message.append(" " + counts.get("charsetEdits") + " character set edits. ");
+                            if(counts.storiesReceived > 0){
+                                message.append(" Received " + counts.storiesReceived + " character stories.");
                             }
-                            if(counts.get("charsetGoals") != null){
-                                message.append(" " + counts.get("charsetGoals") + " character set goals.");
+                            if(counts.charsetEditsReceived > 0){
+                                message.append(" Received " + counts.charsetEditsReceived + " character set edits.");
                             }
+                            if(counts.charsetGoalsSent > 0){
+                                message.append(" Received " + counts.charsetGoalsReceived + " character set goals.");
+                            }
+
+                            if(counts.practiceLogsSent > 0){
+                                message.append(" Sent " + counts.practiceLogsSent + " practice logs.");
+                            }
+                            if(counts.charsetGoalsSent > 0){
+                                message.append(" Sent " + counts.charsetGoalsSent + " character set goals.");
+                            }
+                            if(counts.charsetEditsSent > 0){
+                                message.append(" Sent " + counts.charsetEditsSent + " character set edits.");
+                            }
+                            if(counts.charsetGoalsSent > 0){
+                                message.append(" Sent " + counts.charsetGoalsSent + " character set goals.");
+                            }
+
                             final String m = message.toString();
 
                             Handler handler = new Handler(Looper.getMainLooper());

@@ -30,7 +30,7 @@ public class KanjiMasterApplicaton extends Application {
 
         SettingsFactory.initialize(new SettingsAndroid(appContext));
 
-        if (SettingsFactory.get().debug()) {
+        if (SettingsFactory.get().debug() && false) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                  .detectDiskReads()
                  .detectDiskWrites()

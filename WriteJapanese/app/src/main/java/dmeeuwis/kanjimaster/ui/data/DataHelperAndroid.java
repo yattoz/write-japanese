@@ -1,7 +1,6 @@
 package dmeeuwis.kanjimaster.ui.data;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -251,9 +250,10 @@ public class DataHelperAndroid implements DataHelper {
     }
 
     @Override
-    public void queryToJsonArray(String name, String sql, String[] args, JsonWriter jw) throws IOException {
+    public int queryToJsonArray(String name, String sql, String[] args, JsonWriter jw) throws IOException {
         WriteJapaneseOpenHelper woh = new WriteJapaneseOpenHelper(context);
         SQLiteDatabase sqlite = woh.getReadableDatabase();
+        int count = 0;
         try {
             Cursor c = sqlite.rawQuery(sql, args);
             try {
@@ -261,6 +261,7 @@ public class DataHelperAndroid implements DataHelper {
                 jw.name(name);
                 jw.beginArray();
                 while (c.moveToNext()) {
+                    count++;
                     jw.beginObject();
                     for (int i = 0; i < c.getColumnCount(); i++) {
                         jw.name(c.getColumnName(i));
@@ -276,6 +277,7 @@ public class DataHelperAndroid implements DataHelper {
             sqlite.close();
             woh.close();
         }
+        return count;
     }
 }
 

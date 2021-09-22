@@ -70,6 +70,10 @@ public interface Settings {
             this.lastSyncServerTimestamp = serverTimestamp;
             this.lastSyncDeviceTimestamp = deviceTimestamp;
         }
+
+        @Override public String toString(){
+            return String.format("[Sync lastDevice=" + lastSyncDeviceTimestamp + " lastService=" + lastSyncServerTimestamp + "]");
+        }
     }
 
     class SyncStatus {

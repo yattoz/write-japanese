@@ -19,7 +19,7 @@ public interface DataHelper {
     Map<String, Map<String, String>> selectRecordsIndexedByFirst(String sql, String indexKey, Object... params);
     Map<String, String> selectRecord(String sql, Object... params);
 
-    void queryToJsonArray(String name, String sql, String[] args, JsonWriter jw) throws IOException;
+    int queryToJsonArray(String name, String sql, String[] args, JsonWriter jw) throws IOException;
 
     void execSQL(String s, String[] strings);
     void execSQL(String s);
