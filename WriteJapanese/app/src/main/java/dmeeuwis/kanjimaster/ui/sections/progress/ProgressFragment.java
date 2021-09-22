@@ -98,8 +98,8 @@ public class ProgressFragment extends Fragment implements AdapterView.OnItemClic
         super.onResume();
 
         Bundle params = getArguments();
-        callingClass = params.getString("parent");
-        callingPath = params.getString(Constants.KANJI_PATH_PARAM);
+        callingClass = ((ProgressLogActivity)getActivity()).callingClass;
+        callingPath = ((ProgressLogActivity)getActivity()).callingPath;
 
         charSet = CharacterSets.fromName(callingPath, lc);
         charSet.load(CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS);
