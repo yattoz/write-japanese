@@ -47,8 +47,6 @@ public class ProgressFragment extends Fragment implements AdapterView.OnItemClic
     String[] strings;
     CharacterStudySet.SetProgress scores;
 
-    LockChecker lc;
-
     String characterList;
     CharacterStudySet charSet;
 
@@ -101,7 +99,7 @@ public class ProgressFragment extends Fragment implements AdapterView.OnItemClic
         callingClass = ((ProgressLogActivity)getActivity()).callingClass;
         callingPath = ((ProgressLogActivity)getActivity()).callingPath;
 
-        charSet = CharacterSets.fromName(callingPath, lc);
+        charSet = CharacterSets.fromName(callingPath, ((ProgressLogActivity)getActivity()).lc);
         charSet.load(CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS);
         scores = charSet.getProgress();
         characterList = charSet.charactersAsString();
