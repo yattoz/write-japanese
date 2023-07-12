@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         production {
-            keyAlias 'writekanji'
-            keyPassword '***REMOVED***'
+            keyAlias '***REDACTED***'
+            keyPassword '***REDACTED***'
             storeFile file(rootProject.projectDir.absolutePath + '/../keystore/keystore')
-            storePassword '***REMOVED***'
+            storePassword '***REDACTED***'
         }
     }
 
