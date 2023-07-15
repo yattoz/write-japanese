@@ -79,12 +79,10 @@ import dmeeuwis.kanjimaster.logic.data.CharacterStudySet.LockLevel;
 import dmeeuwis.kanjimaster.logic.data.ClueExtractor;
 import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
 import dmeeuwis.kanjimaster.logic.data.DictionarySet;
-import dmeeuwis.kanjimaster.logic.data.PracticeLogSync;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
 import dmeeuwis.kanjimaster.logic.data.SRSQueue;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
-import dmeeuwis.kanjimaster.ui.data.SyncRegistration;
 import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.logic.drawing.Comparator;
 import dmeeuwis.kanjimaster.logic.drawing.ComparisonAsyncTask;
@@ -477,14 +475,13 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         Boolean srsEnabled = SettingsFactory.get().getSRSEnabled();
         boolean srsAsked = srsEnabled != null;
-        Settings.SyncStatus syncStatus = SettingsFactory.get().getCrossDeviceSyncEnabled();
 
         boolean skipIntro = false;
         try {
             skipIntro = getIntent().getExtras().getBoolean(SKIP_INTRO_CHECK, false);
         } catch(Throwable t){ /* ignore */ }
 
-        if((!srsAsked || !syncStatus.asked ) && !skipIntro){
+        if(!srsAsked && !skipIntro){
             Log.i("nakama-intro", "Launch IntroActivity from KanjiMasterActivity");
             startActivity(new Intent(this, IntroActivity.class));
         }
@@ -1188,9 +1185,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
 
         // detect if user changed SRS settings, and need to reload charsets
-        Settings.SyncStatus syncStatus = SettingsFactory.get().getCrossDeviceSyncEnabled();
         boolean srsAsked = SettingsFactory.get().getBooleanSetting(USE_SRS_SETTING_NAME, null) != null;
-        if(syncStatus.asked && srsAsked &&
+        if(srsAsked &&
                 currentCharacterSet.srsAcrossSets() != SettingsFactory.get().getSRSAcrossSets()){
             Log.i("nakama-intro", "Restarting activity due to change in SRS settings");
             this.recreate();
@@ -1261,17 +1257,13 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:ResetStorySharing");
             menu.add("DEBUG:ClearRegisteredAccount");
             menu.add("DEBUG:ClearSharedPrefs");
-            menu.add("DEBUG:ClearSyncSettings");
             menu.add("DEBUG:ClearSRSSettings");
             menu.add("DEBUG:PrintSRSQueues");
             menu.add("DEBUG:SRSPassCurrentSet");
             menu.add("DEBUG:SRSAddDay");
-            menu.add("DEBUG:ClearSync");
             menu.add("DEBUG:PrintPracticeLog");
-            menu.add("DEBUG:SyncNow");
             menu.add("DEBUG:ThrowException");
             menu.add("DEBUG:LogBackgroundException");
-            menu.add("DEBUG:ClearSyncTimestamp");
             menu.add("DEBUG:ClearUpdateNotification");
             menu.add("DEBUG:PrintCharsetsAndSRS");
             menu.add("DEBUG:ClearLogCache");
@@ -1356,64 +1348,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         } else if (item.getItemId() == R.id.menu_lock) {
             raisePurchaseDialog(PurchaseDialog.DialogMessage.LOCK_BUTTON, Frequency.ALWAYS);
-        } else if (item.getItemId() == R.id.menu_network_sync) {
-            if(!SyncRegistration.checkIsRegistered(KanjiMasterActivity.this)) {
-                Intent i = new Intent(this, IntroActivity.class);
-                i.putExtra(IntroActivity.REQUEST_SYNC_SETTINGS, true);
-                startActivity(i);
-            } else {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            PracticeLogSync.SyncCounts counts = new PracticeLogSync().sync();
-                            StringBuffer message = new StringBuffer("Sync completed!");
-                            if(counts.practiceLogsReceived > 0){
-                                message.append(" Received " + counts.practiceLogsReceived + " practice logs.");
-                            }
-                            if(counts.storiesReceived > 0){
-                                message.append(" Received " + counts.storiesReceived + " character stories.");
-                            }
-                            if(counts.charsetEditsReceived > 0){
-                                message.append(" Received " + counts.charsetEditsReceived + " character set edits.");
-                            }
-                            if(counts.charsetGoalsSent > 0){
-                                message.append(" Received " + counts.charsetGoalsReceived + " character set goals.");
-                            }
-
-                            if(counts.practiceLogsSent > 0){
-                                message.append(" Sent " + counts.practiceLogsSent + " practice logs.");
-                            }
-                            if(counts.charsetGoalsSent > 0){
-                                message.append(" Sent " + counts.charsetGoalsSent + " character set goals.");
-                            }
-                            if(counts.charsetEditsSent > 0){
-                                message.append(" Sent " + counts.charsetEditsSent + " character set edits.");
-                            }
-                            if(counts.charsetGoalsSent > 0){
-                                message.append(" Sent " + counts.charsetGoalsSent + " character set goals.");
-                            }
-
-                            final String m = message.toString();
-
-                            Handler handler = new Handler(Looper.getMainLooper());
-                            handler.post(new Runnable() {
-                                @Override public void run() {
-                                    Toast.makeText(KanjiMasterActivity.this, m, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        } catch (Throwable e) {
-                            UncaughtExceptionLogger.backgroundLogError("Error on menu-option network sync", e);
-                            Handler handler = new Handler(Looper.getMainLooper());
-                            handler.post(new Runnable() {
-                                @Override public void run() {
-                                    Toast.makeText(KanjiMasterActivity.this, "Error while attempting network sync. Please retry later.", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                    }
-                }.start();
-            }
         } else if (item.getItemId() == R.id.menu_set_goals) {
             String charset = currentCharacterSet.pathPrefix;
             Intent intent = new Intent(this, CharsetInfoActivity.class);
@@ -1470,9 +1404,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 e.putString(TeachingStoryFragment.STORY_SHARING_KEY, null);
                 e.apply();
 
-            } else if (item.getTitle().equals("DEBUG:ClearSyncSettings")) {
-                SettingsFactory.get().clearCrossDeviceSync();
-
             } else if (item.getTitle().equals("DEBUG:ClearSRSSettings")) {
                 SettingsFactory.get().clearSRSSettings();
 
@@ -1488,34 +1419,18 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                     set.getValue().getProgressTracker().debugAddDayToSRS();
                 }
 
-            } else if (item.getTitle().equals("DEBUG:ClearSync")) {
-                new PracticeLogSync().clearSync();
             } else if (item.getTitle().equals("DEBUG:ClearSharedPrefs")) {
                 Log.i("nakama", "DEBUG clearing standardSets shared prefs");
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 Editor e = prefs.edit();
                 e.clear();
                 e.apply();
-            } else if (item.getTitle().equals("DEBUG:PrintPracticeLog")) {
-                new PracticeLogSync().debugPrintLog();
             } else if(item.getTitle().equals("DEBUG:ClearRegisteredAccount")){
-                SyncRegistration.clearAccount(this);
-            } else if(item.getTitle().equals("DEBUG:SyncNow")){
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-                ContentResolver.requestSync(null, "dmeeuwis.com", bundle);
             } else if(item.getTitle().equals("DEBUG:ThrowException")){
                 throw new RuntimeException("Practicing error catching!");
             } else if(item.getTitle().equals("DEBUG:LogBackgroundException")){
                 UncaughtExceptionLogger.backgroundLogError("Practicing background error catching!",
                         new RuntimeException("BOOM!", new RuntimeException("CRASH!", new RuntimeException("THUNK!"))));
-            } else if(item.getTitle().equals("DEBUG:ClearSyncTimestamp")){
-                SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
-                ed.remove(SettingsAndroid.DEVICE_SYNC_PREFS_KEY);
-                ed.remove(SettingsAndroid.SERVER_SYNC_PREFS_KEY);
-                ed.apply();
             } else if (item.getTitle().equals("DEBUG:ClearUpdateNotification")) {
                 UpdateNotifier.debugClearNotified(this);
             } else if(item.getTitle().equals("DEBUG:PrintCharsetsAndSRS")){
@@ -1554,7 +1469,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                 ed.remove(SKIP_INTRO_CHECK);
                 ed.remove(SettingsAndroid.INSTALL_TIME_PREF_NAME);
-                ed.remove(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY);
                 ed.commit();
                 SettingsFactory.get().deleteSetting(USE_SRS_SETTING_NAME);
             }

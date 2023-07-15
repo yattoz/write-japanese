@@ -46,23 +46,6 @@ public class SettingsAndroid implements Settings {
         return getBooleanSetting(IntroActivity.SRS_ACROSS_SETS, true);
     }
 
-    @Override
-    public void setCrossDeviceSyncAsked() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putBoolean(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY, true);
-        ed.apply();
-    }
-
-
-    @Override
-    public void clearCrossDeviceSync() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY);
-        ed.remove(SyncRegistration.AUTHCODE_SHARED_PREF_KEY);
-        ed.apply();
-    }
 
 
     @Override
@@ -97,14 +80,6 @@ public class SettingsAndroid implements Settings {
     @Override
     public String osVersion() {
         return Build.VERSION.RELEASE;
-    }
-
-    @Override
-    public Settings.SyncStatus getCrossDeviceSyncEnabled() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
-        Boolean asked = prefs.getBoolean(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY, false);
-        String authcode = prefs.getString(SyncRegistration.AUTHCODE_SHARED_PREF_KEY, null);
-        return new Settings.SyncStatus(asked, authcode);
     }
 
     @Override
@@ -202,32 +177,6 @@ public class SettingsAndroid implements Settings {
                 prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_ADV_REVIEWING, CharacterProgressDataHelper.DEFAULT_ADV_REVIEWING),
                 prefs.getInt(ProgressSettingsDialog.SHARED_PREFS_KEY_CHAR_COOLDOWN, CharacterProgressDataHelper.DEFAULT_CHAR_COOLDOWN),
                 prefs.getBoolean(ProgressSettingsDialog.SHARED_PREFS_KEY_SKIP_SRS_ON_FIRST_CORRECT, CharacterProgressDataHelper.DEFAULT_SKIP_SRS_ON_FIRST_CORRECT));
-    }
-
-    @Override
-    public void clearSyncSettingsDebug() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
-        SharedPreferences.Editor e = prefs.edit();
-        e.putString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
-        e.putString(DEVICE_SYNC_PREFS_KEY, "0");
-        e.apply();
-    }
-
-    @Override
-    public Settings.SyncSettings getSyncSettings() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
-        String lastSyncServerTimestamp = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
-        String lastSyncDeviceTimestamp = prefs.getString(DEVICE_SYNC_PREFS_KEY, "0");
-        return new Settings.SyncSettings(lastSyncServerTimestamp, lastSyncDeviceTimestamp);
-    }
-
-    @Override
-    public void setSyncSettings(Settings.SyncSettings set) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(DEVICE_SYNC_PREFS_KEY, set.lastSyncDeviceTimestamp);
-        ed.putString(SERVER_SYNC_PREFS_KEY, set.lastSyncServerTimestamp);
-        ed.apply();
     }
 
     @Override
