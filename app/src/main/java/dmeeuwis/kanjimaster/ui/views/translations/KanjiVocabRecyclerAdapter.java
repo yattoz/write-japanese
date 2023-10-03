@@ -90,6 +90,9 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
         } catch (IOException e) {
             // kana character?
             return;
+        } catch (StringIndexOutOfBoundsException e)
+        {
+            return;
         }
     }
 

@@ -592,6 +592,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                         TextUtils.join(", ", dictionarySet.kanjiFinder().find(c).meanings));
             } catch (IOException e) {
                 correctVocabArrayAdapter.removeMeaningsHeader();
+            } catch (IndexOutOfBoundsException e)
+            {
+                // ?
             }
         } else {
             correctVocabArrayAdapter.removeReadingsHeader();

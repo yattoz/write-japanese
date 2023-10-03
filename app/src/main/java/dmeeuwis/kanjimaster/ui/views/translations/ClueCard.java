@@ -355,6 +355,10 @@ public class ClueCard extends CardView {
         // =============== meanings =====================
         String[] meaningClues = clueExtractor.meaningsClues(currentCharacter);
         if(DEBUG) Log.d("nakama-clue", "Setting meanings to " + TextUtils.join(", ", meaningClues));
+        if (meaningClues == null) {
+            return;
+        }
+
         if (meaningsLayout.getVisibility() == View.VISIBLE && meaningClues.length > 1) {
             otherMeaningsButton.setVisibility(View.VISIBLE);
         } else {
@@ -391,6 +395,8 @@ public class ClueCard extends CardView {
 
         // =============== translations =====================
         updateToTranslation(currentTranslationsClueIndex, immediate);
+
+
     }
 
     private void updateToTranslation(int i){

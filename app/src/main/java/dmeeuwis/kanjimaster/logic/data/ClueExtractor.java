@@ -44,6 +44,8 @@ public class ClueExtractor {
             return k.meanings;
         } catch (IOException e) {
             return null;
+        } catch (StringIndexOutOfBoundsException e) {
+            return null;
         }
     }
 
