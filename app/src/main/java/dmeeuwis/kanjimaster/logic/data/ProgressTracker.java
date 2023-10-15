@@ -233,7 +233,7 @@ public class ProgressTracker {
 				availSet.remove(c);
 				recentHistoryChars.add(c);
 				if(prev == null){ prev = c; }
-			} catch(ArrayIndexOutOfBoundsException e){
+			} catch(IndexOutOfBoundsException e){
 				// didn't have enough history
 			}
 		}
