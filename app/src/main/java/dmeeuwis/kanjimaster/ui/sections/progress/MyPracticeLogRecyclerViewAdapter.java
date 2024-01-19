@@ -1,7 +1,7 @@
 package dmeeuwis.kanjimaster.ui.sections.progress;
 
 import android.graphics.Color;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

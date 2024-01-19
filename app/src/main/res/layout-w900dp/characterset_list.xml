@@ -6,7 +6,7 @@
               android:layout_marginLeft="16dp"
               android:layout_marginRight="16dp"
               android:baselineAligned="false"
-              android:divider="?android:attr/dividerHorizontal"
+              android:divider="?attr/dividerHorizontal"
               android:orientation="horizontal"
               android:showDividers="middle"
               tools:context="dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetListActivity">
@@ -17,7 +17,7 @@
     
     -->
 
-    <android.support.v7.widget.RecyclerView android:id="@+id/characterset_list"
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/characterset_list"
                                             android:name="dmeeuwis.kanjimaster.charsets.CharacterSetListFragment"
                                             xmlns:android="http://schemas.android.com/apk/res/android"
                                             xmlns:tools="http://schemas.android.com/tools"

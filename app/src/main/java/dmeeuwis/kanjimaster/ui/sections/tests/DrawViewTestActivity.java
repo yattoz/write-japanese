@@ -1,7 +1,7 @@
 package dmeeuwis.kanjimaster.ui.sections.tests;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.ui.views.DrawView;

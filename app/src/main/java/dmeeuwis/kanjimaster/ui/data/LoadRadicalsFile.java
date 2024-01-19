@@ -1,12 +1,13 @@
 package dmeeuwis.kanjimaster.ui.data;
 
 
-import android.app.Activity;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+
+import androidx.fragment.app.FragmentActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +19,12 @@ import dmeeuwis.kanjimaster.core.KanjiRadicalFinder;
 import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 
 public class LoadRadicalsFile extends AsyncTask<Void, Void, List<Kanji>> {
-    final Activity parent;
+    final FragmentActivity parent;
     final char character;
     final ArrayAdapter<Kanji> radicalAdapter;
     final View radicalsCard;
 
-    public LoadRadicalsFile(Activity parent, char character, ArrayAdapter<Kanji> adapter, View card){
+    public LoadRadicalsFile(FragmentActivity parent, char character, ArrayAdapter<Kanji> adapter, View card){
         this.parent = parent;
         this.character = character;
         this.radicalAdapter = adapter;

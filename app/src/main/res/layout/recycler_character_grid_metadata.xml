@@ -5,7 +5,7 @@
               android:paddingTop="10dp"
               android:orientation="vertical">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textinputlayout.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Set Name"
@@ -18,9 +18,9 @@
             android:imeOptions="actionNext"
             android:inputType="textCapWords"
             />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textinputlayout.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textinputlayout.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Set Description"
@@ -33,5 +33,5 @@
             android:imeOptions="actionDone"
             android:inputType="textCapSentences"
             />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textinputlayout.TextInputLayout>
 </LinearLayout>

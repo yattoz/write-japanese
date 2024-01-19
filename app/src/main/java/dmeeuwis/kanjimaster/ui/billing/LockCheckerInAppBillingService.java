@@ -1,5 +1,15 @@
 package dmeeuwis.kanjimaster.ui.billing;
 
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE;
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR;
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_ERROR;
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED;
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED;
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE;
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_OK;
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE;
+import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -16,6 +26,8 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentActivity;
+
 import com.android.vending.billing.IInAppBillingService;
 
 import org.json.JSONException;
@@ -30,19 +42,9 @@ import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.LoggingRunnable;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE;
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR;
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_ERROR;
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED;
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED;
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE;
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_OK;
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE;
-import static com.android.vending.billing.util.IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED;
-
 public class LockCheckerInAppBillingService extends LockChecker {
 
-    final Activity parent;
+    final FragmentActivity parent;
     final ServiceConnection mServiceConn;
     final ConcurrentLinkedQueue<Runnable> delayed;
 
@@ -54,7 +56,7 @@ public class LockCheckerInAppBillingService extends LockChecker {
     boolean googlePlayFound = false;
     String purchaseCode;
 
-    public LockCheckerInAppBillingService(final Activity parent){
+    public LockCheckerInAppBillingService(final FragmentActivity parent){
         super(parent);
 
         this.delayed = new ConcurrentLinkedQueue<>();

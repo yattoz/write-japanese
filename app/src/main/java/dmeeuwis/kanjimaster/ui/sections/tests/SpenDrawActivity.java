@@ -1,6 +1,6 @@
 package dmeeuwis.kanjimaster.ui.sections.tests;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SpenDrawActivity extends AppCompatActivity {
     /*

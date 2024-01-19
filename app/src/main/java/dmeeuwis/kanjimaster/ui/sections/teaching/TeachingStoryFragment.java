@@ -1,14 +1,8 @@
 package dmeeuwis.kanjimaster.ui.sections.teaching;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -25,15 +19,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import dmeeuwis.kanjimaster.core.Kanji;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.ui.data.LoadRadicalsFile;
-import dmeeuwis.kanjimaster.ui.data.RadicalAdapter;
+import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.logic.data.IidFactory;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
-import dmeeuwis.kanjimaster.logic.data.IidFactory;
+import dmeeuwis.kanjimaster.ui.data.LoadRadicalsFile;
+import dmeeuwis.kanjimaster.ui.data.RadicalAdapter;
 import dmeeuwis.kanjimaster.ui.views.AnimatedCurveView;
 import dmeeuwis.kanjimaster.ui.views.NetworkStoriesAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.NetworkStorySaveAsyncTask;
@@ -199,7 +200,7 @@ public class TeachingStoryFragment extends Fragment {
         }
     }
 
-    public void focusAway(Activity parent){
+    public void focusAway(AppCompatActivity parent){
         if(storyEditor != null) {
             storyEditor.clearFocus();
 
@@ -215,7 +216,7 @@ public class TeachingStoryFragment extends Fragment {
 		return inflater.inflate(R.layout.fragment_story, container, false);
 	}
 	
-	public void saveStory(Activity act) {
+	public void saveStory(AppCompatActivity act) {
 		if (storyEditor != null && storyEditor.getText() != null && !storyEditor.getText().toString().trim().equals("")){
             StoryDataHelper db = new StoryDataHelper();
             String story = storyEditor.getText().toString();

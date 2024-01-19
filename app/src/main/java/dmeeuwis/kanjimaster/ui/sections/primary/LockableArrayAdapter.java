@@ -1,6 +1,5 @@
 package dmeeuwis.kanjimaster.ui.sections.primary;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -9,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
         this.data = labels;
 
         DisplayMetrics dm = new DisplayMetrics();
-        ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        ((AppCompatActivity)context).getWindowManager().getDefaultDisplay().getMetrics(dm);
         double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
         double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
         this.screenWidthInches = Math.sqrt(x + y);
@@ -77,7 +78,7 @@ public class LockableArrayAdapter extends ArrayAdapter<LockableArrayAdapter.Char
         View row = convertView;
 
         if (row == null) {
-            LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
+            LayoutInflater inflater = ((AppCompatActivity) getContext()).getLayoutInflater();
             row = inflater.inflate(R.layout.locked_list_item_layout, parent, false);
         }
 

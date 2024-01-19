@@ -1,8 +1,9 @@
 package dmeeuwis.kanjimaster.ui.views.translations;
 
-import android.app.Activity;
 import android.content.res.Resources;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -14,10 +15,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
-import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.SRSQueue;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
@@ -28,7 +29,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
 
     private final float engTextSize;
 
-    private final Activity context;
+    private final FragmentActivity context;
     private final KanjiFinder kanjiFinder;
     private final List<Translation> translations;
 
@@ -49,7 +50,7 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
     private SRSQueue.SRSEntry srsNextPractice;
 
 
-    public KanjiVocabRecyclerAdapter(Activity context, KanjiFinder kanjiFinder) {
+    public KanjiVocabRecyclerAdapter(FragmentActivity context, KanjiFinder kanjiFinder) {
         super();
 
         this.drawnCharacter = null;

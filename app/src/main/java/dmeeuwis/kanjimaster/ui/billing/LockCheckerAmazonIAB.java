@@ -1,25 +1,33 @@
 package dmeeuwis.kanjimaster.ui.billing;
 
-import android.app.*;
-import android.content.*;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.amazon.device.iap.PurchasingListener;
 import com.amazon.device.iap.PurchasingService;
-import com.amazon.device.iap.model.*;
+import com.amazon.device.iap.model.FulfillmentResult;
+import com.amazon.device.iap.model.ProductDataResponse;
+import com.amazon.device.iap.model.ProductType;
+import com.amazon.device.iap.model.PurchaseResponse;
+import com.amazon.device.iap.model.PurchaseUpdatesResponse;
+import com.amazon.device.iap.model.Receipt;
+import com.amazon.device.iap.model.RequestId;
+import com.amazon.device.iap.model.UserDataResponse;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import dmeeuwis.kanjimaster.*;
+import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class LockCheckerAmazonIAB extends LockChecker implements PurchasingListener {
 
     private final static String IN_APP_PURCHASE_KEY = "dmeeuwis.writejapanese.unlock";
 
-    public LockCheckerAmazonIAB(Activity parent) {
+    public LockCheckerAmazonIAB(AppCompatActivity parent) {
         super(parent);
 
         PurchasingService.registerListener(parent, this);

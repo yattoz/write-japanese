@@ -5,9 +5,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 
 import dmeeuwis.kanjimaster.R;
@@ -17,7 +17,6 @@ import dmeeuwis.kanjimaster.logic.data.CharacterSets;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
 import dmeeuwis.kanjimaster.ui.sections.primary.OnGoalPickListener;
-import dmeeuwis.kanjimaster.ui.util.KanjiMasterUncaughtExceptionHandler;
 
 /**
  * On small devices, holds the CharacterSetStatusFragment standardSets by itself.

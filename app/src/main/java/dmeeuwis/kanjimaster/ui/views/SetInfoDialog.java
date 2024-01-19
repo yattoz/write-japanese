@@ -1,8 +1,9 @@
 package dmeeuwis.kanjimaster.ui.views;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+
+import androidx.appcompat.app.AlertDialog;
 
 public class SetInfoDialog {
 

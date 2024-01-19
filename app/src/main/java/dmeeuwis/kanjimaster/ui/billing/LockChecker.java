@@ -1,11 +1,12 @@
 package dmeeuwis.kanjimaster.ui.billing;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,12 +20,12 @@ public abstract class LockChecker implements dmeeuwis.kanjimaster.logic.LockChec
 
 	private static final String PREFS_KEY = "unlockKey";
 
-	final Activity parentActivity;
+	final FragmentActivity parentActivity;
 
     abstract public boolean handleActivityResult(int requestCode, int resultCode, Intent data);
 	abstract public void dispose();
 
-	public LockChecker(Activity parent){
+	public LockChecker(FragmentActivity parent){
 		this.parentActivity = parent;
 	}
 
@@ -98,7 +99,7 @@ public abstract class LockChecker implements dmeeuwis.kanjimaster.logic.LockChec
 		return new String( hexChars );
 	}
 
-	public Activity getParentActivity(){
+	public FragmentActivity getParentActivity(){
 		return parentActivity;
 	}
 }

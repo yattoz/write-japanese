@@ -1,12 +1,13 @@
 package dmeeuwis.kanjimaster.ui.billing;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.JsonWriter;
 import android.util.Log;
 
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
+import androidx.appcompat.app.AppCompatActivity;
+
+// import com.google.android.gms.auth.GoogleAuthUtil;
+// import com.google.android.gms.auth.UserRecoverableAuthException;
 
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -18,7 +19,7 @@ import dmeeuwis.kanjimaster.logic.data.HostFinder;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
 
 public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
-    final Activity mActivity;
+    final AppCompatActivity mActivity;
     final String mEmail;
     final RunWithAuthcode post;
 
@@ -35,7 +36,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
         void exec(String authcode);
     }
 
-    public GetAccountTokenAsync(Activity activity, String name, RunWithAuthcode post) {
+    public GetAccountTokenAsync(AppCompatActivity activity, String name, RunWithAuthcode post) {
         this.mActivity = activity;
         this.mEmail = name;
         this.post = post;
@@ -49,7 +50,7 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
     protected String doInBackground(Void... params) {
         Log.i("nakama-auth", "GetAccountTokenAsync: doInBackground getting token for: " + mActivity + ", " + mEmail + ", " + SCOPE);
         try {
-            String token = GoogleAuthUtil.getToken(mActivity, mEmail, SCOPE);
+            String token = ""; //GoogleAuthUtil.getToken(mActivity, mEmail, SCOPE);
             Log.i("nakama-auth", "Found auth token as: " + token);
 
             // Register authcode to server with: iid, device name
@@ -87,10 +88,10 @@ public class GetAccountTokenAsync extends AsyncTask<Void, Void, String> {
             }
 
             return token;
-        } catch (UserRecoverableAuthException userAuthEx) {
+        } catch (Exception userAuthEx) {
             // Start the user recoverable action using the intent returned by getIntent()
             Log.e("nakama-auth", "Saw UserRecoverableAuthException while getting token", userAuthEx);
-            mActivity.startActivityForResult(userAuthEx.getIntent(), AUTH_REQUEST_ACTIVITY_CODE);
+            //mActivity.startActivityForResult(userAuthEx.getIntent(), AUTH_REQUEST_ACTIVITY_CODE);
         } catch (Throwable e) {
             Log.e("nakama-auth", "GetAccountTokenAsync: caught exception fetching token", e);
             // The fetchToken() method handles Google-specific exceptions,

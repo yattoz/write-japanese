@@ -1,19 +1,26 @@
 package dmeeuwis.kanjimaster.ui.views;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.support.v4.app.DialogFragment;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-
-import org.json.*;
-
-import dmeeuwis.kanjimaster.*;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
-
 import static android.content.DialogInterface.BUTTON_POSITIVE;
+
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import dmeeuwis.kanjimaster.R;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 
 public class ReportBugDialog extends DialogFragment implements DialogInterface.OnClickListener{
 

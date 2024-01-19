@@ -3,7 +3,7 @@ package dmeeuwis.kanjimaster.ui.sections.tests;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 

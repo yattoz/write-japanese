@@ -6,10 +6,9 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -24,21 +23,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.core.Translation;
-import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.logic.data.IidFactory;
-import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
-import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
 import dmeeuwis.kanjimaster.logic.data.DictionarySet;
+import dmeeuwis.kanjimaster.logic.data.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
+import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
 import dmeeuwis.kanjimaster.ui.data.LoadRadicalsFile;
 import dmeeuwis.kanjimaster.ui.data.RadicalAdapter;
-import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
+import dmeeuwis.kanjimaster.ui.sections.primary.OnFragmentInteractionListener;
 import dmeeuwis.kanjimaster.ui.views.NetworkStoriesAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.NetworkStorySaveAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.ShareStoriesDialog;
@@ -280,7 +282,7 @@ public class TeachingCombinedStoryInfoFragment extends Fragment {
         networkStoriesAsyncTask.execute();
     }
 
-    public void saveStory(Activity act) {
+    public void saveStory(AppCompatActivity act) {
         if (storyEditor != null && storyEditor.getText() != null && !storyEditor.getText().toString().trim().equals("")){
             StoryDataHelper db = new StoryDataHelper();
             String story = storyEditor.getText().toString();

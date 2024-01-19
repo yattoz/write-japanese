@@ -15,7 +15,6 @@
 
 package com.android.vending.billing.util;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -29,6 +28,8 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.vending.billing.IInAppBillingService;
 
@@ -387,24 +388,24 @@ public class IabHelper {
     // the purchase finishes
     OnIabPurchaseFinishedListener mPurchaseListener;
 
-    public void launchPurchaseFlow(Activity act, String sku, int requestCode, OnIabPurchaseFinishedListener listener)
+    public void launchPurchaseFlow(AppCompatActivity act, String sku, int requestCode, OnIabPurchaseFinishedListener listener)
         throws IabAsyncInProgressException {
         launchPurchaseFlow(act, sku, requestCode, listener, "");
     }
 
-    public void launchPurchaseFlow(Activity act, String sku, int requestCode,
-            OnIabPurchaseFinishedListener listener, String extraData)
+    public void launchPurchaseFlow(AppCompatActivity act, String sku, int requestCode,
+                                   OnIabPurchaseFinishedListener listener, String extraData)
         throws IabAsyncInProgressException {
         launchPurchaseFlow(act, sku, ITEM_TYPE_INAPP, null, requestCode, listener, extraData);
     }
 
-    public void launchSubscriptionPurchaseFlow(Activity act, String sku, int requestCode,
-            OnIabPurchaseFinishedListener listener) throws IabAsyncInProgressException {
+    public void launchSubscriptionPurchaseFlow(AppCompatActivity act, String sku, int requestCode,
+                                               OnIabPurchaseFinishedListener listener) throws IabAsyncInProgressException {
         launchSubscriptionPurchaseFlow(act, sku, requestCode, listener, "");
     }
 
-    public void launchSubscriptionPurchaseFlow(Activity act, String sku, int requestCode,
-            OnIabPurchaseFinishedListener listener, String extraData)
+    public void launchSubscriptionPurchaseFlow(AppCompatActivity act, String sku, int requestCode,
+                                               OnIabPurchaseFinishedListener listener, String extraData)
         throws IabAsyncInProgressException {
         launchPurchaseFlow(act, sku, ITEM_TYPE_SUBS, null, requestCode, listener, extraData);
     }
@@ -413,7 +414,7 @@ public class IabHelper {
      * Initiate the UI flow for an in-app purchase. Call this method to initiate an in-app purchase,
      * which will involve bringing up the Google Play screen. The calling activity will be paused
      * while the user interacts with Google Play, and the result will be delivered via the
-     * activity's {@link android.app.Activity#onActivityResult} method, at which point you must call
+     * activity's {@link AppCompatActivity#onActivityResult} method, at which point you must call
      * this object's {@link #handleActivityResult} method to continue the purchase flow. This method
      * MUST be called from the UI thread of the Activity.
      *
@@ -423,14 +424,14 @@ public class IabHelper {
      *      ITEM_TYPE_SUBS)
      * @param oldSkus A list of SKUs which the new SKU is replacing or null if there are none
      * @param requestCode A request code (to differentiate from other responses -- as in
-     *      {@link android.app.Activity#startActivityForResult}).
+     *      {@link AppCompatActivity#startActivityForResult}).
      * @param listener The listener to notify when the purchase process finishes
      * @param extraData Extra data (developer payload), which will be returned with the purchase
      *      data when the purchase completes. This extra data will be permanently bound to that
      *      purchase and will always be returned when the purchase is queried.
      */
-    public void launchPurchaseFlow(Activity act, String sku, String itemType, List<String> oldSkus,
-            int requestCode, OnIabPurchaseFinishedListener listener, String extraData)
+    public void launchPurchaseFlow(AppCompatActivity act, String sku, String itemType, List<String> oldSkus,
+                                   int requestCode, OnIabPurchaseFinishedListener listener, String extraData)
         throws IabAsyncInProgressException {
         checkNotDisposed();
         checkSetupDone("launchPurchaseFlow");
@@ -504,7 +505,7 @@ public class IabHelper {
     /**
      * Handles an activity result that's part of the purchase flow in in-app billing. If you
      * are calling {@link #launchPurchaseFlow}, then you must call this method from your
-     * Activity's {@link android.app.Activity@onActivityResult} method. This method
+     * Activity's {@link AppCompatActivity @onActivityResult} method. This method
      * MUST be called from the UI thread of the Activity.
      *
      * @param requestCode The requestCode as you received it.
@@ -535,7 +536,7 @@ public class IabHelper {
         String purchaseData = data.getStringExtra(RESPONSE_INAPP_PURCHASE_DATA);
         String dataSignature = data.getStringExtra(RESPONSE_INAPP_SIGNATURE);
 
-        if (resultCode == Activity.RESULT_OK && responseCode == BILLING_RESPONSE_RESULT_OK) {
+        if (resultCode == AppCompatActivity.RESULT_OK && responseCode == BILLING_RESPONSE_RESULT_OK) {
             logDebug("Successful resultcode from purchase activity.");
             logDebug("Purchase data: " + purchaseData);
             logDebug("Data signature: " + dataSignature);
@@ -576,7 +577,7 @@ public class IabHelper {
                 mPurchaseListener.onIabPurchaseFinished(new IabResult(BILLING_RESPONSE_RESULT_OK, "Success"), purchase);
             }
         }
-        else if (resultCode == Activity.RESULT_OK) {
+        else if (resultCode == AppCompatActivity.RESULT_OK) {
             // result code was OK, but in-app billing response was not OK.
             logDebug("Result code was OK but in-app billing response was not OK: " + getResponseDesc(responseCode));
             if (mPurchaseListener != null) {
@@ -584,7 +585,7 @@ public class IabHelper {
                 mPurchaseListener.onIabPurchaseFinished(result, null);
             }
         }
-        else if (resultCode == Activity.RESULT_CANCELED) {
+        else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
             result = new IabResult(IABHELPER_USER_CANCELLED, "User canceled.");
             if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, null);

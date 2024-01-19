@@ -1,10 +1,12 @@
 package dmeeuwis.kanjimaster.ui.sections.primary;
 
+import static dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity.USE_SRS_SETTING_NAME;
+import static dmeeuwis.kanjimaster.ui.views.OverrideDialog.OverideType.OVERRIDE_TO_CORRECT;
+import static dmeeuwis.kanjimaster.ui.views.OverrideDialog.OverideType.OVERRIDE_TO_INCORRECT;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,13 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -40,13 +36,15 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.amazon.device.iap.PurchasingService;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import dmeeuwis.kanjimaster.logic.data.ClueType;
-import dmeeuwis.kanjimaster.logic.data.IidFactory;
-import dmeeuwis.kanjimaster.logic.data.Settings;
-import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
-import dmeeuwis.kanjimaster.logic.util.JsonWriter;
+import com.amazon.device.iap.PurchasingService;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
@@ -62,41 +60,44 @@ import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.R;
-import dmeeuwis.kanjimaster.logic.Constants;
 import dmeeuwis.kanjimaster.core.Kana;
 import dmeeuwis.kanjimaster.core.Translation;
 import dmeeuwis.kanjimaster.core.util.Util;
-import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
-import dmeeuwis.kanjimaster.ui.data.SRSSScheduleDialog;
-import dmeeuwis.kanjimaster.ui.data.SettingsAndroid;
-import dmeeuwis.kanjimaster.ui.sections.progress.ProgressLogActivity;
-import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
+import dmeeuwis.kanjimaster.logic.Constants;
 import dmeeuwis.kanjimaster.logic.data.AssetFinder;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
 import dmeeuwis.kanjimaster.logic.data.CharacterSets;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet.LockLevel;
 import dmeeuwis.kanjimaster.logic.data.ClueExtractor;
+import dmeeuwis.kanjimaster.logic.data.ClueType;
 import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
 import dmeeuwis.kanjimaster.logic.data.DictionarySet;
+import dmeeuwis.kanjimaster.logic.data.IidFactory;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
 import dmeeuwis.kanjimaster.logic.data.SRSQueue;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.logic.data.StoryDataHelper;
-import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
+import dmeeuwis.kanjimaster.logic.data.UncaughtExceptionLogger;
 import dmeeuwis.kanjimaster.logic.drawing.Comparator;
 import dmeeuwis.kanjimaster.logic.drawing.ComparisonAsyncTask;
 import dmeeuwis.kanjimaster.logic.drawing.ComparisonFactory;
 import dmeeuwis.kanjimaster.logic.drawing.Criticism;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
 import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
+import dmeeuwis.kanjimaster.logic.util.JsonWriter;
 import dmeeuwis.kanjimaster.ui.billing.LockChecker;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerAmazonIAB;
 import dmeeuwis.kanjimaster.ui.billing.LockCheckerInAppBillingService;
+import dmeeuwis.kanjimaster.ui.data.DictionarySetAndroid;
+import dmeeuwis.kanjimaster.ui.data.SRSSScheduleDialog;
+import dmeeuwis.kanjimaster.ui.data.SettingsAndroid;
+import dmeeuwis.kanjimaster.ui.data.WriteJapaneseOpenHelper;
 import dmeeuwis.kanjimaster.ui.sections.credits.CreditsActivity;
 import dmeeuwis.kanjimaster.ui.sections.credits.ReleaseNotesActivity;
 import dmeeuwis.kanjimaster.ui.sections.progress.CharacterSetStatusFragment;
 import dmeeuwis.kanjimaster.ui.sections.progress.CharsetInfoActivity;
+import dmeeuwis.kanjimaster.ui.sections.progress.ProgressLogActivity;
 import dmeeuwis.kanjimaster.ui.sections.progress.ReminderManager;
 import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailActivity;
 import dmeeuwis.kanjimaster.ui.sections.seteditor.CharacterSetDetailFragment;
@@ -107,7 +108,7 @@ import dmeeuwis.kanjimaster.ui.sections.tests.DrawViewTestActivity;
 import dmeeuwis.kanjimaster.ui.sections.tests.KanjiCheckActivity;
 import dmeeuwis.kanjimaster.ui.sections.tests.SpenDrawActivity;
 import dmeeuwis.kanjimaster.ui.sections.tests.TestDrawActivity;
-import dmeeuwis.kanjimaster.ui.util.KanjiMasterUncaughtExceptionHandler;
+import dmeeuwis.kanjimaster.ui.util.AndroidInputStreamGenerator;
 import dmeeuwis.kanjimaster.ui.views.Animatable;
 import dmeeuwis.kanjimaster.ui.views.AnimatedCurveView;
 import dmeeuwis.kanjimaster.ui.views.DrawView;
@@ -119,10 +120,6 @@ import dmeeuwis.kanjimaster.ui.views.StrictnessDialog;
 import dmeeuwis.kanjimaster.ui.views.translations.CharacterTranslationListAsyncTask;
 import dmeeuwis.kanjimaster.ui.views.translations.ClueCard;
 import dmeeuwis.kanjimaster.ui.views.translations.KanjiVocabRecyclerAdapter;
-
-import static dmeeuwis.kanjimaster.ui.sections.primary.IntroActivity.USE_SRS_SETTING_NAME;
-import static dmeeuwis.kanjimaster.ui.views.OverrideDialog.OverideType.OVERRIDE_TO_CORRECT;
-import static dmeeuwis.kanjimaster.ui.views.OverrideDialog.OverideType.OVERRIDE_TO_INCORRECT;
 
 public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.OnNavigationListener,
             LockCheckerHolder, OnFragmentInteractionListener, OnGoalPickListener,
@@ -455,15 +452,20 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         srsBug = findViewById(R.id.srsBug);
 
         ActionBar actionBar = getSupportActionBar();
-        this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
-        actionBar.setBackgroundDrawable(this.actionBarBackground);
 
-        LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
-        characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
-        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
+        if (actionBar != null)
+        {
+            this.actionBarBackground = new ColorDrawable(getResources().getColor(R.color.actionbar_main));
+                actionBar.setBackgroundDrawable(this.actionBarBackground);
 
-        actionBar.show();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+            LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
+            characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
+            actionBar.setListNavigationCallbacks(characterSetAdapter, this);
+
+            actionBar.show();
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        }
+
 
         Log.i("nakama-timing", "MainActivity: timing 3 " + (System.currentTimeMillis() - start) + "ms");
 
@@ -1163,15 +1165,21 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         LockableArrayAdapter characterSetAdapter = new LockableArrayAdapter(this, new ArrayList<>(this.characterSets.values()));
         characterSetAdapter.setDropDownViewResource(R.layout.locked_list_item_spinner_layout);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setListNavigationCallbacks(characterSetAdapter, this);
 
+        if (actionBar != null)
+        {
+            actionBar.setListNavigationCallbacks(characterSetAdapter, this);
+        }
 
         // update tab navigation dropdown to selected character set
         String[] charSetNames = this.characterSets.keySet().toArray(new String[0]);
         for (int i = 0; i < this.characterSets.keySet().size(); i++) {
             String currCharsetName = characterSets.get(charSetNames[i]).pathPrefix;
             if (currCharsetName.equals(this.currentCharacterSet.pathPrefix)) {
-                getSupportActionBar().setSelectedNavigationItem(i);
+                if (getSupportActionBar() != null)
+                {
+                    getSupportActionBar().setSelectedNavigationItem(i);
+                }
                 break;
             }
         }
@@ -1488,7 +1496,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
         d.setArguments(b);
         if(!isFinishing()) {
-            d.show(fm, "fragment_report_bug");
+            // d.show(fm, "fragment_report_bug");
+            //TODO: sort this out.
         }
     }
 

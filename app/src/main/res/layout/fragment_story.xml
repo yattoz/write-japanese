@@ -11,7 +11,7 @@
         android:orientation="vertical"
         >
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="5dp"
@@ -39,13 +39,13 @@
                     android:layerType="software"
                     android:textSize="160sp"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="4dp"/>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
@@ -72,13 +72,13 @@
                 android:lines="4"
                 android:scrollHorizontally="false"
                 android:singleLine="false"/>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="4dp"/>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
@@ -110,13 +110,13 @@
                 android:visibility="gone">
 
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="4dp"/>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/radicalsCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -141,13 +141,13 @@
                 android:layout_marginTop="36sp"
                 android:gravity="center"
                 android:numColumns="3"/>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="4dp"/>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/networkStoriesCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -175,7 +175,7 @@
                 >
 
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 
 </ScrollView>

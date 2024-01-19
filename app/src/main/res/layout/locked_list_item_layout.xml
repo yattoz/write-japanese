@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:contentDescription="@string/locked_icon_content_description"
-        android:src="@drawable/ic_lock_lock"
+        app:srcCompat="@drawable/ic_lock_lock"
         android:visibility="gone"
         />
 
@@ -38,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:contentDescription="@string/locked_icon_content_description"
-        android:src="@android:drawable/ic_input_add"
+        app:srcCompat="@android:drawable/ic_input_add"
         android:visibility="gone"
         />
 </FrameLayout>
