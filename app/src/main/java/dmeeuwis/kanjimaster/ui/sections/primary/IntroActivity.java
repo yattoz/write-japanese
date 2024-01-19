@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +22,7 @@ import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
 import dmeeuwis.kanjimaster.ui.util.KanjiMasterUncaughtExceptionHandler;
 
-public class IntroActivity extends MaterialIntroActivity {
+public class IntroActivity extends AppCompatActivity {
 
     public final static String USE_SRS_SETTING_NAME = "use_spaced_repetition";
     public final static String SRS_NOTIFICATION_SETTING_NAME = "use_srs_notifications";
@@ -75,7 +77,7 @@ public class IntroActivity extends MaterialIntroActivity {
                             "Spaced Repetition reviews override current study-set when ready (cross-set SRS)", SRS_ACROSS_SETS,
                             "Show OS Notifications when characters are due for spaced review", SRS_NOTIFICATION_SETTING_NAME
                     );
-            addSlide(s);
+            // addSlide(s);
             addedSlides.add(s);
 
             // on first view, set defaults
