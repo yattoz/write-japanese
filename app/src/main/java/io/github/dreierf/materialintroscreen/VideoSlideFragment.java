@@ -1,4 +1,4 @@
-package agency.tango.materialintroscreen;
+package io.github.dreierf.materialintroscreen;
 
 import android.net.Uri;
 import android.os.Bundle;

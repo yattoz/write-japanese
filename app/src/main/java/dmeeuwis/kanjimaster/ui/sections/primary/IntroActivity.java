@@ -13,10 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-import agency.tango.materialintroscreen.ButtonSlideFragment;
-import agency.tango.materialintroscreen.CheckboxSlideFragment;
-import agency.tango.materialintroscreen.MaterialIntroActivity;
-import agency.tango.materialintroscreen.SlideFragment;
+import io.github.dreierf.materialintroscreen.ButtonSlideFragment;
+import io.github.dreierf.materialintroscreen.CheckboxSlideFragment;
+import io.github.dreierf.materialintroscreen.MaterialIntroActivity;
+import io.github.dreierf.materialintroscreen.SlideFragment;
 import dmeeuwis.kanjimaster.R;
 import dmeeuwis.kanjimaster.logic.data.Settings;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;

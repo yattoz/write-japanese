@@ -87,11 +87,8 @@ public class KanjiVocabRecyclerAdapter extends RecyclerView.Adapter<RecyclerView
             this.kunyomi = TextUtils.join(", ", k.kunyomi);
             recalculateHeaders();
             this.notifyDataSetChanged();
-        } catch (IOException e) {
+        } catch (Exception e) { // IOException and  catch (StringIndexOutOfBoundsException e)
             // kana character?
-            return;
-        } catch (StringIndexOutOfBoundsException e)
-        {
             return;
         }
     }

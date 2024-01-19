@@ -235,8 +235,6 @@ public class ProgressTracker {
 				if(prev == null){ prev = c; }
 			} catch(IndexOutOfBoundsException e){
 				// didn't have enough history
-			} catch (IndexOutOfBoundsException e) {
-				// didn't have enough history
 			}
 		}
 

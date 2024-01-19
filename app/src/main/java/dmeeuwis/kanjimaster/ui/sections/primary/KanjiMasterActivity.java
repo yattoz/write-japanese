@@ -40,6 +40,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NavUtils;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -452,6 +453,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         srsBug = findViewById(R.id.srsBug);
 
         ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         if (actionBar != null)
         {
@@ -1171,7 +1175,11 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         if (actionBar != null)
         {
-            actionBar.setListNavigationCallbacks(characterSetAdapter, this);
+            try {
+                actionBar.setListNavigationCallbacks(characterSetAdapter, this);
+            } catch(Exception e) {
+                //ERF.
+            }
         }
 
         // update tab navigation dropdown to selected character set
@@ -1388,6 +1396,8 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         } else if(item.getTitle().equals("Recalculate Progress")) {
             new CharacterProgressDataHelper(IidFactory.get()).clearPracticeRecord();
             initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
+        } else if (item.getItemId() == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
         }
 
         if (BuildConfig.DEBUG) {

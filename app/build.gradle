@@ -86,7 +86,9 @@ dependencies {
     implementation 'uk.co.deanwild:flowtextview:2.0.2@aar'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.1'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
-    implementation 'agency.tango.android:material-intro-screen:0.0.5'
+
+
+    implementation 'io.github.dreierf:material-intro-screen:0.0.6'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
