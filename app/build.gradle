@@ -11,8 +11,7 @@ android {
     }
 
 
-
-    compileSdkVersion 33
+    compileSdk 33
     defaultConfig {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 29
@@ -61,6 +60,9 @@ android {
     namespace 'dmeeuwis.kanjimaster'
     lint {
         abortOnError false
+    }
+    buildFeatures {
+        aidl true
     }
     testOptions.unitTests.includeAndroidResources true
 }
