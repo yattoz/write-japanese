@@ -134,8 +134,9 @@ public class TeachingActivity extends AppCompatActivity implements ViewPager.OnP
 
         DictionarySet sd = DictionarySetAndroid.get(this);
         try {
-            this.kanji = sd.kanjiFinder().find(getCharacter().charAt(0));
-        } catch (IOException e) {
+            char lookup = getCharacter().charAt(0);
+            this.kanji = sd.kanjiFinder().find((char) (lookup));
+        } catch (IOException | StringIndexOutOfBoundsException e) {
             Log.e("nakama", "Error: can't find kanji for: " + this.kanji, e);
             Toast.makeText(this, "Internal Error: can't find kanji information for: " + this.kanji, Toast.LENGTH_LONG).show();
         }
@@ -214,7 +215,8 @@ public class TeachingActivity extends AppCompatActivity implements ViewPager.OnP
         }
 	}
 	
-    @Override protected void onNewIntent(Intent intent){
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         Log.i("nakama", "TeachingActivity lifecycle onNewIntent");
         this.setIntent(intent);
     }

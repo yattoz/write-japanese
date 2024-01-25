@@ -454,7 +454,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            // display the back arrow in the action bar. Set to false, as this causes more problems than it is currently solving.
+            // TODO: allow the back arrow to appear on screens where the back action has sense
+            actionBar.setDisplayHomeAsUpEnabled(false);
         }
 
         if (actionBar != null)
@@ -1391,9 +1393,9 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         } else if (item.getItemId() == R.id.menu_bug) {
             // show criticism selection fragment
             showReportBugDialog();
-
-
-        } else if(item.getTitle().equals("Recalculate Progress")) {
+        } else if (item.getItemId() == R.id.button_back) {
+            Log.d("Activity", "back button pressed. What should we do?");
+        } else if(item.getTitle().equals("Recalculate Progress")) { //TODO: null object reference here - in particular, back arrow when on home screen
             new CharacterProgressDataHelper(IidFactory.get()).clearPracticeRecord();
             initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
         } else if (item.getItemId() == android.R.id.home) {
