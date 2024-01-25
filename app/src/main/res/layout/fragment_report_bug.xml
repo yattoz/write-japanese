@@ -11,7 +11,7 @@
         android:padding="5sp"
         android:text="@string/bug_report_text" />
 
-    <com.google.android.material.textinputlayout.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:labelFor="@id/debug_user_message"
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="100sp"
             android:inputType="" />
-    </com.google.android.material.textinputlayout.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
         android:id="@+id/debug_dialog_check"
