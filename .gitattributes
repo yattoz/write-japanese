@@ -1,0 +1,7 @@
+# The dictionary is accessed like a binary file, using byte offset.
+# Git for Windows will checkout as CRLF by default, which mess things up.
+
+# First you acknowledge the file as text, with LF enforced. **At checkout** it will keep LF.
+kanjidic.utf8.awb text eol=lf
+# Then, you force Git for Windows to consider the file like a binary file. If for whatever reason the file changes encoding, you'll see it in git.
+kanjidic.utf8.awb binary
