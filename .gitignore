@@ -10,5 +10,9 @@
 .idea/caches/build_file_checksums.ser
 app/explode
 app/release
+
+# Android App Bundle (build artifact)
 *.aab
+
+# Keystore file. Copy the keystore.properties.template and fill it.
 keystore.properties

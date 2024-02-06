@@ -5,9 +5,3 @@ Write Japanese is an Android app that teaches the Japanese character set, includ
 It is recommended to build using the free Android Studio IDE.
 
 For screenshots and info, see the [Google Play Store listing](https://play.google.com/store/apps/details?id=dmeeuwis.kanjimaster&hl=en_U).
-
-## Build notes
-
-If you're using Windows, chances are Git is automatically checking out text files with line ends CRLF. 
-**This causes an issue with the dictionary file kanjidic.utf8.awb that is read like you would with a binary file.**
-**Be sure to save kanjidic.utf8.awb as LF (and not CRLF) after checking out the repository.**
