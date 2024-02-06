@@ -1,12 +1,16 @@
 apply plugin: 'com.android.application'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties");
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     signingConfigs {
         production {
-            keyAlias '---------'
-            keyPassword '---------'
-            storeFile file(rootProject.projectDir.absolutePath + '/../keystore/keystore.jks')
-            storePassword '---------'
+            storeFile file(rootProject.projectDir.absolutePath + keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
         }
     }
 

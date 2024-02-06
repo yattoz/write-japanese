@@ -11,3 +11,4 @@
 app/explode
 app/release
 *.aab
+keystore.properties
