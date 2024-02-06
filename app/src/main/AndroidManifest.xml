@@ -34,6 +34,7 @@
         <activity
             android:name=".ui.sections.primary.KanjiMasterActivity"
             android:label="@string/app_name"
+            android:exported="true"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,7 +47,8 @@
         <receiver
             android:name=".ui.sections.progress.ReminderManager"
             android:icon="@mipmap/ic_launcher_adaptive" />
-        <receiver android:name="com.amazon.device.iap.ResponseReceiver">
+        <receiver android:name="com.amazon.device.iap.ResponseReceiver"
+                    android:exported="true">
             <intent-filter>
                 <action
                     android:name="com.amazon.inapp.purchasing.NOTIFY"

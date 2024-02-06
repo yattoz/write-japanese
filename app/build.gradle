@@ -19,7 +19,9 @@ android {
     defaultConfig {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 21
-        versionCode 203
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 29 // TODO: target higher version (need fix for some layouts)
+        versionCode 220
         versionName "22.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
