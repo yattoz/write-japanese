@@ -75,6 +75,7 @@ import dmeeuwis.kanjimaster.logic.data.ClueType;
 import dmeeuwis.kanjimaster.logic.data.CustomCharacterSetDataHelper;
 import dmeeuwis.kanjimaster.logic.data.DictionarySet;
 import dmeeuwis.kanjimaster.logic.data.IidFactory;
+import dmeeuwis.kanjimaster.logic.data.PracticeLogSync;
 import dmeeuwis.kanjimaster.logic.data.ProgressTracker;
 import dmeeuwis.kanjimaster.logic.data.SRSQueue;
 import dmeeuwis.kanjimaster.logic.data.SettingsFactory;
@@ -1292,6 +1293,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:DebugJSON");
             menu.add("DEBUG:PurchaseLog");
             menu.add("DEBUG:ClearSkipIntro");
+            menu.add("DEBUG:DumpBackupJson");
         }
 
         return true;
@@ -1494,6 +1496,14 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 ed.remove(SettingsAndroid.INSTALL_TIME_PREF_NAME);
                 ed.commit();
                 SettingsFactory.get().deleteSetting(USE_SRS_SETTING_NAME);
+            } else if(item.getTitle().equals("DEBUG:DumpBackupJson")){
+                Log.d("nakama-debug", "pushed!");
+                PracticeLogSync p = new PracticeLogSync();
+                try {
+                    Log.d("nakama-debug", p.BackupToJson());
+                } catch (IOException e) {
+                    Log.e("nakama-debug", "Error displaying Backup to JSON");
+                }
             }
         }
 

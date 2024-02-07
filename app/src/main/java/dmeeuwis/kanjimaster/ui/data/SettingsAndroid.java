@@ -205,4 +205,51 @@ public class SettingsAndroid implements Settings {
                 || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
                 || "google_sdk".equals(Build.PRODUCT);
     }
+
+    /* Methods related to settings sync.
+     * TODO: BACKUP FEATURE: sort this out
+     */
+    @Override
+    public void setCrossDeviceSyncAsked() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor ed = prefs.edit();
+        //ed.putBoolean(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY, true);
+        ed.apply();
+    }
+
+
+    @Override
+    public void clearCrossDeviceSync() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor ed = prefs.edit();
+        //ed.remove(SyncRegistration.HAVE_ASKED_ABOUT_SYNC_KEY);
+        //ed.remove(SyncRegistration.AUTHCODE_SHARED_PREF_KEY);
+        ed.apply();
+    }
+
+    @Override
+    public void clearSyncSettingsDebug() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor e = prefs.edit();
+        e.putString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
+        e.putString(DEVICE_SYNC_PREFS_KEY, "0");
+        e.apply();
+    }
+
+    @Override
+    public Settings.SyncSettings getSyncSettings() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String lastSyncServerTimestamp = prefs.getString(SERVER_SYNC_PREFS_KEY, "2000-01-01 00:00:00 +00");
+        String lastSyncDeviceTimestamp = prefs.getString(DEVICE_SYNC_PREFS_KEY, "0");
+        return new Settings.SyncSettings(lastSyncServerTimestamp, lastSyncDeviceTimestamp);
+    }
+
+    @Override
+    public void setSyncSettings(Settings.SyncSettings set) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(DEVICE_SYNC_PREFS_KEY, set.lastSyncDeviceTimestamp);
+        ed.putString(SERVER_SYNC_PREFS_KEY, set.lastSyncServerTimestamp);
+        ed.apply();
+    }
 }
