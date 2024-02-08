@@ -7,6 +7,7 @@ import static dmeeuwis.kanjimaster.ui.views.OverrideDialog.OverideType.OVERRIDE_
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +22,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -36,6 +39,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,6 +57,8 @@ import com.amazon.device.iap.PurchasingService;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -186,6 +195,37 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
     protected String[] currentCharacterSvg;
 
     protected CharacterSetStatusFragment charSetFrag;
+
+    protected String m_backupStringJson;
+
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                        assert intent != null;
+                        Uri resultUri = intent.getData();
+                        assert resultUri != null;
+                        try (FileOutputStream fileOutupStream = (FileOutputStream) getContentResolver().openOutputStream(resultUri)) {
+                            if (fileOutupStream != null) {
+                                fileOutupStream.write(m_backupStringJson.getBytes());
+                                fileOutupStream.flush();
+                                m_backupStringJson = null; // freeing what is potentially megabytes of memory.
+                            }
+
+                            Toast.makeText(getBaseContext(), ("saved: " + resultUri), Toast.LENGTH_LONG).show();
+                        } catch (FileNotFoundException e) {
+                            Toast.makeText(getBaseContext(), "File not Found" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            throw new RuntimeException(e);
+                        } catch (IOException e) {
+                            Toast.makeText(getBaseContext(), "IO went wrong" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            });
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1500,7 +1540,10 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 Log.d("nakama-debug", "pushed!");
                 PracticeLogSync p = new PracticeLogSync();
                 try {
-                    Log.d("nakama-debug", p.BackupToJson());
+                    m_backupStringJson =  p.BackupToJson();
+                    Log.d("nakama-debug", m_backupStringJson);
+                    createFile(null);
+
                 } catch (IOException e) {
                     Log.e("nakama-debug", "Error displaying Backup to JSON");
                 }
@@ -1508,6 +1551,24 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         }
 
         return true;
+    }
+
+
+    private void createFile(Uri pickerInitialUri) {
+
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/json");
+        intent.putExtra(Intent.EXTRA_TITLE, "write-japanese-backup.json");
+
+        // Optionally, specify a URI for the directory that should be opened in
+        // the system file picker when your app creates the document.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
+        }
+
+        mStartForResult.launch(intent);
+
     }
 
     private void showReportBugDialog() {
