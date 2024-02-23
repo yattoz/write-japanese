@@ -248,12 +248,13 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
                         FileInputStream fis = null;
                         try {
-                            fis = new FileInputStream(getApplicationContext().getContentResolver().
-                                    openFileDescriptor(resultUri, "r").getFileDescriptor());
+                            fis = new FileInputStream(Objects.requireNonNull(getApplicationContext().getContentResolver().
+                                    openFileDescriptor(resultUri, "r")).getFileDescriptor());
                         } catch (FileNotFoundException e) {
                             throw new RuntimeException(e);
                         }
-                        BufferedReader bfr = new BufferedReader(new InputStreamReader(fis));
+                        InputStreamReader isr = new InputStreamReader(fis);
+                        BufferedReader bfr = new BufferedReader(isr);
                         String line;
                         StringBuilder lin2 = new StringBuilder();
                         while (true)
@@ -265,7 +266,14 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                             }
                             lin2.append(line);
                         }
-                        Log.d("nakama", lin2.toString());
+                        String s = lin2.toString();
+                        Log.d("nakama", s);
+                        PracticeLogSync p = new PracticeLogSync();
+                        try {
+                            p.loadJsonBackup(s);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
 
