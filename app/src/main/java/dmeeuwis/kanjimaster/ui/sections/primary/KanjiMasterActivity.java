@@ -1356,10 +1356,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.findItem(R.id.menu_set_goals).setVisible(false);
         }
 
-        boolean isKindle = Build.MANUFACTURER.equals("Amazon");
-        if (isKindle) {
-            menu.findItem(R.id.menu_network_sync).setVisible(false);
-        }
 
         if (BuildConfig.DEBUG && DEBUG_MENU) {
             menu.add("DEBUG:DrawTest");
@@ -1386,8 +1382,6 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:DebugJSON");
             menu.add("DEBUG:PurchaseLog");
             menu.add("DEBUG:ClearSkipIntro");
-            menu.add("DEBUG:DumpBackupJson");
-            menu.add("DEBUG:LoadBackupJson");
         }
 
         return true;
@@ -1496,6 +1490,19 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             initializeCharacterSets(CharacterProgressDataHelper.ProgressCacheFlag.USE_RAW_LOGS);
         } else if (item.getItemId() == android.R.id.home) {
             NavUtils.navigateUpFromSameTask(this);
+        } else if (item.getItemId() == R.id.dump_backup_json) {
+            Log.d("nakama", "pushed!");
+            PracticeLogSync p = new PracticeLogSync();
+            try {
+                m_backupStringJson =  p.BackupToJson();
+            } catch (IOException e) {
+                Log.e("nakama", "Error running the backup to JSON");
+            }
+            Log.d("nakama", m_backupStringJson);
+            createFile(null);
+        } else if(item.getItemId() == R.id.load_backup_json) {
+            Log.d("nakama", "restoring backup");
+            openFile(null);
         }
 
         if (BuildConfig.DEBUG) {
@@ -1584,43 +1591,12 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 }
             } else if(item.getTitle().equals("DEBUG:PurchaseLog")){
                 UncaughtExceptionLogger.backgroundLogPurchase("DEBUG", "FakePurchaseToken");
-            } else if(item.getTitle().equals("DEBUG:ClearSkipIntro")){
+            } else if(item.getTitle().equals("DEBUG:ClearSkipIntro")) {
                 SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                 ed.remove(SKIP_INTRO_CHECK);
                 ed.remove(SettingsAndroid.INSTALL_TIME_PREF_NAME);
                 ed.commit();
                 SettingsFactory.get().deleteSetting(USE_SRS_SETTING_NAME);
-            } else if(item.getTitle().equals("DEBUG:DumpBackupJson")){
-                Log.d("nakama-debug", "pushed!");
-                PracticeLogSync p = new PracticeLogSync();
-                try {
-                    m_backupStringJson =  p.BackupToJson();
-                    Log.d("nakama-debug", m_backupStringJson);
-                    createFile(null);
-
-                } catch (IOException e) {
-                    Log.e("nakama-debug", "Error displaying Backup to JSON");
-                }
-            } else if(item.getTitle().equals("DEBUG:LoadBackupJson")) {
-                Log.d("nakama-debug", "restoring backup");
-                openFile(null);
-                /*
-                try {
-                    FileInputStream fis = new FileInputStream(myExternalFile);
-                    DataInputStream in = new DataInputStream(fis);
-                    BufferedReader br =
-                            new BufferedReader(new InputStreamReader(in));
-                    String strLine;
-                    while ((strLine = br.readLine()) != null) {
-                        myData = myData + strLine;
-                    }
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                inputText.setText(myData);
-                response.setText("SampleFile.txt data retrieved from Internal Storage...");
-                */
             }
         }
 

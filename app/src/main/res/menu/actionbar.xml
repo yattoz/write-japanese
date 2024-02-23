@@ -50,12 +50,24 @@
         android:title="@string/sync_settings"
         />
 -->
+    <!--
     <item
         android:id="@+id/menu_network_sync"
         android:title="@string/menu_network_string_message"/>
+    -->
+
     <item
         android:id="@+id/menu_srs"
         android:title="@string/srs_schedule_menu"/>
+
+    <item
+        android:id="@+id/dump_backup_json"
+        android:title="@string/dump_backup_json_label"/>
+
+    <item
+        android:id="@+id/load_backup_json"
+        android:title="@string/load_backup_json_label"/>
+
     <item
         android:id="@+id/menu_release_notes"
         android:title="@string/release_notes_menu"/>
