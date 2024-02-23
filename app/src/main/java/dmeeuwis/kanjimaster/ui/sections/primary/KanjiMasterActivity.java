@@ -18,6 +18,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -57,15 +58,19 @@ import com.amazon.device.iap.PurchasingService;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import dmeeuwis.kanjimaster.BuildConfig;
@@ -224,6 +229,46 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                         }
                     }
                 }
+            });
+
+    ActivityResultLauncher<Intent> mStartForResultLoadFile = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                        assert intent != null;
+                        Uri resultUri = intent.getData();
+                        assert resultUri != null;
+                        Log.d("nakama", resultUri.toString());
+                        Log.d("nakama", Objects.requireNonNull(resultUri.getPath()));
+
+
+
+                        FileInputStream fis = null;
+                        try {
+                            fis = new FileInputStream(getApplicationContext().getContentResolver().
+                                    openFileDescriptor(resultUri, "r").getFileDescriptor());
+                        } catch (FileNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                        BufferedReader bfr = new BufferedReader(new InputStreamReader(fis));
+                        String line;
+                        StringBuilder lin2 = new StringBuilder();
+                        while (true)
+                        {
+                            try {
+                                if ((line = bfr.readLine()) == null) break;
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            lin2.append(line);
+                        }
+                        Log.d("nakama", lin2.toString());
+                    }
+                }
+
             });
 
 
@@ -1334,6 +1379,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
             menu.add("DEBUG:PurchaseLog");
             menu.add("DEBUG:ClearSkipIntro");
             menu.add("DEBUG:DumpBackupJson");
+            menu.add("DEBUG:LoadBackupJson");
         }
 
         return true;
@@ -1547,10 +1593,43 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
                 } catch (IOException e) {
                     Log.e("nakama-debug", "Error displaying Backup to JSON");
                 }
+            } else if(item.getTitle().equals("DEBUG:LoadBackupJson")) {
+                Log.d("nakama-debug", "restoring backup");
+                openFile(null);
+                /*
+                try {
+                    FileInputStream fis = new FileInputStream(myExternalFile);
+                    DataInputStream in = new DataInputStream(fis);
+                    BufferedReader br =
+                            new BufferedReader(new InputStreamReader(in));
+                    String strLine;
+                    while ((strLine = br.readLine()) != null) {
+                        myData = myData + strLine;
+                    }
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                inputText.setText(myData);
+                response.setText("SampleFile.txt data retrieved from Internal Storage...");
+                */
             }
         }
 
         return true;
+    }
+
+    private void openFile(Uri pickerInitialUri) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/json");
+
+        // Optionally, specify a URI for the file that should appear in the
+        // system file picker when it loads.
+        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
+
+
+        mStartForResultLoadFile.launch(intent, null);
     }
 
 
@@ -1601,6 +1680,22 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
         if(!isFinishing()) {
             strictnessDialog.show(fm, "fragment_strictness");
         }
+    }
+
+    private static boolean isExternalStorageReadOnly() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean isExternalStorageAvailable() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
+            return true;
+        }
+        return false;
     }
 
     public void updateStorySharingPreferences(boolean sharing) {
