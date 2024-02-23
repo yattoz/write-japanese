@@ -34,6 +34,10 @@ public class PracticeLogSync {
     final private static String SYNC_URL = "/write-japanese/progress-sync";
 
     final ExternalDependencies extDeps;
+    static final String PRACTICE_LOGS_STR = "practice_logs";
+    static final String CHARSET_GOALS_STR = "charset_goals";
+    static final String KANJI_STORIES_STR = "kanji_stories";
+    static final String CHARACTER_SET_EDITS_STR = "character_set_edits";
 
     public static class ExternalDependencies {
 
@@ -106,35 +110,36 @@ public class PracticeLogSync {
         jw.name("install_id").value(iid);
 //      jw.name("level").value(LockCheckerInAppBillingService.getPurchaseStatus(prefs).toString());
 
-        String jsonResponse = null;
-        String jsonPost = null;
 
+        String jsonPost = null;
+        String lastTimestamp = sync.lastSyncServerTimestamp;
+        lastTimestamp = "0";
         DataHelper db = DataHelperFactory.get();
         try {
             //---------------------------------
             // creating backup as JSON
             //---------------------------------
             Log.i("nakama-sync", "Sync using: " + sync + " and iid " + iid);
-            jw.name("prev_sync_timestamp").value(sync.lastSyncServerTimestamp);
+            jw.name("prev_sync_timestamp").value(lastTimestamp);
 
             jw.name("app_version").value(SettingsFactory.get().version());
 
-            int sendingLogs = db.queryToJsonArray("practice_logs",
+            int sendingLogs = db.queryToJsonArray(PRACTICE_LOGS_STR,
                     "SELECT id, install_id, character, charset, timestamp, score, drawing " +
                             "FROM practice_log WHERE timestamp > ? AND install_id = ?",
-                    new String[]{sync.lastSyncDeviceTimestamp, iid}, jw);
+                    new String[]{lastTimestamp, iid}, jw);
 
-            int sendingGoals = db.queryToJsonArray("charset_goals",
+            int sendingGoals = db.queryToJsonArray(CHARSET_GOALS_STR,
                     "SELECT charset, timestamp, goal_start, goal FROM charset_goals WHERE timestamp > ?",
-                    new String[]{sync.lastSyncDeviceTimestamp}, jw);
+                    new String[]{lastTimestamp}, jw);
 
-            int sendingStories = db.queryToJsonArray("kanji_stories",
+            int sendingStories = db.queryToJsonArray(KANJI_STORIES_STR,
                     "SELECT character, story, timestamp FROM kanji_stories WHERE timestamp > ?",
-                    new String[]{sync.lastSyncDeviceTimestamp}, jw);
+                    new String[]{lastTimestamp}, jw);
 
-            int sendingSetEdits = db.queryToJsonArray("character_set_edits",
+            int sendingSetEdits = db.queryToJsonArray(CHARACTER_SET_EDITS_STR,
                     "SELECT id, charset_id, name, description, characters, timestamp as device_timestamp, deleted FROM character_set_edits WHERE timestamp > ? AND install_id = ?",
-                    new String[]{sync.lastSyncDeviceTimestamp, iid}, jw);
+                    new String[]{lastTimestamp, iid}, jw);
 
             jw.endObject();
             jw.close();
@@ -159,7 +164,12 @@ public class PracticeLogSync {
         return jsonPost;
     }
 
-    public SyncCounts loadJsonBackup(String s) throws Exception {
+    public SyncCounts loadJsonBackup(String s) throws Exception
+    {
+        Boolean forceIgnoreTimestamp = true;
+        return loadJsonBackup(s, forceIgnoreTimestamp);
+    }
+    public SyncCounts loadJsonBackup(String s, Boolean forceIgnoreTimestamp) throws Exception {
 
         //-----------------------------------
         // restore backup: read JSON stream
@@ -178,157 +188,166 @@ public class PracticeLogSync {
         String appVersion = jr.nextName();
         String appVersionValue = jr.nextString();
         Log.i("nakama-sync", "Saw JSON response object sync values: " + appVersion + " = " + appVersionValue);
-
-        //-----------------------------------
-        // restore backup: parse JSON, practice logs.
-        //-----------------------------------
         int practiceLogCount = 0;
-        String n = jr.nextName();      // "practice_logs" key
-        if(!"practice_logs".equals(n)){
-            throw new RuntimeException("Expected 'practice_logs' but saw " + n);
-        }
-        Log.i("nakama-sync", "Expecting practice_logs... saw " + n);
-        jr.beginArray();
-        while (jr.hasNext()) {
-            Map<String, String> values = new HashMap<>();
-            jr.beginObject();
-            while (jr.hasNext()) {
-                values.put(jr.nextName(), nextStringOrNull(jr));
-            }
-
-            if(values.get("drawing") == null){
-                values.put("drawing", "");
-            }
-
-            try {
-                String drawing = values.get("drawing");
-                String drawingS = "[]";
-                if (drawing != null && !drawing.equals("")) {
-                    JSONObject drawingJson = new JSONObject(drawing);
-                    JSONArray drawingArr = drawingJson.getJSONArray("drawing");
-                    drawingS = drawingArr.toString();
-                }
-                String[] insert = new String[]{values.get("id"), values.get("install_id"),
-                        values.get("charset"), values.get("character"), values.get("score"),
-                        values.get("timestamp"), drawingS};
-                Log.i("nakama-sync", "Inserting remote log: " + Util.join(", ", insert));
-                practiceLogCount++;
-                DataHelperFactory.get().selectRecord("UPDATE OR IGNORE practice_log SET charset=?, character=?, score=?, timestamp=?, drawing=? WHERE id = ? AND  timestamp < ?",
-                        (Object[])(new String[]{
-                                values.get("charset"), values.get("character"), values.get("score"), values.get("timestamp"), drawingS,
-                                values.get("id"), values.get("timestamp")}));
-                try {
-                    DataHelperFactory.get().selectRecord("INSERT INTO practice_log(id, install_id, charset, character, score, timestamp, drawing) VALUES(?, ?, ?, ?, ?, ?, ?)", (Object[]) insert);
-                } catch (SQLiteConstraintException e) {
-                    Log.i("nakama-sync", "Already exists: " + Util.join(", ", insert));
-                }
-
-            } catch (Exception t) {
-                Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
-            }
-            jr.endObject();
-        }
-        jr.endArray();
-
-        //-----------------------------------
-        // restore backup: parse JSON, charset goals
-        //-----------------------------------
         int charsetGoalsCount = 0;
-        n = jr.nextName();      // "charset_goals" key
-        if(!"charset_goals".equals(n)){
-            throw new RuntimeException("Expected 'charset_goals' but saw " + n);
-        }
-        jr.beginArray();
-        while(jr.hasNext()) {
-            Map<String, String> values = new HashMap<>();
-            jr.beginObject();
-            while (jr.hasNext()) {
-                values.put(jr.nextName(), nextStringOrNull(jr));
-            }
-            Log.i("nakama", "Inserting charset goal from record: " + Util.join(values, "=>", ", "));
-
-            try {
-                DataHelperFactory.get().selectRecord("UPDATE OR IGNORE charset_goals SET goal=?, goal_start=? WHERE charset = ? AND timestamp < ?",
-                        (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
-
-                DataHelperFactory.get().selectRecord("INSERT OR IGNORE INTO charset_goals(goal, goal_start, charset, timestamp) VALUES(?, ?, ?, ?)",
-                        (Object[])(new String[]{ values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
-                charsetGoalsCount++;
-
-                Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
-            } catch (Exception t) {
-                Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
-            }
-            jr.endObject();
-        }
-        jr.endArray();
-
-
-        //-----------------------------------
-        // restore backup: parse JSON, kanji stories.
-        //-----------------------------------
         int kanjiStoriesCount = 0;
-        n = jr.nextName();      // "kanji_stories" key
-        if(!"kanji_stories".equals(n)){
-            throw new RuntimeException("Expected 'kanji_stories' but saw " + n);
-        }
-        jr.beginArray();
-        while (jr.hasNext()) {
-            Map<String, String> values = new HashMap<>();
-            jr.beginObject();
-            while (jr.hasNext()) {
-                values.put(jr.nextName(), nextStringOrNull(jr));
-            }
-
-                Log.i("nakama", "Inserting kanji_story from record: " + Util.join(values, "=>", ", "));
-                try {
-                    DataHelperFactory.get().selectRecord("UPDATE OR IGNORE kanji_stories SET story=? WHERE character = ? AND  timestamp < ?",
-                            (Object[])(new String[]{ values.get("story"), values.get("character"), values.get("timestamp")}));
-
-                    DataHelperFactory.get().selectRecord("INSERT OR IGNORE INTO kanji_stories(character, story, timestamp) VALUES(?, ?, ?)",
-                            (Object[])(new String[]{values.get("character"), values.get("story"), values.get("timestamp") }));
-
-                } catch (SQLiteConstraintException t) {
-                    Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
-                }
-
-            jr.endObject();
-        }
-        jr.endArray();
-
-        //-----------------------------------
-        // restore backup: parse JSON, custom charsets.
-        //-----------------------------------
         int charsetEditCount = 0;
-        if(jr.hasNext()) {
-            n = jr.nextName();      // "character_set_edits" key
-            if(!"character_set_edits".equals(n)){
-                throw new RuntimeException("Expected 'character_set_edits' but saw " + n);
-            }
-            jr.beginArray();
-            while (jr.hasNext()) {
-                Map<String, String> values = new HashMap<>();
-                jr.beginObject();
+
+        while (jr.hasNext()) {
+            String n = jr.nextName();      // read next key
+
+            //-----------------------------------
+            // restore backup: parse JSON, practice logs.
+            //-----------------------------------
+
+            if (PRACTICE_LOGS_STR.equals(n)) {
+                Log.i("nakama-sync", "Expecting practice_logs... saw " + n);
+                jr.beginArray();
                 while (jr.hasNext()) {
-                    values.put(jr.nextName(), nextStringOrNull(jr));
-                }
-                Log.i("nakama-sync", "Inserting character set edit from record: " + Util.join(values, "=>", ", "));
+                    Map<String, String> values = new HashMap<>();
+                    jr.beginObject();
+                    while (jr.hasNext()) {
+                        values.put(jr.nextName(), nextStringOrNull(jr));
+                    }
 
-                try {
-                    CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper();
-                    h.recordRemoteEdit(values.get("id"), values.get("charset_id"), values.get("name"), values.get("description"),
-                            values.get("characters"), installIdValue, values.get("device_timestamp"), Boolean.parseBoolean(values.get("deleted")));
-                    charsetEditCount++;
+                    try {
+                        String drawing = values.get("drawing");
+                        String drawingS = "[]";
+                        if (drawing != null && !drawing.equals("")) {
+                            JSONObject drawingJson = new JSONObject(drawing);
+                            JSONArray drawingArr = drawingJson.getJSONArray("drawing");
+                            drawingS = drawingArr.toString();
+                        }
+                        String[] insert = new String[]{values.get("id"), values.get("install_id"),
+                                values.get("charset"), values.get("character"), values.get("score"),
+                                values.get("timestamp"), drawingS};
+                        Log.i("nakama-sync", "Inserting remote log: " + Util.join(", ", insert));
+                        practiceLogCount++;
+                        if (forceIgnoreTimestamp)
+                        {
+                            DataHelperFactory.get().selectRecord("UPDATE OR IGNORE practice_log SET charset=?, character=?, score=?, timestamp=?, drawing=? WHERE id = ?",
+                                    (Object[]) (new String[]{
+                                            values.get("charset"), values.get("character"), values.get("score"), values.get("timestamp"), drawingS,
+                                            values.get("id")}));
+                        } else {
+                            DataHelperFactory.get().selectRecord("UPDATE OR IGNORE practice_log SET charset=?, character=?, score=?, timestamp=?, drawing=? WHERE id = ? AND timestamp < ?",
+                                    (Object[]) (new String[]{
+                                            values.get("charset"), values.get("character"), values.get("score"), values.get("timestamp"), drawingS,
+                                            values.get("id"), values.get("timestamp")}));
+                        }
 
-                    Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
-                } catch (Exception t) {
-                    Log.e("nakama-sync", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                        try {
+                            DataHelperFactory.get().selectRecord("INSERT INTO practice_log(id, install_id, charset, character, score, timestamp, drawing) VALUES(?, ?, ?, ?, ?, ?, ?)", (Object[]) insert);
+                        } catch (SQLiteConstraintException e) {
+                            Log.i("nakama-sync", "Already exists: " + Util.join(", ", insert));
+                        }
+
+                    } catch (Exception t) {
+                        Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                    }
+                    jr.endObject();
                 }
-                jr.endObject();
+                jr.endArray();
             }
-            jr.endArray();
-        }
 
+            //-----------------------------------
+            // restore backup: parse JSON, charset goals
+            //-----------------------------------
+            if (CHARSET_GOALS_STR.equals(n)) {
+                jr.beginArray();
+                while (jr.hasNext()) {
+                    Map<String, String> values = new HashMap<>();
+                    jr.beginObject();
+                    while (jr.hasNext()) {
+                        values.put(jr.nextName(), nextStringOrNull(jr));
+                    }
+                    Log.i("nakama", "Inserting charset goal from record: " + Util.join(values, "=>", ", "));
+
+                    try {
+                        if (forceIgnoreTimestamp) {
+                            DataHelperFactory.get().selectRecord("UPDATE OR IGNORE charset_goals SET goal=?, goal_start=? WHERE charset = ?",
+                                    (Object[]) (new String[]{values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
+                        } else {
+                            DataHelperFactory.get().selectRecord("UPDATE OR IGNORE charset_goals SET goal=?, goal_start=? WHERE charset = ? AND timestamp < ?",
+                                    (Object[]) (new String[]{values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
+
+                        }
+                        DataHelperFactory.get().selectRecord("INSERT OR IGNORE INTO charset_goals(goal, goal_start, charset, timestamp) VALUES(?, ?, ?, ?)",
+                                (Object[]) (new String[]{values.get("goal"), values.get("goal_start"), values.get("charset"), values.get("timestamp")}));
+
+                        charsetGoalsCount++;
+
+                        Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
+                    } catch (Exception t) {
+                        Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                    }
+                    jr.endObject();
+                }
+                jr.endArray();
+            }
+
+
+            //-----------------------------------
+            // restore backup: parse JSON, kanji stories.
+            //-----------------------------------
+            if (KANJI_STORIES_STR.equals(n)) {
+                jr.beginArray();
+                while (jr.hasNext()) {
+                    Map<String, String> values = new HashMap<>();
+                    jr.beginObject();
+                    while (jr.hasNext()) {
+                        values.put(jr.nextName(), nextStringOrNull(jr));
+                    }
+
+                    Log.i("nakama", "Inserting kanji_story from record: " + Util.join(values, "=>", ", "));
+                    try {
+                        if (forceIgnoreTimestamp){
+                            DataHelperFactory.get().selectRecord("UPDATE OR IGNORE kanji_stories SET story=? WHERE character = ?",
+                                    (Object[]) (new String[]{values.get("story"), values.get("character"), }));
+                        } else {
+                            DataHelperFactory.get().selectRecord("UPDATE OR IGNORE kanji_stories SET story=? WHERE character = ? AND  timestamp < ?",
+                                    (Object[]) (new String[]{values.get("story"), values.get("character"), values.get("timestamp")}));
+                        }
+                        DataHelperFactory.get().selectRecord("INSERT OR IGNORE INTO kanji_stories(character, story, timestamp) VALUES(?, ?, ?)",
+                                (Object[]) (new String[]{values.get("character"), values.get("story"), values.get("timestamp")}));
+
+                    } catch (SQLiteConstraintException t) {
+                        Log.e("nakama", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                    }
+
+                    jr.endObject();
+                }
+                jr.endArray();
+            }
+
+            //-----------------------------------
+            // restore backup: parse JSON, custom charsets.
+            //-----------------------------------
+            if (CHARACTER_SET_EDITS_STR.equals(n)) {
+                jr.beginArray();
+                while (jr.hasNext()) {
+                    Map<String, String> values = new HashMap<>();
+                    jr.beginObject();
+                    while (jr.hasNext()) {
+                        values.put(jr.nextName(), nextStringOrNull(jr));
+                    }
+                    Log.i("nakama-sync", "Inserting character set edit from record: " + Util.join(values, "=>", ", "));
+
+                    try {
+                        CustomCharacterSetDataHelper h = new CustomCharacterSetDataHelper();
+                        h.recordRemoteEdit(values.get("id"), values.get("charset_id"), values.get("name"), values.get("description"),
+                                values.get("characters"), installIdValue, values.get("device_timestamp"), Boolean.parseBoolean(values.get("deleted")));
+                        charsetEditCount++;
+
+                        Log.i("nakama-sync", "Upserting remote story: " + Util.join(", ", values.entrySet()));
+                    } catch (Exception t) {
+                        Log.e("nakama-sync", "DB error while error inserting sync log: " + Arrays.toString(values.entrySet().toArray()), t);
+                    }
+                    jr.endObject();
+                }
+                jr.endArray();
+            }
+        }
         jr.endObject();
 
         jr.close();
@@ -339,7 +358,17 @@ public class PracticeLogSync {
         //-----------------------------------
 
 
-        return null;
+        //-----------------------------------
+        // Set last backup sync timestamp in settings.
+        // If we're force-updating, no need to keep this.
+        //-----------------------------------
+        Settings.SyncSettings set = new Settings.SyncSettings(prevSyncTimestampValue, maxTimestamp());
+        SettingsFactory.get().setSyncSettings(set);
+
+        Log.i("nakama-sync", "Sync complete! Set lastSyncDeviceTimestamp to " + set.lastSyncDeviceTimestamp + " and lastSyncServerTimestamp to " + set.lastSyncServerTimestamp);
+
+        return new SyncCounts(practiceLogCount, kanjiStoriesCount, charsetGoalsCount, charsetEditCount,
+                0,                 0,        0,         0);
     }
     public SyncCounts sync() throws IOException {
         long startTime = System.currentTimeMillis();
@@ -368,20 +397,20 @@ public class PracticeLogSync {
 
             jw.name("app_version").value(SettingsFactory.get().version());
 
-            int sendingLogs = db.queryToJsonArray("practice_logs",
+            int sendingLogs = db.queryToJsonArray(PRACTICE_LOGS_STR,
                     "SELECT id, install_id, character, charset, timestamp, score, drawing " +
                             "FROM practice_log WHERE timestamp > ? AND install_id = ?",
                     new String[]{sync.lastSyncDeviceTimestamp, iid}, jw);
 
-            int sendingGoals = db.queryToJsonArray("charset_goals",
+            int sendingGoals = db.queryToJsonArray(CHARSET_GOALS_STR,
                     "SELECT charset, timestamp, goal_start, goal FROM charset_goals WHERE timestamp > ?",
                     new String[]{sync.lastSyncDeviceTimestamp}, jw);
 
-            int sendingStories = db.queryToJsonArray("kanji_stories",
+            int sendingStories = db.queryToJsonArray(KANJI_STORIES_STR,
                     "SELECT character, story, timestamp FROM kanji_stories WHERE timestamp > ?",
                     new String[]{sync.lastSyncDeviceTimestamp}, jw);
 
-            int sendingSetEdits = db.queryToJsonArray("character_set_edits",
+            int sendingSetEdits = db.queryToJsonArray(CHARACTER_SET_EDITS_STR,
                     "SELECT id, charset_id, name, description, characters, timestamp as device_timestamp, deleted FROM character_set_edits WHERE timestamp > ? AND install_id = ?",
                     new String[]{sync.lastSyncDeviceTimestamp, iid}, jw);
 
@@ -416,8 +445,8 @@ public class PracticeLogSync {
             // restore backup: parse JSON, practice logs.
             //-----------------------------------
             int practiceLogCount = 0;
-            String n = jr.nextName();      // "practice_logs" key
-            if(!"practice_logs".equals(n)){
+            String n = jr.nextName();      // PRACTICE_LOGS key
+            if(!PRACTICE_LOGS_STR.equals(n)){
                 throw new RuntimeException("Expected 'practice_logs' but saw " + n);
             }
             Log.i("nakama-sync", "Expecting practice_logs... saw " + n);
