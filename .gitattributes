@@ -5,3 +5,6 @@
 kanjidic.utf8.awb text eol=lf
 # Then, you force Git for Windows to consider the file like a binary file. If for whatever reason the file changes encoding, you'll see it in git.
 kanjidic.utf8.awb binary
+
+JMDict.xml text eol=lf
+JMDict.xml binary

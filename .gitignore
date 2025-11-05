@@ -17,3 +17,5 @@ app/debug
 
 # Keystore file. Copy the keystore.properties.template and fill it.
 keystore.properties
+
+vendor/bundle
