@@ -19,3 +19,4 @@ app/debug
 keystore.properties
 
 vendor/bundle
+JMDictAssetsBuilder/output_assets/*.xml
