@@ -111,6 +111,12 @@ def generate_trans_xml(nicechar, dictionary)
     entry.xpath(".//misc").each do |entref|
       entref.content = entref.child.name
     end
+    entry.xpath(".//field").each do |entref|
+      entref.content = entref.child.name
+    end
+    entry.xpath(".//dial").each do |entref|
+      entref.content = entref.child.name
+    end
   end
 
   def write_output(nicehex, entries)
