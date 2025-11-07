@@ -99,23 +99,10 @@ def generate_trans_xml(nicechar, dictionary)
   # 1. remove Entity Reference tags with &...;
   # It's brutal, but I don't know how basic the parser in write-japanese is... so better remove all I see...
   sorted_best.each do |entry|
-    entry.xpath(".//pos").each do |entref|
-      entref.content = entref.child.name
-    end
-    entry.xpath(".//ke_inf").each do |entref|
-      entref.content = entref.child.name
-    end
-    entry.xpath(".//re_inf").each do |entref|
-      entref.content = entref.child.name
-    end
-    entry.xpath(".//misc").each do |entref|
-      entref.content = entref.child.name
-    end
-    entry.xpath(".//field").each do |entref|
-      entref.content = entref.child.name
-    end
-    entry.xpath(".//dial").each do |entref|
-      entref.content = entref.child.name
+    for path_to_clean in [".//pos", ".//ke_inf", ".//re_inf", ".//misc", ".//field", ".//dial"] do
+      entry.xpath(path_to_clean).each do |entref|
+        entref.content = entref.child.name
+      end
     end
   end
 
@@ -146,6 +133,6 @@ def generate_trans_xml(nicechar, dictionary)
   write_output(gethex(nicechar), sorted_best)
 end
 
-# generate_trans_xml(getkanji("4e1e"), doc)
+generate_trans_xml(getkanji("4e1e"), doc)
 
-get_problematic_trans().each { |kanji| generate_trans_xml(kanji, doc) }
+# get_problematic_trans().each { |kanji| generate_trans_xml(kanji, doc) }
