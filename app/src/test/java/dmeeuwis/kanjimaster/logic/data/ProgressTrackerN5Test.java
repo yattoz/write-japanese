@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.util.Util;
 
 import static junit.framework.Assert.assertEquals;
@@ -28,7 +28,7 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 public class ProgressTrackerN5Test {
 
-    private List<Character> chars = Util.toCharList(Kanji.JLPT_N5);
+    private List<Character> chars = Util.stringToCharList(Kanji.JLPT_N5);
     private Set<Character> charSet = new LinkedHashSet<>(chars);
 
     private ProgressTracker simpleTestTracker(int advIncorrect, int advReview, boolean skipSrsIfFirstCorrect){

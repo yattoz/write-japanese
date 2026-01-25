@@ -11,9 +11,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import dmeeuwis.Kana;
-import dmeeuwis.Kanji;
-import dmeeuwis.Translation;
+import dmeeuwis.kanjimaster.core.Kana;
+import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.core.Translation;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertFalse;
@@ -57,10 +57,9 @@ public class VocabExistsTest {
 
                 final List<Translation> collect = new ArrayList<>();
                 TranslationsFromXml.PublishTranslation p = new TranslationsFromXml.PublishTranslation() {
-                                                       @Override
-                                                       public void publish(Translation t) {
+                    public void publish(dmeeuwis.kanjimaster.core.Translation t) {
                         collect.add(t);
-                }
+                    }
             };
 
                 t.load(fin, p);

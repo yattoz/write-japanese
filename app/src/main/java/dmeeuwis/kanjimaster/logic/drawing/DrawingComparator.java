@@ -324,7 +324,7 @@ public class DrawingComparator implements Comparator {
 		// intersection point distance errors
 	}
 
-	static boolean[][] calculateAboveMatrix(PointDrawing d){
+	public static boolean[][] calculateAboveMatrix(PointDrawing d){
 		boolean[][] matrix = new boolean[d.strokeCount()][d.strokeCount()];
 		for(int i = 0; i < d.strokeCount(); i++){
 			for(int j = 0; j < d.strokeCount(); j++){
@@ -411,7 +411,7 @@ public class DrawingComparator implements Comparator {
 
 
 
-    static List<StrokeResult> findBestPairings(int[][] matrix){
+    public static List<StrokeResult> findBestPairings(int[][] matrix){
 		Set<Integer> finishedRows = new TreeSet<>();
 		Set<Integer> finishedCols = new TreeSet<>();
 		List<StrokeResult> pairs = new ArrayList<>(matrix[0].length);

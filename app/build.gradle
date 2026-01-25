@@ -13,9 +13,11 @@ android {
             keyPassword keystoreProperties['keyPassword']
         }
     }
-
-
-    compileSdk 34
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    compileSdkVersion 36
     defaultConfig {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 21
@@ -105,5 +107,9 @@ dependencies {
     testImplementation 'org.powermock:powermock:1.6.5'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.5'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.5'
+
+    androidTestImplementation 'androidx.test:core:1.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+
     implementation files('libs/in-app-purchasing-2.0.76.jar')
 }

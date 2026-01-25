@@ -8,8 +8,8 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import dmeeuwis.Kanji;
-import dmeeuwis.indexer.KanjiFinder;
+import dmeeuwis.kanjimaster.core.Kanji;
+import dmeeuwis.kanjimaster.core.indexer.KanjiFinder;
 
 import static junit.framework.Assert.assertEquals;
 
