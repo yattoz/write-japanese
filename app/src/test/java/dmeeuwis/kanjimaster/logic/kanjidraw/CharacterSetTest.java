@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import dmeeuwis.kanjimaster.BuildConfig;
-import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.logic.drawing.PointDrawing;
 import dmeeuwis.kanjimaster.logic.data.CharacterProgressDataHelper;
 import dmeeuwis.kanjimaster.logic.data.CharacterStudySet;
@@ -27,7 +27,8 @@ public class CharacterSetTest {
             super(null);
         }
 
-        @Override public ProgressionSettings getProgressionSettings(){
+        //TODO: method never used?
+        public ProgressionSettings getProgressionSettings(){
             return new ProgressionSettings(CharacterProgressDataHelper.DEFAULT_INTRO_INCORRECT, CharacterProgressDataHelper.DEFAULT_INTRO_REVIEWING,
                     CharacterProgressDataHelper.DEFAULT_ADV_INCORRECT, CharacterProgressDataHelper.DEFAULT_ADV_REVIEWING,
                     CharacterProgressDataHelper.DEFAULT_CHAR_COOLDOWN, true);

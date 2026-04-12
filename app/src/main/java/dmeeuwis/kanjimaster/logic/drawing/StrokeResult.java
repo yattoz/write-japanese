@@ -5,7 +5,7 @@ import java.util.Locale;
 /**
  * Created by dmeeuwis on 22/09/16.
  */
-class StrokeResult {
+public class StrokeResult {
     public final Integer knownStrokeIndex;
     public final Integer drawnStrokeIndex;
     public final int score;

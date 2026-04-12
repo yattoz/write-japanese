@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dmeeuwis.Kana;
-import dmeeuwis.Kanji;
+import dmeeuwis.kanjimaster.core.Kana;
+import dmeeuwis.kanjimaster.core.Kanji;
 import dmeeuwis.kanjimaster.BuildConfig;
 import dmeeuwis.kanjimaster.logic.drawing.CurveDrawing;
 import dmeeuwis.util.Util;

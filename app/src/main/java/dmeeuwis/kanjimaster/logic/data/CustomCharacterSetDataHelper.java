@@ -13,7 +13,7 @@ public class CustomCharacterSetDataHelper {
 
     void recordRemoteEdit(String editId, String charsetId, String name, String desc, String set, String installId, String timestamp, Boolean deleted) {
         DataHelperFactory.get().execSQL(
-                "INSERT INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), ?)",
+                "INSERT OR IGNORE INTO character_set_edits(id, charset_id, name, description, characters, install_id, timestamp, deleted) VALUES(?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), ?)",
                 new String[]{editId, charsetId, name, desc, set, installId, timestamp, deleted.toString()});
     }
 

@@ -17,9 +17,9 @@ import dmeeuwis.kanjimaster.logic.data.Point;
 import dmeeuwis.kanjimaster.logic.data.Rect;
 import dmeeuwis.kanjimaster.core.util.Util;
 
-class SimpleDrawingComparator implements Comparator {
+public class SimpleDrawingComparator implements Comparator {
 
-	enum StrokeOrder { DISCOUNT, COUNT }
+	public enum StrokeOrder { DISCOUNT, COUNT }
 
 	enum StrokeCompareFailure { START_POINT_DIFFERENCE, END_POINT_DIFFERENCE, BACKWARDS }
 	enum OverallFailure { EXTRA_STROKES, MISSING_STROKES, WRONG_STROKE_ORDER }
@@ -40,7 +40,7 @@ class SimpleDrawingComparator implements Comparator {
 	final AssetFinder assetFinder;
 	StrokeOrder strokeOrder;
 
-	SimpleDrawingComparator(AssetFinder assetFinder, StrokeOrder order) {
+	public SimpleDrawingComparator(AssetFinder assetFinder, StrokeOrder order) {
 		this.assetFinder = assetFinder;
 		strokeOrder = order;
 	}
@@ -314,7 +314,7 @@ class SimpleDrawingComparator implements Comparator {
 	}
 
 
-	static List<StrokeResult> findBestPairings(double[][] matrix){
+	public static List<StrokeResult> findBestPairings(double[][] matrix){
 		HungarianAlgorithm al = new HungarianAlgorithm(matrix);
 		int[] matches = al.execute();
 		if(DEBUG) Log.i("nakama", "Assignment results: " + Arrays.toString(matches));

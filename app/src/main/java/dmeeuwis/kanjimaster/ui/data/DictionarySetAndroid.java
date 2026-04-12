@@ -84,10 +84,10 @@ public class DictionarySetAndroid implements DictionarySet {
 		final List<Translation> collect = new ArrayList<>();
 		TranslationsFromXml.PublishTranslation p = new TranslationsFromXml.PublishTranslation() {
 			@Override
-			public void publish(Translation t) {
-				collect.add(t);
+			public void publish(dmeeuwis.kanjimaster.core.Translation t) {
+                collect.add(t);
 			}
-		};
+        };
 		TranslationsFromXml t = new TranslationsFromXml();
 		t.load(in, p, limit);
 		return collect;

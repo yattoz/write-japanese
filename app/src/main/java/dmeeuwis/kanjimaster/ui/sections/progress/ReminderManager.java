@@ -65,7 +65,7 @@ public class ReminderManager extends BroadcastReceiver {
 
         Log.i("nakama", "Setting study reminder : " + df.format(calendar.getTime()));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(c, NOTIFICATION_ID,
-                    makeIntent(c), PendingIntent.FLAG_UPDATE_CURRENT);
+                    makeIntent(c), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
