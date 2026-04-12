@@ -22,9 +22,9 @@ android {
         applicationId "dmeeuwis.kanjimaster"
         minSdkVersion 21
         //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 29 // TODO: target higher version (need fix for some layouts)
-        versionCode 220
-        versionName "22.0"
+        targetSdkVersion 34 // TODO: target 35+ version (need fix for some layouts)
+        versionCode 221
+        versionName "22.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
