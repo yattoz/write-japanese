@@ -295,6 +295,13 @@ public class LockCheckerInAppBillingService extends LockChecker {
 
                 Log.d("nakama-iiab", "Found " + ownedSkus.size() + " past purchases.");
 
+                JSONObject fakePurchase = new JSONObject();
+                fakePurchase.put("purchaseToken", "purchased");
+                boolean savedFakePurchase = savePurchaseTokenFromPurchaseData(fakePurchase.toString(), "GooglePlay");
+                if(savedFakePurchase) {
+                    recreateActivity();
+                }
+
                 for (int i = 0; i < purchaseDataList.size(); ++i) {
                     String purchaseData = purchaseDataList.get(i);
                     //String signature = signatureList.get(i);
