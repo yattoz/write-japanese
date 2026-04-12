@@ -647,7 +647,7 @@ public class KanjiMasterActivity extends AppCompatActivity implements ActionBar.
 
         SRSQueue.registerSetsForGlobalSRS(characterSets.values());
 
-        reloadPracticeLogs(CharacterStudySet.LoadProgress.NO_LOAD_SET_PROGRESS, progressCacheFlag);
+        reloadPracticeLogs(CharacterStudySet.LoadProgress.LOAD_SET_PROGRESS, progressCacheFlag);
 
         long time = System.currentTimeMillis() - start;
         Log.i("nakama", "Loading character sets took: " + time + "ms");
